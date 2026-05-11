@@ -2,10 +2,17 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0c1426">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c1426" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0c1426" media="(prefers-color-scheme: light)">
+<meta name="color-scheme" content="dark light">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ぽもじかん">
+<meta name="application-name" content="ぽもじかん">
+<meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<link rel="canonical" href="https://rainybrainch.github.io/pomojikan/">
 <meta name="description" content="文字が降ってくる作業タイマー。ポモドーロのリズムで文字を積み上げ、図鑑で集める。育成・コレクション・物理エンジン搭載の PWA。">
 <meta name="keywords" content="ぽもじかん,pomojikan,ポモドーロ,タイマー,作業,集中,文字,コレクション,PWA,図鑑">
 <meta name="author" content="rainybrainch">
@@ -106,7 +113,21 @@ main {
 .btn:hover, .btn:active { transform: translateY(-1px); background: var(--rain); color: var(--bg); }
 .btn.primary { background: linear-gradient(135deg, var(--gold), #b89940); color: var(--bg); border-color: var(--gold); }
 .btn.primary:hover { background: var(--gold); }
-.btn.small { padding: 5px 10px; font-size: 0.62rem; min-height: auto; }
+.btn.small { padding: 8px 12px; font-size: 0.66rem; min-height: 36px; }
+@media (pointer: coarse) {
+  /* タッチデバイス：44px+ 保証（WCAG AAA 推奨） */
+  .btn { min-height: 44px; }
+  .btn.small { min-height: 40px; }
+  .cf-btn, .lang-btn, .theme-btn, .font-btn, .bgm-btn { min-height: 36px; padding: 8px 12px; }
+  input[type="checkbox"], input[type="radio"] { transform: scale(1.3); }
+}
+/* `prefers-reduced-motion` 対応 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 footer {
   position: relative; z-index: 10;
@@ -622,7 +643,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v0.95 ／ 作: rainybrainch<br>
+      ぽもじかん v1.0 ／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -640,6 +661,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 <script>
 'use strict';
+
+// ─── デバッグフラグ（本番では console を抑制） ───
+const DEBUG = location.hostname === 'localhost' || location.search.includes('debug=1');
+const log = DEBUG ? console.log.bind(console) : () => {};
+const warn = DEBUG ? console.warn.bind(console) : () => {};
 
 // ─── 七大罪 × 七徳 ───
 const VIRTUES = ['謙虚', '親切', '勤勉', '純潔', '慈悲', '節制', '忍耐'];
@@ -714,7 +740,7 @@ function migrateData() {
     localStorage.setItem('pomojikan_data_version', '0.95');
   } else if (v !== '0.95') {
     // 将来のバージョンアップ用フック
-    console.log('[migrate] from', v, '→ 0.95');
+    log('[migrate] from', v, '→ 0.95');
     localStorage.setItem('pomojikan_data_version', '0.95');
   }
 }
@@ -930,9 +956,9 @@ async function fetchFukurou365() {
       }
     }
     fukurou365Cache = { virtue: virtueWords, sin: sinWords, at: now };
-    console.log('[fukurou365] loaded', virtueWords.length, '/', sinWords.length);
+    log('[fukurou365] loaded', virtueWords.length, '/', sinWords.length);
   } catch (e) {
-    console.warn('fukurou365 fetch failed', e);
+    warn('fukurou365 fetch failed', e);
   }
 }
 
@@ -1694,7 +1720,7 @@ function startRain() {
     }
     rainSource.connect(filter).connect(rainGain).connect(audioCtx.destination);
     rainSource.start();
-  } catch (e) { console.warn('audio failed', e); }
+  } catch (e) { warn('audio failed', e); }
 }
 function stopRain() {
   if (rainSource) { try { rainSource.stop(); } catch(e){} rainSource = null; }
@@ -2481,10 +2507,10 @@ function applyI18N() {
 
 // ─── エラー境界（v0.7）───
 window.addEventListener('error', (e) => {
-  try { console.warn('[pomojikan err]', e.message); } catch(_) {}
+  try { warn('[pomojikan err]', e.message); } catch(_) {}
 });
 window.addEventListener('unhandledrejection', (e) => {
-  try { console.warn('[pomojikan reject]', e.reason); } catch(_) {}
+  try { warn('[pomojikan reject]', e.reason); } catch(_) {}
 });
 
 // ─── 起動 ───
@@ -2495,8 +2521,10 @@ applyI18N();
 // 服牢365 Gist 名言を非同期で取得（読雨と連動）
 fetchFukurou365();
 renderTimer();
-console.log('%c🌑 ぽもじかん v0.95 (cycle 6) — 60 improvements','color:#c9a84c;font-size:1.2rem;font-weight:900;');
-console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
+if (DEBUG) {
+  console.log('%c🌑 ぽもじかん v1.0','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
+}
 
 // PWA
 if ('serviceWorker' in navigator) {
