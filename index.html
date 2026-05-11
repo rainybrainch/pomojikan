@@ -357,6 +357,32 @@ body.focus-mode header { opacity: 0; transition: opacity 0.3s; }
 body.focus-mode footer { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 body.focus-mode .phase-label { opacity: 0.3; }
 
+/* ランク：ライトモード（最初の白背景）対応 */
+body.light-mode {
+  color: var(--text);
+}
+body.light-mode::before { opacity: 0.2; }
+body.light-mode .btn {
+  background: linear-gradient(135deg, var(--bg2), var(--panel));
+  color: var(--gold);
+  border-color: var(--gold);
+}
+body.light-mode .btn:hover, body.light-mode .btn:active {
+  background: var(--gold);
+  color: var(--bg);
+}
+body.light-mode .btn.primary {
+  background: var(--gold);
+  color: var(--white);
+}
+body.light-mode .timer { color: var(--white); text-shadow: 0 0 10px rgba(0,0,0,0.08); }
+body.light-mode .overlay { background: rgba(255,255,255,0.85); }
+body.light-mode .overlay-card { background: var(--bg2); border-color: rgba(0,0,0,0.15); }
+body.light-mode input, body.light-mode textarea, body.light-mode select {
+  background: var(--white) !important; color: var(--text) !important;
+  border-color: rgba(0,0,0,0.18) !important;
+}
+
 /* 高コントラストモード */
 body.high-contrast {
   --bg: #000000; --bg2: #0a0a0a; --panel: #1a1a1a;
@@ -556,12 +582,14 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- テーマ -->
     <div class="section-h">🎨 テーマ（配色）</div>
     <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn small theme-btn" data-theme="rank">⭐ キャラLv連動</button>
       <button class="btn small theme-btn" data-theme="zaitoku">🌑 罪徳</button>
       <button class="btn small theme-btn" data-theme="rain">🌧 雨</button>
       <button class="btn small theme-btn" data-theme="sand">🌅 砂</button>
       <button class="btn small theme-btn" data-theme="snow">❄ 雪</button>
       <button class="btn small theme-btn" data-theme="sakura">🌸 桜</button>
     </div>
+    <div id="rank-info" style="font-size:0.72rem;color:var(--muted);padding:4px 10px;line-height:1.6;margin-bottom:8px;"></div>
 
     <!-- フォント -->
     <div class="section-h">🖋 フォント</div>
@@ -663,7 +691,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.4（ポモドーロ本気版）／ 作: rainybrainch<br>
+      ぽもじかん v1.5（キャラLv連動色）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -769,7 +797,7 @@ const STATE = {
   daily: {},
   achievements: {},     // { 'id': timestamp }
   dailyChallenge: null, // { date, target, count, done }
-  theme: 'zaitoku',
+  theme: 'rank',     // 初期値：育てたキャラ Lv で背景色が育つ（最初は白）
   bgm: 'rain',
   font: 'serif',
   favorites: {},        // { '謙虚': true }
@@ -869,8 +897,57 @@ function updateDailyChallenge(text) {
   try { localStorage.setItem(KEY_DAILY_CHL, JSON.stringify(STATE.dailyChallenge)); } catch(e) {}
 }
 
+// ─── ランクテーブル（累計完走で色が育つ・背景も連動）───
+const RANKS = [
+  { min: 0,    name: '🌱 はじまり', virtue: '#cd7f32', sin: '#8b5a2b',
+    bg: '#fafaf5', bg2: '#ecebe2', panel: '#dcd9cc', text: '#3a3a3a', white: '#1a1a1a', muted: '#8a8676',
+    dark: false },
+  { min: 10,   name: '🥈 銀',       virtue: '#7a7a7a', sin: '#5a5a5a',
+    bg: '#e8e9ed', bg2: '#d0d2d8', panel: '#bcc0c8', text: '#2a2a2a', white: '#1a1a1a', muted: '#6a6a6a',
+    dark: false },
+  { min: 50,   name: '🥇 金',       virtue: '#c9a84c', sin: '#a87f30',
+    bg: '#0c1426', bg2: '#131c33', panel: '#1a2440', text: '#c8d0e8', white: '#eef2ff', muted: '#5a6890',
+    dark: true },
+  { min: 100,  name: '✨ プラチナ',  virtue: '#e5e4e2', sin: '#a8a6a4',
+    bg: '#0a0e1a', bg2: '#11162a', panel: '#1a2236', text: '#dcdce0', white: '#ffffff', muted: '#6a7080',
+    dark: true },
+  { min: 250,  name: '🟢 エメラルド',virtue: '#50c878', sin: '#2e7d4f',
+    bg: '#0a1a14', bg2: '#0e2620', panel: '#15302a', text: '#c8e8d4', white: '#eefff0', muted: '#5a8870',
+    dark: true },
+  { min: 500,  name: '🔵 サファイア',virtue: '#5fa9e8', sin: '#2e5a87',
+    bg: '#08152e', bg2: '#0d1f3e', panel: '#152846', text: '#c8d8f0', white: '#e8f0ff', muted: '#5a78a0',
+    dark: true },
+  { min: 1000, name: '🌈 伝説',     virtue: '#ff9bb3', sin: '#c890d8',
+    bg: '#1a0a1a', bg2: '#28102e', panel: '#3a1a40', text: '#f0d8f0', white: '#fff0ff', muted: '#a08aa0',
+    dark: true }
+];
+// ランクは「育てたキャラ（ぽもじ）の最高 Lv」で決まる
+function getMaxCharLv() {
+  let max = 0;
+  for (const v of Object.values(STATE.collection || {})) {
+    const lv = getLevel(v.count);
+    if (lv > max) max = lv;
+  }
+  return max;
+}
+function getCurrentRank() {
+  const maxLv = getMaxCharLv();
+  if (maxLv <= 0)      return RANKS[0];  // はじまり（白）
+  else if (maxLv <= 2) return RANKS[1];  // 銀
+  else if (maxLv <= 4) return RANKS[2];  // 金
+  else if (maxLv <= 5) return RANKS[3];  // プラチナ
+  else if (maxLv === 6) return RANKS[4]; // エメラルド
+  else if (maxLv === 7) return RANKS[5]; // サファイア
+  else                  return RANKS[6]; // 虹（Lv 8-9）
+}
+function getNextRank() {
+  const idx = RANKS.indexOf(getCurrentRank());
+  return RANKS[idx + 1] || null;
+}
+
 // ─── テーマ切替 ───
 const THEMES = {
+  rank:    null,  // 動的：累計完走でランクテーブルから取得
   zaitoku: { virtue: '#e8c668', sin: '#ff9b9b', accent: '#c9a84c', sub: '#c890d8' },
   rain:    { virtue: '#6bb6ff', sin: '#3a6fc9', accent: '#6bb6ff', sub: '#c890d8' },
   sand:    { virtue: '#d6b966', sin: '#a87850', accent: '#c9a84c', sub: '#8a6440' },
@@ -1100,7 +1177,7 @@ function load() {
   try { STATE.daily = JSON.parse(localStorage.getItem(KEY_DAILY) || '{}'); } catch(e) { STATE.daily = {}; }
   try { STATE.achievements = JSON.parse(localStorage.getItem(KEY_ACHIEVE) || '{}'); } catch(e) { STATE.achievements = {}; }
   try { STATE.dailyChallenge = JSON.parse(localStorage.getItem(KEY_DAILY_CHL) || 'null'); } catch(e) { STATE.dailyChallenge = null; }
-  STATE.theme = localStorage.getItem(KEY_THEME) || 'zaitoku';
+  STATE.theme = localStorage.getItem(KEY_THEME) || 'rank';
   STATE.bgm = localStorage.getItem(KEY_BGM) || 'rain';
   STATE.font = localStorage.getItem(KEY_FONT) || 'serif';
   STATE.interrupts = parseInt(localStorage.getItem('pomojikan_interrupts') || '0', 10);
@@ -1445,11 +1522,20 @@ function spawn() {
   const words = getWordsForPhase(isWork ? 'work' : 'rest');
   const text = words[Math.floor(Math.random() * words.length)];
   // コレクション記録 + Lv 取得
+  const prevRank = (STATE.theme === 'rank') ? getCurrentRank() : null;
   const entry = recordWord(text, type);
   const lv = getLevel(entry.count);
+  // ランク連動なら、ランクアップ確認＋色変更
+  if (STATE.theme === 'rank') {
+    const newRank = getCurrentRank();
+    if (prevRank && newRank.name !== prevRank.name) {
+      flash(`🌟 ランクアップ！ ${newRank.name}`);
+      if (navigator.vibrate && STATE.vibrateOn) navigator.vibrate([100, 50, 100, 50, 100]);
+      applyThemeCSS();
+    }
+  }
   // デイリーチャレンジ更新
   updateDailyChallenge(text);
-  // 一定間隔でアチーブメントもチェック
   if (entry.count % 5 === 0) checkAchievements();
   // レア新規発見ならフラッシュ
   // 初出メッセージ（レアリティ別）
@@ -1991,6 +2077,14 @@ function openMenu() {
   document.querySelectorAll('.theme-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.theme === STATE.theme);
   });
+  // ランク情報
+  const ri = document.getElementById('rank-info');
+  if (ri) {
+    const cur = getCurrentRank();
+    const next = getNextRank();
+    const maxLv = getMaxCharLv();
+    ri.innerHTML = `現在ランク：<strong style="color:var(--gold);">${cur.name}</strong>（最高 Lv ${maxLv}）${next ? ` ／ 次：${next.name}` : ' ／ 最高ランク'}`;
+  }
   // フォント
   document.querySelectorAll('.font-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.font === STATE.font);
@@ -2103,12 +2197,32 @@ document.querySelectorAll('.bgm-btn').forEach(btn => {
   });
 });
 function applyThemeCSS() {
+  // ランクモード：育てたキャラの最高 Lv で全色を決定
+  if (STATE.theme === 'rank') {
+    const r = getCurrentRank();
+    const ds = document.documentElement.style;
+    ds.setProperty('--bg', r.bg);
+    ds.setProperty('--bg2', r.bg2);
+    ds.setProperty('--panel', r.panel);
+    ds.setProperty('--text', r.text);
+    ds.setProperty('--white', r.white);
+    ds.setProperty('--muted', r.muted);
+    ds.setProperty('--gold', r.virtue);
+    ds.setProperty('--sin', r.sin);
+    document.body.classList.toggle('light-mode', !r.dark);
+    // theme-color メタを更新（PWA タイトルバー）
+    const tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) tc.setAttribute('content', r.bg);
+    return;
+  }
   // パレットカスタムがあれば優先
   if (STATE.palette && STATE.palette.virtue && STATE.palette.sin) {
     document.documentElement.style.setProperty('--gold', STATE.palette.virtue);
     document.documentElement.style.setProperty('--sin', STATE.palette.sin);
     return;
   }
+  // 通常テーマ
+  document.body.classList.remove('light-mode');
   const t = themeColors();
   document.documentElement.style.setProperty('--gold', t.virtue);
   document.documentElement.style.setProperty('--sin', t.sin);
