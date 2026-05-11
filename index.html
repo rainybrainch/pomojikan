@@ -173,6 +173,88 @@ footer {
 
 .menu-actions { display: flex; gap: 8px; margin-top: 14px; }
 .menu-actions .btn { flex: 1; }
+
+/* 📚 ぽもじ図鑑 */
+.collection-card { max-width: 540px; }
+.collection-stats {
+  display: flex; justify-content: space-around; gap: 8px;
+  padding: 10px; margin-bottom: 12px;
+  background: rgba(0,0,0,0.28); border-radius: 4px;
+  font-family: var(--mono);
+}
+.collection-stats .cs-item { text-align: center; flex: 1; }
+.collection-stats .cs-num { display: block; font-size: 1.1rem; font-weight: 900; color: var(--gold); }
+.collection-stats .cs-label { display: block; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.1em; margin-top: 2px; }
+
+.collection-filter {
+  display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap;
+}
+.cf-btn {
+  background: transparent; border: 1px solid rgba(107,182,255,0.18);
+  color: var(--muted); padding: 4px 10px; border-radius: 3px;
+  font-family: var(--mono); font-size: 0.62rem; cursor: pointer;
+  letter-spacing: 0.05em; transition: all 0.15s;
+}
+.cf-btn:hover { color: var(--rain); }
+.cf-btn.active { color: var(--gold); border-color: var(--gold); }
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 6px;
+  max-height: 50vh; overflow-y: auto;
+  padding: 4px;
+}
+.col-item {
+  position: relative;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(107,182,255,0.10);
+  border-radius: 4px;
+  padding: 8px 4px;
+  text-align: center;
+  cursor: default;
+  transition: all 0.15s;
+  min-height: 64px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.col-item:hover { transform: translateY(-1px); background: rgba(0,0,0,0.50); }
+.col-item.col-virtue { border-left: 2px solid var(--gold); }
+.col-item.col-sin    { border-left: 2px solid var(--sin); }
+.col-item.col-gold   { border: 1px solid var(--gold); box-shadow: 0 0 8px rgba(201,168,76,0.4); }
+.col-item.col-rainbow{
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)) padding-box,
+    linear-gradient(135deg, #ff6b6b, #c9a84c, #6bb6ff, #c890d8) border-box;
+}
+.col-item .ci-text {
+  font-family: var(--serif); font-weight: 700;
+  font-size: 0.82rem; line-height: 1.1;
+  color: var(--white);
+  word-break: break-all;
+}
+.col-item.col-virtue .ci-text { color: #e8c668; }
+.col-item.col-sin    .ci-text { color: #ff9b9b; }
+.col-item.col-gold   .ci-text { color: #ffe28a; }
+.col-item.col-rainbow .ci-text { color: #ffffff; text-shadow: 0 0 4px rgba(255,255,255,0.8); }
+.col-item .ci-lv {
+  position: absolute; top: 2px; right: 4px;
+  font-family: var(--mono); font-size: 0.50rem;
+  color: var(--gold); letter-spacing: 0.05em;
+}
+.col-item .ci-count {
+  font-family: var(--mono); font-size: 0.55rem;
+  color: var(--muted); margin-top: 4px;
+}
+.col-item .ci-rare {
+  position: absolute; top: 2px; left: 4px;
+  font-size: 0.55rem;
+}
+.col-empty {
+  grid-column: 1 / -1;
+  text-align: center; padding: 30px 20px;
+  color: var(--muted); font-style: italic; font-size: 0.82rem;
+}
 </style>
 </head>
 <body>
@@ -202,10 +284,29 @@ footer {
     <button class="btn small" data-preset="25/5">25/5</button>
     <button class="btn small" data-preset="50/10">50/10</button>
     <button class="btn small" data-preset="15/3">15/3</button>
+    <button class="btn small" id="btn-collection" title="ぽもじ図鑑">📚 図鑑</button>
     <button class="btn small" id="btn-menu" title="メニュー">⚙ メニュー</button>
   </div>
   <div class="poetic" id="poetic-line">徳は降り、罪は上がる。永遠に。</div>
 </footer>
+
+<!-- 📚 ぽもじ図鑑 -->
+<div id="overlay-collection" class="overlay">
+  <div class="overlay-card collection-card">
+    <div class="overlay-title">📚 ぽもじ図鑑</div>
+    <div class="collection-stats" id="collection-stats"></div>
+    <div class="collection-filter">
+      <button class="cf-btn active" data-sort="count">出現順</button>
+      <button class="cf-btn" data-sort="new">新しい順</button>
+      <button class="cf-btn" data-sort="alpha">あいうえお順</button>
+      <button class="cf-btn" data-sort="rare">レア順</button>
+    </div>
+    <div class="collection-grid" id="collection-grid"></div>
+    <div class="actions menu-actions">
+      <button class="btn" id="col-close">閉じる</button>
+    </div>
+  </div>
+</div>
 
 <!-- メニュー（設定モーダル） -->
 <div id="overlay-menu" class="overlay">
@@ -276,6 +377,7 @@ const KEY_WORDS_WORK = 'zaitoku_words_work';
 const KEY_WORDS_REST = 'zaitoku_words_rest';
 const KEY_VIBRATE = 'zaitoku_vibrate';
 const KEY_NOTIFY  = 'zaitoku_notify';
+const KEY_COLLECTION = 'pomojikan_collection';  // { word: { count, firstSeen, lastSeen, rare } }
 
 const STATE = {
   phase: 'work',        // 'work' | 'rest'
@@ -291,8 +393,57 @@ const STATE = {
   customWorkWords: [],
   customRestWords: [],
   vibrateOn: true,
-  notifyOn: true
+  notifyOn: true,
+  collection: {}     // { '謙虚': { count: 23, firstSeen, lastSeen, rare: 'gold'|'rainbow'|null, type } }
 };
+
+// ─── ぽもじ図鑑（コレクション） ───
+function getLevel(count) {
+  // Lv 1: 1-2 / Lv 2: 3-5 / Lv 3: 6-10 / Lv 4: 11-20 / Lv 5: 21-40 / Lv 6: 41-80 / Lv 7: 81-150 / Lv 8: 151-300 / Lv 9: 301+
+  const thresholds = [1, 3, 6, 11, 21, 41, 81, 151, 301];
+  let lv = 0;
+  for (const t of thresholds) if (count >= t) lv++;
+  return lv;
+}
+function levelStyle(lv, type, rare) {
+  // type: virtue / sin, rare: null / gold / rainbow
+  const base = type === 'virtue' ? '#e8c668' : '#ff9b9b';
+  if (rare === 'rainbow') return { color: '#ffffff', glow: 'rgba(255,255,255,0.9)', glowStrength: 18 };
+  if (rare === 'gold')    return { color: '#ffe28a', glow: 'rgba(255,224,138,0.85)', glowStrength: 14 };
+  const styles = [
+    { color: base, glow: 'transparent', glowStrength: 0 },                                                  // Lv 1
+    { color: base, glow: type === 'virtue' ? 'rgba(232,198,104,0.3)' : 'rgba(255,155,155,0.3)', glowStrength: 4 },  // Lv 2
+    { color: base, glow: type === 'virtue' ? 'rgba(232,198,104,0.5)' : 'rgba(255,155,155,0.5)', glowStrength: 6 },  // Lv 3
+    { color: '#f0d488', glow: 'rgba(232,198,104,0.6)', glowStrength: 8 },                                          // Lv 4
+    { color: '#f5dba0', glow: 'rgba(255,210,120,0.7)', glowStrength: 10 },                                         // Lv 5
+    { color: '#ffe2a8', glow: 'rgba(255,220,140,0.8)', glowStrength: 12 },                                         // Lv 6
+    { color: '#ffe8b3', glow: 'rgba(255,230,160,0.9)', glowStrength: 14 },                                         // Lv 7
+    { color: '#fff0c0', glow: 'rgba(255,240,180,1.0)', glowStrength: 16 },                                         // Lv 8
+    { color: '#ffffff', glow: 'rgba(255,255,200,1.0)', glowStrength: 20 }                                          // Lv 9
+  ];
+  return styles[Math.min(lv, styles.length - 1)] || styles[0];
+}
+function recordWord(text, type) {
+  const now = new Date().toISOString();
+  const existing = STATE.collection[text];
+  let rare = existing ? existing.rare : null;
+  if (!existing) {
+    // 初出：レア判定
+    const r = Math.random();
+    if (r < 0.002)      rare = 'rainbow';   // 0.2%
+    else if (r < 0.01)  rare = 'gold';      // 1%
+  }
+  STATE.collection[text] = {
+    count: (existing ? existing.count : 0) + 1,
+    firstSeen: existing ? existing.firstSeen : now,
+    lastSeen: now,
+    rare,
+    type
+  };
+  // 永続化（spawn頻度が低いので保存OK）
+  try { localStorage.setItem(KEY_COLLECTION, JSON.stringify(STATE.collection)); } catch(e) {}
+  return STATE.collection[text];
+}
 
 // 言葉セレクタ（モード別）
 function getWordsForPhase(phase) {
@@ -328,6 +479,7 @@ function load() {
   try { STATE.customRestWords = JSON.parse(localStorage.getItem(KEY_WORDS_REST) || '[]'); } catch(e) { STATE.customRestWords = []; }
   STATE.vibrateOn = (localStorage.getItem(KEY_VIBRATE) || '1') === '1';
   STATE.notifyOn = (localStorage.getItem(KEY_NOTIFY) || '1') === '1';
+  try { STATE.collection = JSON.parse(localStorage.getItem(KEY_COLLECTION) || '{}'); } catch(e) { STATE.collection = {}; }
   // 日付変わってたらリセット
   const today = new Date().toISOString().slice(0,10);
   if (STATE.todayDate !== today) {
@@ -580,15 +732,27 @@ function spawn() {
   if (now - field.lastSpawn < PHYSICS.spawnInterval) return;
   field.lastSpawn = now;
   const isWork = STATE.phase === 'work';
+  const type = isWork ? 'virtue' : 'sin';
   const words = getWordsForPhase(isWork ? 'work' : 'rest');
   const text = words[Math.floor(Math.random() * words.length)];
+  // コレクション記録 + Lv 取得
+  const entry = recordWord(text, type);
+  const lv = getLevel(entry.count);
+  // レア新規発見ならフラッシュ
+  if (entry.count === 1 && entry.rare) {
+    flash(entry.rare === 'rainbow' ? '🌈 虹色の文字を発見！' : '✨ 金色の文字を発見！');
+  } else if (entry.count === 1) {
+    flash(`📚 新文字「${text}」`);
+  } else if (entry.count === 50 || entry.count === 100 || entry.count === 200) {
+    flash(`🌟 ${text} Lv ${lv} 到達`);
+  }
   const r = radiusFor(text);
   const margin = r + 8;
   field.bodies.push({
-    type: isWork ? 'virtue' : 'sin',
-    text,
-    r,                                          // 半径
-    mass: r * r,                                 // 質量（半径^2 = 面積比）
+    type, text, r,
+    mass: r * r,
+    lv,
+    rare: entry.rare,
     x: margin + Math.random() * (innerWidth - margin * 2),
     y: isWork ? -r : innerHeight + r,
     vx: (Math.random() - 0.5) * 0.5,
@@ -596,7 +760,7 @@ function spawn() {
     rot: (Math.random() - 0.5) * 0.4,
     vrot: (Math.random() - 0.5) * 0.02,
     alpha: 0,
-    settled: false,                              // 静止フラグ
+    settled: false,
     spawnedAt: now
   });
 }
@@ -742,28 +906,44 @@ function draw() {
     ctx.translate(b.x, b.y);
     ctx.rotate(b.rot || 0);
 
-    // メダル風円（文字数で大きさ変動）
+    // Lv / rare に応じたスタイル
+    const style = levelStyle(b.lv || 0, b.type, b.rare);
+
+    // メダル風円
     ctx.beginPath();
     ctx.arc(0, 0, b.r, 0, Math.PI * 2);
-    ctx.fillStyle = b.type === 'virtue'
-      ? 'rgba(201,168,76,0.14)'
-      : 'rgba(255,107,107,0.14)';
+    if (b.rare === 'rainbow') {
+      // 虹グラデ
+      const grad = ctx.createLinearGradient(-b.r, -b.r, b.r, b.r);
+      grad.addColorStop(0, 'rgba(255,107,107,0.25)');
+      grad.addColorStop(0.33, 'rgba(232,198,104,0.25)');
+      grad.addColorStop(0.66, 'rgba(107,182,255,0.25)');
+      grad.addColorStop(1, 'rgba(200,144,216,0.25)');
+      ctx.fillStyle = grad;
+    } else if (b.rare === 'gold') {
+      ctx.fillStyle = 'rgba(255,224,138,0.30)';
+    } else {
+      ctx.fillStyle = b.type === 'virtue' ? 'rgba(201,168,76,0.14)' : 'rgba(255,107,107,0.14)';
+    }
     ctx.fill();
-    ctx.strokeStyle = b.type === 'virtue'
-      ? 'rgba(201,168,76,0.55)'
-      : 'rgba(255,107,107,0.45)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = b.rare === 'rainbow' ? 'rgba(255,255,255,0.9)'
+                    : b.rare === 'gold'    ? 'rgba(255,224,138,0.9)'
+                    : b.type === 'virtue'  ? 'rgba(201,168,76,0.55)'
+                    : 'rgba(255,107,107,0.45)';
+    ctx.lineWidth = b.rare ? 2 : 1.5;
     ctx.stroke();
 
     // 文字
-    ctx.fillStyle = b.type === 'virtue' ? '#e8c668' : '#ff9b9b';
-    if (!b.settled) {
+    ctx.fillStyle = style.color;
+    if (style.glowStrength > 0) {
+      ctx.shadowColor = style.glow;
+      ctx.shadowBlur = b.settled ? Math.max(2, style.glowStrength * 0.5) : style.glowStrength;
+    } else if (!b.settled) {
       ctx.shadowColor = b.type === 'virtue' ? 'rgba(201,168,76,0.7)' : 'rgba(255,107,107,0.6)';
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 8;
     }
-    // 文字サイズを半径に合わせる
     const fontSize = Math.max(11, b.r * 0.85);
-    ctx.font = `700 ${fontSize}px "Noto Serif JP", serif`;
+    ctx.font = `${b.lv >= 5 ? 900 : 700} ${fontSize}px "Noto Serif JP", serif`;
     ctx.fillText(b.text, 0, 1);
     ctx.restore();
   }
@@ -877,6 +1057,87 @@ function applyMenu() {
   flash('⚙ 設定を適用');
 }
 document.getElementById('btn-menu').addEventListener('click', openMenu);
+document.getElementById('btn-collection').addEventListener('click', openCollection);
+document.getElementById('col-close').addEventListener('click', () => document.getElementById('overlay-collection').classList.remove('show'));
+document.getElementById('overlay-collection').addEventListener('click', (e) => {
+  if (e.target.id === 'overlay-collection') document.getElementById('overlay-collection').classList.remove('show');
+});
+document.querySelectorAll('.cf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCollection(btn.dataset.sort);
+  });
+});
+
+// ─── 📚 ぽもじ図鑑 ───
+function openCollection() {
+  document.getElementById('overlay-collection').classList.add('show');
+  renderCollection('count');
+}
+function renderCollection(sortBy) {
+  const entries = Object.entries(STATE.collection);
+  const total = entries.length;
+  const totalCount = entries.reduce((s, [, v]) => s + v.count, 0);
+  const goldCount = entries.filter(([, v]) => v.rare === 'gold').length;
+  const rainbowCount = entries.filter(([, v]) => v.rare === 'rainbow').length;
+  // 統計
+  document.getElementById('collection-stats').innerHTML = `
+    <div class="cs-item"><span class="cs-num">${total}</span><span class="cs-label">種類</span></div>
+    <div class="cs-item"><span class="cs-num">${totalCount}</span><span class="cs-label">出現数</span></div>
+    <div class="cs-item"><span class="cs-num" style="color:#ffe28a">${goldCount}</span><span class="cs-label">金</span></div>
+    <div class="cs-item"><span class="cs-num" style="color:#ffffff">${rainbowCount}</span><span class="cs-label">虹</span></div>
+  `;
+
+  // ソート
+  let sorted = entries.slice();
+  switch (sortBy) {
+    case 'new':
+      sorted.sort(([, a], [, b]) => (b.firstSeen || '').localeCompare(a.firstSeen || ''));
+      break;
+    case 'alpha':
+      sorted.sort(([a], [b]) => a.localeCompare(b, 'ja'));
+      break;
+    case 'rare':
+      const rareRank = { rainbow: 0, gold: 1 };
+      sorted.sort(([, a], [, b]) => {
+        const ra = rareRank[a.rare] ?? 2;
+        const rb = rareRank[b.rare] ?? 2;
+        if (ra !== rb) return ra - rb;
+        return b.count - a.count;
+      });
+      break;
+    case 'count':
+    default:
+      sorted.sort(([, a], [, b]) => b.count - a.count);
+  }
+
+  const grid = document.getElementById('collection-grid');
+  if (sorted.length === 0) {
+    grid.innerHTML = '<div class="col-empty">まだ何も降っていない。<br>▶ 開始 で文字を集めはじめる。</div>';
+    return;
+  }
+  grid.innerHTML = sorted.map(([text, v]) => {
+    const lv = getLevel(v.count);
+    const classes = ['col-item'];
+    if (v.rare === 'gold')         classes.push('col-gold');
+    else if (v.rare === 'rainbow') classes.push('col-rainbow');
+    else if (v.type === 'virtue')  classes.push('col-virtue');
+    else                            classes.push('col-sin');
+    const rareIcon = v.rare === 'rainbow' ? '🌈' : v.rare === 'gold' ? '✨' : '';
+    return `
+      <div class="${classes.join(' ')}" title="${escape(text)} ── Lv ${lv} ／ ${v.count}回">
+        ${rareIcon ? `<span class="ci-rare">${rareIcon}</span>` : ''}
+        <span class="ci-lv">Lv${lv}</span>
+        <span class="ci-text">${escape(text)}</span>
+        <span class="ci-count">×${v.count}</span>
+      </div>
+    `;
+  }).join('');
+}
+function escape(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 document.getElementById('menu-apply').addEventListener('click', applyMenu);
 document.getElementById('menu-cancel').addEventListener('click', closeMenu);
 document.querySelectorAll('input[name="word-mode"]').forEach(r => {
