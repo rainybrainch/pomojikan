@@ -537,16 +537,24 @@ document.head.appendChild(style);
 // ═══════════════════════════════════════════════════
 const canvas = document.getElementById('field');
 const ctx = canvas.getContext('2d');
-const COLS = 8;                  // 横の列数（テトリス的）
-const ROW_HEIGHT = 26;           // 1段の高さ（px・文字サイズに対応）
+
+// 物理パラメータ
+const PHYSICS = {
+  gravity: 0.18,        // 重力加速度（下向き正）
+  buoyancy: -0.14,      // 浮力（上向き、休憩中の罪）
+  friction: 0.96,       // 横方向摩擦（地面・壁）
+  restitution: 0.25,    // 反発係数（0=吸着、1=完全弾性）
+  maxV: 5,              // 最大速度
+  rotFriction: 0.95,    // 回転摩擦
+  spawnInterval: 2500,  // 文字が降る間隔（ms・ゆっくり）
+  sizeBase: 12,         // 文字数1あたりの半径基準
+  sizePerChar: 5        // 文字1個増えるごとの半径加算
+};
+
 const field = {
-  particles: [],
-  pile: [],       // 砂底に積もった徳（テトリス的・列管理）
-  bubbles: [],    // 上層に滞留した罪（テトリス的・列管理）
-  colsDown: new Array(COLS).fill(0),  // 各列：下から積み上げた段数
-  colsUp: new Array(COLS).fill(0),    // 各列：上から積み上げた段数
+  bodies: [],     // 全パーティクル（飛行中・着地後すべて）── 物理オブジェクト
   lastSpawn: 0,
-  fullFlash: 0    // 満タンになった時の演出タイマー
+  fullFlash: 0
 };
 
 function resize() {
@@ -559,138 +567,148 @@ function resize() {
 resize();
 addEventListener('resize', resize);
 
-// 列の x 座標
-function colX(col) {
-  const margin = 30;
-  const usableW = innerWidth - margin * 2;
-  return margin + (col + 0.5) * (usableW / COLS);
-}
-function pickLowCol(arr) {
-  // 最も低い（積みやすい）列をランダム加味で選ぶ
-  let min = Infinity;
-  arr.forEach(v => { if (v < min) min = v; });
-  const candidates = [];
-  arr.forEach((v, i) => { if (v <= min + 1) candidates.push(i); });
-  return candidates[Math.floor(Math.random() * candidates.length)];
+// 文字の半径を文字数で計算（文字数が多いほど大きく重い）
+function radiusFor(text) {
+  const n = [...text].length;  // サロゲートペア考慮
+  return PHYSICS.sizeBase + n * PHYSICS.sizePerChar;
 }
 
-// 文字パーティクル生成
+// 文字パーティクル生成（物理ボディとして）
 function spawn() {
   if (!STATE.running) return;
   const now = performance.now();
-  if (now - field.lastSpawn < 700) return;  // 700ms に1個
+  if (now - field.lastSpawn < PHYSICS.spawnInterval) return;
   field.lastSpawn = now;
-  if (STATE.phase === 'work') {
-    // 徳のしずく：上から落ちる → 下に積む
-    const words = getWordsForPhase('work');
-    const text = words[Math.floor(Math.random() * words.length)];
-    const col = pickLowCol(field.colsDown);
-    field.particles.push({
-      type: 'virtue', text, col,
-      x: colX(col), targetX: colX(col),
-      y: -20, vy: 1.0 + Math.random() * 0.6,
-      alpha: 0, size: 19,
-      rot: (Math.random() - 0.5) * 0.06
-    });
-  } else {
-    // 罪の泡：下から上がる → 上に積む
-    const words = getWordsForPhase('rest');
-    const text = words[Math.floor(Math.random() * words.length)];
-    const col = pickLowCol(field.colsUp);
-    field.particles.push({
-      type: 'sin', text, col,
-      x: colX(col), targetX: colX(col),
-      y: innerHeight + 20, vy: -0.8 - Math.random() * 0.5,
-      alpha: 0, size: 19,
-      rot: (Math.random() - 0.5) * 0.12
-    });
-  }
+  const isWork = STATE.phase === 'work';
+  const words = getWordsForPhase(isWork ? 'work' : 'rest');
+  const text = words[Math.floor(Math.random() * words.length)];
+  const r = radiusFor(text);
+  const margin = r + 8;
+  field.bodies.push({
+    type: isWork ? 'virtue' : 'sin',
+    text,
+    r,                                          // 半径
+    mass: r * r,                                 // 質量（半径^2 = 面積比）
+    x: margin + Math.random() * (innerWidth - margin * 2),
+    y: isWork ? -r : innerHeight + r,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: isWork ? 0.3 + Math.random() * 0.4 : -0.3 - Math.random() * 0.4,
+    rot: (Math.random() - 0.5) * 0.4,
+    vrot: (Math.random() - 0.5) * 0.02,
+    alpha: 0,
+    settled: false,                              // 静止フラグ
+    spawnedAt: now
+  });
 }
 
+// ─── 物理シミュレーション（自前・円どうし衝突）───
 function update() {
   spawn();
-  const floorY = innerHeight - 8;       // 砂底（最下段の中心）
-  const ceilY  = 28;                    // 天井（最上段の中心）
-  const maxStack = Math.floor((innerHeight - 100) / ROW_HEIGHT / 2);  // 上下それぞれの最大段数
+  const floorY = innerHeight - 6;
+  const ceilY  = 6;
+  const maxBodies = 100;
 
-  // パーティクル更新
-  for (let i = field.particles.length - 1; i >= 0; i--) {
-    const p = field.particles[i];
-    p.y += p.vy;
-    if (p.alpha < 1) p.alpha = Math.min(1, p.alpha + 0.025);
-    if (p.rot) p.rot *= 0.99;
-
-    if (p.type === 'virtue') {
-      const stack = field.colsDown[p.col];
-      const restY = floorY - stack * ROW_HEIGHT;
-      if (p.y >= restY) {
-        // 着地：列に積む
-        field.pile.push({
-          text: p.text, col: p.col,
-          x: colX(p.col), y: restY,
-          alpha: 0.85, age: 0
-        });
-        field.colsDown[p.col]++;
-        // 満タンチェック
-        if (field.colsDown[p.col] >= maxStack) {
-          if (field.colsDown.every(v => v >= maxStack - 1)) {
-            field.fullFlash = 60;
-            // 砂時計反転：底が満ちたら、ゆっくり一段ずつ消す（自然リセット）
-            setTimeout(() => {
-              field.colsDown = field.colsDown.map(v => Math.max(0, v - 2));
-              field.pile = field.pile.slice(field.pile.length / 4 | 0);
-            }, 800);
-          }
-        }
-        field.particles.splice(i, 1);
-        continue;
-      }
-    } else {
-      const stack = field.colsUp[p.col];
-      const restY = ceilY + stack * ROW_HEIGHT;
-      if (p.y <= restY) {
-        field.bubbles.push({
-          text: p.text, col: p.col,
-          x: colX(p.col), y: restY,
-          alpha: 0.75, age: 0
-        });
-        field.colsUp[p.col]++;
-        if (field.colsUp[p.col] >= maxStack) {
-          if (field.colsUp.every(v => v >= maxStack - 1)) {
-            field.fullFlash = 60;
-            setTimeout(() => {
-              field.colsUp = field.colsUp.map(v => Math.max(0, v - 2));
-              field.bubbles = field.bubbles.slice(field.bubbles.length / 4 | 0);
-            }, 800);
-          }
-        }
-        field.particles.splice(i, 1);
-        continue;
-      }
+  // 反対型を溶かす（work 中は sin / rest 中は virtue が薄れて消える）
+  for (let i = field.bodies.length - 1; i >= 0; i--) {
+    const b = field.bodies[i];
+    const isOpp = (STATE.phase === 'work' && b.type === 'sin') ||
+                  (STATE.phase === 'rest' && b.type === 'virtue');
+    if (isOpp) {
+      b.alpha -= 0.006;
+      if (b.alpha <= 0) { field.bodies.splice(i, 1); continue; }
     }
-    // 画面外（保険）
-    if (p.y > innerHeight + 50 || p.y < -50) {
-      field.particles.splice(i, 1);
+  }
+  while (field.bodies.length > maxBodies) field.bodies.shift();
+
+  // 1) 個別の物理更新
+  for (const b of field.bodies) {
+    if (b.alpha < 1) b.alpha = Math.min(1, b.alpha + 0.02);
+
+    if (b.settled) {
+      // 静止：摩擦のみ
+      b.vx *= PHYSICS.friction;
+      if (Math.abs(b.vx) < 0.05) b.vx = 0;
+      b.x += b.vx;
+      b.vrot *= PHYSICS.rotFriction;
+      b.rot += b.vrot;
+      continue;
+    }
+    // 重力 or 浮力
+    if (b.type === 'virtue') b.vy += PHYSICS.gravity;
+    else                     b.vy += PHYSICS.buoyancy;
+    // 速度クリップ
+    b.vy = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, b.vy));
+    b.vx = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, b.vx));
+    b.x += b.vx;
+    b.y += b.vy;
+    b.rot += b.vrot;
+    b.vrot *= 0.99;
+    // 横壁
+    if (b.x - b.r < 0) { b.x = b.r; b.vx = -b.vx * PHYSICS.restitution; }
+    if (b.x + b.r > innerWidth) { b.x = innerWidth - b.r; b.vx = -b.vx * PHYSICS.restitution; }
+    // 床（徳）／天井（罪）
+    if (b.type === 'virtue' && b.y + b.r > floorY) {
+      b.y = floorY - b.r;
+      if (b.vy > 0.4) b.vy = -b.vy * PHYSICS.restitution;
+      else { b.vy = 0; if (Math.abs(b.vx) < 0.2) b.settled = true; }
+    }
+    if (b.type === 'sin' && b.y - b.r < ceilY) {
+      b.y = ceilY + b.r;
+      if (b.vy < -0.4) b.vy = -b.vy * PHYSICS.restitution;
+      else { b.vy = 0; if (Math.abs(b.vx) < 0.2) b.settled = true; }
     }
   }
 
-  // フェーズ切替時、反対側を溶かす
-  if (STATE.phase === 'work') {
-    for (let i = field.bubbles.length - 1; i >= 0; i--) {
-      field.bubbles[i].alpha -= 0.004;
-      if (field.bubbles[i].alpha <= 0) {
-        field.colsUp[field.bubbles[i].col] = Math.max(0, field.colsUp[field.bubbles[i].col] - 1);
-        field.bubbles.splice(i, 1);
+  // 2) 円どうしの衝突
+  for (let i = 0; i < field.bodies.length; i++) {
+    const a = field.bodies[i];
+    for (let j = i + 1; j < field.bodies.length; j++) {
+      const c = field.bodies[j];
+      if (a.type !== c.type) continue;   // 徳と罪は干渉しない
+      const dx = c.x - a.x, dy = c.y - a.y;
+      const dist = Math.hypot(dx, dy);
+      const minDist = a.r + c.r;
+      if (dist < minDist && dist > 0.01) {
+        const overlap = (minDist - dist);
+        const nx = dx / dist, ny = dy / dist;
+        const totalMass = a.mass + c.mass;
+        a.x -= nx * overlap * (c.mass / totalMass);
+        a.y -= ny * overlap * (c.mass / totalMass);
+        c.x += nx * overlap * (a.mass / totalMass);
+        c.y += ny * overlap * (a.mass / totalMass);
+        // 速度反映（弾性衝突簡易）
+        const relV = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
+        if (relV < 0) {
+          const impulse = -(1 + PHYSICS.restitution) * relV / totalMass;
+          a.vx -= impulse * c.mass * nx;
+          a.vy -= impulse * c.mass * ny;
+          c.vx += impulse * a.mass * nx;
+          c.vy += impulse * a.mass * ny;
+          if (Math.abs(relV) > 0.6) {
+            a.settled = false;
+            c.settled = false;
+          }
+          a.vrot += (Math.random() - 0.5) * 0.03;
+          c.vrot += (Math.random() - 0.5) * 0.03;
+        }
       }
     }
-  } else {
-    for (let i = field.pile.length - 1; i >= 0; i--) {
-      field.pile[i].alpha -= 0.004;
-      if (field.pile[i].alpha <= 0) {
-        field.colsDown[field.pile[i].col] = Math.max(0, field.colsDown[field.pile[i].col] - 1);
-        field.pile.splice(i, 1);
+  }
+
+  // 満タンチェック
+  const currentType = STATE.phase === 'work' ? 'virtue' : 'sin';
+  const settledCount = field.bodies.filter(b => b.settled && b.type === currentType).length;
+  if (settledCount > 40 && field.fullFlash === 0) {
+    field.fullFlash = 80;
+    setTimeout(() => {
+      const target = Math.floor(settledCount / 3);
+      let removed = 0;
+      for (let i = 0; i < field.bodies.length && removed < target; i++) {
+        if (field.bodies[i].settled && field.bodies[i].type === currentType) {
+          field.bodies.splice(i, 1); i--; removed++;
+        }
       }
-    }
+    }, 1000);
   }
   if (field.fullFlash > 0) field.fullFlash--;
 }
@@ -706,67 +724,53 @@ function draw() {
 
   // 満タン演出
   if (field.fullFlash > 0) {
-    const a = (field.fullFlash / 60) * 0.15;
-    ctx.fillStyle = `rgba(201,168,76,${a})`;
+    const a = (field.fullFlash / 80) * 0.18;
+    ctx.fillStyle = STATE.phase === 'work'
+      ? `rgba(201,168,76,${a})`
+      : `rgba(255,107,107,${a})`;
     ctx.fillRect(0, 0, innerWidth, innerHeight);
   }
 
-  // 列ガイド線（薄く）
-  ctx.strokeStyle = 'rgba(107,182,255,0.04)';
-  ctx.lineWidth = 1;
-  for (let c = 1; c < COLS; c++) {
-    const x = 30 + c * ((innerWidth - 60) / COLS);
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, innerHeight); ctx.stroke();
-  }
-
-  ctx.font = '700 18px "Noto Serif JP", serif';
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-  // 堆積：下層（徳）── 積み重ね描画
-  for (const p of field.pile) {
-    ctx.globalAlpha = p.alpha;
-    ctx.fillStyle = '#d6b966';
-    // メダル背景（薄い丸枠）
-    ctx.beginPath();
-    ctx.arc(p.x, p.y - 6, 17, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(201,168,76,0.10)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(201,168,76,0.35)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    // 文字
-    ctx.fillStyle = '#e8c668';
-    ctx.fillText(p.text, p.x, p.y);
-  }
-  // 滞留：上層（罪）── 上から積み重ね
-  for (const b of field.bubbles) {
+  // 物理ボディ描画（settled 優先で先に・飛行中を上に）
+  const sorted = [...field.bodies].sort((a, b) => (a.settled ? -1 : 1) - (b.settled ? -1 : 1));
+  for (const b of sorted) {
     ctx.globalAlpha = b.alpha;
-    ctx.beginPath();
-    ctx.arc(b.x, b.y - 6, 17, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,107,107,0.10)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,107,107,0.30)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.fillStyle = '#ff9b9b';
-    ctx.fillText(b.text, b.x, b.y);
-  }
-
-  // 飛行中のパーティクル
-  for (const p of field.particles) {
-    ctx.globalAlpha = p.alpha * 0.95;
     ctx.save();
-    ctx.translate(p.x, p.y);
-    if (p.rot) ctx.rotate(p.rot);
-    ctx.shadowColor = p.type === 'virtue' ? 'rgba(201,168,76,0.7)' : 'rgba(255,107,107,0.6)';
-    ctx.shadowBlur = 10;
-    ctx.fillStyle = p.type === 'virtue' ? '#e8c668' : '#ff9b9b';
-    ctx.font = `700 ${p.size}px "Noto Serif JP", serif`;
-    ctx.fillText(p.text, 0, 0);
+    ctx.translate(b.x, b.y);
+    ctx.rotate(b.rot || 0);
+
+    // メダル風円（文字数で大きさ変動）
+    ctx.beginPath();
+    ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+    ctx.fillStyle = b.type === 'virtue'
+      ? 'rgba(201,168,76,0.14)'
+      : 'rgba(255,107,107,0.14)';
+    ctx.fill();
+    ctx.strokeStyle = b.type === 'virtue'
+      ? 'rgba(201,168,76,0.55)'
+      : 'rgba(255,107,107,0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 文字
+    ctx.fillStyle = b.type === 'virtue' ? '#e8c668' : '#ff9b9b';
+    if (!b.settled) {
+      ctx.shadowColor = b.type === 'virtue' ? 'rgba(201,168,76,0.7)' : 'rgba(255,107,107,0.6)';
+      ctx.shadowBlur = 10;
+    }
+    // 文字サイズを半径に合わせる
+    const fontSize = Math.max(11, b.r * 0.85);
+    ctx.font = `700 ${fontSize}px "Noto Serif JP", serif`;
+    ctx.fillText(b.text, 0, 1);
     ctx.restore();
   }
+
   ctx.globalAlpha = 1;
-  ctx.textAlign = 'left';  // reset
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
 }
 
 function loop() {
