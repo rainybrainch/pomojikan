@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 128 128">
+  <!-- Maskable: 80% セーフゾーン内に主要要素を収める -->
+  <rect width="128" height="128" fill="#0c1426"/>
+  <path d="M44 30 L84 30 L84 60 Q84 63 64 63 Q44 63 44 60 Z" fill="#ff8e8e" opacity="0.78"/>
+  <circle cx="64" cy="64" r="3" fill="#c9a84c"/>
+  <path d="M44 98 L84 98 L84 68 Q84 65 64 65 Q44 65 44 68 Z" fill="#d6b966" opacity="0.92"/>
+  <line x1="40" y1="30" x2="88" y2="30" stroke="#eef2ff" stroke-width="3" stroke-linecap="round"/>
+  <line x1="40" y1="98" x2="88" y2="98" stroke="#eef2ff" stroke-width="3" stroke-linecap="round"/>
+</svg>

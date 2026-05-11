@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0c1426"/>
+      <stop offset="1" stop-color="#131c33"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0" stop-color="#c9a84c" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#c9a84c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="315" rx="540" ry="280" fill="url(#glow)"/>
+
+  <!-- 砂時計シンボル -->
+  <g transform="translate(150, 165)">
+    <path d="M0 0 L240 0 L240 130 Q240 150 120 150 Q0 150 0 130 Z" fill="#ff6b6b" opacity="0.45"/>
+    <circle cx="120" cy="150" r="6" fill="#c9a84c"/>
+    <path d="M0 300 L240 300 L240 170 Q240 150 120 150 Q0 150 0 170 Z" fill="#c9a84c" opacity="0.75"/>
+    <line x1="-10" y1="0" x2="250" y2="0" stroke="#eef2ff" stroke-width="4" stroke-linecap="round"/>
+    <line x1="-10" y1="300" x2="250" y2="300" stroke="#eef2ff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- タイトル -->
+  <g transform="translate(460, 220)" fill="#eef2ff" font-family="'Noto Serif JP', serif" font-weight="900">
+    <text font-size="92" letter-spacing="14">ぽもじかん</text>
+    <text y="62" font-size="32" fill="#c890d8" font-weight="700" letter-spacing="6">PMJ ／ 文字が降ってくる作業タイマー</text>
+  </g>
+
+  <!-- 文字の積み重ね（装飾） -->
+  <g font-family="'Noto Serif JP', serif" font-weight="700">
+    <text x="490" y="395" font-size="34" fill="#e8c668" opacity="0.85">勤勉</text>
+    <text x="560" y="395" font-size="34" fill="#e8c668" opacity="0.65">節制</text>
+    <text x="630" y="395" font-size="34" fill="#e8c668" opacity="0.75">純潔</text>
+    <text x="700" y="395" font-size="34" fill="#e8c668" opacity="0.55">忍耐</text>
+    <text x="770" y="395" font-size="34" fill="#e8c668" opacity="0.7">慈悲</text>
+    <text x="490" y="450" font-size="30" fill="#e8c668" opacity="0.5">謙虚</text>
+    <text x="555" y="450" font-size="30" fill="#e8c668" opacity="0.45">親切</text>
+    <text x="620" y="450" font-size="30" fill="#e8c668" opacity="0.6">凝縮</text>
+    <text x="690" y="450" font-size="30" fill="#e8c668" opacity="0.4">廃人</text>
+  </g>
+
+  <!-- フッタータグ -->
+  <g transform="translate(460, 530)" fill="#5a6890" font-family="'JetBrains Mono', monospace" font-size="22" letter-spacing="3">
+    <text>POMODORO × COLLECTION × PHYSICS</text>
+  </g>
+
+  <!-- 雨粒装飾 -->
+  <g stroke="#6bb6ff" stroke-width="2" stroke-linecap="round" opacity="0.4">
+    <line x1="50" y1="50" x2="45" y2="80"/>
+    <line x1="100" y1="30" x2="95" y2="55"/>
+    <line x1="1100" y1="60" x2="1095" y2="90"/>
+    <line x1="1150" y1="30" x2="1145" y2="55"/>
+    <line x1="80" y1="540" x2="75" y2="570"/>
+    <line x1="1120" y1="540" x2="1115" y2="570"/>
+  </g>
+</svg>

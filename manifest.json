@@ -1,7 +1,7 @@
 {
   "name": "ぽもじかん",
   "short_name": "ぽもじかん",
-  "description": "文字が降ってくる作業タイマー。ポモドーロで文字を積み上げる。",
+  "description": "文字が降ってくる作業タイマー。ポモドーロで文字を積み上げ、図鑑で集める。育成・コレクション・物理エンジン搭載の PWA。",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
@@ -9,18 +9,34 @@
   "orientation": "portrait-primary",
   "theme_color": "#0c1426",
   "background_color": "#0c1426",
+  "categories": ["productivity", "lifestyle", "utilities"],
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/><line x1='38' y1='22' x2='90' y2='22' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/><line x1='38' y1='106' x2='90' y2='106' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/></svg>",
+      "src": "icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/><line x1='38' y1='22' x2='90' y2='22' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/><line x1='38' y1='106' x2='90' y2='106' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/></svg>",
+      "src": "icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "図鑑",
+      "short_name": "図鑑",
+      "description": "ぽもじ図鑑（コレクション）を開く",
+      "url": "./?view=collection",
+      "icons": [{ "src": "icon-192.svg", "sizes": "192x192" }]
     }
   ]
 }
