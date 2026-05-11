@@ -645,7 +645,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.1（のほほん版）／ 作: rainybrainch<br>
+      ぽもじかん v1.2（物理修正）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1316,18 +1316,21 @@ document.head.appendChild(style);
 const canvas = document.getElementById('field');
 const ctx = canvas.getContext('2d');
 
-// 物理パラメータ（v1.1 「のほほん」デフォルト）
+// 物理パラメータ（v1.2 画面サイズ正規化）
 const PHYSICS = {
-  gravity: 0.10,        // ゆっくり落ちる
-  buoyancy: -0.08,      // ふわっと上がる
-  friction: 0.93,       // すぐ落ち着く
-  restitution: 0.15,    // 反発控えめ・自然に止まる
-  maxV: 3.5,            // 最大速度（暴れない）
+  gravity: 0.10,        // ゆっくり落ちる（基準値・実値は scaleY() でスケール）
+  buoyancy: -0.08,
+  friction: 0.93,
+  restitution: 0.15,
+  maxV: 3.5,            // 基準値・scaleY() でスケール
   rotFriction: 0.94,
-  spawnInterval: 4000,  // 4秒に1個（ゆっくり）
+  spawnInterval: 4000,
   sizeBase: 14,
   sizePerChar: 4.5
 };
+// 画面高さに対する正規化スケール（基準 800px）
+function scaleY() { return innerHeight / 800; }
+function scaleX() { return innerWidth / 400; }
 
 const field = {
   bodies: [],     // 全パーティクル（飛行中・着地後すべて）── 物理オブジェクト
@@ -1343,7 +1346,26 @@ function resize() {
   ctx.scale(devicePixelRatio, devicePixelRatio);
 }
 resize();
-addEventListener('resize', resize);
+addEventListener('resize', () => {
+  resize();
+  // ボディ位置を画面内に再収納（横回転・別端末復帰時）
+  for (const b of field.bodies) {
+    if (b.x - b.r < 0) b.x = b.r;
+    if (b.x + b.r > innerWidth) b.x = innerWidth - b.r;
+    if (b.type === 'virtue' && b.y + b.r > innerHeight - 6) b.y = innerHeight - 6 - b.r;
+    if (b.type === 'sin' && b.y - b.r < 6) b.y = 6 + b.r;
+    // settled は一旦解除（再配置で落ち直す）
+    if (b.settled) b.settled = false;
+  }
+});
+// orientationchange もハンドル（iOS 対応）
+addEventListener('orientationchange', () => setTimeout(() => {
+  resize();
+  for (const b of field.bodies) {
+    if (b.x - b.r < 0) b.x = b.r;
+    if (b.x + b.r > innerWidth) b.x = innerWidth - b.r;
+  }
+}, 100));
 
 // 文字の半径を文字数で計算（非線形・長文字も収まる）
 function radiusFor(text) {
@@ -1402,6 +1424,30 @@ function spawn() {
 }
 
 // ─── 物理シミュレーション（自前・円どうし衝突）───
+// 下に支えがあるか確認（settled でも床から離れて宙に浮いてるボディを検出）
+function hasSupport(b, allBodies) {
+  if (b.type === 'virtue') {
+    if (b.y + b.r >= innerHeight - 10) return true;  // 床に接地
+    // 直下に同タイプボディがあるか
+    for (const c of allBodies) {
+      if (c === b || c.type !== b.type) continue;
+      const dx = Math.abs(c.x - b.x);
+      const dy = c.y - b.y;  // 下にあれば正
+      if (dx < (b.r + c.r) * 0.85 && dy > 0 && dy < (b.r + c.r) * 1.05) return true;
+    }
+    return false;
+  } else {
+    if (b.y - b.r <= 10) return true;  // 天井に接地
+    for (const c of allBodies) {
+      if (c === b || c.type !== b.type) continue;
+      const dx = Math.abs(c.x - b.x);
+      const dy = b.y - c.y;  // 上にあれば正
+      if (dx < (b.r + c.r) * 0.85 && dy > 0 && dy < (b.r + c.r) * 1.05) return true;
+    }
+    return false;
+  }
+}
+
 function update() {
   spawn();
   const floorY = innerHeight - 6;
@@ -1421,24 +1467,34 @@ function update() {
   while (field.bodies.length > maxBodies) field.bodies.shift();
 
   // 1) 個別の物理更新
+  // settled 解除判定（毎フレーム全部やると重いので 30フレームごと）
+  const checkSupport = (Math.random() < 0.033);  // 約30フレームに1回
   for (const b of field.bodies) {
     if (b.alpha < 1) b.alpha = Math.min(1, b.alpha + 0.02);
 
     if (b.settled) {
-      // 静止：摩擦のみ
-      b.vx *= PHYSICS.friction;
-      if (Math.abs(b.vx) < 0.05) b.vx = 0;
-      b.x += b.vx;
-      b.vrot *= PHYSICS.rotFriction;
-      b.rot += b.vrot;
-      continue;
+      // 支え確認 → 中空に浮いてたら settled 解除
+      if (checkSupport && !hasSupport(b, field.bodies)) {
+        b.settled = false;
+        b.vy = b.type === 'virtue' ? 0.5 : -0.5;  // ちょっと押される
+      } else {
+        // 静止：摩擦のみ
+        b.vx *= PHYSICS.friction;
+        if (Math.abs(b.vx) < 0.05) b.vx = 0;
+        b.x += b.vx;
+        b.vrot *= PHYSICS.rotFriction;
+        b.rot += b.vrot;
+        continue;
+      }
     }
-    // 重力 or 浮力
-    if (b.type === 'virtue') b.vy += PHYSICS.gravity;
-    else                     b.vy += PHYSICS.buoyancy;
-    // 速度クリップ
-    b.vy = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, b.vy));
-    b.vx = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, b.vx));
+    // 重力 or 浮力（画面高さで正規化 → どの端末でも同じ秒数で落ちる）
+    const sy = scaleY();
+    if (b.type === 'virtue') b.vy += PHYSICS.gravity * sy;
+    else                     b.vy += PHYSICS.buoyancy * sy;
+    // 速度クリップ（画面比）
+    const maxV = PHYSICS.maxV * sy;
+    b.vy = Math.max(-maxV, Math.min(maxV, b.vy));
+    b.vx = Math.max(-maxV, Math.min(maxV, b.vx));
     b.x += b.vx;
     b.y += b.vy;
     b.rot += b.vrot;
@@ -1450,12 +1506,12 @@ function update() {
     if (b.type === 'virtue' && b.y + b.r > floorY) {
       b.y = floorY - b.r;
       if (b.vy > 0.4) b.vy = -b.vy * PHYSICS.restitution;
-      else { b.vy = 0; if (Math.abs(b.vx) < 0.2) b.settled = true; }
+      else { b.vy = 0; if (Math.abs(b.vx) < 0.3) b.settled = true; }
     }
     if (b.type === 'sin' && b.y - b.r < ceilY) {
       b.y = ceilY + b.r;
       if (b.vy < -0.4) b.vy = -b.vy * PHYSICS.restitution;
-      else { b.vy = 0; if (Math.abs(b.vx) < 0.2) b.settled = true; }
+      else { b.vy = 0; if (Math.abs(b.vx) < 0.3) b.settled = true; }
     }
   }
 
@@ -1515,6 +1571,24 @@ function update() {
           if (Math.abs(relV) > 0.6) { a.settled = false; c.settled = false; }
           a.vrot += (Math.random() - 0.5) * 0.03;
           c.vrot += (Math.random() - 0.5) * 0.03;
+        } else {
+          // 接触するが互いに動いてない → 積み重なり判定
+          // 下のボディが settled なら上のボディも settled に近づける
+          if (a.type === 'virtue') {
+            const upper = a.y < c.y ? a : c;
+            const lower = a.y < c.y ? c : a;
+            if (lower.settled && Math.abs(upper.vy) < 0.5 && Math.abs(upper.vx) < 0.4) {
+              upper.vy = 0; upper.vx *= 0.5;
+              if (Math.abs(upper.vx) < 0.2) upper.settled = true;
+            }
+          } else {
+            const upper = a.y < c.y ? a : c;
+            const lower = a.y < c.y ? c : a;
+            if (upper.settled && Math.abs(lower.vy) < 0.5 && Math.abs(lower.vx) < 0.4) {
+              lower.vy = 0; lower.vx *= 0.5;
+              if (Math.abs(lower.vx) < 0.2) lower.settled = true;
+            }
+          }
         }
       }
       } // for j
