@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0c1426">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="罪徳">
+<meta name="apple-mobile-web-app-title" content="ぽもじ">
 <link rel="manifest" href="manifest.json">
-<title>🌑 罪徳ポモドーロ ── 七大罪と七徳の磁力時計</title>
+<title>🌑 ぽもじ ── 文字が降ってくる作業タイマー</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -107,14 +107,80 @@ footer {
   font-family: var(--serif); font-size: 0.62rem; color: var(--muted);
   letter-spacing: 0.18em; margin-top: 8px; opacity: 0.6;
 }
+
+/* オーバーレイ（メニュー） */
+.overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,0.78);
+  padding: 20px;
+  overflow-y: auto;
+  pointer-events: auto;
+}
+.overlay.show { display: flex; align-items: flex-start; justify-content: center; }
+.overlay-card {
+  background: var(--bg2);
+  border: 1px solid rgba(107,182,255,0.25);
+  border-radius: 6px;
+  padding: 18px 20px;
+  max-width: 460px; width: 100%;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  margin-top: 30px;
+}
+.overlay-title {
+  font-family: var(--serif); font-weight: 900;
+  font-size: 1.05rem; color: var(--white); letter-spacing: 0.15em;
+  text-align: center; margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(107,182,255,0.15);
+}
+.section-h {
+  font-family: var(--mono); font-size: 0.62rem;
+  color: var(--gold); letter-spacing: 0.18em;
+  margin: 12px 0 6px;
+}
+.field-row {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 8px;
+}
+.field-row label {
+  font-size: 0.72rem; color: var(--text);
+  display: flex; align-items: center; gap: 6px;
+}
+.field-row input[type="number"], .field-row textarea {
+  background: rgba(0,0,0,0.35); border: 1px solid rgba(107,182,255,0.18);
+  color: var(--white); padding: 7px 10px; border-radius: 3px;
+  font-family: var(--mono); font-size: 0.85rem; line-height: 1.5;
+}
+.field-row textarea { font-family: var(--serif); font-size: 0.78rem; resize: vertical; }
+.field-row input:focus, .field-row textarea:focus {
+  outline: none; border-color: var(--gold);
+}
+.tag-gold { background: rgba(201,168,76,0.15); color: var(--gold); padding: 1px 6px; border-radius: 3px; font-size: 0.6rem; font-family: var(--mono); }
+.tag-sin  { background: rgba(255,107,107,0.15); color: var(--sin); padding: 1px 6px; border-radius: 3px; font-size: 0.6rem; font-family: var(--mono); }
+
+.mode-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; margin-bottom: 4px;
+  border: 1px solid rgba(107,182,255,0.08);
+  border-radius: 3px; cursor: pointer;
+  font-size: 0.78rem; color: var(--text);
+  transition: background 0.15s;
+}
+.mode-row:hover { background: rgba(107,182,255,0.05); }
+.mode-row input[type="radio"], .mode-row input[type="checkbox"] { accent-color: var(--gold); }
+.mode-row .hint { color: var(--muted); font-size: 0.62rem; margin-left: auto; }
+
+.menu-actions { display: flex; gap: 8px; margin-top: 14px; }
+.menu-actions .btn { flex: 1; }
 </style>
 </head>
 <body>
 <canvas id="field" aria-hidden="true"></canvas>
 
 <header>
-  <div class="title">🌑 罪徳ポモドーロ</div>
-  <div class="subtitle">SIN ⇄ VIRTUE  ／  雨と砂の磁力時計</div>
+  <div class="title">🌑 ぽもじ</div>
+  <div class="subtitle">PMJ  ／  文字が降ってくる作業タイマー</div>
 </header>
 
 <main>
@@ -133,12 +199,61 @@ footer {
     <div><span class="num" id="total">0</span> 累計</div>
   </div>
   <div class="settings">
-    <button class="btn small" data-preset="25/5">25 / 5</button>
-    <button class="btn small" data-preset="50/10">50 / 10</button>
-    <button class="btn small" data-preset="15/3">15 / 3</button>
+    <button class="btn small" data-preset="25/5">25/5</button>
+    <button class="btn small" data-preset="50/10">50/10</button>
+    <button class="btn small" data-preset="15/3">15/3</button>
+    <button class="btn small" id="btn-menu" title="メニュー">⚙ メニュー</button>
   </div>
-  <div class="poetic">徳は降り、罪は上がる。永遠に。</div>
+  <div class="poetic" id="poetic-line">徳は降り、罪は上がる。永遠に。</div>
 </footer>
+
+<!-- メニュー（設定モーダル） -->
+<div id="overlay-menu" class="overlay">
+  <div class="overlay-card">
+    <div class="overlay-title">⚙ メニュー</div>
+
+    <!-- 時間 -->
+    <div class="section-h">⏱ 時間（分）</div>
+    <div class="field-row">
+      <label>作業 <span class="tag-gold">徳が降る</span></label>
+      <input type="number" id="cust-work" min="1" max="180" value="25">
+    </div>
+    <div class="field-row">
+      <label>休憩 <span class="tag-sin">罪が上がる</span></label>
+      <input type="number" id="cust-rest" min="1" max="60" value="5">
+    </div>
+
+    <!-- 言葉モード -->
+    <div class="section-h">📜 落ちる言葉のモード</div>
+    <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"> <span>🌑 七大罪徳</span><span class="hint">既定 ── 七大罪/七徳が降る</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自由</span><span class="hint">自分の言葉を入れる（作業用/休憩用 別）</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365</span><span class="hint">読雨内の名言がランダムに降る（仮接続）</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 混在</span><span class="hint">七罪徳＋自由＋名言 全部混ぜる</span></label>
+
+    <div id="custom-words-box" style="display:none;">
+      <div class="section-h" style="margin-top:8px;">✏ 自由の言葉（カンマ区切り・最大20個）</div>
+      <div class="field-row">
+        <label>作業中（落ちる・下に積もる）</label>
+        <textarea id="cust-work-words" rows="2" placeholder="例：呼吸, 集中, 静か, 砂, 凝縮"></textarea>
+      </div>
+      <div class="field-row">
+        <label>休憩中（上がる・上に滞留）</label>
+        <textarea id="cust-rest-words" rows="2" placeholder="例：浮遊, 余白, 雲, 余韻"></textarea>
+      </div>
+    </div>
+
+    <!-- 音 -->
+    <div class="section-h">🔊 音と通知</div>
+    <label class="mode-row"><input type="checkbox" id="cfg-sound"> <span>雨音 BGM</span><span class="hint">Web Audio・ホワイトノイズ</span></label>
+    <label class="mode-row"><input type="checkbox" id="cfg-vibrate" checked> <span>完了時バイブ</span><span class="hint">対応端末のみ</span></label>
+    <label class="mode-row"><input type="checkbox" id="cfg-notify" checked> <span>通知</span><span class="hint">バックグラウンド中の完了を OS が伝える</span></label>
+
+    <div class="actions menu-actions">
+      <button class="btn primary" id="menu-apply">適用して閉じる</button>
+      <button class="btn" id="menu-cancel">キャンセル</button>
+    </div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -153,6 +268,14 @@ const KEY_TOTAL  = 'zaitoku_total';
 const KEY_DATE   = 'zaitoku_today_date';
 const KEY_PRESET = 'zaitoku_preset';
 const KEY_SOUND  = 'zaitoku_sound';
+const KEY_END    = 'zaitoku_end_at';     // 終了時刻（バックグラウンド対応）
+const KEY_PHASE  = 'zaitoku_phase';
+const KEY_CUSTOM = 'zaitoku_custom';      // カスタム "workMin/restMin"
+const KEY_WORDMODE = 'zaitoku_wordmode';  // 'zaitoku'|'custom'|'fukurou365'|'mixed'
+const KEY_WORDS_WORK = 'zaitoku_words_work';
+const KEY_WORDS_REST = 'zaitoku_words_rest';
+const KEY_VIBRATE = 'zaitoku_vibrate';
+const KEY_NOTIFY  = 'zaitoku_notify';
 
 const STATE = {
   phase: 'work',        // 'work' | 'rest'
@@ -162,8 +285,36 @@ const STATE = {
   workMin: 25, restMin: 5,
   today: 0, total: 0,
   todayDate: new Date().toISOString().slice(0,10),
-  soundOn: false
+  soundOn: false,
+  endAt: null,
+  wordMode: 'zaitoku',         // 'zaitoku'|'custom'|'fukurou365'|'mixed'
+  customWorkWords: [],
+  customRestWords: [],
+  vibrateOn: true,
+  notifyOn: true
 };
+
+// 言葉セレクタ（モード別）
+function getWordsForPhase(phase) {
+  const defaults = phase === 'work' ? VIRTUES : SINS;
+  switch (STATE.wordMode) {
+    case 'custom':
+      const c = phase === 'work' ? STATE.customWorkWords : STATE.customRestWords;
+      return c.length > 0 ? c : defaults;
+    case 'fukurou365':
+      // 将来：読雨 Gist から名言取得。今は仮で defaults + 「廃人」「凝縮」等を混ぜる
+      return phase === 'work'
+        ? [...VIRTUES, '凝縮', '神器', '仙人', '積上']
+        : [...SINS, '怠惰', '雑念', '焦燥'];
+    case 'mixed':
+      const merged = [...defaults];
+      if (phase === 'work' && STATE.customWorkWords.length) merged.push(...STATE.customWorkWords);
+      if (phase === 'rest' && STATE.customRestWords.length) merged.push(...STATE.customRestWords);
+      return merged;
+    default:
+      return defaults;
+  }
+}
 
 // localStorage 読込
 function load() {
@@ -172,6 +323,11 @@ function load() {
   STATE.todayDate = localStorage.getItem(KEY_DATE) || STATE.todayDate;
   STATE.preset = localStorage.getItem(KEY_PRESET) || '25/5';
   STATE.soundOn = localStorage.getItem(KEY_SOUND) === '1';
+  STATE.wordMode = localStorage.getItem(KEY_WORDMODE) || 'zaitoku';
+  try { STATE.customWorkWords = JSON.parse(localStorage.getItem(KEY_WORDS_WORK) || '[]'); } catch(e) { STATE.customWorkWords = []; }
+  try { STATE.customRestWords = JSON.parse(localStorage.getItem(KEY_WORDS_REST) || '[]'); } catch(e) { STATE.customRestWords = []; }
+  STATE.vibrateOn = (localStorage.getItem(KEY_VIBRATE) || '1') === '1';
+  STATE.notifyOn = (localStorage.getItem(KEY_NOTIFY) || '1') === '1';
   // 日付変わってたらリセット
   const today = new Date().toISOString().slice(0,10);
   if (STATE.todayDate !== today) {
@@ -180,6 +336,54 @@ function load() {
     save();
   }
   applyPreset(STATE.preset, false);
+
+  // ─── バックグラウンド復帰：保存された終了時刻から差分計算 ───
+  const savedEnd = parseInt(localStorage.getItem(KEY_END) || '0', 10);
+  const savedPhase = localStorage.getItem(KEY_PHASE) || 'work';
+  if (savedEnd > 0) {
+    const now = Date.now();
+    STATE.phase = savedPhase;
+    if (savedEnd > now) {
+      // まだ進行中 → 自動再開
+      STATE.endAt = savedEnd;
+      STATE.remaining = Math.ceil((savedEnd - now) / 1000);
+      STATE.running = true;
+      tickId = setInterval(tick, 1000);
+      if (STATE.soundOn) startRain();
+    } else {
+      // 完了済み（バックグラウンドで終わってた）
+      const elapsedSinceEnd = (now - savedEnd) / 1000;
+      // 完了処理
+      handlePhaseEnd(savedPhase, true);
+      // 続いて休憩/作業も自動進行（最大3周分）
+      let phase = STATE.phase;
+      let elapsed = elapsedSinceEnd;
+      let cycles = 0;
+      while (cycles < 3) {
+        const dur = (phase === 'work' ? STATE.workMin : STATE.restMin) * 60;
+        if (elapsed < dur) {
+          // この相の途中
+          STATE.phase = phase;
+          STATE.remaining = Math.ceil(dur - elapsed);
+          STATE.endAt = now + STATE.remaining * 1000;
+          STATE.running = true;
+          localStorage.setItem(KEY_END, STATE.endAt);
+          localStorage.setItem(KEY_PHASE, phase);
+          tickId = setInterval(tick, 1000);
+          break;
+        }
+        // この相も終わってる
+        elapsed -= dur;
+        if (phase === 'work') {
+          STATE.today++;
+          STATE.total++;
+        }
+        phase = phase === 'work' ? 'rest' : 'work';
+        cycles++;
+      }
+      save();
+    }
+  }
 }
 function save() {
   localStorage.setItem(KEY_TODAY, STATE.today);
@@ -187,6 +391,19 @@ function save() {
   localStorage.setItem(KEY_DATE, STATE.todayDate);
   localStorage.setItem(KEY_PRESET, STATE.preset);
   localStorage.setItem(KEY_SOUND, STATE.soundOn ? '1' : '0');
+  localStorage.setItem(KEY_WORDMODE, STATE.wordMode);
+  localStorage.setItem(KEY_WORDS_WORK, JSON.stringify(STATE.customWorkWords));
+  localStorage.setItem(KEY_WORDS_REST, JSON.stringify(STATE.customRestWords));
+  localStorage.setItem(KEY_VIBRATE, STATE.vibrateOn ? '1' : '0');
+  localStorage.setItem(KEY_NOTIFY, STATE.notifyOn ? '1' : '0');
+}
+
+function handlePhaseEnd(phase, silent) {
+  if (phase === 'work') {
+    STATE.today++;
+    STATE.total++;
+    save();
+  }
 }
 
 function applyPreset(p, restart) {
@@ -238,12 +455,21 @@ function tick() {
 function start() {
   if (STATE.running) return;
   STATE.running = true;
+  STATE.endAt = Date.now() + STATE.remaining * 1000;
+  localStorage.setItem(KEY_END, STATE.endAt);
+  localStorage.setItem(KEY_PHASE, STATE.phase);
   tickId = setInterval(tick, 1000);
   if (STATE.soundOn) startRain();
+  // 通知許可をリクエスト（初回のみ）
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
   renderTimer();
 }
 function pause() {
   STATE.running = false;
+  // タブ離れても再開できるよう endAt は保持しない（ポーズ＝意図的停止）
+  localStorage.removeItem(KEY_END);
   clearInterval(tickId); tickId = null;
   stopRain();
   renderTimer();
@@ -254,6 +480,9 @@ function reset() {
   STATE.phase = 'work';
   STATE.remaining = STATE.workMin * 60;
   field.particles = [];
+  field.pile = []; field.bubbles = [];
+  localStorage.removeItem(KEY_END);
+  localStorage.removeItem(KEY_PHASE);
   renderTimer();
 }
 function completePhase() {
@@ -264,15 +493,32 @@ function completePhase() {
     save();
     STATE.phase = 'rest';
     STATE.remaining = STATE.restMin * 60;
+    STATE.endAt = Date.now() + STATE.remaining * 1000;
+    localStorage.setItem(KEY_END, STATE.endAt);
+    localStorage.setItem(KEY_PHASE, STATE.phase);
     flash('⭐ 完走 +1');
+    notify('⭐ 作業完了', `今日 ${STATE.today} 完走 / 累計 ${STATE.total}。次は ${STATE.restMin}分の休憩。`);
   } else {
     // 休憩完了 → 作業へ
     STATE.phase = 'work';
     STATE.remaining = STATE.workMin * 60;
+    STATE.endAt = Date.now() + STATE.remaining * 1000;
+    localStorage.setItem(KEY_END, STATE.endAt);
+    localStorage.setItem(KEY_PHASE, STATE.phase);
     flash('🌑 次の周回へ');
+    notify('🌑 休憩終了', `${STATE.workMin}分の作業を再開。徳が降りはじめる。`);
   }
   // バイブ（対応端末）
   if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+}
+
+// 通知（タブ非アクティブでもOSレベルで通知される）
+function notify(title, body) {
+  if (!('Notification' in window)) return;
+  if (Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body, icon: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%230c1426"/><circle cx="32" cy="32" r="3" fill="%23c9a84c"/></svg>' });
+  } catch (e) {}
 }
 
 function flash(msg) {
@@ -291,11 +537,16 @@ document.head.appendChild(style);
 // ═══════════════════════════════════════════════════
 const canvas = document.getElementById('field');
 const ctx = canvas.getContext('2d');
+const COLS = 8;                  // 横の列数（テトリス的）
+const ROW_HEIGHT = 26;           // 1段の高さ（px・文字サイズに対応）
 const field = {
   particles: [],
-  pile: [],       // 砂底に積もった徳
-  bubbles: [],    // 上層に滞留した罪
-  lastSpawn: 0
+  pile: [],       // 砂底に積もった徳（テトリス的・列管理）
+  bubbles: [],    // 上層に滞留した罪（テトリス的・列管理）
+  colsDown: new Array(COLS).fill(0),  // 各列：下から積み上げた段数
+  colsUp: new Array(COLS).fill(0),    // 各列：上から積み上げた段数
+  lastSpawn: 0,
+  fullFlash: 0    // 満タンになった時の演出タイマー
 };
 
 function resize() {
@@ -308,6 +559,21 @@ function resize() {
 resize();
 addEventListener('resize', resize);
 
+// 列の x 座標
+function colX(col) {
+  const margin = 30;
+  const usableW = innerWidth - margin * 2;
+  return margin + (col + 0.5) * (usableW / COLS);
+}
+function pickLowCol(arr) {
+  // 最も低い（積みやすい）列をランダム加味で選ぶ
+  let min = Infinity;
+  arr.forEach(v => { if (v < min) min = v; });
+  const candidates = [];
+  arr.forEach((v, i) => { if (v <= min + 1) candidates.push(i); });
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
 // 文字パーティクル生成
 function spawn() {
   if (!STATE.running) return;
@@ -315,121 +581,192 @@ function spawn() {
   if (now - field.lastSpawn < 700) return;  // 700ms に1個
   field.lastSpawn = now;
   if (STATE.phase === 'work') {
-    // 徳のしずく：上から落ちる
-    const text = VIRTUES[Math.floor(Math.random() * 7)];
+    // 徳のしずく：上から落ちる → 下に積む
+    const words = getWordsForPhase('work');
+    const text = words[Math.floor(Math.random() * words.length)];
+    const col = pickLowCol(field.colsDown);
     field.particles.push({
-      type: 'virtue', text,
-      x: innerWidth * (0.15 + Math.random() * 0.7),
-      y: -20, vy: 0.6 + Math.random() * 0.8,
-      vx: (Math.random() - 0.5) * 0.2,
-      alpha: 0, size: 18 + Math.random() * 8,
-      rot: 0
+      type: 'virtue', text, col,
+      x: colX(col), targetX: colX(col),
+      y: -20, vy: 1.0 + Math.random() * 0.6,
+      alpha: 0, size: 19,
+      rot: (Math.random() - 0.5) * 0.06
     });
   } else {
-    // 罪の泡：下から上がる
-    const text = SINS[Math.floor(Math.random() * 7)];
+    // 罪の泡：下から上がる → 上に積む
+    const words = getWordsForPhase('rest');
+    const text = words[Math.floor(Math.random() * words.length)];
+    const col = pickLowCol(field.colsUp);
     field.particles.push({
-      type: 'sin', text,
-      x: innerWidth * (0.15 + Math.random() * 0.7),
-      y: innerHeight + 20, vy: -0.5 - Math.random() * 0.6,
-      vx: (Math.random() - 0.5) * 0.3,
-      alpha: 0, size: 18 + Math.random() * 8,
-      rot: (Math.random() - 0.5) * 0.3
+      type: 'sin', text, col,
+      x: colX(col), targetX: colX(col),
+      y: innerHeight + 20, vy: -0.8 - Math.random() * 0.5,
+      alpha: 0, size: 19,
+      rot: (Math.random() - 0.5) * 0.12
     });
   }
 }
 
 function update() {
   spawn();
+  const floorY = innerHeight - 8;       // 砂底（最下段の中心）
+  const ceilY  = 28;                    // 天井（最上段の中心）
+  const maxStack = Math.floor((innerHeight - 100) / ROW_HEIGHT / 2);  // 上下それぞれの最大段数
+
   // パーティクル更新
   for (let i = field.particles.length - 1; i >= 0; i--) {
     const p = field.particles[i];
     p.y += p.vy;
-    p.x += p.vx;
-    // フェードイン
-    if (p.alpha < 1) p.alpha = Math.min(1, p.alpha + 0.02);
-    // 徳：地面（積もる）
-    if (p.type === 'virtue' && p.y > innerHeight - 30 - field.pile.length * 1.5) {
-      field.pile.push({ text: p.text, x: p.x, y: innerHeight - 8 - (field.pile.length % 80) * 2, alpha: 0.65 });
-      if (field.pile.length > 300) field.pile.shift();
-      field.particles.splice(i, 1);
-      continue;
+    if (p.alpha < 1) p.alpha = Math.min(1, p.alpha + 0.025);
+    if (p.rot) p.rot *= 0.99;
+
+    if (p.type === 'virtue') {
+      const stack = field.colsDown[p.col];
+      const restY = floorY - stack * ROW_HEIGHT;
+      if (p.y >= restY) {
+        // 着地：列に積む
+        field.pile.push({
+          text: p.text, col: p.col,
+          x: colX(p.col), y: restY,
+          alpha: 0.85, age: 0
+        });
+        field.colsDown[p.col]++;
+        // 満タンチェック
+        if (field.colsDown[p.col] >= maxStack) {
+          if (field.colsDown.every(v => v >= maxStack - 1)) {
+            field.fullFlash = 60;
+            // 砂時計反転：底が満ちたら、ゆっくり一段ずつ消す（自然リセット）
+            setTimeout(() => {
+              field.colsDown = field.colsDown.map(v => Math.max(0, v - 2));
+              field.pile = field.pile.slice(field.pile.length / 4 | 0);
+            }, 800);
+          }
+        }
+        field.particles.splice(i, 1);
+        continue;
+      }
+    } else {
+      const stack = field.colsUp[p.col];
+      const restY = ceilY + stack * ROW_HEIGHT;
+      if (p.y <= restY) {
+        field.bubbles.push({
+          text: p.text, col: p.col,
+          x: colX(p.col), y: restY,
+          alpha: 0.75, age: 0
+        });
+        field.colsUp[p.col]++;
+        if (field.colsUp[p.col] >= maxStack) {
+          if (field.colsUp.every(v => v >= maxStack - 1)) {
+            field.fullFlash = 60;
+            setTimeout(() => {
+              field.colsUp = field.colsUp.map(v => Math.max(0, v - 2));
+              field.bubbles = field.bubbles.slice(field.bubbles.length / 4 | 0);
+            }, 800);
+          }
+        }
+        field.particles.splice(i, 1);
+        continue;
+      }
     }
-    // 罪：天井（滞留）
-    if (p.type === 'sin' && p.y < 60 + field.bubbles.length * 1.5) {
-      field.bubbles.push({ text: p.text, x: p.x, y: 24 + (field.bubbles.length % 80) * 2, alpha: 0.55 });
-      if (field.bubbles.length > 300) field.bubbles.shift();
-      field.particles.splice(i, 1);
-      continue;
-    }
-    // 画面外
+    // 画面外（保険）
     if (p.y > innerHeight + 50 || p.y < -50) {
       field.particles.splice(i, 1);
     }
   }
-  // フェーズ切替時、反対側の堆積を「溶けて」消す
-  // 作業中：上の罪が薄れて消える / 休憩中：下の徳が薄れて消える
+
+  // フェーズ切替時、反対側を溶かす
   if (STATE.phase === 'work') {
     for (let i = field.bubbles.length - 1; i >= 0; i--) {
-      field.bubbles[i].alpha -= 0.003;
-      if (field.bubbles[i].alpha <= 0) field.bubbles.splice(i, 1);
+      field.bubbles[i].alpha -= 0.004;
+      if (field.bubbles[i].alpha <= 0) {
+        field.colsUp[field.bubbles[i].col] = Math.max(0, field.colsUp[field.bubbles[i].col] - 1);
+        field.bubbles.splice(i, 1);
+      }
     }
   } else {
     for (let i = field.pile.length - 1; i >= 0; i--) {
-      field.pile[i].alpha -= 0.003;
-      if (field.pile[i].alpha <= 0) field.pile.splice(i, 1);
+      field.pile[i].alpha -= 0.004;
+      if (field.pile[i].alpha <= 0) {
+        field.colsDown[field.pile[i].col] = Math.max(0, field.colsDown[field.pile[i].col] - 1);
+        field.pile.splice(i, 1);
+      }
     }
   }
+  if (field.fullFlash > 0) field.fullFlash--;
 }
 
 function draw() {
   ctx.clearRect(0, 0, innerWidth, innerHeight);
-  // 砂底ガイド
+
+  // 砂底ガイド・罪の海ガイド
   ctx.fillStyle = 'rgba(201,168,76,0.04)';
-  ctx.fillRect(0, innerHeight * 0.62, innerWidth, innerHeight * 0.38);
-  // 罪の海ガイド
+  ctx.fillRect(0, innerHeight * 0.55, innerWidth, innerHeight * 0.45);
   ctx.fillStyle = 'rgba(255,107,107,0.04)';
   ctx.fillRect(0, 0, innerWidth, innerHeight * 0.18);
-  // 水面ライン
-  ctx.strokeStyle = 'rgba(107,182,255,0.10)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, innerHeight * 0.18);
-  ctx.lineTo(innerWidth, innerHeight * 0.18);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(0, innerHeight * 0.62);
-  ctx.lineTo(innerWidth, innerHeight * 0.62);
-  ctx.stroke();
 
-  // 堆積：下層（徳）
-  ctx.font = '700 14px "Noto Serif JP", serif';
+  // 満タン演出
+  if (field.fullFlash > 0) {
+    const a = (field.fullFlash / 60) * 0.15;
+    ctx.fillStyle = `rgba(201,168,76,${a})`;
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+
+  // 列ガイド線（薄く）
+  ctx.strokeStyle = 'rgba(107,182,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let c = 1; c < COLS; c++) {
+    const x = 30 + c * ((innerWidth - 60) / COLS);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, innerHeight); ctx.stroke();
+  }
+
+  ctx.font = '700 18px "Noto Serif JP", serif';
+  ctx.textAlign = 'center';
+
+  // 堆積：下層（徳）── 積み重ね描画
   for (const p of field.pile) {
     ctx.globalAlpha = p.alpha;
-    ctx.fillStyle = '#c9a84c';
-    ctx.fillText(p.text, p.x - 14, p.y);
+    ctx.fillStyle = '#d6b966';
+    // メダル背景（薄い丸枠）
+    ctx.beginPath();
+    ctx.arc(p.x, p.y - 6, 17, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(201,168,76,0.10)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201,168,76,0.35)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // 文字
+    ctx.fillStyle = '#e8c668';
+    ctx.fillText(p.text, p.x, p.y);
   }
-  // 滞留：上層（罪）
+  // 滞留：上層（罪）── 上から積み重ね
   for (const b of field.bubbles) {
     ctx.globalAlpha = b.alpha;
-    ctx.fillStyle = '#ff8e8e';
-    ctx.fillText(b.text, b.x - 14, b.y);
+    ctx.beginPath();
+    ctx.arc(b.x, b.y - 6, 17, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,107,107,0.10)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,107,107,0.30)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#ff9b9b';
+    ctx.fillText(b.text, b.x, b.y);
   }
-  // パーティクル
+
+  // 飛行中のパーティクル
   for (const p of field.particles) {
     ctx.globalAlpha = p.alpha * 0.95;
-    ctx.fillStyle = p.type === 'virtue' ? '#e8c668' : '#ff9b9b';
-    ctx.font = `700 ${p.size}px "Noto Serif JP", serif`;
     ctx.save();
     ctx.translate(p.x, p.y);
     if (p.rot) ctx.rotate(p.rot);
-    // 光彩（影）
-    ctx.shadowColor = p.type === 'virtue' ? 'rgba(201,168,76,0.6)' : 'rgba(255,107,107,0.5)';
-    ctx.shadowBlur = 8;
-    ctx.fillText(p.text, -p.size, 0);
+    ctx.shadowColor = p.type === 'virtue' ? 'rgba(201,168,76,0.7)' : 'rgba(255,107,107,0.6)';
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = p.type === 'virtue' ? '#e8c668' : '#ff9b9b';
+    ctx.font = `700 ${p.size}px "Noto Serif JP", serif`;
+    ctx.fillText(p.text, 0, 0);
     ctx.restore();
   }
   ctx.globalAlpha = 1;
+  ctx.textAlign = 'left';  // reset
 }
 
 function loop() {
@@ -483,18 +820,94 @@ document.getElementById('btn-sound').addEventListener('click', () => {
   else stopRain();
   renderTimer();
 });
-document.querySelectorAll('.settings .btn').forEach(b => {
+document.querySelectorAll('.settings .btn[data-preset]').forEach(b => {
   b.addEventListener('click', () => applyPreset(b.dataset.preset, true));
+});
+
+// ─── メニュー（設定モーダル） ───
+function openMenu() {
+  // 現在値を反映
+  document.getElementById('cust-work').value = STATE.workMin;
+  document.getElementById('cust-rest').value = STATE.restMin;
+  document.querySelectorAll('input[name="word-mode"]').forEach(r => {
+    r.checked = (r.value === STATE.wordMode);
+  });
+  document.getElementById('custom-words-box').style.display = (STATE.wordMode === 'custom' || STATE.wordMode === 'mixed') ? '' : 'none';
+  document.getElementById('cust-work-words').value = STATE.customWorkWords.join(', ');
+  document.getElementById('cust-rest-words').value = STATE.customRestWords.join(', ');
+  document.getElementById('cfg-sound').checked = STATE.soundOn;
+  document.getElementById('cfg-vibrate').checked = STATE.vibrateOn;
+  document.getElementById('cfg-notify').checked = STATE.notifyOn;
+  document.getElementById('overlay-menu').classList.add('show');
+}
+function closeMenu() {
+  document.getElementById('overlay-menu').classList.remove('show');
+}
+function applyMenu() {
+  const w = parseInt(document.getElementById('cust-work').value, 10);
+  const r = parseInt(document.getElementById('cust-rest').value, 10);
+  if (w >= 1 && w <= 180 && r >= 1 && r <= 60) {
+    STATE.preset = `${w}/${r}`;
+    STATE.workMin = w; STATE.restMin = r;
+    if (!STATE.running) {
+      STATE.remaining = (STATE.phase === 'work' ? w : r) * 60;
+    }
+    document.querySelectorAll('.settings .btn[data-preset]').forEach(b => {
+      b.classList.toggle('active', b.dataset.preset === STATE.preset);
+    });
+  }
+  const modeEl = document.querySelector('input[name="word-mode"]:checked');
+  if (modeEl) STATE.wordMode = modeEl.value;
+  STATE.customWorkWords = document.getElementById('cust-work-words').value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 20);
+  STATE.customRestWords = document.getElementById('cust-rest-words').value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 20);
+  STATE.soundOn = document.getElementById('cfg-sound').checked;
+  STATE.vibrateOn = document.getElementById('cfg-vibrate').checked;
+  STATE.notifyOn = document.getElementById('cfg-notify').checked;
+  if (STATE.notifyOn && 'Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+  if (STATE.soundOn && STATE.running) startRain(); else if (!STATE.soundOn) stopRain();
+  save();
+  renderTimer();
+  closeMenu();
+  flash('⚙ 設定を適用');
+}
+document.getElementById('btn-menu').addEventListener('click', openMenu);
+document.getElementById('menu-apply').addEventListener('click', applyMenu);
+document.getElementById('menu-cancel').addEventListener('click', closeMenu);
+document.querySelectorAll('input[name="word-mode"]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('custom-words-box').style.display = (r.value === 'custom' || r.value === 'mixed') ? '' : 'none';
+  });
+});
+document.getElementById('overlay-menu').addEventListener('click', (e) => {
+  if (e.target.id === 'overlay-menu') closeMenu();
 });
 document.addEventListener('keydown', (e) => {
   if (e.code === 'Space') { e.preventDefault(); toggle(); }
   if (e.code === 'KeyR') reset();
 });
 
+// タブ復帰時：終了時刻から残り時間を再計算（バックグラウンド対応）
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  if (!STATE.running) return;
+  if (!STATE.endAt) return;
+  const now = Date.now();
+  if (now >= STATE.endAt) {
+    // バックグラウンド中に完了していた
+    STATE.remaining = 0;
+    completePhase();
+  } else {
+    STATE.remaining = Math.ceil((STATE.endAt - now) / 1000);
+  }
+  renderTimer();
+});
+
 // ─── 起動 ───
 load();
 renderTimer();
-console.log('%c🌑 罪徳ポモドーロ v0.1','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c🌑 ぽもじ v0.2','color:#c9a84c;font-size:1.2rem;font-weight:900;');
 
 // PWA
 if ('serviceWorker' in navigator) {

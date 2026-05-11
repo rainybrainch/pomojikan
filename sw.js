@@ -1,5 +1,5 @@
-// 罪徳ポモドーロ ── Service Worker
-const CACHE_NAME = 'zaitoku-v1';
+// ぽもじ ── Service Worker
+const CACHE_NAME = 'pomoji-v2';
 const PRECACHE = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {

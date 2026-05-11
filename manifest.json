@@ -1,7 +1,7 @@
 {
-  "name": "罪徳ポモドーロ",
-  "short_name": "罪徳",
-  "description": "七大罪と七徳が永遠に磁力反転する、動く時計。",
+  "name": "ぽもじ",
+  "short_name": "ぽもじ",
+  "description": "文字が降ってくる作業タイマー。ポモドーロで文字を積み上げる。",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
