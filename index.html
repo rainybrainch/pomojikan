@@ -320,6 +320,30 @@ body.focus-mode header { opacity: 0; transition: opacity 0.3s; }
 body.focus-mode footer { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 body.focus-mode .phase-label { opacity: 0.3; }
 
+/* 高コントラストモード */
+body.high-contrast {
+  --bg: #000000; --bg2: #0a0a0a; --panel: #1a1a1a;
+  --text: #ffffff; --white: #ffffff; --muted: #cccccc;
+}
+body.high-contrast .timer { text-shadow: 0 0 4px #ffffff; }
+body.high-contrast .btn { border-width: 2px; }
+
+/* Tab フォーカス強化 */
+.btn:focus-visible, .cf-btn:focus-visible, .theme-btn:focus-visible,
+.font-btn:focus-visible, .bgm-btn:focus-visible, .lang-btn:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* FPS ステータス */
+.fps-status {
+  position: fixed; top: 6px; right: 8px; z-index: 60;
+  font-family: var(--mono); font-size: 0.62rem;
+  color: var(--gold); background: rgba(0,0,0,0.65); padding: 3px 8px;
+  border-radius: 3px; pointer-events: none;
+}
+
 .hourly-heat { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 4px; }
 .heat-cell {
   border-radius: 2px; padding: 4px 0;
@@ -332,6 +356,7 @@ body.focus-mode .phase-label { opacity: 0.3; }
 </head>
 <body>
 <canvas id="field" aria-hidden="true"></canvas>
+<div id="fps-status" class="fps-status" style="display:none;">FPS: -- / Bodies: --</div>
 
 <header>
   <div class="title">🌑 ぽもじかん</div>
@@ -585,11 +610,23 @@ body.focus-mode .phase-label { opacity: 0.3; }
       <button class="btn small danger" id="btn-reset-all">🌑 全リセット</button>
     </div>
 
+    <!-- 言語・アクセシビリティ -->
+    <div class="section-h">🌍 言語 ／ A11y</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn small lang-btn" data-lang="ja">🇯🇵 日本語</button>
+      <button class="btn small lang-btn" data-lang="en">🇬🇧 English</button>
+    </div>
+    <label class="mode-row"><input type="checkbox" id="cfg-contrast"> <span>🌓 高コントラストモード</span><span class="hint">背景＝黒、文字＝白の最大コントラスト</span></label>
+    <label class="mode-row"><input type="checkbox" id="cfg-fps"> <span>📈 FPS 表示（デバッグ）</span><span class="hint">右上に FPS が出る</span></label>
+
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v0.9 ／ 作: rainybrainch<br>
-      <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシーポリシー</a> ／
+      ぽもじかん v0.95 ／ 作: rainybrainch<br>
+      <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
+      <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
+      <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
+      <a href="license.html" target="_blank" rel="noopener" style="color:var(--rain);">ライセンス</a><br>
       <a href="https://github.com/rainybrainch/pomojikan" target="_blank" rel="noopener" style="color:var(--rain);">ソースコード</a><br>
       <button class="btn small" id="btn-tour" style="margin-top:8px;">📖 ツアーをもう一度</button>
     </div>
@@ -662,8 +699,26 @@ const STATE = {
   favorites: {},        // { '謙虚': true }
   hourly: new Array(24).fill(0),  // 完走の時間帯
   palette: null,        // { virtue, sin, accent } 任意
-  presets: []           // [{ name, ... }]
+  presets: [],          // [{ name, ... }]
+  lang: 'ja',
+  highContrast: false,
+  showFPS: false,
+  dataVersion: '0.95'    // データスキーマバージョン（マイグレーション用）
 };
+
+// ─── データバージョンマイグレーション ───
+function migrateData() {
+  const v = localStorage.getItem('pomojikan_data_version');
+  if (!v) {
+    // 旧版から：そのまま使える（後方互換 maintained）
+    localStorage.setItem('pomojikan_data_version', '0.95');
+  } else if (v !== '0.95') {
+    // 将来のバージョンアップ用フック
+    console.log('[migrate] from', v, '→ 0.95');
+    localStorage.setItem('pomojikan_data_version', '0.95');
+  }
+}
+migrateData();
 
 // ─── フォント切替 ───
 const FONT_FAMILIES = {
@@ -948,6 +1003,14 @@ function load() {
   } catch(e) { STATE.hourly = new Array(24).fill(0); }
   try { STATE.palette = JSON.parse(localStorage.getItem(KEY_PALETTE) || 'null'); } catch(e) { STATE.palette = null; }
   try { STATE.presets = JSON.parse(localStorage.getItem(KEY_PRESETS) || '[]'); } catch(e) { STATE.presets = []; }
+  STATE.lang = localStorage.getItem('pomojikan_lang') || (navigator.language && navigator.language.startsWith('en') ? 'en' : 'ja');
+  STATE.highContrast = localStorage.getItem('pomojikan_contrast') === '1';
+  STATE.showFPS = localStorage.getItem('pomojikan_fps') === '1';
+  if (STATE.highContrast) document.body.classList.add('high-contrast');
+  if (STATE.showFPS) {
+    const f = document.getElementById('fps-status');
+    if (f) f.style.display = 'block';
+  }
   // URL クエリで設定上書き（モード共有用）
   const usp = new URLSearchParams(location.search);
   if (usp.has('theme') && THEMES[usp.get('theme')]) { STATE.theme = usp.get('theme'); try { localStorage.setItem(KEY_THEME, STATE.theme); } catch(e){} }
@@ -1493,9 +1556,24 @@ function draw() {
   ctx.textBaseline = 'alphabetic';
 }
 
+// FPS 計測
+let fpsLast = performance.now();
+let fpsFrames = 0;
+let fpsValue = 0;
 function loop() {
   update();
   draw();
+  // FPS 計測
+  fpsFrames++;
+  const now = performance.now();
+  if (now - fpsLast >= 500) {
+    fpsValue = Math.round(fpsFrames * 1000 / (now - fpsLast));
+    fpsFrames = 0; fpsLast = now;
+    const fps = document.getElementById('fps-status');
+    if (fps && fps.style.display !== 'none') {
+      fps.textContent = `FPS: ${fpsValue} / Bodies: ${field.bodies.length}`;
+    }
+  }
   requestAnimationFrame(loop);
 }
 loop();
@@ -1668,6 +1746,12 @@ function openMenu() {
   }
   // プリセット
   refreshPresetList();
+  // 言語・A11y
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === STATE.lang);
+  });
+  const cc = document.getElementById('cfg-contrast'); if (cc) cc.checked = STATE.highContrast;
+  const cf = document.getElementById('cfg-fps');      if (cf) cf.checked = STATE.showFPS;
   // BGM
   document.querySelectorAll('.bgm-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.bgm === STATE.bgm);
@@ -1931,6 +2015,30 @@ document.querySelectorAll('.overlay').forEach(o => {
     }
     swipeStart = null;
   });
+});
+
+// 言語切替
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    STATE.lang = btn.dataset.lang;
+    try { localStorage.setItem('pomojikan_lang', STATE.lang); } catch(e) {}
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b === btn));
+    applyI18N();
+    flash(STATE.lang === 'en' ? 'Language switched' : '言語を切替');
+  });
+});
+// 高コントラスト
+document.getElementById('cfg-contrast')?.addEventListener('change', (e) => {
+  STATE.highContrast = e.target.checked;
+  document.body.classList.toggle('high-contrast', STATE.highContrast);
+  try { localStorage.setItem('pomojikan_contrast', STATE.highContrast ? '1' : '0'); } catch(_){}
+});
+// FPS
+document.getElementById('cfg-fps')?.addEventListener('change', (e) => {
+  STATE.showFPS = e.target.checked;
+  const f = document.getElementById('fps-status');
+  if (f) f.style.display = STATE.showFPS ? 'block' : 'none';
+  try { localStorage.setItem('pomojikan_fps', STATE.showFPS ? '1' : '0'); } catch(_){}
 });
 
 document.getElementById('btn-tour')?.addEventListener('click', () => {
@@ -2335,6 +2443,42 @@ document.addEventListener('visibilitychange', () => {
   renderTimer();
 });
 
+// ─── i18n（多言語）───
+const I18N = {
+  ja: {
+    appName: 'ぽもじかん',
+    subtitle: 'PMJ ／ 文字が降ってくる作業タイマー',
+    workLabel: '作業 ── 徳が降る',
+    restLabel: '休憩 ── 罪が上がる',
+    start: '▶ 開始', pause: '⏸ 一時停止', reset: '↺ リセット',
+    todayLabel: '今日の完走', totalLabel: '累計',
+    footerPoetic: '徳は降り、罪は上がる。永遠に。',
+    completed: '⭐ 完走 +1', nextCycle: '🌑 次の周回へ'
+  },
+  en: {
+    appName: 'Pomojikan',
+    subtitle: 'PMJ / Falling Characters Focus Timer',
+    workLabel: 'Work ── virtues fall',
+    restLabel: 'Rest ── sins rise',
+    start: '▶ Start', pause: '⏸ Pause', reset: '↺ Reset',
+    todayLabel: 'Today', totalLabel: 'Total',
+    footerPoetic: 'Virtues fall. Sins rise. Forever.',
+    completed: '⭐ Done +1', nextCycle: '🌑 Next cycle'
+  }
+};
+function t(key) {
+  const lang = STATE.lang || (navigator.language || 'ja').startsWith('en') ? 'en' : 'ja';
+  return (I18N[lang] && I18N[lang][key]) || I18N.ja[key] || key;
+}
+function applyI18N() {
+  const titleEl = document.querySelector('.title');
+  const subtitleEl = document.querySelector('.subtitle');
+  if (titleEl) titleEl.textContent = '🌑 ' + t('appName');
+  if (subtitleEl) subtitleEl.textContent = t('subtitle');
+  const poetic = document.getElementById('poetic-line');
+  if (poetic) poetic.textContent = t('footerPoetic');
+}
+
 // ─── エラー境界（v0.7）───
 window.addEventListener('error', (e) => {
   try { console.warn('[pomojikan err]', e.message); } catch(_) {}
@@ -2347,10 +2491,11 @@ window.addEventListener('unhandledrejection', (e) => {
 load();
 applyThemeCSS();
 applyFontCSS();
+applyI18N();
 // 服牢365 Gist 名言を非同期で取得（読雨と連動）
 fetchFukurou365();
 renderTimer();
-console.log('%c🌑 ぽもじかん v0.9 (cycle 5)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c🌑 ぽもじかん v0.95 (cycle 6) — 60 improvements','color:#c9a84c;font-size:1.2rem;font-weight:900;');
 console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 
 // PWA

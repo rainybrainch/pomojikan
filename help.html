@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヘルプ ── ぽもじかん</title>
+<style>
+body { background: #0c1426; color: #c8d0e8; font-family: 'Noto Serif JP', serif; max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; line-height: 1.8; }
+h1 { color: #c9a84c; font-size: 1.4rem; letter-spacing: 0.18em; margin-bottom: 18px; }
+h2 { color: #6bb6ff; font-size: 1.0rem; margin-top: 24px; letter-spacing: 0.1em; border-bottom: 1px dashed rgba(107,182,255,0.2); padding-bottom: 6px; }
+details { margin: 10px 0; }
+summary { cursor: pointer; padding: 8px 12px; background: rgba(107,182,255,0.08); border-radius: 3px; color: #eef2ff; font-weight: 700; }
+summary:hover { background: rgba(107,182,255,0.15); }
+details[open] summary { background: rgba(201,168,76,0.18); color: #c9a84c; }
+.body { padding: 8px 14px; font-size: 0.88rem; line-height: 1.9; }
+.muted { color: #5a6890; font-size: 0.78rem; }
+a { color: #6bb6ff; }
+</style>
+</head>
+<body>
+<h1>🌑 ぽもじかん ── ヘルプ ／ FAQ</h1>
+<p class="muted">わからないことを Q&A 形式で。</p>
+
+<h2>基本</h2>
+<details><summary>Q. ぽもじかんって何？</summary><div class="body">A. ポモドーロ法のタイマー＋文字が物理エンジンで降る・積み上がる PWA。25分作業＋5分休憩のリズムで集中する装置。</div></details>
+<details><summary>Q. ポモドーロ法を知らない</summary><div class="body">A. 25分作業→5分休憩を 4〜6 セット繰り返す時間管理術。ぽもじかんは時間設定を自由に変えられます（メニュー→時間）。</div></details>
+<details><summary>Q. 落ちる文字に意味はある？</summary><div class="body">A. 既定では「七大罪・七徳」。作業中は徳のしずく、休憩中は罪の泡。メニューの言葉モードで自由文字や服牢365 名言に切り替えられます。</div></details>
+
+<h2>操作</h2>
+<details><summary>Q. キーボードショートカット</summary><div class="body">A. Space=開始/停止 / R=リセット / M=メニュー / C=図鑑 / S=統計 / P=シェア / Esc=モーダル閉じる</div></details>
+<details><summary>Q. 文字をタッチで動かせる？</summary><div class="body">A. はい。指で掴んで投げられます。フリック速度で慣性が乗る物理ドラッグです。</div></details>
+<details><summary>Q. モーダルの閉じ方</summary><div class="body">A. 「閉じる」ボタン / Esc キー / モーダル外の暗い部分をタップ / モーダルを下スワイプ。</div></details>
+
+<h2>遊び方</h2>
+<details><summary>Q. 文字が「大」になった</summary><div class="body">A. 同じ文字どうしが衝突して合体しました（スイカゲーム的）。「大→真→極」と3段階で進化します。</div></details>
+<details><summary>Q. レアな文字（金・虹）の出し方</summary><div class="body">A. 初出時に確率判定（金: 1%、虹: 0.2%）。たくさん作業して新しい文字を引いてください。</div></details>
+<details><summary>Q. アチーブメントは何種類？</summary><div class="body">A. 17種類。完走数・連続日数・図鑑種類数・レア発見・合体段階・Lv9 到達 など。</div></details>
+
+<h2>データ</h2>
+<details><summary>Q. データは送信される？</summary><div class="body">A. 一切送信されません。すべて端末の localStorage に保存。アクセス解析もありません。詳しくは <a href="privacy.html">プライバシーポリシー</a>。</div></details>
+<details><summary>Q. 別の端末に移したい</summary><div class="body">A. メニュー →「📤 書き出し」で JSON 取得 → 別端末で「📥 取り込み」。</div></details>
+<details><summary>Q. データをすべて消したい</summary><div class="body">A. メニュー → 「🌑 全リセット」（2段階確認あり）。</div></details>
+
+<h2>申請・配布</h2>
+<details><summary>Q. アプリストアで配布されてる？</summary><div class="body">A. 現在 Web 版（PWA）のみ公開中。Microsoft Store / Google Play への申請を準備中です。</div></details>
+<details><summary>Q. ホーム画面に追加したい</summary><div class="body">A. iOS Safari：共有→ホーム画面に追加 ／ Android Chrome：⋮→アプリをインストール。</div></details>
+
+<p class="muted" style="margin-top:30px;">バグ報告・改善要望は <a href="https://github.com/rainybrainch/pomojikan/issues" target="_blank">GitHub Issues</a> へ。</p>
+<p><a href="./">← アプリに戻る</a></p>
+</body>
+</html>
