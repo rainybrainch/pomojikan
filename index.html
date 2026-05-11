@@ -25,6 +25,7 @@
 <!-- iOS / PWA -->
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/svg+xml" href="icon-192.svg">
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/></svg>">
 <link rel="manifest" href="manifest.json">
 <title>🌑 ぽもじかん ── 文字が降ってくる作業タイマー</title>
@@ -301,10 +302,10 @@ footer {
 <main>
   <div class="phase-label work" id="phase">作業 ── 徳が降る</div>
   <div class="timer" id="timer">25:00</div>
-  <div class="controls">
-    <button class="btn primary" id="btn-toggle">▶ 開始</button>
-    <button class="btn" id="btn-reset">↺ リセット</button>
-    <button class="btn small" id="btn-sound">🔊 音</button>
+  <div class="controls" role="group" aria-label="タイマーコントロール">
+    <button class="btn primary" id="btn-toggle" aria-label="タイマーの開始または一時停止（スペースキーでも操作可）">▶ 開始</button>
+    <button class="btn" id="btn-reset" aria-label="タイマーをリセット（Rキーでも操作可）">↺ リセット</button>
+    <button class="btn small" id="btn-sound" aria-label="雨音BGMの切替">🔊 音</button>
   </div>
 </main>
 
@@ -418,12 +419,38 @@ footer {
       </div>
     </div>
 
+    <!-- テーマ -->
+    <div class="section-h">🎨 テーマ（配色）</div>
+    <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn small theme-btn" data-theme="zaitoku">🌑 罪徳</button>
+      <button class="btn small theme-btn" data-theme="rain">🌧 雨</button>
+      <button class="btn small theme-btn" data-theme="sand">🌅 砂</button>
+      <button class="btn small theme-btn" data-theme="snow">❄ 雪</button>
+      <button class="btn small theme-btn" data-theme="sakura">🌸 桜</button>
+    </div>
+
     <!-- 音 -->
     <div class="section-h">🔊 音と通知</div>
-    <label class="mode-row"><input type="checkbox" id="cfg-chime" checked> <span>🎵 完走チャイム</span><span class="hint">作業完了時に三和音</span></label>
-    <label class="mode-row"><input type="checkbox" id="cfg-sound"> <span>雨音 BGM</span><span class="hint">Web Audio・ホワイトノイズ</span></label>
-    <label class="mode-row"><input type="checkbox" id="cfg-vibrate" checked> <span>完了時バイブ</span><span class="hint">対応端末のみ</span></label>
-    <label class="mode-row"><input type="checkbox" id="cfg-notify" checked> <span>通知</span><span class="hint">バックグラウンド中の完了を OS が伝える</span></label>
+    <label class="mode-row" aria-label="完走時に三和音チャイムを鳴らす">
+      <input type="checkbox" id="cfg-chime" checked> <span>🎵 完走チャイム</span><span class="hint">作業完了時に三和音</span>
+    </label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px;">
+      <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);padding:6px 4px;letter-spacing:0.08em;">BGM:</span>
+      <button class="btn small bgm-btn" data-bgm="none">無音</button>
+      <button class="btn small bgm-btn" data-bgm="rain">🌧 雨</button>
+      <button class="btn small bgm-btn" data-bgm="wind">🌬 風</button>
+      <button class="btn small bgm-btn" data-bgm="wave">🌊 波</button>
+    </div>
+    <label class="mode-row" aria-label="完走時にバイブレーション">
+      <input type="checkbox" id="cfg-vibrate" checked> <span>完了時バイブ</span><span class="hint">対応端末のみ</span>
+    </label>
+    <label class="mode-row" aria-label="OSの通知を許可してバックグラウンドでも完了を知らせる">
+      <input type="checkbox" id="cfg-notify" checked> <span>通知</span><span class="hint">バックグラウンド中の完了を OS が伝える</span>
+    </label>
+
+    <!-- デイリーチャレンジ -->
+    <div class="section-h">🎯 今日のチャレンジ</div>
+    <div id="daily-chl-info" style="font-size:0.78rem;color:var(--text);padding:6px 10px;background:rgba(0,0,0,0.28);border-radius:3px;line-height:1.6;"></div>
 
     <!-- データ管理 -->
     <div class="section-h">💾 データ</div>
@@ -474,6 +501,10 @@ const KEY_COLLECTION = 'pomojikan_collection';  // { word: { count, firstSeen, l
 const KEY_STREAK     = 'pomojikan_streak';      // { current: 3, max: 12, lastDay: 'YYYY-MM-DD' }
 const KEY_DAILY      = 'pomojikan_daily';       // { 'YYYY-MM-DD': count }
 const KEY_ONBOARD    = 'pomojikan_onboarded';
+const KEY_ACHIEVE    = 'pomojikan_achievements';  // { id: timestamp }
+const KEY_DAILY_CHL  = 'pomojikan_daily_challenge';  // { date, target, count, done }
+const KEY_THEME      = 'pomojikan_theme';
+const KEY_BGM        = 'pomojikan_bgm';
 
 const STATE = {
   phase: 'work',        // 'work' | 'rest'
@@ -490,10 +521,91 @@ const STATE = {
   customRestWords: [],
   vibrateOn: true,
   notifyOn: true,
-  collection: {},     // { '謙虚': { count, firstSeen, lastSeen, rare, type } }
+  collection: {},
   streak: { current: 0, max: 0, lastDay: null },
-  daily: {}           // { 'YYYY-MM-DD': 完走数 }
+  daily: {},
+  achievements: {},     // { 'id': timestamp }
+  dailyChallenge: null, // { date, target, count, done }
+  theme: 'zaitoku',     // 'zaitoku'|'rain'|'sand'|'snow'|'sakura'
+  bgm: 'rain'           // 'rain'|'wind'|'wave'|'none'
 };
+
+// ─── アチーブメント定義 ───
+const ACHIEVEMENTS = [
+  { id: 'first',       title: '🌑 初の完走',      cond: s => s.total >= 1 },
+  { id: 'ten',         title: '🌱 10完走',       cond: s => s.total >= 10 },
+  { id: 'fifty',       title: '🌿 50完走',       cond: s => s.total >= 50 },
+  { id: 'hundred',     title: '🌳 100完走',      cond: s => s.total >= 100 },
+  { id: 'year',        title: '🌟 365完走',      cond: s => s.total >= 365 },
+  { id: 'streak3',     title: '🔥 3日連続',      cond: s => s.streak.current >= 3 },
+  { id: 'streak7',     title: '🔥🔥 7日連続',    cond: s => s.streak.current >= 7 },
+  { id: 'streak30',    title: '🔥🔥🔥 30日連続', cond: s => s.streak.current >= 30 },
+  { id: 'col10',       title: '📚 図鑑10種',     cond: s => Object.keys(s.collection).length >= 10 },
+  { id: 'col30',       title: '📚 図鑑30種',     cond: s => Object.keys(s.collection).length >= 30 },
+  { id: 'col100',      title: '📚 図鑑100種',    cond: s => Object.keys(s.collection).length >= 100 },
+  { id: 'gold1',       title: '✨ 金色を発見',    cond: s => Object.values(s.collection).some(v => v.rare === 'gold') },
+  { id: 'rainbow1',    title: '🌈 虹色を発見',    cond: s => Object.values(s.collection).some(v => v.rare === 'rainbow') },
+  { id: 'merge1',      title: '🌟 初の合体',      cond: s => Object.keys(s.collection).some(t => t.startsWith('大')) },
+  { id: 'merge2',      title: '🌟🌟 真への進化',  cond: s => Object.keys(s.collection).some(t => t.startsWith('真')) },
+  { id: 'merge3',      title: '🌟🌟🌟 極を見た',  cond: s => Object.keys(s.collection).some(t => t.startsWith('極')) },
+  { id: 'lv9',         title: '👑 殿堂入り Lv9', cond: s => Object.values(s.collection).some(v => getLevel(v.count) >= 9) }
+];
+function checkAchievements() {
+  let newOnes = [];
+  for (const a of ACHIEVEMENTS) {
+    if (STATE.achievements[a.id]) continue;
+    if (a.cond(STATE)) {
+      STATE.achievements[a.id] = new Date().toISOString();
+      newOnes.push(a);
+    }
+  }
+  if (newOnes.length) {
+    try { localStorage.setItem(KEY_ACHIEVE, JSON.stringify(STATE.achievements)); } catch(e) {}
+    for (const a of newOnes) {
+      flash(`🏆 達成 ── ${a.title}`);
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+    }
+  }
+}
+
+// ─── デイリーチャレンジ ───
+function ensureDailyChallenge() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (STATE.dailyChallenge && STATE.dailyChallenge.date === today) return;
+  // 新しいお題：当日の罪徳から選ぶ
+  const pool = STATE.phase === 'rest' ? SINS : VIRTUES;
+  const target = pool[Math.floor(Math.random() * pool.length)];
+  const count = 3 + Math.floor(Math.random() * 5);  // 3〜7個
+  STATE.dailyChallenge = { date: today, target, count, current: 0, done: false };
+  try { localStorage.setItem(KEY_DAILY_CHL, JSON.stringify(STATE.dailyChallenge)); } catch(e) {}
+}
+function updateDailyChallenge(text) {
+  if (!STATE.dailyChallenge) return;
+  if (STATE.dailyChallenge.done) return;
+  if (STATE.dailyChallenge.date !== new Date().toISOString().slice(0, 10)) return;
+  if (text !== STATE.dailyChallenge.target) return;
+  STATE.dailyChallenge.current++;
+  if (STATE.dailyChallenge.current >= STATE.dailyChallenge.count) {
+    STATE.dailyChallenge.done = true;
+    flash(`🎯 デイリーチャレンジ達成！ ${STATE.dailyChallenge.target} ×${STATE.dailyChallenge.count}`);
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+  }
+  try { localStorage.setItem(KEY_DAILY_CHL, JSON.stringify(STATE.dailyChallenge)); } catch(e) {}
+}
+
+// ─── テーマ切替 ───
+const THEMES = {
+  zaitoku: { virtue: '#e8c668', sin: '#ff9b9b', accent: '#c9a84c', sub: '#c890d8' },
+  rain:    { virtue: '#6bb6ff', sin: '#3a6fc9', accent: '#6bb6ff', sub: '#c890d8' },
+  sand:    { virtue: '#d6b966', sin: '#a87850', accent: '#c9a84c', sub: '#8a6440' },
+  snow:    { virtue: '#eef2ff', sin: '#a8c0e0', accent: '#ffffff', sub: '#9fb8d0' },
+  sakura:  { virtue: '#ffb7c5', sin: '#ff6b88', accent: '#ff8aa5', sub: '#d68aaa' }
+};
+function applyTheme(name) {
+  STATE.theme = THEMES[name] ? name : 'zaitoku';
+  try { localStorage.setItem(KEY_THEME, STATE.theme); } catch(e) {}
+}
+function themeColors() { return THEMES[STATE.theme] || THEMES.zaitoku; }
 
 // ─── 連続日数 ストリーク + 日次統計 ───
 function updateStreak() {
@@ -628,6 +740,11 @@ function load() {
   try { STATE.collection = JSON.parse(localStorage.getItem(KEY_COLLECTION) || '{}'); } catch(e) { STATE.collection = {}; }
   try { STATE.streak = JSON.parse(localStorage.getItem(KEY_STREAK) || '{"current":0,"max":0,"lastDay":null}'); } catch(e) {}
   try { STATE.daily = JSON.parse(localStorage.getItem(KEY_DAILY) || '{}'); } catch(e) { STATE.daily = {}; }
+  try { STATE.achievements = JSON.parse(localStorage.getItem(KEY_ACHIEVE) || '{}'); } catch(e) { STATE.achievements = {}; }
+  try { STATE.dailyChallenge = JSON.parse(localStorage.getItem(KEY_DAILY_CHL) || 'null'); } catch(e) { STATE.dailyChallenge = null; }
+  STATE.theme = localStorage.getItem(KEY_THEME) || 'zaitoku';
+  STATE.bgm = localStorage.getItem(KEY_BGM) || 'rain';
+  ensureDailyChallenge();
   // 日付変わってたらリセット
   const today = new Date().toISOString().slice(0,10);
   if (STATE.todayDate !== today) {
@@ -792,6 +909,7 @@ function completePhase() {
     STATE.total++;
     save();
     updateStreak();
+    checkAchievements();
     if (STATE.soundOn) playChime();
     STATE.phase = 'rest';
     STATE.remaining = STATE.restMin * 60;
@@ -888,6 +1006,10 @@ function spawn() {
   // コレクション記録 + Lv 取得
   const entry = recordWord(text, type);
   const lv = getLevel(entry.count);
+  // デイリーチャレンジ更新
+  updateDailyChallenge(text);
+  // 一定間隔でアチーブメントもチェック
+  if (entry.count % 5 === 0) checkAchievements();
   // レア新規発見ならフラッシュ
   if (entry.count === 1 && entry.rare) {
     flash(entry.rare === 'rainbow' ? '🌈 虹色の文字を発見！' : '✨ 金色の文字を発見！');
@@ -973,16 +1095,45 @@ function update() {
     }
   }
 
-  // 2) 円どうしの衝突
+  // 2) 円どうしの衝突 + スイカ合体（空間グリッドで O(n) 寄りに最適化）
+  const mergeList = [];
+  const cellSize = 80;  // セルサイズ
+  const grid = new Map();
+  function cellKey(x, y) { return Math.floor(x / cellSize) + ',' + Math.floor(y / cellSize); }
+  field.bodies.forEach((b, idx) => {
+    const k = cellKey(b.x, b.y);
+    if (!grid.has(k)) grid.set(k, []);
+    grid.get(k).push(idx);
+  });
+  // 各セルとその近傍8セルだけ比較
+  const checked = new Set();
   for (let i = 0; i < field.bodies.length; i++) {
     const a = field.bodies[i];
-    for (let j = i + 1; j < field.bodies.length; j++) {
-      const c = field.bodies[j];
-      if (a.type !== c.type) continue;   // 徳と罪は干渉しない
+    const cx = Math.floor(a.x / cellSize), cy = Math.floor(a.y / cellSize);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      const k = (cx + dx) + ',' + (cy + dy);
+      const cell = grid.get(k);
+      if (!cell) continue;
+      for (const j of cell) {
+        if (j <= i) continue;
+        const pairKey = i + ',' + j;
+        if (checked.has(pairKey)) continue;
+        checked.add(pairKey);
+        const c = field.bodies[j];
+      if (a.type !== c.type) continue;
       const dx = c.x - a.x, dy = c.y - a.y;
       const dist = Math.hypot(dx, dy);
       const minDist = a.r + c.r;
       if (dist < minDist && dist > 0.01) {
+        // ── 合体判定（同じ text + 両方 settled or ほぼ静止）──
+        if (a.text === c.text && a.alpha >= 0.9 && c.alpha >= 0.9 &&
+            Math.abs(a.vy) < 1.5 && Math.abs(c.vy) < 1.5) {
+          const evolveMark = a.text.startsWith('大') ? '真' : a.text.startsWith('真') ? '極' : '大';
+          if (!a.text.startsWith('極')) {
+            mergeList.push({ keepIdx: i, removeIdx: j, newText: evolveMark + a.text });
+            continue;
+          }
+        }
         const overlap = (minDist - dist);
         const nx = dx / dist, ny = dy / dist;
         const totalMass = a.mass + c.mass;
@@ -990,7 +1141,6 @@ function update() {
         a.y -= ny * overlap * (c.mass / totalMass);
         c.x += nx * overlap * (a.mass / totalMass);
         c.y += ny * overlap * (a.mass / totalMass);
-        // 速度反映（弾性衝突簡易）
         const relV = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
         if (relV < 0) {
           const impulse = -(1 + PHYSICS.restitution) * relV / totalMass;
@@ -998,15 +1148,36 @@ function update() {
           a.vy -= impulse * c.mass * ny;
           c.vx += impulse * a.mass * nx;
           c.vy += impulse * a.mass * ny;
-          if (Math.abs(relV) > 0.6) {
-            a.settled = false;
-            c.settled = false;
-          }
+          if (Math.abs(relV) > 0.6) { a.settled = false; c.settled = false; }
           a.vrot += (Math.random() - 0.5) * 0.03;
           c.vrot += (Math.random() - 0.5) * 0.03;
         }
       }
-    }
+      } // for j
+    } // for dx,dy
+  } // for i
+  // 合体適用（後ろから削除して index ずれ防止）
+  mergeList.sort((a, b) => b.removeIdx - a.removeIdx);
+  const merged = new Set();
+  for (const m of mergeList) {
+    if (merged.has(m.keepIdx) || merged.has(m.removeIdx)) continue;
+    const k = field.bodies[m.keepIdx];
+    if (!k) continue;
+    // 進化：text 更新・半径拡大・質量増・記録
+    k.text = m.newText;
+    k.r = radiusFor(m.newText);
+    k.mass = k.r * k.r;
+    k.lv = (k.lv || 0) + 1;
+    k.vrot = (Math.random() - 0.5) * 0.15;
+    k.settled = false;
+    k.vy = -1.5;  // 少し浮く演出
+    // フラッシュ
+    flash(`🌟 合体 → ${m.newText}`);
+    if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+    field.bodies.splice(m.removeIdx, 1);
+    merged.add(m.keepIdx);
+    // コレクションにも記録
+    recordWord(m.newText, k.type);
   }
 
   // 満タンチェック
@@ -1118,22 +1289,40 @@ let rainSource = null;
 let rainGain = null;
 function startRain() {
   if (rainSource) return;
+  if (STATE.bgm === 'none') return;
   try {
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     const bufferSize = 2 * audioCtx.sampleRate;
     const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * 0.5;
-    }
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
     rainSource = audioCtx.createBufferSource();
     rainSource.buffer = noiseBuffer;
     rainSource.loop = true;
     const filter = audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 1200;
+    // BGM 種別ごとにフィルタを変える
+    if (STATE.bgm === 'wind') {
+      filter.type = 'bandpass';
+      filter.frequency.value = 600;
+      filter.Q.value = 0.7;
+    } else if (STATE.bgm === 'wave') {
+      filter.type = 'lowpass';
+      filter.frequency.value = 400;
+    } else {  // rain（既定）
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+    }
     rainGain = audioCtx.createGain();
-    rainGain.gain.value = 0.06;
+    rainGain.gain.value = STATE.bgm === 'wave' ? 0.08 : 0.06;
+    // 波だけ低周波の揺らぎを追加
+    if (STATE.bgm === 'wave') {
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.frequency.value = 0.3;  // 0.3Hz = 3.3秒周期
+      lfoGain.gain.value = 0.04;
+      lfo.connect(lfoGain).connect(rainGain.gain);
+      lfo.start();
+    }
     rainSource.connect(filter).connect(rainGain).connect(audioCtx.destination);
     rainSource.start();
   } catch (e) { console.warn('audio failed', e); }
@@ -1159,10 +1348,29 @@ document.querySelectorAll('.settings .btn[data-preset]').forEach(b => {
 });
 
 // ─── メニュー（設定モーダル） ───
+function refreshDailyChlInfo() {
+  ensureDailyChallenge();
+  const c = STATE.dailyChallenge;
+  if (!c) return;
+  const el = document.getElementById('daily-chl-info');
+  if (!el) return;
+  el.innerHTML = c.done
+    ? `✅ <strong>達成！</strong> 「${c.target}」を ${c.count} 個集めました（${c.date}）`
+    : `「<strong style="color:var(--gold);">${c.target}</strong>」を ${c.count} 個集める ── 進捗 ${c.current} / ${c.count}`;
+}
 function openMenu() {
   // 現在値を反映
   document.getElementById('cust-work').value = STATE.workMin;
   document.getElementById('cust-rest').value = STATE.restMin;
+  // テーマ
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.theme === STATE.theme);
+  });
+  // BGM
+  document.querySelectorAll('.bgm-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.bgm === STATE.bgm);
+  });
+  refreshDailyChlInfo();
   document.querySelectorAll('input[name="word-mode"]').forEach(r => {
     r.checked = (r.value === STATE.wordMode);
   });
@@ -1205,6 +1413,26 @@ function applyMenu() {
   renderTimer();
   closeMenu();
   flash('⚙ 設定を適用');
+}
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    applyTheme(btn.dataset.theme);
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b === btn));
+    applyThemeCSS();
+  });
+});
+document.querySelectorAll('.bgm-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    STATE.bgm = btn.dataset.bgm;
+    try { localStorage.setItem(KEY_BGM, STATE.bgm); } catch(e) {}
+    document.querySelectorAll('.bgm-btn').forEach(b => b.classList.toggle('active', b === btn));
+    if (STATE.running) { stopRain(); if (STATE.bgm !== 'none' && STATE.soundOn) startRain(); }
+  });
+});
+function applyThemeCSS() {
+  const t = themeColors();
+  document.documentElement.style.setProperty('--gold', t.virtue);
+  document.documentElement.style.setProperty('--sin', t.sin);
 }
 document.getElementById('btn-menu').addEventListener('click', openMenu);
 document.getElementById('btn-collection').addEventListener('click', openCollection);
@@ -1477,8 +1705,9 @@ document.addEventListener('visibilitychange', () => {
 
 // ─── 起動 ───
 load();
+applyThemeCSS();
 renderTimer();
-console.log('%c🌑 ぽもじかん v0.5','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c🌑 ぽもじかん v0.6 (cycle 2)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
 
 // PWA
 if ('serviceWorker' in navigator) {
