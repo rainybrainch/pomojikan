@@ -1,6 +1,6 @@
 {
-  "name": "ぽもじ",
-  "short_name": "ぽもじ",
+  "name": "ぽもじかん",
+  "short_name": "ぽもじかん",
   "description": "文字が降ってくる作業タイマー。ポモドーロで文字を積み上げる。",
   "lang": "ja",
   "start_url": "./",

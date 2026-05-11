@@ -1,5 +1,5 @@
-// ぽもじ ── Service Worker
-const CACHE_NAME = 'pomoji-v2';
+// ぽもじかん ── Service Worker
+const CACHE_NAME = 'pomojikan-v3';
 const PRECACHE = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
