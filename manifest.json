@@ -1,0 +1,26 @@
+{
+  "name": "罪徳ポモドーロ",
+  "short_name": "罪徳",
+  "description": "七大罪と七徳が永遠に磁力反転する、動く時計。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0c1426",
+  "background_color": "#0c1426",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/><line x1='38' y1='22' x2='90' y2='22' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/><line x1='38' y1='106' x2='90' y2='106' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/><line x1='38' y1='22' x2='90' y2='22' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/><line x1='38' y1='106' x2='90' y2='106' stroke='%23eef2ff' stroke-width='3' stroke-linecap='round'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
