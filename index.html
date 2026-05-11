@@ -385,7 +385,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 </header>
 
 <main>
-  <div class="phase-label work" id="phase">ぽもじ中 ☂</div>
+  <div class="phase-label work" id="phase">🎯 集中</div>
   <div class="timer" id="timer">25:00</div>
   <div class="controls" role="group" aria-label="タイマーコントロール">
     <button class="btn primary" id="btn-toggle" aria-label="タイマーの開始または一時停止（スペースキーでも操作可）">▶ 開始</button>
@@ -506,32 +506,32 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 時間 -->
     <div class="section-h">⏱ 時間（分）</div>
     <div class="field-row">
-      <label>作業 <span class="tag-gold">徳が降る</span></label>
+      <label>集中 <span class="tag-gold">ぽもじが降る</span></label>
       <input type="number" id="cust-work" min="1" max="180" value="25">
     </div>
     <div class="field-row">
-      <label>休憩 <span class="tag-sin">罪が上がる</span></label>
+      <label>休憩 <span class="tag-sin">ぽもじが上がる</span></label>
       <input type="number" id="cust-rest" min="1" max="60" value="5">
     </div>
 
     <!-- 言葉モード -->
-    <div class="section-h">📜 落ちる言葉のモード</div>
-    <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気</span><span class="hint">「勉強する！」「頑張るぞ！」「やるぞ！」</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほん</span><span class="hint">「のんびり」「お茶しよう」「ぼーっと」</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"> <span>🌑 七大罪徳</span><span class="hint">傲慢→謙虚など七罪と七徳が降る</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自由</span><span class="hint">自分の言葉を入れる（作業用/休憩用 別）</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365</span><span class="hint">読雨内の名言がランダムに降る</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋罪徳＋名言 全部</span></label>
+    <div class="section-h">📜 どんなぽもじが降る？</div>
+    <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気のぽもじ</span><span class="hint">「勉強する！」「頑張るぞ！」</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほんのぽもじ</span><span class="hint">「のんびり」「お茶しよう」</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"><span>☆ 伝説のぽもじ</span><span class="hint">七大罪徳＝レア・経験値多め</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自分で決める</span><span class="hint">自分の言葉を入れる（集中用/休憩用 別）</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365 の名言</span><span class="hint">読雨に書いた名言が降る</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋伝説＋名言 全部</span></label>
 
     <div id="custom-words-box" style="display:none;">
-      <div class="section-h" style="margin-top:8px;">✏ 自由の言葉（カンマ区切り・最大20個）</div>
+      <div class="section-h" style="margin-top:8px;">✏ 自分のぽもじ（カンマ区切り・最大20個）</div>
       <div class="field-row">
-        <label>作業中（落ちる・下に積もる）</label>
-        <textarea id="cust-work-words" rows="2" placeholder="例：呼吸, 集中, 静か, 砂, 凝縮"></textarea>
+        <label>集中中に落ちるぽもじ</label>
+        <textarea id="cust-work-words" rows="2" placeholder="例：勉強する！, 進む, 集中, 一歩"></textarea>
       </div>
       <div class="field-row">
-        <label>休憩中（上がる・上に滞留）</label>
-        <textarea id="cust-rest-words" rows="2" placeholder="例：浮遊, 余白, 雲, 余韻"></textarea>
+        <label>休憩中に上がるぽもじ</label>
+        <textarea id="cust-rest-words" rows="2" placeholder="例：休もう, お茶, 深呼吸"></textarea>
       </div>
     </div>
 
@@ -645,7 +645,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.2（物理修正）／ 作: rainybrainch<br>
+      ぽもじかん v1.3（伝説のぽもじ）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -918,10 +918,10 @@ function getLevel(count) {
   return lv;
 }
 function levelStyle(lv, type, rare) {
-  // type: virtue / sin, rare: null / gold / rainbow
   const base = type === 'virtue' ? '#e8c668' : '#ff9b9b';
-  if (rare === 'rainbow') return { color: '#ffffff', glow: 'rgba(255,255,255,0.9)', glowStrength: 18 };
-  if (rare === 'gold')    return { color: '#ffe28a', glow: 'rgba(255,224,138,0.85)', glowStrength: 14 };
+  if (rare === 'rainbow')   return { color: '#ffffff', glow: 'rgba(255,255,255,0.9)', glowStrength: 18 };
+  if (rare === 'legendary') return { color: '#ffd0f0', glow: 'rgba(255,200,240,0.85)', glowStrength: 16 };
+  if (rare === 'gold')      return { color: '#ffe28a', glow: 'rgba(255,224,138,0.85)', glowStrength: 14 };
   const styles = [
     { color: base, glow: 'transparent', glowStrength: 0 },                                                  // Lv 1
     { color: base, glow: type === 'virtue' ? 'rgba(232,198,104,0.3)' : 'rgba(255,155,155,0.3)', glowStrength: 4 },  // Lv 2
@@ -935,24 +935,44 @@ function levelStyle(lv, type, rare) {
   ];
   return styles[Math.min(lv, styles.length - 1)] || styles[0];
 }
+// 伝説のぽもじ判定（罪徳7+7=14語は伝説扱い）
+const LEGENDARY_SET = new Set([...VIRTUES, ...SINS]);
+function isLegendary(text) {
+  return LEGENDARY_SET.has(text);
+}
+
+// レアリティ別経験値量
+function expFor(rare) {
+  switch (rare) {
+    case 'rainbow':   return 20;
+    case 'gold':      return 5;
+    case 'legendary': return 10;
+    default:          return 1;
+  }
+}
+
 function recordWord(text, type) {
   const now = new Date().toISOString();
   const existing = STATE.collection[text];
   let rare = existing ? existing.rare : null;
   if (!existing) {
     // 初出：レア判定
-    const r = Math.random();
-    if (r < 0.002)      rare = 'rainbow';   // 0.2%
-    else if (r < 0.01)  rare = 'gold';      // 1%
+    if (isLegendary(text)) {
+      rare = 'legendary';
+    } else {
+      const r = Math.random();
+      if (r < 0.002)      rare = 'rainbow';
+      else if (r < 0.01)  rare = 'gold';
+    }
   }
+  const gain = expFor(rare);
   STATE.collection[text] = {
-    count: (existing ? existing.count : 0) + 1,
+    count: (existing ? existing.count : 0) + gain,  // ← レアリティ別加算
     firstSeen: existing ? existing.firstSeen : now,
     lastSeen: now,
     rare,
     type
   };
-  // 永続化（spawn頻度が低いので保存OK）
   try { localStorage.setItem(KEY_COLLECTION, JSON.stringify(STATE.collection)); } catch(e) {}
   return STATE.collection[text];
 }
@@ -1189,20 +1209,11 @@ function fmt(sec) {
 function renderTimer() {
   document.getElementById('timer').textContent = fmt(STATE.remaining);
   const ph = document.getElementById('phase');
-  const labels = {
-    yaruki:   { work: '🔥 ぽもじ中（やる気）', rest: '☕ ひと休み（おつかれ）' },
-    nohohon:  { work: '☁ のほほんぽもじ中',   rest: '🌙 ゆるり休憩' },
-    zaitoku:  { work: '🌑 徳が降る',           rest: '🌫 罪が上がる' },
-    custom:   { work: '✏ ぽもじ中',           rest: '☁ 休憩' },
-    fukurou365: { work: '🌧 名言が降る',       rest: '☁ ひと息' },
-    mixed:    { work: '🌗 ぽもじ中（混在）',   rest: '☁ ひと休み' }
-  };
-  const set = labels[STATE.wordMode] || labels.yaruki;
   if (STATE.phase === 'work') {
-    ph.textContent = set.work;
+    ph.textContent = '🎯 集中';
     ph.className = 'phase-label work';
   } else {
-    ph.textContent = set.rest;
+    ph.textContent = '☕ 休憩';
     ph.className = 'phase-label rest';
   }
   document.getElementById('today').textContent = STATE.today;
@@ -1397,12 +1408,15 @@ function spawn() {
   // 一定間隔でアチーブメントもチェック
   if (entry.count % 5 === 0) checkAchievements();
   // レア新規発見ならフラッシュ
-  if (entry.count === 1 && entry.rare) {
-    flash(entry.rare === 'rainbow' ? '🌈 虹色の文字を発見！' : '✨ 金色の文字を発見！');
-  } else if (entry.count === 1) {
-    flash(`📚 新文字「${text}」`);
-  } else if (entry.count === 50 || entry.count === 100 || entry.count === 200) {
-    flash(`🌟 ${text} Lv ${lv} 到達`);
+  // 初出メッセージ（レアリティ別）
+  if (entry.count === expFor(entry.rare) /* 初回直後 */) {
+    if (entry.rare === 'rainbow')      flash(`🌈 虹のぽもじを発見！「${text}」`);
+    else if (entry.rare === 'gold')    flash(`✨ 金のぽもじを発見！「${text}」`);
+    else if (entry.rare === 'legendary') flash(`☆ 伝説のぽもじ！「${text}」`);
+    else                                flash(`📚 新ぽもじ「${text}」`);
+  } else if (entry.count >= 50 && entry.count - getLevel(entry.count - expFor(entry.rare)) > 0
+             && getLevel(entry.count) > getLevel(entry.count - expFor(entry.rare))) {
+    flash(`🌟 「${text}」が Lv ${lv} に成長`);
   }
   const r = radiusFor(text);
   const margin = r + 8;
@@ -1672,12 +1686,17 @@ function draw() {
     ctx.beginPath();
     ctx.arc(0, 0, b.r, 0, Math.PI * 2);
     if (b.rare === 'rainbow') {
-      // 虹グラデ
       const grad = ctx.createLinearGradient(-b.r, -b.r, b.r, b.r);
       grad.addColorStop(0, 'rgba(255,107,107,0.25)');
       grad.addColorStop(0.33, 'rgba(232,198,104,0.25)');
       grad.addColorStop(0.66, 'rgba(107,182,255,0.25)');
       grad.addColorStop(1, 'rgba(200,144,216,0.25)');
+      ctx.fillStyle = grad;
+    } else if (b.rare === 'legendary') {
+      // 伝説：紫＋金のグラデ
+      const grad = ctx.createRadialGradient(0, 0, 2, 0, 0, b.r);
+      grad.addColorStop(0, 'rgba(255,224,138,0.35)');
+      grad.addColorStop(1, 'rgba(200,144,216,0.20)');
       ctx.fillStyle = grad;
     } else if (b.rare === 'gold') {
       ctx.fillStyle = 'rgba(255,224,138,0.30)';
@@ -1685,9 +1704,10 @@ function draw() {
       ctx.fillStyle = b.type === 'virtue' ? 'rgba(201,168,76,0.14)' : 'rgba(255,107,107,0.14)';
     }
     ctx.fill();
-    ctx.strokeStyle = b.rare === 'rainbow' ? 'rgba(255,255,255,0.9)'
-                    : b.rare === 'gold'    ? 'rgba(255,224,138,0.9)'
-                    : b.type === 'virtue'  ? 'rgba(201,168,76,0.55)'
+    ctx.strokeStyle = b.rare === 'rainbow'   ? 'rgba(255,255,255,0.9)'
+                    : b.rare === 'legendary' ? 'rgba(255,200,240,0.9)'
+                    : b.rare === 'gold'      ? 'rgba(255,224,138,0.9)'
+                    : b.type === 'virtue'    ? 'rgba(201,168,76,0.55)'
                     : 'rgba(255,107,107,0.45)';
     ctx.lineWidth = b.rare ? 2 : 1.5;
     ctx.stroke();
@@ -2319,10 +2339,10 @@ function renderCollection(sortBy) {
       sorted.sort(([a], [b]) => a.localeCompare(b, 'ja'));
       break;
     case 'rare':
-      const rareRank = { rainbow: 0, gold: 1 };
+      const rareRank = { rainbow: 0, legendary: 1, gold: 2 };
       sorted.sort(([, a], [, b]) => {
-        const ra = rareRank[a.rare] ?? 2;
-        const rb = rareRank[b.rare] ?? 2;
+        const ra = rareRank[a.rare] ?? 3;
+        const rb = rareRank[b.rare] ?? 3;
         if (ra !== rb) return ra - rb;
         return b.count - a.count;
       });
@@ -2348,7 +2368,7 @@ function renderCollection(sortBy) {
     else if (v.rare === 'rainbow') classes.push('col-rainbow');
     else if (v.type === 'virtue')  classes.push('col-virtue');
     else                            classes.push('col-sin');
-    const rareIcon = v.rare === 'rainbow' ? '🌈' : v.rare === 'gold' ? '✨' : '';
+    const rareIcon = v.rare === 'rainbow' ? '🌈' : v.rare === 'legendary' ? '☆' : v.rare === 'gold' ? '✨' : '';
     const fav = STATE.favorites[text] ? '★' : '☆';
     const favCls = STATE.favorites[text] ? 'on' : '';
     return `
