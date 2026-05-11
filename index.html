@@ -299,6 +299,27 @@ footer {
 .bar30-col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
 .bar30-fill { background: var(--rain); border-radius: 2px 2px 0 0; min-height: 1px; transition: height 0.3s; opacity: 0.7; }
 
+/* 達成バッジ */
+.badge-card {
+  padding: 12px 10px; border-radius: 4px; text-align: center;
+  background: rgba(0,0,0,0.30); border: 1px solid rgba(107,182,255,0.08);
+  transition: all 0.15s;
+}
+.badge-card.unlocked {
+  background: linear-gradient(135deg, rgba(201,168,76,0.18), rgba(201,168,76,0.06));
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 8px rgba(201,168,76,0.25);
+}
+.badge-card.locked { opacity: 0.45; }
+.badge-card .badge-title { font-family: var(--serif); font-weight: 700; font-size: 0.85rem; color: var(--white); margin-bottom: 4px; }
+.badge-card.locked .badge-title { color: var(--muted); }
+.badge-card .badge-when { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); letter-spacing: 0.05em; }
+
+/* フォーカスモード */
+body.focus-mode header { opacity: 0; transition: opacity 0.3s; }
+body.focus-mode footer { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+body.focus-mode .phase-label { opacity: 0.3; }
+
 .hourly-heat { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 4px; }
 .heat-cell {
   border-radius: 2px; padding: 4px 0;
@@ -337,9 +358,11 @@ footer {
     <button class="btn small" data-preset="50/10">50/10</button>
     <button class="btn small" data-preset="15/3">15/3</button>
     <button class="btn small" id="btn-collection" title="ぽもじ図鑑">📚 図鑑</button>
+    <button class="btn small" id="btn-badges" title="達成バッジ">🏆 達成</button>
     <button class="btn small" id="btn-stats" title="統計">📊 統計</button>
     <button class="btn small" id="btn-share" title="シェア">📤 シェア</button>
     <button class="btn small" id="btn-menu" title="メニュー">⚙ メニュー</button>
+    <button class="btn small" id="btn-focus" title="フォーカスモード（UI最小化）">⛶ 集中</button>
   </div>
   <div class="poetic" id="poetic-line">徳は降り、罪は上がる。永遠に。</div>
 </footer>
@@ -362,13 +385,26 @@ footer {
       <p style="margin-top:10px;"><strong style="color:var(--gold);">⚙ カスタマイズ</strong></p>
       <p>メニューから時間 / 言葉モード / 音 などすべて変更可能。<br>
         自由モードで <strong>自分が育てたい言葉</strong>を入れられる。</p>
+      <p style="margin-top:10px;"><strong style="color:var(--gold);">⌨ ショートカット</strong></p>
+      <p style="font-family:var(--mono);font-size:0.72rem;line-height:1.7;">
+        Space: 開始/停止 ／ R: リセット<br>
+        M: メニュー ／ C: 図鑑 ／ S: 統計 ／ P: シェア<br>
+        Esc: モーダル閉じる
+      </p>
+      <p style="margin-top:10px;"><strong style="color:var(--gold);">👆 タッチ</strong></p>
+      <p style="font-size:0.78rem;">
+        ・文字をタップ＆ドラッグで動かせる<br>
+        ・モーダルを下スワイプで閉じる<br>
+        ・⛶ 集中ボタンでフォーカスモード
+      </p>
       <p style="margin-top:10px;font-size:0.72rem;color:var(--muted);">
-        ・データはすべて端末ローカル（送信先なし）<br>
-        ・ホーム画面に追加すれば PWA として動作（オフライン可）
+        データはすべて端末ローカル（送信先なし）。<br>
+        ホーム画面に追加すれば PWA として動作（オフライン可）。
       </p>
     </div>
     <div class="actions menu-actions">
       <button class="btn primary" id="onboard-start">▶ はじめる</button>
+      <button class="btn" id="onboard-skip" style="display:none;">スキップ</button>
     </div>
   </div>
 </div>
@@ -384,11 +420,24 @@ footer {
   </div>
 </div>
 
+<!-- 🏆 達成バッジ -->
+<div id="overlay-badges" class="overlay">
+  <div class="overlay-card collection-card">
+    <div class="overlay-title">🏆 達成バッジ</div>
+    <div class="collection-stats" id="badges-stats"></div>
+    <div class="collection-grid" id="badges-grid" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));"></div>
+    <div class="actions menu-actions">
+      <button class="btn" id="badges-close">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <!-- 📚 ぽもじ図鑑 -->
 <div id="overlay-collection" class="overlay">
   <div class="overlay-card collection-card">
     <div class="overlay-title">📚 ぽもじ図鑑</div>
     <div class="collection-stats" id="collection-stats"></div>
+    <input type="text" id="col-search" placeholder="🔍 検索（文字・タグ）" style="width:100%;background:rgba(0,0,0,0.35);border:1px solid rgba(107,182,255,0.18);color:var(--white);padding:8px 12px;border-radius:3px;font-family:var(--serif);font-size:0.85rem;margin-bottom:8px;">
     <div class="collection-filter">
       <button class="cf-btn active" data-sort="count">出現順</button>
       <button class="cf-btn" data-sort="new">新しい順</button>
@@ -475,6 +524,29 @@ footer {
       <button class="btn small danger" id="preset-del">🗑</button>
     </div>
 
+    <!-- 物理パラメータ -->
+    <div class="section-h">⚛ 物理（高度）</div>
+    <div class="field-row" style="flex-direction:row;align-items:center;gap:8px;font-size:0.7rem;">
+      <label style="flex:0 0 56px;">重力</label>
+      <input type="range" id="phys-gravity" min="0.05" max="0.6" step="0.02" value="0.18" style="flex:1;">
+      <span id="phys-gravity-v" style="font-family:var(--mono);font-size:0.65rem;color:var(--gold);width:40px;">0.18</span>
+    </div>
+    <div class="field-row" style="flex-direction:row;align-items:center;gap:8px;font-size:0.7rem;">
+      <label style="flex:0 0 56px;">反発</label>
+      <input type="range" id="phys-rest" min="0" max="0.8" step="0.05" value="0.25" style="flex:1;">
+      <span id="phys-rest-v" style="font-family:var(--mono);font-size:0.65rem;color:var(--gold);width:40px;">0.25</span>
+    </div>
+    <div class="field-row" style="flex-direction:row;align-items:center;gap:8px;font-size:0.7rem;">
+      <label style="flex:0 0 56px;">摩擦</label>
+      <input type="range" id="phys-fric" min="0.85" max="1" step="0.01" value="0.96" style="flex:1;">
+      <span id="phys-fric-v" style="font-family:var(--mono);font-size:0.65rem;color:var(--gold);width:40px;">0.96</span>
+    </div>
+    <div class="field-row" style="flex-direction:row;align-items:center;gap:8px;font-size:0.7rem;">
+      <label style="flex:0 0 56px;">出現間隔</label>
+      <input type="range" id="phys-spawn" min="500" max="6000" step="100" value="2500" style="flex:1;">
+      <span id="phys-spawn-v" style="font-family:var(--mono);font-size:0.65rem;color:var(--gold);width:40px;">2.5s</span>
+    </div>
+
     <!-- ナレーション -->
     <div class="section-h">📜 ナレーション（任意）</div>
     <label class="mode-row"><input type="checkbox" id="cfg-narration"> <span>完走時に短い詩</span><span class="hint">服牢AI 5本柱から1行</span></label>
@@ -488,6 +560,8 @@ footer {
       <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);padding:6px 4px;letter-spacing:0.08em;">BGM:</span>
       <button class="btn small bgm-btn" data-bgm="none">無音</button>
       <button class="btn small bgm-btn" data-bgm="rain">🌧 雨</button>
+      <button class="btn small bgm-btn" data-bgm="heavy">⛈ 激雨</button>
+      <button class="btn small bgm-btn" data-bgm="night">🌃 夜雨</button>
       <button class="btn small bgm-btn" data-bgm="wind">🌬 風</button>
       <button class="btn small bgm-btn" data-bgm="wave">🌊 波</button>
     </div>
@@ -514,9 +588,10 @@ footer {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v0.5 ／ 作: rainybrainch<br>
+      ぽもじかん v0.9 ／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシーポリシー</a> ／
-      <a href="https://github.com/rainybrainch/pomojikan" target="_blank" rel="noopener" style="color:var(--rain);">ソースコード</a>
+      <a href="https://github.com/rainybrainch/pomojikan" target="_blank" rel="noopener" style="color:var(--rain);">ソースコード</a><br>
+      <button class="btn small" id="btn-tour" style="margin-top:8px;">📖 ツアーをもう一度</button>
     </div>
 
     <div class="actions menu-actions">
@@ -1513,12 +1588,23 @@ function startRain() {
     } else if (STATE.bgm === 'wave') {
       filter.type = 'lowpass';
       filter.frequency.value = 400;
+    } else if (STATE.bgm === 'heavy') {
+      // 激しい雨：高域も残す
+      filter.type = 'lowpass';
+      filter.frequency.value = 2500;
+    } else if (STATE.bgm === 'night') {
+      // 夜の雨：深く静か
+      filter.type = 'lowpass';
+      filter.frequency.value = 800;
     } else {  // rain（既定）
       filter.type = 'lowpass';
       filter.frequency.value = 1200;
     }
     rainGain = audioCtx.createGain();
-    rainGain.gain.value = STATE.bgm === 'wave' ? 0.08 : 0.06;
+    rainGain.gain.value = STATE.bgm === 'heavy' ? 0.10
+                        : STATE.bgm === 'night' ? 0.05
+                        : STATE.bgm === 'wave'  ? 0.08
+                        : 0.06;
     // 波だけ低周波の揺らぎを追加
     if (STATE.bgm === 'wave') {
       const lfo = audioCtx.createOscillator();
@@ -1776,6 +1862,114 @@ function recordVisit() {
   } catch(e) {}
 }
 recordVisit();
+
+// ─── 達成バッジ画面 ───
+function openBadges() {
+  const total = ACHIEVEMENTS.length;
+  const got = Object.keys(STATE.achievements).length;
+  document.getElementById('badges-stats').innerHTML = `
+    <div class="cs-item"><span class="cs-num">${got}</span><span class="cs-label">獲得</span></div>
+    <div class="cs-item"><span class="cs-num">${total}</span><span class="cs-label">全数</span></div>
+    <div class="cs-item"><span class="cs-num">${Math.round(got/total*100)}%</span><span class="cs-label">達成率</span></div>
+  `;
+  document.getElementById('badges-grid').innerHTML = ACHIEVEMENTS.map(a => {
+    const got = STATE.achievements[a.id];
+    return `<div class="badge-card ${got ? 'unlocked' : 'locked'}" title="${got ? '達成: ' + new Date(got).toLocaleDateString('ja-JP') : '未達成'}">
+      <div class="badge-title">${got ? a.title : '🔒 ???'}</div>
+      <div class="badge-when">${got ? new Date(got).toLocaleDateString('ja-JP') : ''}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('overlay-badges').classList.add('show');
+}
+
+// ─── フォーカスモード ───
+function toggleFocus() {
+  document.body.classList.toggle('focus-mode');
+  // フルスクリーン併用
+  if (document.body.classList.contains('focus-mode')) {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(()=>{});
+    }
+    flash('⛶ フォーカスモード（タップで戻る）');
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  }
+}
+
+// ─── タップサウンド（軽量）───
+function playTap() {
+  if (!STATE.soundOn) return;
+  try {
+    chimeCtx = chimeCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = chimeCtx;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    o.connect(g).connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + 0.1);
+  } catch(e) {}
+}
+
+// ─── スワイプで モーダル閉じ ───
+let swipeStart = null;
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('touchstart', (e) => {
+    swipeStart = { y: e.touches[0].clientY, t: Date.now() };
+  });
+  o.addEventListener('touchend', (e) => {
+    if (!swipeStart) return;
+    const dy = e.changedTouches[0].clientY - swipeStart.y;
+    const dt = Date.now() - swipeStart.t;
+    if (dy > 80 && dt < 400) {
+      o.classList.remove('show');
+      playTap();
+    }
+    swipeStart = null;
+  });
+});
+
+document.getElementById('btn-tour')?.addEventListener('click', () => {
+  closeMenu();
+  document.getElementById('overlay-onboard').classList.add('show');
+});
+document.getElementById('btn-badges').addEventListener('click', openBadges);
+document.getElementById('badges-close').addEventListener('click', () => document.getElementById('overlay-badges').classList.remove('show'));
+document.getElementById('btn-focus').addEventListener('click', toggleFocus);
+document.getElementById('col-search')?.addEventListener('input', () => renderCollection(currentSort));
+
+// 全 btn-small にタップ音
+document.querySelectorAll('.btn').forEach(b => b.addEventListener('click', playTap));
+
+// 物理スライダー
+function bindPhysSlider(id, vId, key, fmt) {
+  const el = document.getElementById(id);
+  const vEl = document.getElementById(vId);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    const v = parseFloat(el.value);
+    PHYSICS[key] = v;
+    if (vEl) vEl.textContent = fmt ? fmt(v) : v.toFixed(2);
+    try { localStorage.setItem('pomojikan_phys_' + key, String(v)); } catch(e) {}
+  });
+  // 起動時保存値を適用
+  try {
+    const saved = parseFloat(localStorage.getItem('pomojikan_phys_' + key));
+    if (!isNaN(saved)) {
+      PHYSICS[key] = saved;
+      el.value = saved;
+      if (vEl) vEl.textContent = fmt ? fmt(saved) : saved.toFixed(2);
+    }
+  } catch(e) {}
+}
+bindPhysSlider('phys-gravity', 'phys-gravity-v', 'gravity');
+bindPhysSlider('phys-rest',    'phys-rest-v',    'restitution');
+bindPhysSlider('phys-fric',    'phys-fric-v',    'friction');
+bindPhysSlider('phys-spawn',   'phys-spawn-v',   'spawnInterval', v => (v/1000).toFixed(1) + 's');
 document.getElementById('btn-menu').addEventListener('click', openMenu);
 document.getElementById('btn-collection').addEventListener('click', openCollection);
 document.getElementById('btn-stats').addEventListener('click', openStats);
@@ -1820,8 +2014,11 @@ function openCollection() {
   document.getElementById('overlay-collection').classList.add('show');
   renderCollection(currentSort);
 }
+let currentSearch = '';
 function renderCollection(sortBy) {
   currentSort = sortBy;
+  const searchEl = document.getElementById('col-search');
+  if (searchEl) currentSearch = searchEl.value.trim();
   const entries = Object.entries(STATE.collection);
   const total = entries.length;
   const totalCount = entries.reduce((s, [, v]) => s + v.count, 0);
@@ -1835,8 +2032,14 @@ function renderCollection(sortBy) {
     <div class="cs-item"><span class="cs-num" style="color:#ffffff">${rainbowCount}</span><span class="cs-label">虹</span></div>
   `;
 
+  // 検索フィルタ
+  let filtered = entries;
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    filtered = filtered.filter(([text]) => text.toLowerCase().includes(q));
+  }
   // ソート
-  let sorted = entries.slice();
+  let sorted = filtered.slice();
   switch (sortBy) {
     case 'new':
       sorted.sort(([, a], [, b]) => (b.firstSeen || '').localeCompare(a.firstSeen || ''));
@@ -2147,7 +2350,7 @@ applyFontCSS();
 // 服牢365 Gist 名言を非同期で取得（読雨と連動）
 fetchFukurou365();
 renderTimer();
-console.log('%c🌑 ぽもじかん v0.8 (cycle 4)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c🌑 ぽもじかん v0.9 (cycle 5)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
 console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 
 // PWA
