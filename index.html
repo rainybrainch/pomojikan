@@ -273,6 +273,13 @@ footer {
   position: absolute; top: 2px; left: 4px;
   font-size: 0.55rem;
 }
+.col-item .ci-fav {
+  position: absolute; bottom: 2px; right: 4px;
+  font-size: 0.72rem; color: var(--muted);
+  cursor: pointer; transition: color 0.15s;
+}
+.col-item .ci-fav.on { color: var(--gold); }
+.col-item .ci-fav:hover { color: var(--gold); }
 .col-empty {
   grid-column: 1 / -1;
   text-align: center; padding: 30px 20px;
@@ -291,6 +298,15 @@ footer {
 .bar30 { display: flex; align-items: flex-end; gap: 2px; height: 50px; padding: 4px; }
 .bar30-col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
 .bar30-fill { background: var(--rain); border-radius: 2px 2px 0 0; min-height: 1px; transition: height 0.3s; opacity: 0.7; }
+
+.hourly-heat { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 4px; }
+.heat-cell {
+  border-radius: 2px; padding: 4px 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--mono); min-height: 32px;
+}
+.heat-cell .hh-h { font-size: 0.58rem; color: rgba(255,255,255,0.5); }
+.heat-cell .hh-v { font-size: 0.6rem; color: var(--white); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -378,6 +394,7 @@ footer {
       <button class="cf-btn" data-sort="new">新しい順</button>
       <button class="cf-btn" data-sort="alpha">あいうえお順</button>
       <button class="cf-btn" data-sort="rare">レア順</button>
+      <button class="cf-btn" data-sort="fav">★ お気に入り</button>
     </div>
     <div class="collection-grid" id="collection-grid"></div>
     <div class="actions menu-actions">
@@ -438,6 +455,29 @@ footer {
       <button class="btn small font-btn" data-font="maru">丸ゴシック</button>
       <button class="btn small font-btn" data-font="gothic">角ゴシック</button>
     </div>
+
+    <!-- カラーパレットカスタム -->
+    <div class="section-h">🎨 カラーカスタム（任意）</div>
+    <div class="field-row" style="flex-direction:row;align-items:center;gap:8px;">
+      <label style="flex:0 0 70px;">徳</label>
+      <input type="color" id="pal-virtue" value="#c9a84c" style="width:50px;height:30px;border:none;background:none;cursor:pointer;">
+      <label style="flex:0 0 30px;margin-left:8px;">罪</label>
+      <input type="color" id="pal-sin" value="#ff6b6b" style="width:50px;height:30px;border:none;background:none;cursor:pointer;">
+      <button class="btn small" id="pal-reset" style="margin-left:auto;">↺</button>
+    </div>
+
+    <!-- プリセット -->
+    <div class="section-h">💾 プリセット</div>
+    <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn small" id="preset-save">＋ 現状を保存</button>
+      <select id="preset-list" style="flex:1;background:rgba(0,0,0,0.35);border:1px solid rgba(107,182,255,0.18);color:var(--white);padding:6px 10px;border-radius:3px;font-family:var(--mono);font-size:0.72rem;"><option value="">プリセット…</option></select>
+      <button class="btn small" id="preset-load">▶ 読込</button>
+      <button class="btn small danger" id="preset-del">🗑</button>
+    </div>
+
+    <!-- ナレーション -->
+    <div class="section-h">📜 ナレーション（任意）</div>
+    <label class="mode-row"><input type="checkbox" id="cfg-narration"> <span>完走時に短い詩</span><span class="hint">服牢AI 5本柱から1行</span></label>
 
     <!-- 音 -->
     <div class="section-h">🔊 音と通知</div>
@@ -515,7 +555,11 @@ const KEY_ACHIEVE    = 'pomojikan_achievements';  // { id: timestamp }
 const KEY_DAILY_CHL  = 'pomojikan_daily_challenge';  // { date, target, count, done }
 const KEY_THEME      = 'pomojikan_theme';
 const KEY_BGM        = 'pomojikan_bgm';
-const KEY_FONT       = 'pomojikan_font';   // 'serif'|'maru'|'gothic'
+const KEY_FONT       = 'pomojikan_font';
+const KEY_FAV        = 'pomojikan_favorites';   // { text: true }
+const KEY_HOURLY     = 'pomojikan_hourly';      // [0..23] 24要素配列
+const KEY_PALETTE    = 'pomojikan_palette';     // { virtue, sin, accent }
+const KEY_PRESETS    = 'pomojikan_presets';     // [{ name, theme, font, mode, work, rest }]
 
 const STATE = {
   phase: 'work',        // 'work' | 'rest'
@@ -539,7 +583,11 @@ const STATE = {
   dailyChallenge: null, // { date, target, count, done }
   theme: 'zaitoku',
   bgm: 'rain',
-  font: 'serif'         // 'serif'|'maru'|'gothic'
+  font: 'serif',
+  favorites: {},        // { '謙虚': true }
+  hourly: new Array(24).fill(0),  // 完走の時間帯
+  palette: null,        // { virtue, sin, accent } 任意
+  presets: []           // [{ name, ... }]
 };
 
 // ─── フォント切替 ───
@@ -818,6 +866,13 @@ function load() {
   STATE.theme = localStorage.getItem(KEY_THEME) || 'zaitoku';
   STATE.bgm = localStorage.getItem(KEY_BGM) || 'rain';
   STATE.font = localStorage.getItem(KEY_FONT) || 'serif';
+  try { STATE.favorites = JSON.parse(localStorage.getItem(KEY_FAV) || '{}'); } catch(e) { STATE.favorites = {}; }
+  try {
+    const h = JSON.parse(localStorage.getItem(KEY_HOURLY) || 'null');
+    STATE.hourly = (Array.isArray(h) && h.length === 24) ? h : new Array(24).fill(0);
+  } catch(e) { STATE.hourly = new Array(24).fill(0); }
+  try { STATE.palette = JSON.parse(localStorage.getItem(KEY_PALETTE) || 'null'); } catch(e) { STATE.palette = null; }
+  try { STATE.presets = JSON.parse(localStorage.getItem(KEY_PRESETS) || '[]'); } catch(e) { STATE.presets = []; }
   // URL クエリで設定上書き（モード共有用）
   const usp = new URLSearchParams(location.search);
   if (usp.has('theme') && THEMES[usp.get('theme')]) { STATE.theme = usp.get('theme'); try { localStorage.setItem(KEY_THEME, STATE.theme); } catch(e){} }
@@ -994,8 +1049,12 @@ function completePhase() {
     STATE.total++;
     save();
     updateStreak();
+    // 時間帯カウント（完走時の時刻）
+    STATE.hourly[new Date().getHours()]++;
+    try { localStorage.setItem(KEY_HOURLY, JSON.stringify(STATE.hourly)); } catch(e) {}
     checkAchievements();
     if (STATE.soundOn) playChime();
+    speakNarration();
     STATE.phase = 'rest';
     STATE.remaining = STATE.restMin * 60;
     STATE.endAt = Date.now() + STATE.remaining * 1000;
@@ -1366,6 +1425,67 @@ function loop() {
 }
 loop();
 
+// ─── タッチ/マウスで文字をドラッグ（物理ドラッグ）───
+let dragging = null;
+let dragLastX = 0, dragLastY = 0, dragLastT = 0;
+function getEventPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches && e.touches[0]) return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+function findBodyAt(x, y) {
+  // 後ろのものを優先（飛行中＞静止）
+  for (let i = field.bodies.length - 1; i >= 0; i--) {
+    const b = field.bodies[i];
+    const dx = b.x - x, dy = b.y - y;
+    if (Math.hypot(dx, dy) < b.r) return b;
+  }
+  return null;
+}
+canvas.style.pointerEvents = 'auto';
+function onDown(e) {
+  if (!STATE.running && field.bodies.filter(b => b.settled).length === 0) return;
+  const p = getEventPos(e);
+  const b = findBodyAt(p.x, p.y);
+  if (b) {
+    dragging = b;
+    b.settled = false;
+    b.vx = 0; b.vy = 0;
+    dragLastX = p.x; dragLastY = p.y;
+    dragLastT = performance.now();
+    e.preventDefault();
+  }
+}
+function onMove(e) {
+  if (!dragging) return;
+  const p = getEventPos(e);
+  dragging.x = p.x;
+  dragging.y = p.y;
+  const now = performance.now();
+  const dt = Math.max(1, now - dragLastT);
+  // フリック用に速度を保持
+  dragging._releaseVx = (p.x - dragLastX) / dt * 16;  // 16ms = 1フレーム想定
+  dragging._releaseVy = (p.y - dragLastY) / dt * 16;
+  dragLastX = p.x; dragLastY = p.y; dragLastT = now;
+  e.preventDefault();
+}
+function onUp() {
+  if (!dragging) return;
+  // 投げた速度を適用
+  dragging.vx = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, dragging._releaseVx || 0));
+  dragging.vy = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, dragging._releaseVy || 0));
+  dragging.vrot = (dragging._releaseVx || 0) * 0.02;
+  if (navigator.vibrate && STATE.vibrateOn) navigator.vibrate(8);
+  dragging = null;
+}
+canvas.addEventListener('mousedown', onDown);
+canvas.addEventListener('mousemove', onMove);
+canvas.addEventListener('mouseup', onUp);
+canvas.addEventListener('mouseleave', onUp);
+canvas.addEventListener('touchstart', onDown, { passive: false });
+canvas.addEventListener('touchmove', onMove, { passive: false });
+canvas.addEventListener('touchend', onUp);
+
 // ═══════════════════════════════════════════════════
 // 雨音：Web Audio API（ホワイトノイズ → ローパス）
 // ═══════════════════════════════════════════════════
@@ -1455,6 +1575,13 @@ function openMenu() {
   document.querySelectorAll('.font-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.font === STATE.font);
   });
+  // パレット
+  if (STATE.palette) {
+    if (STATE.palette.virtue) document.getElementById('pal-virtue').value = STATE.palette.virtue;
+    if (STATE.palette.sin)    document.getElementById('pal-sin').value = STATE.palette.sin;
+  }
+  // プリセット
+  refreshPresetList();
   // BGM
   document.querySelectorAll('.bgm-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.bgm === STATE.bgm);
@@ -1518,6 +1645,29 @@ document.querySelectorAll('.font-btn').forEach(btn => {
     applyFontCSS();
   });
 });
+// パレットイベント
+document.getElementById('pal-virtue')?.addEventListener('change', (e) => {
+  STATE.palette = STATE.palette || {};
+  STATE.palette.virtue = e.target.value;
+  try { localStorage.setItem(KEY_PALETTE, JSON.stringify(STATE.palette)); } catch(_){}
+  applyThemeCSS();
+});
+document.getElementById('pal-sin')?.addEventListener('change', (e) => {
+  STATE.palette = STATE.palette || {};
+  STATE.palette.sin = e.target.value;
+  try { localStorage.setItem(KEY_PALETTE, JSON.stringify(STATE.palette)); } catch(_){}
+  applyThemeCSS();
+});
+document.getElementById('pal-reset')?.addEventListener('click', () => {
+  STATE.palette = null;
+  try { localStorage.removeItem(KEY_PALETTE); } catch(_){}
+  applyThemeCSS();
+  flash('🎨 パレットをリセット');
+});
+// プリセット
+document.getElementById('preset-save')?.addEventListener('click', savePreset);
+document.getElementById('preset-load')?.addEventListener('click', loadPreset);
+document.getElementById('preset-del')?.addEventListener('click', deletePreset);
 document.querySelectorAll('.bgm-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     STATE.bgm = btn.dataset.bgm;
@@ -1527,10 +1677,105 @@ document.querySelectorAll('.bgm-btn').forEach(btn => {
   });
 });
 function applyThemeCSS() {
+  // パレットカスタムがあれば優先
+  if (STATE.palette && STATE.palette.virtue && STATE.palette.sin) {
+    document.documentElement.style.setProperty('--gold', STATE.palette.virtue);
+    document.documentElement.style.setProperty('--sin', STATE.palette.sin);
+    return;
+  }
   const t = themeColors();
   document.documentElement.style.setProperty('--gold', t.virtue);
   document.documentElement.style.setProperty('--sin', t.sin);
 }
+
+// ─── ナレーション（5本柱から1行）───
+const NARRATIONS = [
+  '砂と雨の世界を、作り続ける。',
+  '善悪ではない。磁力の、方向の違い。',
+  '牢に閉じこもって、作り込む。',
+  'アナログと、デジタルのキメラ。',
+  '恵みの雨は、誰の上にも降る。',
+  '点と点は、線になる。',
+  'ひたすら作業している人になりたい。',
+  'ミクロを365日積めば、マクロの重力になる。',
+  '廃人って、何かに特化しているってことだからね。',
+  '土台のしっかりした仙人のようなポジション。'
+];
+function speakNarration() {
+  if (!document.getElementById('cfg-narration')?.checked) return;
+  const text = NARRATIONS[Math.floor(Math.random() * NARRATIONS.length)];
+  if ('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ja-JP';
+    u.rate = 0.85;
+    u.volume = 0.6;
+    try { speechSynthesis.speak(u); } catch(e) {}
+  }
+  flash('📜 ' + text);
+}
+
+// ─── プリセット ───
+function savePreset() {
+  const name = prompt('プリセット名を入れて：');
+  if (!name) return;
+  STATE.presets.push({
+    name, theme: STATE.theme, font: STATE.font, mode: STATE.wordMode,
+    work: STATE.workMin, rest: STATE.restMin, bgm: STATE.bgm,
+    palette: STATE.palette, createdAt: new Date().toISOString()
+  });
+  try { localStorage.setItem(KEY_PRESETS, JSON.stringify(STATE.presets)); } catch(e) {}
+  refreshPresetList();
+  flash(`💾 「${name}」を保存`);
+}
+function loadPreset() {
+  const sel = document.getElementById('preset-list');
+  const idx = parseInt(sel.value, 10);
+  if (isNaN(idx) || !STATE.presets[idx]) return;
+  const p = STATE.presets[idx];
+  STATE.theme = p.theme; STATE.font = p.font; STATE.wordMode = p.mode;
+  STATE.workMin = p.work; STATE.restMin = p.rest;
+  STATE.preset = `${p.work}/${p.rest}`;
+  STATE.bgm = p.bgm || 'rain';
+  STATE.palette = p.palette || null;
+  save();
+  try {
+    localStorage.setItem(KEY_THEME, STATE.theme);
+    localStorage.setItem(KEY_FONT, STATE.font);
+    localStorage.setItem(KEY_BGM, STATE.bgm);
+    if (STATE.palette) localStorage.setItem(KEY_PALETTE, JSON.stringify(STATE.palette));
+    else localStorage.removeItem(KEY_PALETTE);
+  } catch(e) {}
+  applyThemeCSS();
+  applyFontCSS();
+  flash(`▶ 「${p.name}」を適用`);
+}
+function deletePreset() {
+  const sel = document.getElementById('preset-list');
+  const idx = parseInt(sel.value, 10);
+  if (isNaN(idx) || !STATE.presets[idx]) return;
+  if (!confirm(`「${STATE.presets[idx].name}」を削除？`)) return;
+  STATE.presets.splice(idx, 1);
+  try { localStorage.setItem(KEY_PRESETS, JSON.stringify(STATE.presets)); } catch(e) {}
+  refreshPresetList();
+}
+function refreshPresetList() {
+  const sel = document.getElementById('preset-list');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">プリセット…</option>' +
+    STATE.presets.map((p, i) => `<option value="${i}">${escape(p.name)}</option>`).join('');
+}
+
+// ─── 軽量アクセス記録（ローカルのみ・送信なし） ───
+function recordVisit() {
+  try {
+    const k = 'pomojikan_visits';
+    const arr = JSON.parse(localStorage.getItem(k) || '[]');
+    arr.push(new Date().toISOString());
+    if (arr.length > 100) arr.shift();
+    localStorage.setItem(k, JSON.stringify(arr));
+  } catch(e) {}
+}
+recordVisit();
 document.getElementById('btn-menu').addEventListener('click', openMenu);
 document.getElementById('btn-collection').addEventListener('click', openCollection);
 document.getElementById('btn-stats').addEventListener('click', openStats);
@@ -1570,11 +1815,13 @@ document.querySelectorAll('.cf-btn').forEach(btn => {
 });
 
 // ─── 📚 ぽもじ図鑑 ───
+let currentSort = 'count';
 function openCollection() {
   document.getElementById('overlay-collection').classList.add('show');
-  renderCollection('count');
+  renderCollection(currentSort);
 }
 function renderCollection(sortBy) {
+  currentSort = sortBy;
   const entries = Object.entries(STATE.collection);
   const total = entries.length;
   const totalCount = entries.reduce((s, [, v]) => s + v.count, 0);
@@ -1606,6 +1853,10 @@ function renderCollection(sortBy) {
         return b.count - a.count;
       });
       break;
+    case 'fav':
+      sorted = sorted.filter(([t]) => STATE.favorites[t]);
+      sorted.sort(([, a], [, b]) => b.count - a.count);
+      break;
     case 'count':
     default:
       sorted.sort(([, a], [, b]) => b.count - a.count);
@@ -1624,18 +1875,71 @@ function renderCollection(sortBy) {
     else if (v.type === 'virtue')  classes.push('col-virtue');
     else                            classes.push('col-sin');
     const rareIcon = v.rare === 'rainbow' ? '🌈' : v.rare === 'gold' ? '✨' : '';
+    const fav = STATE.favorites[text] ? '★' : '☆';
+    const favCls = STATE.favorites[text] ? 'on' : '';
     return `
       <div class="${classes.join(' ')}" title="${escape(text)} ── Lv ${lv} ／ ${v.count}回">
         ${rareIcon ? `<span class="ci-rare">${rareIcon}</span>` : ''}
         <span class="ci-lv">Lv${lv}</span>
         <span class="ci-text">${escape(text)}</span>
         <span class="ci-count">×${v.count}</span>
+        <span class="ci-fav ${favCls}" onclick="event.stopPropagation();toggleFavorite('${escape(text).replace(/'/g, "\\'")}')">${fav}</span>
       </div>
     `;
   }).join('');
 }
 function escape(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ─── お気に入り（図鑑からトグル） ───
+function toggleFavorite(text) {
+  if (STATE.favorites[text]) delete STATE.favorites[text];
+  else STATE.favorites[text] = true;
+  try { localStorage.setItem(KEY_FAV, JSON.stringify(STATE.favorites)); } catch(e) {}
+  // 再描画
+  const overlay = document.getElementById('overlay-collection');
+  if (overlay && overlay.classList.contains('show')) renderCollection(currentSort);
+}
+
+// ─── CSV エクスポート（コレクション） ───
+function exportCSV() {
+  const headers = ['text','type','count','firstSeen','lastSeen','rare','level','favorite'];
+  const rows = [headers.join(',')];
+  for (const [text, v] of Object.entries(STATE.collection)) {
+    const lv = getLevel(v.count);
+    const fav = STATE.favorites[text] ? 'yes' : '';
+    const row = [text, v.type || '', v.count, v.firstSeen || '', v.lastSeen || '', v.rare || '', lv, fav]
+      .map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',');
+    rows.push(row);
+  }
+  const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pomojikan_collection_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  flash('📊 CSV を書き出しました');
+}
+
+// ─── 月別マイルストーン報告 ───
+function showMonthlyReport() {
+  const today = new Date();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+  const monthKey = year + '-' + String(month + 1).padStart(2, '0');
+  let monthTotal = 0, dayCount = 0, maxDay = 0;
+  for (const [date, count] of Object.entries(STATE.daily)) {
+    if (date.startsWith(monthKey)) {
+      monthTotal += count;
+      dayCount++;
+      if (count > maxDay) maxDay = count;
+    }
+  }
+  const newWords = Object.values(STATE.collection).filter(v => v.firstSeen && v.firstSeen.startsWith(monthKey)).length;
+  const newAch = Object.entries(STATE.achievements).filter(([_, t]) => t && t.startsWith(monthKey)).length;
+  flash(`📅 ${monthKey} ── ${monthTotal}完走 / ${dayCount}日活動 / 新${newWords}種 / 🏆${newAch}個`);
 }
 
 // ─── データエクスポート（JSON ダウンロード）───
@@ -1768,6 +2072,24 @@ function openStats() {
     <div class="bar30">
       ${days30.map(d => `<div class="bar30-col" title="${d.key}: ${d.count}"><div class="bar30-fill" style="height:${(d.count/max30)*100}%"></div></div>`).join('')}
     </div>
+    <div class="section-h" style="margin-top:14px;">🕐 時間帯ヒートマップ（一番集中する時間）</div>
+    <div class="hourly-heat">
+      ${(() => {
+        const maxH = Math.max(1, ...STATE.hourly);
+        return STATE.hourly.map((v, h) => {
+          const ratio = v / maxH;
+          const opacity = v === 0 ? 0.06 : (0.15 + ratio * 0.85);
+          return `<div class="heat-cell" title="${h}時: ${v}完走" style="background:rgba(201,168,76,${opacity});">
+            <span class="hh-h">${h}</span>
+            <span class="hh-v">${v}</span>
+          </div>`;
+        }).join('');
+      })()}
+    </div>
+    <div style="margin-top:14px;text-align:center;">
+      <button class="btn small" onclick="showMonthlyReport()">📅 月別レポート</button>
+      <button class="btn small" onclick="exportCSV()">📊 CSV書き出し</button>
+    </div>
   `;
   document.getElementById('overlay-stats').classList.add('show');
 }
@@ -1825,7 +2147,7 @@ applyFontCSS();
 // 服牢365 Gist 名言を非同期で取得（読雨と連動）
 fetchFukurou365();
 renderTimer();
-console.log('%c🌑 ぽもじかん v0.7 (cycle 3)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c🌑 ぽもじかん v0.8 (cycle 4)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
 console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 
 // PWA
