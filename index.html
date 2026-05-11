@@ -55,7 +55,14 @@ body {
   font-family: var(--serif); line-height: 1.5;
   display: flex; flex-direction: column;
   position: fixed; inset: 0;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  overscroll-behavior: none;
 }
+header { padding-top: max(14px, env(safe-area-inset-top)); }
+footer { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
 
 /* 背景の星粒 */
 body::before {
@@ -85,11 +92,17 @@ main {
 }
 
 .timer {
-  font-family: var(--mono); font-size: 4.5rem; font-weight: 700;
-  color: var(--white); letter-spacing: 0.08em;
-  text-shadow: 0 0 20px rgba(201,168,76,0.3);
+  font-family: var(--mono); font-size: 5.5rem; font-weight: 700;
+  color: var(--white); letter-spacing: 0.06em;
+  text-shadow: 0 0 24px rgba(201,168,76,0.35);
   pointer-events: auto;
+  line-height: 1;
 }
+@media (max-width: 360px) {
+  .timer { font-size: 4.5rem; }
+}
+.phase-label.longrest { color: #6bff95; }
+.phase-label { font-size: 0.78rem; padding: 6px 14px; background: rgba(0,0,0,0.18); border-radius: 16px; }
 
 .phase-label {
   font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.25em;
@@ -142,8 +155,11 @@ footer {
 .stats .num { color: var(--gold); font-weight: 700; font-size: 0.85rem; margin-right: 4px; }
 .settings {
   display: flex; justify-content: center; gap: 6px;
-  pointer-events: auto;
+  pointer-events: auto; flex-wrap: wrap;
 }
+.settings-row1 { margin-bottom: 6px; }
+.settings-row2 { gap: 8px; }
+.settings-row2 .btn.small { width: 44px; min-width: 44px; padding: 8px 0; }
 .settings .btn.small { color: var(--muted); border-color: rgba(107,182,255,0.18); }
 .settings .btn.small.active { color: var(--gold); border-color: var(--gold); }
 
@@ -399,16 +415,18 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <div><span class="num" id="today">0</span> 今日の完走</div>
     <div><span class="num" id="total">0</span> 累計</div>
   </div>
-  <div class="settings">
+  <div class="settings settings-row1">
     <button class="btn small" data-preset="25/5">25/5</button>
     <button class="btn small" data-preset="50/10">50/10</button>
     <button class="btn small" data-preset="15/3">15/3</button>
-    <button class="btn small" id="btn-collection" title="ぽもじ図鑑">📚 図鑑</button>
-    <button class="btn small" id="btn-badges" title="達成バッジ">🏆 達成</button>
-    <button class="btn small" id="btn-stats" title="統計">📊 統計</button>
-    <button class="btn small" id="btn-share" title="シェア">📤 シェア</button>
-    <button class="btn small" id="btn-menu" title="メニュー">⚙ メニュー</button>
-    <button class="btn small" id="btn-focus" title="フォーカスモード（UI最小化）">⛶ 集中</button>
+    <button class="btn small" id="btn-focus" title="集中モード（UI 最小化）">⛶ 集中</button>
+  </div>
+  <div class="settings settings-row2">
+    <button class="btn small" id="btn-collection" title="ぽもじ図鑑">📚</button>
+    <button class="btn small" id="btn-badges" title="達成バッジ">🏆</button>
+    <button class="btn small" id="btn-stats" title="統計">📊</button>
+    <button class="btn small" id="btn-share" title="シェア">📤</button>
+    <button class="btn small" id="btn-menu" title="メニュー">⚙</button>
   </div>
   <div class="poetic" id="poetic-line">ゆるく、文字を積もう。</div>
 </footer>
@@ -645,7 +663,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.3（伝説のぽもじ）／ 作: rainybrainch<br>
+      ぽもじかん v1.4（ポモドーロ本気版）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -728,11 +746,15 @@ const KEY_PALETTE    = 'pomojikan_palette';     // { virtue, sin, accent }
 const KEY_PRESETS    = 'pomojikan_presets';     // [{ name, theme, font, mode, work, rest }]
 
 const STATE = {
-  phase: 'work',        // 'work' | 'rest'
-  remaining: 25 * 60,   // 秒
+  phase: 'work',        // 'work' | 'rest' | 'longRest'
+  remaining: 25 * 60,
   running: false,
   preset: '25/5',
   workMin: 25, restMin: 5,
+  longRestMin: 15,            // 長休憩（標準ポモドーロ）
+  sessionsBeforeLong: 4,      // 何セッションで長休憩
+  currentSession: 1,          // 現在のセッション番号 1-4
+  interrupts: 0,              // 中断回数（集中度メーター用）
   today: 0, total: 0,
   todayDate: new Date().toISOString().slice(0,10),
   soundOn: false,
@@ -1081,6 +1103,7 @@ function load() {
   STATE.theme = localStorage.getItem(KEY_THEME) || 'zaitoku';
   STATE.bgm = localStorage.getItem(KEY_BGM) || 'rain';
   STATE.font = localStorage.getItem(KEY_FONT) || 'serif';
+  STATE.interrupts = parseInt(localStorage.getItem('pomojikan_interrupts') || '0', 10);
   try { STATE.favorites = JSON.parse(localStorage.getItem(KEY_FAV) || '{}'); } catch(e) { STATE.favorites = {}; }
   try {
     const h = JSON.parse(localStorage.getItem(KEY_HOURLY) || 'null');
@@ -1210,8 +1233,11 @@ function renderTimer() {
   document.getElementById('timer').textContent = fmt(STATE.remaining);
   const ph = document.getElementById('phase');
   if (STATE.phase === 'work') {
-    ph.textContent = '🎯 集中';
+    ph.textContent = `🎯 集中  ${STATE.currentSession}/${STATE.sessionsBeforeLong}`;
     ph.className = 'phase-label work';
+  } else if (STATE.phase === 'longRest') {
+    ph.textContent = '🌳 長休憩';
+    ph.className = 'phase-label longrest';
   } else {
     ph.textContent = '☕ 休憩';
     ph.className = 'phase-label rest';
@@ -1256,36 +1282,47 @@ function pause() {
 }
 function toggle() { STATE.running ? pause() : start(); }
 function reset() {
+  // タイマー進行中の場合は中断としてカウント
+  if (STATE.running && STATE.phase === 'work' && STATE.remaining < STATE.workMin * 60) {
+    STATE.interrupts++;
+    try { localStorage.setItem('pomojikan_interrupts', String(STATE.interrupts)); } catch(e) {}
+  }
   pause();
   STATE.phase = 'work';
   STATE.remaining = STATE.workMin * 60;
-  field.particles = [];
-  field.pile = []; field.bubbles = [];
+  STATE.currentSession = 1;
+  field.bodies = [];
   localStorage.removeItem(KEY_END);
   localStorage.removeItem(KEY_PHASE);
   renderTimer();
 }
 function completePhase() {
   if (STATE.phase === 'work') {
-    // 作業完了 → 完走+1
+    // 集中完了 → 完走+1・セッション数++
     STATE.today++;
     STATE.total++;
     save();
     updateStreak();
-    // 時間帯カウント（完走時の時刻）
     STATE.hourly[new Date().getHours()]++;
     try { localStorage.setItem(KEY_HOURLY, JSON.stringify(STATE.hourly)); } catch(e) {}
     checkAchievements();
     if (STATE.soundOn) playChime();
     speakNarration();
-    STATE.phase = 'rest';
-    STATE.remaining = STATE.restMin * 60;
+    // 4 セッション完了で長休憩
+    const isLong = STATE.currentSession >= STATE.sessionsBeforeLong;
+    STATE.phase = isLong ? 'longRest' : 'rest';
+    STATE.remaining = (isLong ? STATE.longRestMin : STATE.restMin) * 60;
     STATE.endAt = Date.now() + STATE.remaining * 1000;
     localStorage.setItem(KEY_END, STATE.endAt);
     localStorage.setItem(KEY_PHASE, STATE.phase);
-    const cheers = ['🌸 おつかれ！', '🌿 いいぞ！', '☕ 休憩しよ', '⭐ 完走+1', '✨ ナイス！', '🌧 ひと段落'];
-    flash(cheers[Math.floor(Math.random() * cheers.length)] + ` (${STATE.today}回目)`);
-    notify('🌸 おつかれ', `今日 ${STATE.today} 回目／累計 ${STATE.total}回。${STATE.restMin}分やすみましょ。`);
+    if (isLong) {
+      flash(`🌳 長休憩！ ${STATE.longRestMin}分 ゆっくり`);
+      notify('🌳 長休憩 開始', `${STATE.sessionsBeforeLong} セッション完走！ ${STATE.longRestMin}分 ゆっくり休憩。`);
+    } else {
+      const cheers = ['🌸 おつかれ！', '🌿 いいぞ！', '☕ 休憩しよ', '⭐ 完走+1', '✨ ナイス！'];
+      flash(cheers[Math.floor(Math.random() * cheers.length)] + ` (${STATE.currentSession}/${STATE.sessionsBeforeLong})`);
+      notify('🌸 おつかれ', `セッション ${STATE.currentSession}/${STATE.sessionsBeforeLong}。${STATE.restMin}分休憩。`);
+    }
   } else {
     // 休憩完了 → 作業へ
     STATE.phase = 'work';
@@ -1296,6 +1333,13 @@ function completePhase() {
     const restarts = ['☂ さあ、もう一回', '🌧 ぽもじ再開', '✨ 次いってみよう', '🌿 ぼちぼちと'];
     flash(restarts[Math.floor(Math.random() * restarts.length)]);
     notify('☂ 再開', `${STATE.workMin}分のぽもじ、もう一回ゆるく。`);
+    // セッション番号進める（長休憩明けは 1 にリセット）
+    if (STATE.phase === 'longRest' || (STATE.phase === 'rest' && STATE.currentSession >= STATE.sessionsBeforeLong)) {
+      STATE.currentSession = 1;
+    } else if (STATE.phase === 'rest') {
+      STATE.currentSession++;
+    }
+    // phase 設定（既存コードで上書きされる前にここでも明示）
   }
   // バイブ（対応端末）
   if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
@@ -1880,7 +1924,43 @@ function stopRain() {
 // イベント
 // ═══════════════════════════════════════════════════
 document.getElementById('btn-toggle').addEventListener('click', toggle);
-document.getElementById('btn-reset').addEventListener('click', reset);
+
+// リセットは長押し 0.8秒で実行（誤タップ防止）
+(function setupResetLongPress() {
+  const btn = document.getElementById('btn-reset');
+  let tid = null;
+  let progress = 0;
+  function start() {
+    if (!STATE.running && STATE.remaining === STATE.workMin * 60) {
+      // 既に初期状態 → 即実行
+      reset();
+      return;
+    }
+    progress = 0;
+    btn.style.background = 'linear-gradient(90deg, var(--hp) 0%, transparent 0%)';
+    tid = setInterval(() => {
+      progress += 5;
+      btn.style.background = `linear-gradient(90deg, var(--hp) ${progress}%, transparent ${progress}%)`;
+      if (progress >= 100) {
+        clearInterval(tid); tid = null;
+        btn.style.background = '';
+        if (navigator.vibrate && STATE.vibrateOn) navigator.vibrate(30);
+        reset();
+        flash('↺ リセット');
+      }
+    }, 40);  // 40ms * 20回 = 800ms で 100%
+  }
+  function cancel() {
+    if (tid) { clearInterval(tid); tid = null; }
+    btn.style.background = '';
+  }
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('touchstart', (e) => { e.preventDefault(); start(); }, { passive: false });
+  btn.addEventListener('mouseup', cancel);
+  btn.addEventListener('mouseleave', cancel);
+  btn.addEventListener('touchend', cancel);
+  btn.addEventListener('touchcancel', cancel);
+})();
 document.getElementById('btn-sound').addEventListener('click', () => {
   STATE.soundOn = !STATE.soundOn;
   save();
@@ -2236,6 +2316,30 @@ document.getElementById('col-search')?.addEventListener('input', () => renderCol
 // 全 btn-small にタップ音
 document.querySelectorAll('.btn').forEach(b => b.addEventListener('click', playTap));
 
+// ─── 左右スワイプでプリセット切替 ───
+(function setupSwipePresets() {
+  const main = document.querySelector('main');
+  const presets = ['25/5', '50/10', '15/3'];
+  let sx = 0, sy = 0, st = 0;
+  main.addEventListener('touchstart', (e) => {
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now();
+  }, { passive: true });
+  main.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    const dt = Date.now() - st;
+    if (dt > 500) return;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    // 水平スワイプ
+    const idx = presets.indexOf(STATE.preset);
+    const next = dx > 0 ? presets[(idx - 1 + presets.length) % presets.length]
+                        : presets[(idx + 1) % presets.length];
+    applyPreset(next, true);
+    flash(`◀ ${next} ▶`);
+    if (navigator.vibrate && STATE.vibrateOn) navigator.vibrate(15);
+  });
+})();
+
 // 物理スライダー
 function bindPhysSlider(id, vId, key, fmt) {
   const el = document.getElementById(id);
@@ -2557,6 +2661,10 @@ function openStats() {
       <div class="stats-num"><span class="num">${monthSum}</span> 今月</div>
       <div class="stats-num"><span class="num">${STATE.streak.current}</span> 🔥 連続</div>
       <div class="stats-num"><span class="num">${STATE.streak.max}</span> 最高</div>
+    </div>
+    <div class="stats-row" style="margin-top:6px;">
+      <div class="stats-num"><span class="num">${STATE.interrupts}</span> 中断</div>
+      <div class="stats-num"><span class="num">${STATE.total > 0 ? Math.round((STATE.total / (STATE.total + STATE.interrupts)) * 100) : 100}%</span> 集中率</div>
     </div>
     <div class="section-h" style="margin-top:14px;">📅 直近7日</div>
     <div class="bar7">
