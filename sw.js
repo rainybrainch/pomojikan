@@ -6,7 +6,7 @@
 //   - api.github.com: ネットワークのみ（Gist 同期）
 //   - その他 cross-origin: network-first
 
-const CACHE_NAME = 'pomojikan-v10';
+const CACHE_NAME = 'pomojikan-v11';
 const PRECACHE = [
   './',
   './index.html',

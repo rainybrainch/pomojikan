@@ -381,11 +381,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 <header>
   <div class="title">🌑 ぽもじかん</div>
-  <div class="subtitle">PMJ  ／  文字が降ってくる作業タイマー</div>
+  <div class="subtitle">PMJ  ／  ゆるく文字を積もう</div>
 </header>
 
 <main>
-  <div class="phase-label work" id="phase">作業 ── 徳が降る</div>
+  <div class="phase-label work" id="phase">ぽもじ中 ☂</div>
   <div class="timer" id="timer">25:00</div>
   <div class="controls" role="group" aria-label="タイマーコントロール">
     <button class="btn primary" id="btn-toggle" aria-label="タイマーの開始または一時停止（スペースキーでも操作可）">▶ 開始</button>
@@ -410,7 +410,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <button class="btn small" id="btn-menu" title="メニュー">⚙ メニュー</button>
     <button class="btn small" id="btn-focus" title="フォーカスモード（UI最小化）">⛶ 集中</button>
   </div>
-  <div class="poetic" id="poetic-line">徳は降り、罪は上がる。永遠に。</div>
+  <div class="poetic" id="poetic-line">ゆるく、文字を積もう。</div>
 </footer>
 
 <!-- 🚀 初回オンボーディング -->
@@ -516,10 +516,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
     <!-- 言葉モード -->
     <div class="section-h">📜 落ちる言葉のモード</div>
-    <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"> <span>🌑 七大罪徳</span><span class="hint">既定 ── 七大罪/七徳が降る</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気</span><span class="hint">「勉強する！」「頑張るぞ！」「やるぞ！」</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほん</span><span class="hint">「のんびり」「お茶しよう」「ぼーっと」</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"> <span>🌑 七大罪徳</span><span class="hint">傲慢→謙虚など七罪と七徳が降る</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自由</span><span class="hint">自分の言葉を入れる（作業用/休憩用 別）</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365</span><span class="hint">読雨内の名言がランダムに降る（仮接続）</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 混在</span><span class="hint">七罪徳＋自由＋名言 全部混ぜる</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365</span><span class="hint">読雨内の名言がランダムに降る</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋罪徳＋名言 全部</span></label>
 
     <div id="custom-words-box" style="display:none;">
       <div class="section-h" style="margin-top:8px;">✏ 自由の言葉（カンマ区切り・最大20個）</div>
@@ -643,7 +645,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.0 ／ 作: rainybrainch<br>
+      ぽもじかん v1.1（のほほん版）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -670,6 +672,32 @@ const warn = DEBUG ? console.warn.bind(console) : () => {};
 // ─── 七大罪 × 七徳 ───
 const VIRTUES = ['謙虚', '親切', '勤勉', '純潔', '慈悲', '節制', '忍耐'];
 const SINS    = ['傲慢', '嫉妬', '怠惰', '色欲', '強欲', '暴食', '憤怒'];
+
+// やる気モード（作業中の掛け声）
+const YARUKI_WORK = [
+  '勉強する！', '仕事する！', '頑張るぞ！', '集中！',
+  'やるぞ！', '進め！', 'いいぞ！', 'もうひとつ！',
+  'やればできる', 'いまだ！', '積み上げ', '一歩ずつ',
+  '今日も', 'できる', '進む', 'やる'
+];
+// やる気モード（休憩中の掛け声）
+const YARUKI_REST = [
+  'よくやった！', 'ナイス！', 'いいね', 'すごい',
+  '一回休憩', 'お疲れさま', 'ひと息', '深呼吸'
+];
+
+// のほほんモード（作業中）
+const NOHOHON_WORK = [
+  'のんびり', 'まあいいか', 'ゆるく', 'マイペース',
+  'ぼちぼち', '気楽に', '余裕', '一服しながら',
+  '焦らず', 'いい感じ', 'うん', 'ふむ'
+];
+// のほほんモード（休憩中）
+const NOHOHON_REST = [
+  '休もう', '寝よう', 'お茶しよう', '散歩',
+  '深呼吸', 'ぼーっと', '空を見る', '雨音',
+  'ねむい', 'お昼寝', 'ゆるり', 'まどろみ'
+];
 
 // ─── 状態 ───
 const KEY_TODAY  = 'zaitoku_today';
@@ -709,7 +737,7 @@ const STATE = {
   todayDate: new Date().toISOString().slice(0,10),
   soundOn: false,
   endAt: null,
-  wordMode: 'zaitoku',         // 'zaitoku'|'custom'|'fukurou365'|'mixed'
+  wordMode: 'yaruki',         // 'yaruki'|'nohohon'|'zaitoku'|'custom'|'fukurou365'|'mixed'
   customWorkWords: [],
   customRestWords: [],
   vibrateOn: true,
@@ -976,24 +1004,35 @@ function getWordsForPhase(phase) {
   const defaults = phase === 'work' ? VIRTUES : SINS;
   let words;
   switch (STATE.wordMode) {
+    case 'yaruki':
+      words = phase === 'work' ? YARUKI_WORK : YARUKI_REST;
+      break;
+    case 'nohohon':
+      words = phase === 'work' ? NOHOHON_WORK : NOHOHON_REST;
+      break;
+    case 'zaitoku':
+      words = defaults;
+      break;
     case 'custom':
       const c = phase === 'work' ? STATE.customWorkWords : STATE.customRestWords;
       words = c.length > 0 ? c : defaults;
       break;
     case 'fukurou365':
-      // 読雨 Gist 名言（短い形）+ defaults
       const f = phase === 'work' ? fukurou365Cache.virtue : fukurou365Cache.sin;
       words = f.length > 0 ? [...f, ...defaults] : defaults;
       break;
     case 'mixed':
-      words = [...defaults];
+      // 全部混在（やる気＋のほほん＋罪徳＋カスタム＋名言）
+      words = [...(phase === 'work' ? YARUKI_WORK : YARUKI_REST),
+               ...(phase === 'work' ? NOHOHON_WORK : NOHOHON_REST),
+               ...defaults];
       if (phase === 'work' && STATE.customWorkWords.length) words.push(...STATE.customWorkWords);
       if (phase === 'rest' && STATE.customRestWords.length) words.push(...STATE.customRestWords);
       if (phase === 'work' && fukurou365Cache.virtue.length) words.push(...fukurou365Cache.virtue);
       if (phase === 'rest' && fukurou365Cache.sin.length) words.push(...fukurou365Cache.sin);
       break;
     default:
-      words = defaults;
+      words = phase === 'work' ? YARUKI_WORK : YARUKI_REST;
   }
   // 季節文字を 10% の確率で混入（既定モード以外でも）
   if (Math.random() < 0.10) {
@@ -1043,7 +1082,7 @@ function load() {
   if (usp.has('font')  && FONT_FAMILIES[usp.get('font')]) { STATE.font = usp.get('font'); try { localStorage.setItem(KEY_FONT, STATE.font); } catch(e){} }
   if (usp.has('mode')) {
     const m = usp.get('mode');
-    if (['zaitoku','custom','fukurou365','mixed'].includes(m)) {
+    if (['yaruki','nohohon','zaitoku','custom','fukurou365','mixed'].includes(m)) {
       STATE.wordMode = m;
       try { localStorage.setItem(KEY_WORDMODE, STATE.wordMode); } catch(e){}
     }
@@ -1150,11 +1189,20 @@ function fmt(sec) {
 function renderTimer() {
   document.getElementById('timer').textContent = fmt(STATE.remaining);
   const ph = document.getElementById('phase');
+  const labels = {
+    yaruki:   { work: '🔥 ぽもじ中（やる気）', rest: '☕ ひと休み（おつかれ）' },
+    nohohon:  { work: '☁ のほほんぽもじ中',   rest: '🌙 ゆるり休憩' },
+    zaitoku:  { work: '🌑 徳が降る',           rest: '🌫 罪が上がる' },
+    custom:   { work: '✏ ぽもじ中',           rest: '☁ 休憩' },
+    fukurou365: { work: '🌧 名言が降る',       rest: '☁ ひと息' },
+    mixed:    { work: '🌗 ぽもじ中（混在）',   rest: '☁ ひと休み' }
+  };
+  const set = labels[STATE.wordMode] || labels.yaruki;
   if (STATE.phase === 'work') {
-    ph.textContent = '作業 ── 徳が降る';
+    ph.textContent = set.work;
     ph.className = 'phase-label work';
   } else {
-    ph.textContent = '休憩 ── 罪が上がる';
+    ph.textContent = set.rest;
     ph.className = 'phase-label rest';
   }
   document.getElementById('today').textContent = STATE.today;
@@ -1224,8 +1272,9 @@ function completePhase() {
     STATE.endAt = Date.now() + STATE.remaining * 1000;
     localStorage.setItem(KEY_END, STATE.endAt);
     localStorage.setItem(KEY_PHASE, STATE.phase);
-    flash('⭐ 完走 +1');
-    notify('⭐ 作業完了', `今日 ${STATE.today} 完走 / 累計 ${STATE.total}。次は ${STATE.restMin}分の休憩。`);
+    const cheers = ['🌸 おつかれ！', '🌿 いいぞ！', '☕ 休憩しよ', '⭐ 完走+1', '✨ ナイス！', '🌧 ひと段落'];
+    flash(cheers[Math.floor(Math.random() * cheers.length)] + ` (${STATE.today}回目)`);
+    notify('🌸 おつかれ', `今日 ${STATE.today} 回目／累計 ${STATE.total}回。${STATE.restMin}分やすみましょ。`);
   } else {
     // 休憩完了 → 作業へ
     STATE.phase = 'work';
@@ -1233,8 +1282,9 @@ function completePhase() {
     STATE.endAt = Date.now() + STATE.remaining * 1000;
     localStorage.setItem(KEY_END, STATE.endAt);
     localStorage.setItem(KEY_PHASE, STATE.phase);
-    flash('🌑 次の周回へ');
-    notify('🌑 休憩終了', `${STATE.workMin}分の作業を再開。徳が降りはじめる。`);
+    const restarts = ['☂ さあ、もう一回', '🌧 ぽもじ再開', '✨ 次いってみよう', '🌿 ぼちぼちと'];
+    flash(restarts[Math.floor(Math.random() * restarts.length)]);
+    notify('☂ 再開', `${STATE.workMin}分のぽもじ、もう一回ゆるく。`);
   }
   // バイブ（対応端末）
   if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
@@ -1266,17 +1316,17 @@ document.head.appendChild(style);
 const canvas = document.getElementById('field');
 const ctx = canvas.getContext('2d');
 
-// 物理パラメータ
+// 物理パラメータ（v1.1 「のほほん」デフォルト）
 const PHYSICS = {
-  gravity: 0.18,        // 重力加速度（下向き正）
-  buoyancy: -0.14,      // 浮力（上向き、休憩中の罪）
-  friction: 0.96,       // 横方向摩擦（地面・壁）
-  restitution: 0.25,    // 反発係数（0=吸着、1=完全弾性）
-  maxV: 5,              // 最大速度
-  rotFriction: 0.95,    // 回転摩擦
-  spawnInterval: 2500,  // 文字が降る間隔（ms・ゆっくり）
-  sizeBase: 12,         // 文字数1あたりの半径基準
-  sizePerChar: 5        // 文字1個増えるごとの半径加算
+  gravity: 0.10,        // ゆっくり落ちる
+  buoyancy: -0.08,      // ふわっと上がる
+  friction: 0.93,       // すぐ落ち着く
+  restitution: 0.15,    // 反発控えめ・自然に止まる
+  maxV: 3.5,            // 最大速度（暴れない）
+  rotFriction: 0.94,
+  spawnInterval: 4000,  // 4秒に1個（ゆっくり）
+  sizeBase: 14,
+  sizePerChar: 4.5
 };
 
 const field = {
@@ -1295,10 +1345,16 @@ function resize() {
 resize();
 addEventListener('resize', resize);
 
-// 文字の半径を文字数で計算（文字数が多いほど大きく重い）
+// 文字の半径を文字数で計算（非線形・長文字も収まる）
 function radiusFor(text) {
-  const n = [...text].length;  // サロゲートペア考慮
-  return PHYSICS.sizeBase + n * PHYSICS.sizePerChar;
+  const n = [...text].length;
+  // 1-4文字：線形 / 5文字以上：log で緩やかに大きく
+  if (n <= 4) {
+    return PHYSICS.sizeBase + n * PHYSICS.sizePerChar;
+  } else {
+    return PHYSICS.sizeBase + 4 * PHYSICS.sizePerChar + Math.log2(n - 3) * 6;
+  }
+  // n=4: 32 / n=5: 32+6=38 / n=8: 32+9.5=42 / n=12: 32+13=45 / n=20: 32+18=50
 }
 
 // 文字パーティクル生成（物理ボディとして）
@@ -1886,16 +1942,23 @@ function applyThemeCSS() {
 
 // ─── ナレーション（5本柱から1行）───
 const NARRATIONS = [
-  '砂と雨の世界を、作り続ける。',
-  '善悪ではない。磁力の、方向の違い。',
-  '牢に閉じこもって、作り込む。',
-  'アナログと、デジタルのキメラ。',
-  '恵みの雨は、誰の上にも降る。',
+  // のほほん系
+  '今日も、ぽつぽつ積もりましたね。',
+  'ゆっくりで、いいんですよ。',
+  'お茶でも飲みましょうか。',
+  '雨の音、聞こえますか。',
+  'ちょっと一息、つきましょう。',
+  // やる気系
+  'よくがんばりました。',
+  'あと一つ、いけそうですか。',
+  '積み重ね、すごいですね。',
+  '集中、続いてますね。',
+  // 服牢AI 系
   '点と点は、線になる。',
-  'ひたすら作業している人になりたい。',
   'ミクロを365日積めば、マクロの重力になる。',
   '廃人って、何かに特化しているってことだからね。',
-  '土台のしっかりした仙人のようなポジション。'
+  '土台のしっかりした仙人のようなポジション。',
+  '善悪ではない。磁力の、方向の違い。'
 ];
 function speakNarration() {
   if (!document.getElementById('cfg-narration')?.checked) return;
@@ -2473,13 +2536,12 @@ document.addEventListener('visibilitychange', () => {
 const I18N = {
   ja: {
     appName: 'ぽもじかん',
-    subtitle: 'PMJ ／ 文字が降ってくる作業タイマー',
-    workLabel: '作業 ── 徳が降る',
-    restLabel: '休憩 ── 罪が上がる',
+    subtitle: 'PMJ ／ ゆるく文字を積もう',
+    workLabel: 'ぽもじ中', restLabel: 'ひと休み',
     start: '▶ 開始', pause: '⏸ 一時停止', reset: '↺ リセット',
-    todayLabel: '今日の完走', totalLabel: '累計',
-    footerPoetic: '徳は降り、罪は上がる。永遠に。',
-    completed: '⭐ 完走 +1', nextCycle: '🌑 次の周回へ'
+    todayLabel: '今日', totalLabel: '累計',
+    footerPoetic: 'ゆるく、文字を積もう。',
+    completed: '🌸 おつかれ！', nextCycle: '☂ もう一回'
   },
   en: {
     appName: 'Pomojikan',
