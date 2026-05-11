@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1280" viewBox="0 0 720 1280">
+  <rect width="720" height="1280" fill="#0c1426"/>
+  <!-- ヘッダー -->
+  <text x="360" y="80" font-family="'Noto Serif JP', serif" font-size="36" font-weight="900" fill="#eef2ff" text-anchor="middle" letter-spacing="14">ぽもじかん</text>
+  <text x="360" y="110" font-family="'JetBrains Mono', monospace" font-size="14" fill="#5a6890" text-anchor="middle" letter-spacing="5">PMJ ／ 文字が降ってくる作業タイマー</text>
+  <!-- 罪の海（上層） -->
+  <g font-family="'Noto Serif JP', serif" font-weight="700" opacity="0.7">
+    <text x="180" y="200" font-size="28" fill="#ff9b9b">怠惰</text>
+    <text x="360" y="220" font-size="28" fill="#ff9b9b">傲慢</text>
+    <text x="540" y="200" font-size="28" fill="#ff9b9b">憤怒</text>
+  </g>
+  <!-- タイマー -->
+  <text x="360" y="540" font-family="'JetBrains Mono', monospace" font-size="140" font-weight="700" fill="#eef2ff" text-anchor="middle" letter-spacing="6">25:00</text>
+  <!-- 操作ボタン -->
+  <g transform="translate(180, 620)">
+    <rect width="160" height="48" rx="4" fill="#c9a84c"/>
+    <text x="80" y="32" font-family="'Noto Serif JP', serif" font-weight="700" font-size="18" fill="#0c1426" text-anchor="middle">▶ 開始</text>
+  </g>
+  <g transform="translate(380, 620)">
+    <rect width="160" height="48" rx="4" stroke="#6bb6ff" stroke-width="2" fill="none"/>
+    <text x="80" y="32" font-family="'Noto Serif JP', serif" font-weight="700" font-size="18" fill="#6bb6ff" text-anchor="middle">↺ リセット</text>
+  </g>
+  <!-- 徳の砂底（下層・コインゲーム的） -->
+  <g font-family="'Noto Serif JP', serif" font-weight="700">
+    <circle cx="120" cy="880" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="120" y="888" font-size="22" fill="#e8c668" text-anchor="middle">勤勉</text>
+    <circle cx="220" cy="880" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="220" y="888" font-size="22" fill="#e8c668" text-anchor="middle">慈悲</text>
+    <circle cx="320" cy="880" r="40" fill="rgba(255,224,138,0.30)" stroke="#ffe28a" stroke-width="2"/>
+    <text x="320" y="890" font-size="22" fill="#ffe28a" text-anchor="middle">✨大徳</text>
+    <circle cx="430" cy="880" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="430" y="888" font-size="22" fill="#e8c668" text-anchor="middle">純潔</text>
+    <circle cx="530" cy="880" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="530" y="888" font-size="22" fill="#e8c668" text-anchor="middle">親切</text>
+    <circle cx="610" cy="880" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="610" y="888" font-size="22" fill="#e8c668" text-anchor="middle">忍耐</text>
+    <!-- 2列目 -->
+    <circle cx="170" cy="950" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="170" y="958" font-size="22" fill="#e8c668" text-anchor="middle">節制</text>
+    <circle cx="270" cy="950" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="270" y="958" font-size="22" fill="#e8c668" text-anchor="middle">謙虚</text>
+    <circle cx="370" cy="950" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="370" y="958" font-size="22" fill="#e8c668" text-anchor="middle">凝縮</text>
+    <circle cx="470" cy="950" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="470" y="958" font-size="22" fill="#e8c668" text-anchor="middle">廃人</text>
+    <circle cx="570" cy="950" r="32" fill="rgba(201,168,76,0.14)" stroke="#c9a84c" stroke-width="2"/>
+    <text x="570" y="958" font-size="22" fill="#e8c668" text-anchor="middle">仙人</text>
+  </g>
+  <!-- 統計 -->
+  <text x="360" y="1080" font-family="'JetBrains Mono', monospace" font-size="20" fill="#c9a84c" text-anchor="middle">3 今日の完走 ／ 47 累計 ／ 🔥 5 日連続</text>
+  <!-- メニュー -->
+  <g transform="translate(80, 1140)">
+    <rect width="120" height="38" rx="3" fill="rgba(107,182,255,0.08)" stroke="rgba(107,182,255,0.3)"/>
+    <text x="60" y="25" font-family="'Noto Serif JP', serif" font-size="14" fill="#6bb6ff" text-anchor="middle">📚 図鑑</text>
+    <rect x="140" width="120" height="38" rx="3" fill="rgba(107,182,255,0.08)" stroke="rgba(107,182,255,0.3)"/>
+    <text x="200" y="25" font-family="'Noto Serif JP', serif" font-size="14" fill="#6bb6ff" text-anchor="middle">📊 統計</text>
+    <rect x="280" width="120" height="38" rx="3" fill="rgba(107,182,255,0.08)" stroke="rgba(107,182,255,0.3)"/>
+    <text x="340" y="25" font-family="'Noto Serif JP', serif" font-size="14" fill="#6bb6ff" text-anchor="middle">📤 シェア</text>
+    <rect x="420" width="120" height="38" rx="3" fill="rgba(107,182,255,0.08)" stroke="rgba(107,182,255,0.3)"/>
+    <text x="480" y="25" font-family="'Noto Serif JP', serif" font-size="14" fill="#6bb6ff" text-anchor="middle">⚙ メニュー</text>
+  </g>
+  <!-- 雨粒 -->
+  <g stroke="#6bb6ff" stroke-width="2" stroke-linecap="round" opacity="0.4">
+    <line x1="60" y1="60" x2="55" y2="90"/>
+    <line x1="660" y1="80" x2="655" y2="110"/>
+    <line x1="40" y1="400" x2="35" y2="430"/>
+    <line x1="680" y1="450" x2="675" y2="480"/>
+  </g>
+</svg>

@@ -37,6 +37,22 @@
       "description": "ぽもじ図鑑（コレクション）を開く",
       "url": "./?view=collection",
       "icons": [{ "src": "icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "統計",
+      "short_name": "統計",
+      "description": "完走の統計を見る",
+      "url": "./?view=stats",
+      "icons": [{ "src": "icon-192.svg", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot.svg",
+      "sizes": "720x1280",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "メイン画面 ── タイマー + 文字の積み重ね"
     }
   ]
 }

@@ -26,10 +26,12 @@
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/svg+xml" href="icon-192.svg">
+<!-- iOS スプラッシュ（黒い砂時計） -->
+<link rel="apple-touch-startup-image" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1170' height='2532' viewBox='0 0 1170 2532'><rect width='1170' height='2532' fill='%230c1426'/><g transform='translate(450, 1080) scale(2.5)'><path d='M0 0 L108 0 L108 60 Q108 64 54 64 Q0 64 0 60 Z' fill='%23ff8e8e' opacity='0.78'/><circle cx='54' cy='64' r='3' fill='%23c9a84c'/><path d='M0 128 L108 128 L108 68 Q108 64 54 64 Q0 64 0 68 Z' fill='%23d6b966' opacity='0.92'/></g><text x='585' y='1700' font-family='Noto Serif JP' font-size='80' fill='%23c9a84c' text-anchor='middle' letter-spacing='25' font-weight='900'>ぽもじかん</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/></svg>">
 <link rel="manifest" href="manifest.json">
 <title>🌑 ぽもじかん ── 文字が降ってくる作業タイマー</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0c1426; --bg2: #131c33; --panel: #1a2440;
@@ -429,6 +431,14 @@ footer {
       <button class="btn small theme-btn" data-theme="sakura">🌸 桜</button>
     </div>
 
+    <!-- フォント -->
+    <div class="section-h">🖋 フォント</div>
+    <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn small font-btn" data-font="serif">明朝</button>
+      <button class="btn small font-btn" data-font="maru">丸ゴシック</button>
+      <button class="btn small font-btn" data-font="gothic">角ゴシック</button>
+    </div>
+
     <!-- 音 -->
     <div class="section-h">🔊 音と通知</div>
     <label class="mode-row" aria-label="完走時に三和音チャイムを鳴らす">
@@ -505,6 +515,7 @@ const KEY_ACHIEVE    = 'pomojikan_achievements';  // { id: timestamp }
 const KEY_DAILY_CHL  = 'pomojikan_daily_challenge';  // { date, target, count, done }
 const KEY_THEME      = 'pomojikan_theme';
 const KEY_BGM        = 'pomojikan_bgm';
+const KEY_FONT       = 'pomojikan_font';   // 'serif'|'maru'|'gothic'
 
 const STATE = {
   phase: 'work',        // 'work' | 'rest'
@@ -526,9 +537,20 @@ const STATE = {
   daily: {},
   achievements: {},     // { 'id': timestamp }
   dailyChallenge: null, // { date, target, count, done }
-  theme: 'zaitoku',     // 'zaitoku'|'rain'|'sand'|'snow'|'sakura'
-  bgm: 'rain'           // 'rain'|'wind'|'wave'|'none'
+  theme: 'zaitoku',
+  bgm: 'rain',
+  font: 'serif'         // 'serif'|'maru'|'gothic'
 };
+
+// ─── フォント切替 ───
+const FONT_FAMILIES = {
+  serif:  "'Noto Serif JP', serif",
+  maru:   "'Zen Maru Gothic', 'Zen Kaku Gothic New', sans-serif",
+  gothic: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif"
+};
+function applyFontCSS() {
+  document.documentElement.style.setProperty('--serif', FONT_FAMILIES[STATE.font] || FONT_FAMILIES.serif);
+}
 
 // ─── アチーブメント定義 ───
 const ACHIEVEMENTS = [
@@ -703,26 +725,77 @@ function recordWord(text, type) {
   return STATE.collection[text];
 }
 
+// 服牢365 Gist キャッシュ（読雨 quotes[] から取得）
+const FUKUROU_GIST_URL = 'https://gist.githubusercontent.com/rainybrainch/cffc5abcf62103b27effe2efba25ca6a/raw/yomu-data.json';
+let fukurou365Cache = { virtue: [], sin: [], at: 0 };
+async function fetchFukurou365() {
+  const now = Date.now();
+  if (fukurou365Cache.at && now - fukurou365Cache.at < 5 * 60 * 1000) return;  // 5分キャッシュ
+  try {
+    const r = await fetch(FUKUROU_GIST_URL + '?cb=' + now, { cache: 'no-store' });
+    if (!r.ok) return;
+    const d = await r.json();
+    const quotes = d.quotes || [];
+    // 短い名言（1〜10文字程度）と長い名言（11文字〜）で分ける
+    const virtueWords = [];
+    const sinWords = [];
+    for (const q of quotes) {
+      const text = (q.quote || '').slice(0, 24);  // 表示用に切る
+      if (!text) continue;
+      const isSubl = q.state === 'sublimated';
+      // sublimated は徳寄り、fallen は罪寄り、transit は両方
+      if (q.state === 'fallen' || (q.virtue && q.sin)) {
+        sinWords.push(text);
+      }
+      if (isSubl || q.state === 'transit' || !q.state) {
+        virtueWords.push(text);
+      }
+    }
+    fukurou365Cache = { virtue: virtueWords, sin: sinWords, at: now };
+    console.log('[fukurou365] loaded', virtueWords.length, '/', sinWords.length);
+  } catch (e) {
+    console.warn('fukurou365 fetch failed', e);
+  }
+}
+
+// ─── 季節イベント文字 ───
+function seasonWords() {
+  const m = new Date().getMonth() + 1;  // 1-12
+  if (m >= 3 && m <= 5)  return ['春', '芽', '桜', '萌', '陽', '風', '花', '若'];
+  if (m >= 6 && m <= 8)  return ['夏', '雷', '蝉', '燃', '炎', '青', '潮', '海'];
+  if (m >= 9 && m <= 11) return ['秋', '実', '紅', '月', '稲', '葉', '澄', '黄'];
+  return ['冬', '雪', '霜', '寒', '凛', '静', '白', '深'];
+}
+
 // 言葉セレクタ（モード別）
 function getWordsForPhase(phase) {
   const defaults = phase === 'work' ? VIRTUES : SINS;
+  let words;
   switch (STATE.wordMode) {
     case 'custom':
       const c = phase === 'work' ? STATE.customWorkWords : STATE.customRestWords;
-      return c.length > 0 ? c : defaults;
+      words = c.length > 0 ? c : defaults;
+      break;
     case 'fukurou365':
-      // 将来：読雨 Gist から名言取得。今は仮で defaults + 「廃人」「凝縮」等を混ぜる
-      return phase === 'work'
-        ? [...VIRTUES, '凝縮', '神器', '仙人', '積上']
-        : [...SINS, '怠惰', '雑念', '焦燥'];
+      // 読雨 Gist 名言（短い形）+ defaults
+      const f = phase === 'work' ? fukurou365Cache.virtue : fukurou365Cache.sin;
+      words = f.length > 0 ? [...f, ...defaults] : defaults;
+      break;
     case 'mixed':
-      const merged = [...defaults];
-      if (phase === 'work' && STATE.customWorkWords.length) merged.push(...STATE.customWorkWords);
-      if (phase === 'rest' && STATE.customRestWords.length) merged.push(...STATE.customRestWords);
-      return merged;
+      words = [...defaults];
+      if (phase === 'work' && STATE.customWorkWords.length) words.push(...STATE.customWorkWords);
+      if (phase === 'rest' && STATE.customRestWords.length) words.push(...STATE.customRestWords);
+      if (phase === 'work' && fukurou365Cache.virtue.length) words.push(...fukurou365Cache.virtue);
+      if (phase === 'rest' && fukurou365Cache.sin.length) words.push(...fukurou365Cache.sin);
+      break;
     default:
-      return defaults;
+      words = defaults;
   }
+  // 季節文字を 10% の確率で混入（既定モード以外でも）
+  if (Math.random() < 0.10) {
+    return [...words, ...seasonWords()];
+  }
+  return words;
 }
 
 // localStorage 読込
@@ -744,6 +817,18 @@ function load() {
   try { STATE.dailyChallenge = JSON.parse(localStorage.getItem(KEY_DAILY_CHL) || 'null'); } catch(e) { STATE.dailyChallenge = null; }
   STATE.theme = localStorage.getItem(KEY_THEME) || 'zaitoku';
   STATE.bgm = localStorage.getItem(KEY_BGM) || 'rain';
+  STATE.font = localStorage.getItem(KEY_FONT) || 'serif';
+  // URL クエリで設定上書き（モード共有用）
+  const usp = new URLSearchParams(location.search);
+  if (usp.has('theme') && THEMES[usp.get('theme')]) { STATE.theme = usp.get('theme'); try { localStorage.setItem(KEY_THEME, STATE.theme); } catch(e){} }
+  if (usp.has('font')  && FONT_FAMILIES[usp.get('font')]) { STATE.font = usp.get('font'); try { localStorage.setItem(KEY_FONT, STATE.font); } catch(e){} }
+  if (usp.has('mode')) {
+    const m = usp.get('mode');
+    if (['zaitoku','custom','fukurou365','mixed'].includes(m)) {
+      STATE.wordMode = m;
+      try { localStorage.setItem(KEY_WORDMODE, STATE.wordMode); } catch(e){}
+    }
+  }
   ensureDailyChallenge();
   // 日付変わってたらリセット
   const today = new Date().toISOString().slice(0,10);
@@ -1366,6 +1451,10 @@ function openMenu() {
   document.querySelectorAll('.theme-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.theme === STATE.theme);
   });
+  // フォント
+  document.querySelectorAll('.font-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.font === STATE.font);
+  });
   // BGM
   document.querySelectorAll('.bgm-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.bgm === STATE.bgm);
@@ -1419,6 +1508,14 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
     applyTheme(btn.dataset.theme);
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b === btn));
     applyThemeCSS();
+  });
+});
+document.querySelectorAll('.font-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    STATE.font = btn.dataset.font;
+    try { localStorage.setItem(KEY_FONT, STATE.font); } catch(e){}
+    document.querySelectorAll('.font-btn').forEach(b => b.classList.toggle('active', b === btn));
+    applyFontCSS();
   });
 });
 document.querySelectorAll('.bgm-btn').forEach(btn => {
@@ -1623,7 +1720,9 @@ async function shareStatus() {
   const streak = STATE.streak.current;
   const rareCount = Object.values(STATE.collection).filter(v => v.rare).length;
   const text = `🌑 ぽもじかん：${total} 完走 ／ 図鑑 ${types} 種類 ／ 🔥 ${streak} 日連続 ／ ✨ レア ${rareCount} 個\n#ぽもじかん #pomojikan`;
-  const url = 'https://rainybrainch.github.io/pomojikan/';
+  // 設定を URL に埋め込み（モード共有）
+  const params = new URLSearchParams({ theme: STATE.theme, font: STATE.font, mode: STATE.wordMode });
+  const url = 'https://rainybrainch.github.io/pomojikan/?' + params.toString();
   if (navigator.share) {
     try { await navigator.share({ title: 'ぽもじかん', text, url }); flash('📤 シェア OK'); }
     catch (e) { /* キャンセル */ }
@@ -1683,8 +1782,16 @@ document.getElementById('overlay-menu').addEventListener('click', (e) => {
   if (e.target.id === 'overlay-menu') closeMenu();
 });
 document.addEventListener('keydown', (e) => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
   if (e.code === 'Space') { e.preventDefault(); toggle(); }
-  if (e.code === 'KeyR') reset();
+  else if (e.code === 'KeyR') reset();
+  else if (e.code === 'KeyM') openMenu();
+  else if (e.code === 'KeyC') openCollection();
+  else if (e.code === 'KeyS') openStats();
+  else if (e.code === 'KeyP') shareStatus();
+  else if (e.code === 'Escape') {
+    document.querySelectorAll('.overlay.show').forEach(o => o.classList.remove('show'));
+  }
 });
 
 // タブ復帰時：終了時刻から残り時間を再計算（バックグラウンド対応）
@@ -1703,11 +1810,23 @@ document.addEventListener('visibilitychange', () => {
   renderTimer();
 });
 
+// ─── エラー境界（v0.7）───
+window.addEventListener('error', (e) => {
+  try { console.warn('[pomojikan err]', e.message); } catch(_) {}
+});
+window.addEventListener('unhandledrejection', (e) => {
+  try { console.warn('[pomojikan reject]', e.reason); } catch(_) {}
+});
+
 // ─── 起動 ───
 load();
 applyThemeCSS();
+applyFontCSS();
+// 服牢365 Gist 名言を非同期で取得（読雨と連動）
+fetchFukurou365();
 renderTimer();
-console.log('%c🌑 ぽもじかん v0.6 (cycle 2)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c🌑 ぽもじかん v0.7 (cycle 3)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 
 // PWA
 if ('serviceWorker' in navigator) {

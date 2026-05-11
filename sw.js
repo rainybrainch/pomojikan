@@ -1,6 +1,6 @@
 // ぽもじかん ── Service Worker
-const CACHE_NAME = 'pomojikan-v5';
-const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.svg', './icon-512.svg', './icon-maskable.svg', './og.svg', './privacy.html', './404.html'];
+const CACHE_NAME = 'pomojikan-v6';
+const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.svg', './icon-512.svg', './icon-maskable.svg', './og.svg', './privacy.html', './404.html', './screenshot.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
