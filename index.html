@@ -711,7 +711,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.2（百科ぽもじ・ユニーク 22,160 種 / 真の 22,000 達成）／ 作: rainybrainch<br>
+      ぽもじかん v2.3（レアリティ演出強化・虹/伝説/金の発見エフェクト）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1789,15 +1789,60 @@ function notify(title, body) {
   } catch (e) {}
 }
 
-function flash(msg) {
+function flash(msg, rare) {
   const el = document.createElement('div');
   el.textContent = msg;
-  el.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(12,20,38,0.95);color:var(--gold);padding:18px 28px;border-radius:6px;border:1px solid var(--gold);font-family:var(--serif);font-weight:700;font-size:1.1rem;z-index:100;animation:fadeOut 2s forwards;';
+  let style = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:18px 28px;border-radius:6px;font-family:var(--serif);font-weight:700;font-size:1.1rem;z-index:100;animation:fadeOut 2.5s forwards;';
+  if (rare === 'rainbow') {
+    style += 'background:linear-gradient(135deg,rgba(255,80,150,0.95),rgba(255,200,80,0.95),rgba(100,255,150,0.95),rgba(100,150,255,0.95),rgba(255,100,255,0.95));background-size:300% 300%;color:#fff;border:2px solid #fff;font-size:1.3rem;text-shadow:0 0 8px rgba(255,255,255,0.9);box-shadow:0 0 32px rgba(255,255,255,0.6);animation:fadeOut 2.8s forwards,rainbowShift 2.8s linear;';
+  } else if (rare === 'legendary') {
+    style += 'background:rgba(20,12,32,0.95);color:#ffd0f0;border:2px solid #ffd0f0;font-size:1.2rem;text-shadow:0 0 12px rgba(255,200,240,0.9);box-shadow:0 0 28px rgba(255,200,240,0.6);';
+  } else if (rare === 'gold') {
+    style += 'background:rgba(28,20,12,0.95);color:#ffe28a;border:2px solid #ffe28a;text-shadow:0 0 8px rgba(255,224,138,0.85);box-shadow:0 0 20px rgba(255,224,138,0.5);';
+  } else {
+    style += 'background:rgba(12,20,38,0.95);color:var(--gold);border:1px solid var(--gold);';
+  }
+  el.style.cssText = style;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2000);
+  setTimeout(() => el.remove(), 2500);
 }
+
+// レア発見時の画面全体エフェクト（オーバーレイ）
+function triggerRareEffect(rare) {
+  if (rare !== 'rainbow' && rare !== 'legendary' && rare !== 'gold') return;
+  const overlay = document.createElement('div');
+  overlay.className = 'rare-overlay rare-overlay-' + rare;
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), rare === 'rainbow' ? 1800 : rare === 'legendary' ? 1300 : 900);
+  // パーティクル：12 個拡散
+  const particleCount = rare === 'rainbow' ? 18 : rare === 'legendary' ? 12 : 8;
+  const colors = rare === 'rainbow'
+    ? ['#ff80c0','#ffcc40','#80ff90','#80b0ff','#ff80ff','#ffffff']
+    : rare === 'legendary' ? ['#ffd0f0','#ffaadd','#ffffff']
+    : ['#ffe28a','#ffce5e','#fff0c0'];
+  for (let i = 0; i < particleCount; i++) {
+    const p = document.createElement('div');
+    p.className = 'rare-particle';
+    const ang = (i / particleCount) * Math.PI * 2 + Math.random() * 0.3;
+    const dist = 80 + Math.random() * 160;
+    p.style.cssText = 'position:fixed;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:' + colors[i % colors.length] + ';box-shadow:0 0 12px ' + colors[i % colors.length] + ';pointer-events:none;z-index:99;--tx:' + Math.cos(ang)*dist + 'px;--ty:' + Math.sin(ang)*dist + 'px;animation:rareParticle 1.4s ease-out forwards;';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
 const style = document.createElement('style');
-style.textContent = '@keyframes fadeOut { 0%{opacity:0;transform:translate(-50%,-50%) scale(0.9);} 15%{opacity:1;transform:translate(-50%,-50%) scale(1);} 85%{opacity:1;} 100%{opacity:0;} }';
+style.textContent = `
+@keyframes fadeOut { 0%{opacity:0;transform:translate(-50%,-50%) scale(0.9);} 15%{opacity:1;transform:translate(-50%,-50%) scale(1);} 85%{opacity:1;} 100%{opacity:0;transform:translate(-50%,-50%) scale(0.95);} }
+@keyframes rainbowShift { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+@keyframes rareParticle { 0%{opacity:0;transform:translate(0,0) scale(0.4);} 15%{opacity:1;transform:translate(0,0) scale(1);} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.6);} }
+.rare-overlay { position:fixed; inset:0; pointer-events:none; z-index:90; opacity:0; }
+.rare-overlay-rainbow { background:radial-gradient(ellipse at center,transparent 25%,rgba(255,100,180,0.18) 55%,rgba(120,200,255,0.22) 85%,rgba(255,255,255,0.15) 100%); animation:rainbowOverlay 1.8s ease-out forwards; }
+.rare-overlay-legendary { background:radial-gradient(ellipse at center,transparent 35%,rgba(255,200,240,0.25) 80%); animation:rareOverlay 1.3s ease-out forwards; }
+.rare-overlay-gold { background:radial-gradient(ellipse at center,transparent 45%,rgba(255,224,138,0.18) 95%); animation:rareOverlay 0.9s ease-out forwards; }
+@keyframes rareOverlay { 0%{opacity:0;} 20%{opacity:1;} 100%{opacity:0;} }
+@keyframes rainbowOverlay { 0%{opacity:0;filter:hue-rotate(0deg);} 15%{opacity:1;} 100%{opacity:0;filter:hue-rotate(180deg);} }
+`;
 document.head.appendChild(style);
 
 // ═══════════════════════════════════════════════════
@@ -1896,12 +1941,12 @@ function spawn() {
   updateDailyChallenge(text);
   if (entry.count % 5 === 0) checkAchievements();
   // レア新規発見ならフラッシュ
-  // 初出メッセージ（レアリティ別）
+  // 初出メッセージ（レアリティ別）＋ 画面エフェクト
   if (entry.count === expFor(entry.rare) /* 初回直後 */) {
-    if (entry.rare === 'rainbow')      flash(`🌈 虹のぽもじを発見！「${text}」`);
-    else if (entry.rare === 'gold')    flash(`✨ 金のぽもじを発見！「${text}」`);
-    else if (entry.rare === 'legendary') flash(`☆ 伝説のぽもじ！「${text}」`);
-    else                                flash(`📚 新ぽもじ「${text}」`);
+    if (entry.rare === 'rainbow')        { triggerRareEffect('rainbow');   flash(`🌈 虹のぽもじを発見！「${text}」`, 'rainbow'); }
+    else if (entry.rare === 'legendary') { triggerRareEffect('legendary'); flash(`☆ 伝説のぽもじ！「${text}」`, 'legendary'); }
+    else if (entry.rare === 'gold')      { triggerRareEffect('gold');      flash(`✨ 金のぽもじを発見！「${text}」`, 'gold'); }
+    else                                  flash(`📚 新ぽもじ「${text}」`);
   } else if (entry.count >= 50 && entry.count - getLevel(entry.count - expFor(entry.rare)) > 0
              && getLevel(entry.count) > getLevel(entry.count - expFor(entry.rare))) {
     flash(`🌟 「${text}」が Lv ${lv} に成長`);
@@ -3258,7 +3303,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.2 真の百科事典 完成（ユニーク 22,160）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.3 レアリティ演出強化版（ユニーク 22,160 / 96 カテゴリ）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
