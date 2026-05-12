@@ -1,0 +1,11 @@
+# ぽもじかん ── クローラーポリシー
+
+User-agent: *
+Allow: /
+Disallow: /.well-known/assetlinks.json
+
+# JS データファイルもクロール OK（百科ぽもじの語彙公開で SEO 強化）
+Allow: /*.js$
+Allow: /*.svg$
+
+Sitemap: https://rainybrainch.github.io/pomojikan/sitemap.xml
