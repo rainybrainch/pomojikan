@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.1（雨ぽもじ / 泡ぽもじ 4:1 分離）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.2（雨/泡 視覚区別 + レアリティ振り直し）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1753,9 +1753,11 @@ function recordWord(text, type) {
     else if (isLegendary(text))  rare = 'legendary';
     else if (isGold(text))       rare = 'gold';
     else {
+      // v2.9.2 確率レア（カテゴリレアに該当しない通常語にも夢を）
       const r = Math.random();
-      if (r < 0.002)      rare = 'rainbow';
-      else if (r < 0.01)  rare = 'gold';
+      if (r < 0.003)      rare = 'rainbow';    // 0.3% (旧 0.2%)
+      else if (r < 0.012) rare = 'legendary';  // 0.9% 新規（カテゴリ外でも伝説に届く）
+      else if (r < 0.04)  rare = 'gold';       // 2.8% (旧 1%)
     }
   }
   const gain = expFor(rare);
@@ -2773,6 +2775,27 @@ function draw() {
                     : 'rgba(255,107,107,0.45)';
     ctx.lineWidth = b.rare ? 2 : 1.5;
     ctx.stroke();
+    // v2.9.2 視覚区別：泡ぽもじ (sin) は球体ハイライト + 内側の薄い輪
+    if (b.type === 'sin') {
+      // 上左に光沢ハイライト（球体感）
+      const hg = ctx.createRadialGradient(-b.r*0.35, -b.r*0.4, 1, -b.r*0.35, -b.r*0.4, b.r*0.55);
+      hg.addColorStop(0, 'rgba(255,255,255,0.45)');
+      hg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = hg;
+      ctx.fill();
+      // 内側の輪（泡の二重壁）
+      ctx.beginPath();
+      ctx.arc(0, 0, b.r * 0.78, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else if (b.type === 'virtue') {
+      // 雨ぽもじ：下端に微小な「しずく」感（縦長の影）
+      ctx.beginPath();
+      ctx.ellipse(0, b.r * 0.25, b.r * 0.15, b.r * 0.35, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(107,182,255,0.10)';
+      ctx.fill();
+    }
 
     // 文字
     ctx.fillStyle = style.color;
