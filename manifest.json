@@ -12,7 +12,7 @@
   "orientation": "portrait-primary",
   "theme_color": "#0c1426",
   "background_color": "#0c1426",
-  "categories": ["productivity", "lifestyle", "utilities"],
+  "categories": ["productivity", "education", "games", "lifestyle", "utilities"],
   "prefer_related_applications": false,
   "icons": [
     {
