@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.3（☆ 段階解放 + 序盤レア 千分の一の奇跡）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.4（雨/泡 独立進捗・☆ 別解放）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -983,12 +983,16 @@ const STATE = {
     members: [],          // パーティ 3 体（消滅不可）
     initialized: false    // 初期選択完了フラグ
   },
-  classLevel: 10,         // 解放級 (10=最下級、1=最上級、0=伝説)
+  classLevel: 10,         // 解放級 (10=最下級、1=最上級、0=伝説) ※全体（後方互換）
+  classLevelWork: 10,     // 雨ぽもじ（集中）の解放級
+  classLevelRest: 10,     // 泡ぽもじ（休憩）の解放級
   customWorkSec: 0,       // カスタム時間：分に追加する秒数
   customRestSec: 0
 };
 const KEY_PARTY      = 'pomojikan_party';
 const KEY_CLASSLEVEL = 'pomojikan_classlevel';
+const KEY_CLASSLEVEL_WORK = 'pomojikan_classlevel_work';
+const KEY_CLASSLEVEL_REST = 'pomojikan_classlevel_rest';
 const KEY_CUSTOM_SEC = 'pomojikan_custom_sec';
 
 // ─── データバージョンマイグレーション ───
@@ -1596,57 +1600,80 @@ function classOf(text) {
   return 10; // 通常語
 }
 
-// v2.9: パーティ 4 体の平均 Lv を計算し、解放級を自動更新
-function updateClassLevel() {
-  if (!STATE.party.initialized) return;
+// v2.9.4: パーティ 4 体の phase 別 Lv 平均 → work/rest 別に解放級を更新
+// collection entry に workCount / restCount を持たせ、それぞれで Lv 計算
+function _avgPartyLvPhase(phase) {
+  if (!STATE.party.initialized) return 1;
   const party = [STATE.party.hero, ...STATE.party.members].filter(Boolean);
-  if (party.length === 0) return;
+  if (party.length === 0) return 1;
   let totalLv = 0;
   for (const p of party) {
     const entry = STATE.collection[p];
-    totalLv += entry ? getLevel(entry.count) : 1;
-  }
-  const avgLv = totalLv / party.length;
-  // 平均 Lv 1→10級 / 2→9級 / ... / 9→2級 / 10+→1級 or 伝説
-  let newClass = Math.max(0, Math.min(10, 11 - Math.floor(avgLv)));
-  if (avgLv >= 11) newClass = 0; // 伝説解放
-  if (newClass !== STATE.classLevel) {
-    const advanced = newClass < STATE.classLevel;
-    const oldClass = STATE.classLevel;
-    STATE.classLevel = newClass;
-    localStorage.setItem(KEY_CLASSLEVEL, String(newClass));
-    _encycPool = null; _encycPoolWork = null; _encycPoolRest = null; // pool 再構築
-    if (advanced) {
-      const label = newClass === 0 ? '☆ 伝説' : newClass + ' 級';
-      flash(`🎓 ${label} 解放！新カテゴリの言葉が降ってきます`, 'gold');
-      triggerRareEffect('gold');
-      // v2.9.3 レアリティ解放通知
-      // 6級到達 = 金解放 / 3級到達 = 伝説解放 / 1級到達 = 虹解放
-      if (oldClass > 6 && newClass <= 6) {
-        setTimeout(() => { flash('✨ 金のぽもじ が解放されました！', 'gold'); triggerRareEffect('gold'); }, 1200);
-      } else if (oldClass > 3 && newClass <= 3) {
-        setTimeout(() => { flash('☆ 伝説のぽもじ が解放されました！', 'legendary'); triggerRareEffect('legendary'); }, 1200);
-      } else if (oldClass > 1 && newClass <= 1) {
-        setTimeout(() => { flash('🌈 虹のぽもじ が解放されました！', 'rainbow'); triggerRareEffect('rainbow'); }, 1200);
+    let cnt = 0;
+    if (entry) {
+      cnt = (phase === 'rest') ? (entry.restCount || 0) : (entry.workCount || 0);
+      // マイグレーション：旧データは count を半分ずつとして扱う
+      if (!entry.workCount && !entry.restCount && entry.count) {
+        cnt = Math.floor(entry.count / 2);
       }
     }
-    renderClassBadge();
+    totalLv += getLevel(cnt || 1);
   }
+  return totalLv / party.length;
 }
 
-// 解放級バッジ表示（v2.9.3: ☆ レアリティ解放状態も表示）
+function updateClassLevel() {
+  if (!STATE.party.initialized) return;
+  for (const phase of ['work', 'rest']) {
+    const avgLv = _avgPartyLvPhase(phase);
+    let newClass = Math.max(0, Math.min(10, 11 - Math.floor(avgLv)));
+    if (avgLv >= 11) newClass = 0;
+    const key = phase === 'rest' ? 'classLevelRest' : 'classLevelWork';
+    const storageKey = phase === 'rest' ? KEY_CLASSLEVEL_REST : KEY_CLASSLEVEL_WORK;
+    const oldClass = STATE[key];
+    if (newClass !== oldClass) {
+      const advanced = newClass < oldClass;
+      STATE[key] = newClass;
+      localStorage.setItem(storageKey, String(newClass));
+      // pool キャッシュリセット
+      if (phase === 'rest') _encycPoolRest = null; else _encycPoolWork = null;
+      if (advanced) {
+        const phaseLabel = phase === 'rest' ? '🫧 泡' : '🌧 雨';
+        const label = newClass === 0 ? '☆5 伝説' : newClass + ' 級';
+        flash(`🎓 ${phaseLabel} ${label} 解放！`, 'gold');
+        if (oldClass > 6 && newClass <= 6) {
+          setTimeout(() => { flash(`${phaseLabel} ☆3 解放！`, 'gold'); triggerRareEffect('gold'); }, 1200);
+        } else if (oldClass > 3 && newClass <= 3) {
+          setTimeout(() => { flash(`${phaseLabel} ☆4 解放！`, 'legendary'); triggerRareEffect('legendary'); }, 1200);
+        } else if (oldClass > 1 && newClass <= 1) {
+          setTimeout(() => { flash(`${phaseLabel} ☆5 解放！`, 'rainbow'); triggerRareEffect('rainbow'); }, 1200);
+        }
+      }
+    }
+  }
+  // 後方互換: classLevel は 2 つの低い方（より進んだ方）
+  STATE.classLevel = Math.min(STATE.classLevelWork, STATE.classLevelRest);
+  localStorage.setItem(KEY_CLASSLEVEL, String(STATE.classLevel));
+  renderClassBadge();
+}
+
+// 解放級バッジ表示（v2.9.4: 雨/泡 を別行で表示）
 function renderClassBadge() {
   const el = document.getElementById('class-badge');
   if (!el) return;
   if (!STATE.party.initialized) { el.classList.add('hidden'); return; }
-  const lv = STATE.classLevel;
-  const classText = lv === 0 ? '☆5 伝説' : lv + ' 級';
-  // 解放されている星の最高ランク
-  let starText = '';
-  if (rarityAllowed('rainbow'))        starText = ' ☆5';
-  else if (rarityAllowed('legendary')) starText = ' ☆4';
-  else if (rarityAllowed('gold'))      starText = ' ☆3';
-  el.textContent = classText + starText;
+  const labelOf = (cl, phase) => {
+    const classText = cl === 0 ? '☆5' : cl + '級';
+    let starText = '';
+    if (rarityAllowed('rainbow', phase))        starText = ' ☆5';
+    else if (rarityAllowed('legendary', phase)) starText = ' ☆4';
+    else if (rarityAllowed('gold', phase))      starText = ' ☆3';
+    return classText + starText;
+  };
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:1px;font-size:0.62rem;line-height:1.2;">
+    <span>🌧 ${labelOf(STATE.classLevelWork, 'work')}</span>
+    <span style="color:var(--rose);">🫧 ${labelOf(STATE.classLevelRest, 'rest')}</span>
+  </div>`;
   el.classList.remove('hidden');
 }
 
@@ -1759,28 +1786,27 @@ function expFor(rare) {
   }
 }
 
-// v2.9.3: ☆ レアリティ段階解放（パーティ平均 Lv → classLevel に連動）
+// v2.9.4: ☆ レアリティ段階解放（雨ぽもじ/泡ぽもじ 独立進捗）
 // 表示：☆1〜☆2 = 通常 / ☆3 = 金 / ☆4 = 伝説 / ☆5 = 虹
 // classLevel: 10=最下級 〜 0=伝説
-//   10-7 級: 基本は通常（☆1-2）のみ ＋ 序盤レアとして ☆3 が極低確率
+//   10-7 級: 通常 + ☆3 が 0.1%（序盤の奇跡）
 //   6-4 級: ☆3 解放
 //   3-2 級: + ☆4 解放
 //   1 級〜伝説: + ☆5 解放
-function rarityAllowed(rare) {
-  const cl = STATE.classLevel;
+//
+// 雨ぽもじ(集中)/泡ぽもじ(休憩) で 独立して進捗
+function rarityAllowed(rare, phase) {
+  const cl = (phase === 'rest') ? STATE.classLevelRest : STATE.classLevelWork;
   if (rare === 'rainbow')   return cl <= 1;
   if (rare === 'legendary') return cl <= 3;
   if (rare === 'gold')      return cl <= 6;
   return true; // 通常はいつでも
 }
 
-// 序盤レア：未解放段階でも☆3が極低確率で出る抜け道
-// classLevel が高いほど低確率（序盤のひらめき・希望）
-function earlyStarRoll() {
-  const cl = STATE.classLevel;
-  // 段階解放済みなら通常確率に任せる
+// 序盤レア：未解放段階でも☆3が極低確率で出る（phase 別）
+function earlyStarRoll(phase) {
+  const cl = (phase === 'rest') ? STATE.classLevelRest : STATE.classLevelWork;
   if (cl <= 6) return null;
-  // 未解放：☆3 が 0.1%（千分の一の奇跡）
   if (Math.random() < 0.001) return 'gold';
   return null;
 }
@@ -1797,6 +1823,8 @@ function recordWord(text, type) {
   const now = new Date().toISOString();
   const existing = STATE.collection[text];
   let rare = existing ? existing.rare : null;
+  // v2.9.4: phase（雨=work / 泡=rest）を type から判定
+  const ph = (type === 'sin') ? 'rest' : 'work';
   if (!existing) {
     // 初出：レア判定（カテゴリ優先 → 確率レア）
     let candidate = null;
@@ -1804,23 +1832,21 @@ function recordWord(text, type) {
     else if (isLegendary(text))  candidate = 'legendary';
     else if (isGold(text))       candidate = 'gold';
     else {
-      // 確率レア（カテゴリレアに該当しない通常語にも夢を）
       const r = Math.random();
       if (r < 0.003)      candidate = 'rainbow';    // 0.3%
       else if (r < 0.012) candidate = 'legendary';  // 0.9%
       else if (r < 0.04)  candidate = 'gold';       // 2.8%
     }
-    // 段階解放：未解放のレアリティは downgrade
-    if (candidate && !rarityAllowed(candidate)) {
-      // rainbow → legendary → gold → null と落とす
-      if (candidate === 'rainbow'   && rarityAllowed('legendary')) candidate = 'legendary';
-      else if (candidate === 'rainbow' && rarityAllowed('gold'))   candidate = 'gold';
-      else if (candidate === 'legendary' && rarityAllowed('gold')) candidate = 'gold';
+    // 段階解放（phase 別）：未解放のレアリティは downgrade
+    if (candidate && !rarityAllowed(candidate, ph)) {
+      if (candidate === 'rainbow'   && rarityAllowed('legendary', ph)) candidate = 'legendary';
+      else if (candidate === 'rainbow' && rarityAllowed('gold', ph))   candidate = 'gold';
+      else if (candidate === 'legendary' && rarityAllowed('gold', ph)) candidate = 'gold';
       else candidate = null;
     }
-    // 序盤レア：未解放段階でも極低確率で☆3 を出す（千分の一の奇跡）
+    // 序盤レア：未解放段階でも極低確率で☆3 を出す
     if (!candidate) {
-      const early = earlyStarRoll();
+      const early = earlyStarRoll(ph);
       if (early) candidate = early;
     }
     rare = candidate;
@@ -1828,8 +1854,13 @@ function recordWord(text, type) {
   const gain = expFor(rare);
   // カテゴリは初出時に判定して保存（再判定不要、Lookup を 1 回に）
   const category = existing && existing.category ? existing.category : categoryOf(text);
+  // v2.9.4: phase 別カウントを別管理
+  const prevWorkCount = existing ? (existing.workCount || 0) : 0;
+  const prevRestCount = existing ? (existing.restCount || 0) : 0;
   STATE.collection[text] = {
-    count: (existing ? existing.count : 0) + gain,  // ← レアリティ別加算
+    count: (existing ? existing.count : 0) + gain,
+    workCount: prevWorkCount + (ph === 'work' ? gain : 0),
+    restCount: prevRestCount + (ph === 'rest' ? gain : 0),
     firstSeen: existing ? existing.firstSeen : now,
     lastSeen: now,
     rare,
@@ -2038,12 +2069,10 @@ function getWordsForPhase(phase) {
   let words;
   switch (STATE.wordMode) {
     case 'encyc':
-      // 百科ぽもじ v2.9：work/rest で別 pool（4:1 分割）＋ 解放級フィルタ
+      // 百科ぽもじ v2.9.4：work/rest で別 pool ＋ phase 別 classLevel フィルタ
       words = getEncyclopediaPoolByPhase(phase);
-      // 解放級でフィルタ：classLevel 以上 (=数値が低い = 上級) のみ通過
-      // 例: classLevel=10 → 10 級のみ / classLevel=5 → 10〜5 級
-      words = words.filter(w => classOf(w) >= STATE.classLevel);
-      // 通常語 (class=10) が消えた場合のフォールバック
+      const cl = (phase === 'rest') ? STATE.classLevelRest : STATE.classLevelWork;
+      words = words.filter(w => classOf(w) >= cl);
       if (words.length === 0) words = defaults;
       // v2.9: パーティ 4 体を優先（pool に重複追加して確率を上げる）
       if (STATE.party.initialized) {
@@ -2126,6 +2155,8 @@ function load() {
   // v2.9 リニューアル：パーティ・解放級・カスタム秒
   try { STATE.party = JSON.parse(localStorage.getItem(KEY_PARTY) || '{"hero":null,"members":[],"initialized":false}'); } catch(e) { STATE.party = {hero:null,members:[],initialized:false}; }
   STATE.classLevel = parseInt(localStorage.getItem(KEY_CLASSLEVEL) || '10', 10);
+  STATE.classLevelWork = parseInt(localStorage.getItem(KEY_CLASSLEVEL_WORK) || String(STATE.classLevel), 10);
+  STATE.classLevelRest = parseInt(localStorage.getItem(KEY_CLASSLEVEL_REST) || String(STATE.classLevel), 10);
   try {
     const cs = JSON.parse(localStorage.getItem(KEY_CUSTOM_SEC) || '{}');
     STATE.customWorkSec = cs.work || 0;
