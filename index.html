@@ -325,6 +325,15 @@ footer {
   font-family: var(--mono); font-size: 0.55rem;
   color: var(--muted); margin-top: 4px;
 }
+.col-item .ci-cat {
+  position: absolute; top: 2px; right: 4px;
+  font-family: var(--serif); font-size: 0.5rem;
+  color: rgba(107,182,255,0.65);
+  letter-spacing: 0.02em;
+  max-width: calc(100% - 24px);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-align: right;
+}
 .col-item .ci-rare {
   position: absolute; top: 2px; left: 4px;
   font-size: 0.55rem;
@@ -718,7 +727,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.5（レア文字大きく落ちる + 図鑑500件ページネーション）／ 作: rainybrainch<br>
+      ぽもじかん v2.6（カテゴリタグ・図鑑で 96 カテゴリが一目で分かる）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1281,6 +1290,114 @@ function isMythical(text) {
          (_architectureSet && _architectureSet.has(text)) ||
          (_scientistSet && _scientistSet.has(text));
 }
+// カテゴリ判定（人間が読める名前を返す）
+function categoryOf(text) {
+  buildEncycSets();
+  if (_yojiSet?.has(text))      return '四字熟語';
+  if (_kojiSet?.has(text))      return '故事成語';
+  if (_kotowazaSet?.has(text))  return 'ことわざ';
+  if (_kanyokuSet?.has(text))   return '慣用句';
+  if (_kigoSet?.has(text))      return '季語';
+  if (_kogoSet?.has(text))      return '古語';
+  if (_creativeSet?.has(text))  return '創作';
+  // 古典
+  if (_utamakuraSet?.has(text)) return '歌枕';
+  if (_kotenSet?.has(text))     return '古典作品';
+  if (_hyakuninSet?.has(text))  return '百人一首';
+  if (_gagoSet?.has(text))      return '雅語';
+  if (_kanshiSet?.has(text))    return '漢詩';
+  // 神話・宗教
+  if (_shintoSet?.has(text))    return '神道';
+  if (_buddhistSet?.has(text))  return '仏教';
+  if (_greekSet?.has(text))     return 'ギリシャ神話';
+  if (_northSet?.has(text))     return '北欧神話';
+  if (_cosmosSet?.has(text))    return '宇宙天文';
+  if (_traditionSet?.has(text)) return '伝統文化';
+  // 自然
+  if (_birdSet?.has(text))      return '鳥';
+  if (_fishSet?.has(text))      return '魚';
+  if (_floraSet?.has(text))     return '植物';
+  if (_insectSet?.has(text))    return '昆虫';
+  if (_animalSet?.has(text))    return '動物';
+  if (_mineralSet?.has(text))   return '鉱物';
+  if (_weatherSet?.has(text))   return '気象';
+  if (_biologySet?.has(text))   return '生物分類';
+  if (_treeSet?.has(text))      return '樹木';
+  if (_gemSet?.has(text))       return '宝石';
+  // 生活
+  if (_foodSet?.has(text))      return '食べ物';
+  if (_bodySet?.has(text))      return '体';
+  if (_placeSet?.has(text))     return '地名';
+  if (_colorSet?.has(text))     return '色';
+  if (_emotionSet?.has(text))   return '感情';
+  if (_jobSet?.has(text))       return '職業';
+  if (_toolSet?.has(text))      return '道具楽器';
+  if (_sportSet?.has(text))     return 'スポーツ';
+  if (_clothingSet?.has(text))  return '衣服';
+  // オノマトペ
+  if (_giongoSet?.has(text))    return '擬音語';
+  if (_gitaigoSet?.has(text))   return '擬態語';
+  // 歴史
+  if (_historicSet?.has(text))  return '歴史人物';
+  if (_eraSet?.has(text))       return '時代';
+  // 医療
+  if (_diseaseSet?.has(text))   return '病名';
+  if (_anatomySet?.has(text))   return '解剖';
+  if (_drugSet?.has(text))      return '薬学';
+  if (_medDeptSet?.has(text))   return '診療科';
+  // 現代
+  if (_techSet?.has(text))      return 'テクノロジー';
+  if (_businessSet?.has(text))  return 'ビジネス';
+  if (_cultureSet?.has(text))   return '現代カルチャー';
+  // 世界
+  if (_countrySet?.has(text))   return '国名';
+  if (_capitalSet?.has(text))   return '首都';
+  if (_landmarkSet?.has(text))  return '観光地';
+  if (_geoSet?.has(text))       return '地理';
+  // 法経政
+  if (_lawSet?.has(text))       return '法律';
+  if (_financeSet?.has(text))   return '経済';
+  if (_politicsSet?.has(text))  return '政治';
+  // 科学
+  if (_physicsSet?.has(text))   return '物理';
+  if (_chemistrySet?.has(text)) return '化学';
+  if (_mathSet?.has(text))      return '数学';
+  if (_unitSet?.has(text))      return '単位';
+  // 料理
+  if (_ingredientSet?.has(text)) return '食材';
+  if (_proteinSet?.has(text))   return '肉魚卵乳';
+  if (_cookingSet?.has(text))   return '調理法';
+  // サブカル
+  if (_animeSet?.has(text))     return 'アニメ漫画';
+  if (_gameSet?.has(text))      return 'ゲーム';
+  if (_subculSet?.has(text))    return 'サブカル';
+  // 音楽
+  if (_classicSet?.has(text))   return 'クラシック';
+  if (_popMusicSet?.has(text))  return 'ポップ音楽';
+  if (_genreSet?.has(text))     return '楽派';
+  if (_jpopSet?.has(text))      return '邦楽';
+  // 美術
+  if (_paintingSet?.has(text))     return '名画';
+  if (_artMovementSet?.has(text))  return '美術運動';
+  if (_architectureSet?.has(text)) return '建築';
+  if (_photoSet?.has(text))        return '写真';
+  if (_buildSet?.has(text))        return '建築用語';
+  // 人物
+  if (_scientistSet?.has(text)) return '科学者';
+  if (_literatiSet?.has(text))  return '文学者';
+  if (_athleteSet?.has(text))   return 'アスリート';
+  if (_artistSet?.has(text))    return '芸術家';
+  // カタカナ / 漢字 / 一般語彙
+  if (_katakanaSet?.has(text))  return 'カタカナ';
+  if (_senmonSet?.has(text))    return '専門用語';
+  if (_kanjiG1G3Set?.has(text)) return '小1-3漢字';
+  if (_kanjiG4G6Set?.has(text)) return '小4-6漢字';
+  if (_kanjiMidSet?.has(text))  return '中学習漢字';
+  if (_kanjiJinmeiSet?.has(text)) return '人名用漢字';
+  if (_kanjiHighSet?.has(text)) return '高校漢字';
+  return '';
+}
+
 function isGold(text) {
   buildEncycSets();
   // カタカナ / 慣用句 / 季語 / 中学習漢字 / 人名用 / 高校漢字 / 鳥魚花虫獣 / 色 / オノマトペ / 伝統 / 鉱物 / 天気 / 楽器 / スポーツ = 金
@@ -1354,12 +1471,15 @@ function recordWord(text, type) {
     }
   }
   const gain = expFor(rare);
+  // カテゴリは初出時に判定して保存（再判定不要、Lookup を 1 回に）
+  const category = existing && existing.category ? existing.category : categoryOf(text);
   STATE.collection[text] = {
     count: (existing ? existing.count : 0) + gain,  // ← レアリティ別加算
     firstSeen: existing ? existing.firstSeen : now,
     lastSeen: now,
     rare,
-    type
+    type,
+    category
   };
   try { localStorage.setItem(KEY_COLLECTION, JSON.stringify(STATE.collection)); } catch(e) {}
   return STATE.collection[text];
@@ -3009,6 +3129,12 @@ let currentRarity = 'all';
 let currentColPage = 1;
 function openCollection() {
   currentColPage = 1;
+  // 既存コレクションに category 未保存があれば一度だけバックフィル
+  let dirty = false;
+  for (const [text, v] of Object.entries(STATE.collection)) {
+    if (!v.category) { v.category = categoryOf(text); if (v.category) dirty = true; }
+  }
+  if (dirty) { try { localStorage.setItem(KEY_COLLECTION, JSON.stringify(STATE.collection)); } catch(e) {} }
   document.getElementById('overlay-collection').classList.add('show');
   renderCollection(currentSort);
 }
@@ -3099,11 +3225,13 @@ function renderCollection(sortBy) {
     const rareIcon = v.rare === 'rainbow' ? '🌈' : v.rare === 'legendary' ? '☆' : v.rare === 'gold' ? '✨' : '';
     const fav = STATE.favorites[text] ? '★' : '☆';
     const favCls = STATE.favorites[text] ? 'on' : '';
+    const cat = v.category || categoryOf(text);
     return `
-      <div class="${classes.join(' ')}" title="${escape(text)} ── Lv ${lv} ／ ${v.count}回">
+      <div class="${classes.join(' ')}" title="${escape(text)} ── Lv ${lv} ／ ${v.count}回${cat ? ' ／ ' + cat : ''}">
         ${rareIcon ? `<span class="ci-rare">${rareIcon}</span>` : ''}
         <span class="ci-lv">Lv${lv}</span>
         <span class="ci-text">${escape(text)}</span>
+        ${cat ? `<span class="ci-cat">${cat}</span>` : ''}
         <span class="ci-count">×${v.count}</span>
         <span class="ci-fav ${favCls}" onclick="event.stopPropagation();toggleFavorite('${escape(text).replace(/'/g, "\\'")}')">${fav}</span>
       </div>
@@ -3412,7 +3540,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.5 物理サイズ強化 + 図鑑高速化','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.6 カテゴリタグ追加','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
