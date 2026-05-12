@@ -2,21 +2,30 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c1426">
 <title>404 ── ぽもじかん</title>
 <style>
-body { background: #0c1426; color: #c8d0e8; font-family: 'Noto Serif JP', serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-h1 { color: #c9a84c; font-size: 4rem; letter-spacing: 0.2em; margin: 0 0 8px; }
-p { font-size: 1rem; opacity: 0.85; max-width: 360px; line-height: 1.8; margin: 6px 0; }
+body { background: linear-gradient(180deg, #0c1426, #131c33); color: #c8d0e8; font-family: 'Noto Serif JP', serif; min-height: 100vh; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); text-align: center; }
+h1 { color: #c9a84c; font-size: 4rem; letter-spacing: 0.2em; margin: 0 0 8px; text-shadow: 0 0 24px rgba(201,168,76,0.4); }
+.lost-pomoji { font-size: 2.5rem; color: #ffd0f0; opacity: 0.6; letter-spacing: 0.6em; margin: 14px 0 8px; }
+p { font-size: 1rem; opacity: 0.85; max-width: 380px; line-height: 1.8; margin: 6px 0; }
 .poetic { color: #5a6890; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; margin-top: 24px; }
-a { color: #6bb6ff; text-decoration: none; font-weight: 700; margin-top: 18px; display: inline-block; padding: 12px 22px; border: 1px solid #6bb6ff; border-radius: 4px; }
+.actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; justify-content: center; }
+a { color: #6bb6ff; text-decoration: none; font-weight: 700; display: inline-block; padding: 12px 22px; border: 1px solid #6bb6ff; border-radius: 4px; transition: background 0.15s; }
 a:hover { background: #6bb6ff; color: #0c1426; }
+a.primary { background: #c9a84c; color: #0c1426; border-color: #c9a84c; }
+a.primary:hover { background: #ffe28a; }
 </style>
 </head>
 <body>
 <h1>404</h1>
-<p>その文字は、まだ降ってきていない。</p>
+<div class="lost-pomoji">迷ぽもじ</div>
+<p>その言葉は、まだ降ってきていない。<br>22,160 種類の中にも、まだ現れぬ字がある。</p>
 <p class="poetic">この URL は存在しません</p>
-<a href="/pomojikan/">🌑 ぽもじかん に戻る</a>
+<div class="actions">
+  <a class="primary" href="/pomojikan/">🌑 ぽもじかんへ戻る</a>
+  <a href="/pomojikan/?view=collection">📚 図鑑を見る</a>
+</div>
 </body>
 </html>
