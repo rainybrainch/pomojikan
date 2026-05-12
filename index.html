@@ -38,6 +38,9 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><path d='M40 22 L88 22 L88 60 Q88 64 64 64 Q40 64 40 60 Z' fill='%23ff6b6b' opacity='0.55'/><circle cx='64' cy='64' r='4' fill='%23c9a84c'/><path d='M40 106 L88 106 L88 68 Q88 64 64 64 Q40 64 40 68 Z' fill='%23c9a84c' opacity='0.75'/></svg>">
 <link rel="manifest" href="manifest.json">
 <title>🌑 ぽもじかん ── 文字が降ってくる作業タイマー</title>
+<script src="words-kanji.js"></script>
+<script src="words-jukugo.js"></script>
+<script src="words-general.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -563,6 +566,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気のぽもじ</span><span class="hint">「勉強する！」「頑張るぞ！」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほんのぽもじ</span><span class="hint">「のんびり」「お茶しよう」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"><span>☆ 伝説のぽもじ</span><span class="hint">七大罪徳＝レア・経験値多め</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">漢字・熟語・ことわざ・名詞… 約1万種 / 1年プロジェクト</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自分で決める</span><span class="hint">自分の言葉を入れる（集中用/休憩用 別）</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365 の名言</span><span class="hint">読雨に書いた名言が降る</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋伝説＋名言 全部</span></label>
@@ -691,7 +695,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.5（キャラLv連動色）／ 作: rainybrainch<br>
+      ぽもじかん v1.6（百科ぽもじ・約 3,400 語 収録）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1036,8 +1040,44 @@ function levelStyle(lv, type, rare) {
 }
 // 伝説のぽもじ判定（罪徳7+7=14語は伝説扱い）
 const LEGENDARY_SET = new Set([...VIRTUES, ...SINS]);
+
+// 百科ぽもじ用：カテゴリ別レアリティテーブル
+let _katakanaSet, _kogoSet, _senmonSet, _yojiSet, _kojiSet, _kotowazaSet, _kanyokuSet, _creativeSet, _kanjiG1G3Set, _kanjiG4G6Set, _kanjiMidSet;
+function buildEncycSets() {
+  if (_yojiSet) return;
+  _yojiSet      = new Set(window.POMOJI_YOJI || []);
+  _kojiSet      = new Set(window.POMOJI_KOJI || []);
+  _kotowazaSet  = new Set(window.POMOJI_KOTOWAZA || []);
+  _kanyokuSet   = new Set(window.POMOJI_KANYOKU || []);
+  _katakanaSet  = new Set(window.POMOJI_KATAKANA || []);
+  _kogoSet      = new Set(window.POMOJI_KOGO || []);
+  _senmonSet    = new Set(window.POMOJI_SENMON || []);
+  _creativeSet  = new Set(window.POMOJI_CREATIVE || []);
+  if (window.POMOJI_KANJI) {
+    _kanjiG1G3Set = new Set([...(window.POMOJI_KANJI.g1||''), ...(window.POMOJI_KANJI.g2||''), ...(window.POMOJI_KANJI.g3||'')]);
+    _kanjiG4G6Set = new Set([...(window.POMOJI_KANJI.g4||''), ...(window.POMOJI_KANJI.g5||''), ...(window.POMOJI_KANJI.g6||'')]);
+  }
+  _kanjiMidSet = new Set([...(window.POMOJI_KANJI_MIDDLE||'')]);
+}
 function isLegendary(text) {
-  return LEGENDARY_SET.has(text);
+  buildEncycSets();
+  // 七大罪徳 / 故事成語 / 古語 / 専門用語 / ことわざ / 創作系 = 伝説〜虹
+  return LEGENDARY_SET.has(text) ||
+         (_yojiSet && _yojiSet.has(text)) ||
+         (_kotowazaSet && _kotowazaSet.has(text)) ||
+         (_creativeSet && _creativeSet.has(text));
+}
+function isMythical(text) {
+  buildEncycSets();
+  return (_kojiSet && _kojiSet.has(text)) ||
+         (_kogoSet && _kogoSet.has(text)) ||
+         (_senmonSet && _senmonSet.has(text));
+}
+function isGold(text) {
+  buildEncycSets();
+  return (_katakanaSet && _katakanaSet.has(text)) ||
+         (_kanyokuSet && _kanyokuSet.has(text)) ||
+         (_kanjiMidSet && _kanjiMidSet.has(text));
 }
 
 // レアリティ別経験値量
@@ -1055,10 +1095,11 @@ function recordWord(text, type) {
   const existing = STATE.collection[text];
   let rare = existing ? existing.rare : null;
   if (!existing) {
-    // 初出：レア判定
-    if (isLegendary(text)) {
-      rare = 'legendary';
-    } else {
+    // 初出：レア判定（カテゴリ優先 → 確率レア）
+    if (isMythical(text))        rare = 'rainbow';
+    else if (isLegendary(text))  rare = 'legendary';
+    else if (isGold(text))       rare = 'gold';
+    else {
       const r = Math.random();
       if (r < 0.002)      rare = 'rainbow';
       else if (r < 0.01)  rare = 'gold';
@@ -1118,11 +1159,48 @@ function seasonWords() {
   return ['冬', '雪', '霜', '寒', '凛', '静', '白', '深'];
 }
 
+// 百科ぽもじ語彙集約（全カテゴリ混在）
+let _encycPool = null;
+function getEncyclopediaPool() {
+  if (_encycPool) return _encycPool;
+  buildEncycSets();
+  const pool = [];
+  // 漢字（カテゴリ別重み）
+  if (window.POMOJI_KANJI) {
+    pool.push(...[...(window.POMOJI_KANJI.g1||'')]);
+    pool.push(...[...(window.POMOJI_KANJI.g2||'')]);
+    pool.push(...[...(window.POMOJI_KANJI.g3||'')]);
+    pool.push(...[...(window.POMOJI_KANJI.g4||'')]);
+    pool.push(...[...(window.POMOJI_KANJI.g5||'')]);
+    pool.push(...[...(window.POMOJI_KANJI.g6||'')]);
+  }
+  if (window.POMOJI_KANJI_MIDDLE) pool.push(...[...(window.POMOJI_KANJI_MIDDLE)].slice(0, 400));
+  if (window.POMOJI_YOJI) pool.push(...window.POMOJI_YOJI);
+  if (window.POMOJI_KOJI) pool.push(...window.POMOJI_KOJI);
+  if (window.POMOJI_KOTOWAZA) pool.push(...window.POMOJI_KOTOWAZA);
+  if (window.POMOJI_KANYOKU) pool.push(...window.POMOJI_KANYOKU);
+  if (window.POMOJI_KIGO) pool.push(...window.POMOJI_KIGO);
+  if (window.POMOJI_NOUN) pool.push(...window.POMOJI_NOUN);
+  if (window.POMOJI_VERB) pool.push(...window.POMOJI_VERB);
+  if (window.POMOJI_ADJ) pool.push(...window.POMOJI_ADJ);
+  if (window.POMOJI_KATAKANA) pool.push(...window.POMOJI_KATAKANA);
+  if (window.POMOJI_KOGO) pool.push(...window.POMOJI_KOGO);
+  if (window.POMOJI_SENMON) pool.push(...window.POMOJI_SENMON);
+  if (window.POMOJI_CREATIVE) pool.push(...window.POMOJI_CREATIVE);
+  _encycPool = pool;
+  log('[encyc] pool size:', pool.length);
+  return pool;
+}
+
 // 言葉セレクタ（モード別）
 function getWordsForPhase(phase) {
   const defaults = phase === 'work' ? VIRTUES : SINS;
   let words;
   switch (STATE.wordMode) {
+    case 'encyc':
+      // 百科ぽもじ：全カテゴリ混在（約 1万種）
+      words = getEncyclopediaPool();
+      break;
     case 'yaruki':
       words = phase === 'work' ? YARUKI_WORK : YARUKI_REST;
       break;
@@ -1202,7 +1280,7 @@ function load() {
   if (usp.has('font')  && FONT_FAMILIES[usp.get('font')]) { STATE.font = usp.get('font'); try { localStorage.setItem(KEY_FONT, STATE.font); } catch(e){} }
   if (usp.has('mode')) {
     const m = usp.get('mode');
-    if (['yaruki','nohohon','zaitoku','custom','fukurou365','mixed'].includes(m)) {
+    if (['yaruki','nohohon','zaitoku','encyc','custom','fukurou365','mixed'].includes(m)) {
       STATE.wordMode = m;
       try { localStorage.setItem(KEY_WORDMODE, STATE.wordMode); } catch(e){}
     }
@@ -2900,7 +2978,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v1.0','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v1.6 百科ぽもじ','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
