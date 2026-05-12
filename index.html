@@ -570,6 +570,26 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
       <button class="cf-btn rf-btn" data-rarity="gold">✨ 金</button>
       <button class="cf-btn rf-btn" data-rarity="normal">通常</button>
     </div>
+    <div class="collection-filter" id="category-filter" style="margin-top:4px;flex-wrap:wrap;">
+      <button class="cf-btn cgf-btn active" data-cgroup="all">全カテゴリ</button>
+      <button class="cf-btn cgf-btn" data-cgroup="kanji">漢字</button>
+      <button class="cf-btn cgf-btn" data-cgroup="jukugo">熟語</button>
+      <button class="cf-btn cgf-btn" data-cgroup="classic">古典</button>
+      <button class="cf-btn cgf-btn" data-cgroup="myth">神話宗教</button>
+      <button class="cf-btn cgf-btn" data-cgroup="nature">自然</button>
+      <button class="cf-btn cgf-btn" data-cgroup="life">生活</button>
+      <button class="cf-btn cgf-btn" data-cgroup="history">歴史</button>
+      <button class="cf-btn cgf-btn" data-cgroup="medical">医療</button>
+      <button class="cf-btn cgf-btn" data-cgroup="modern">現代</button>
+      <button class="cf-btn cgf-btn" data-cgroup="world">世界</button>
+      <button class="cf-btn cgf-btn" data-cgroup="legal">法経政</button>
+      <button class="cf-btn cgf-btn" data-cgroup="science">科学</button>
+      <button class="cf-btn cgf-btn" data-cgroup="cooking">料理</button>
+      <button class="cf-btn cgf-btn" data-cgroup="subcul">サブカル</button>
+      <button class="cf-btn cgf-btn" data-cgroup="music">音楽</button>
+      <button class="cf-btn cgf-btn" data-cgroup="arts">美術</button>
+      <button class="cf-btn cgf-btn" data-cgroup="people">人物</button>
+    </div>
     <div class="collection-grid" id="collection-grid"></div>
     <div class="actions menu-actions">
       <button class="btn" id="col-close">閉じる</button>
@@ -727,7 +747,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.6（カテゴリタグ・図鑑で 96 カテゴリが一目で分かる）／ 作: rainybrainch<br>
+      ぽもじかん v2.7（大分類フィルタ・18 大分類で図鑑を俯瞰）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -3122,10 +3142,42 @@ document.querySelectorAll('.rf-btn').forEach(btn => {
     renderCollection(currentSort);
   });
 });
+// 大分類フィルタ用 cgf-btn
+document.querySelectorAll('.cgf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cgf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCgroup = btn.dataset.cgroup;
+    renderCollection(currentSort);
+  });
+});
+
+// カテゴリ名 → 大分類 (cgroup) マッピング
+const CATEGORY_GROUP = {
+  '四字熟語':'jukugo','故事成語':'jukugo','ことわざ':'jukugo','慣用句':'jukugo','季語':'jukugo','古語':'jukugo','創作':'jukugo',
+  '歌枕':'classic','古典作品':'classic','百人一首':'classic','雅語':'classic','漢詩':'classic',
+  '神道':'myth','仏教':'myth','ギリシャ神話':'myth','北欧神話':'myth','宇宙天文':'myth','伝統文化':'myth',
+  '鳥':'nature','魚':'nature','植物':'nature','昆虫':'nature','動物':'nature','鉱物':'nature','気象':'nature','生物分類':'nature','樹木':'nature','宝石':'nature',
+  '食べ物':'life','体':'life','地名':'life','色':'life','感情':'life','職業':'life','道具楽器':'life','スポーツ':'life','衣服':'life','擬音語':'life','擬態語':'life',
+  '歴史人物':'history','時代':'history',
+  '病名':'medical','解剖':'medical','薬学':'medical','診療科':'medical',
+  'テクノロジー':'modern','ビジネス':'modern','現代カルチャー':'modern',
+  '国名':'world','首都':'world','観光地':'world','地理':'world',
+  '法律':'legal','経済':'legal','政治':'legal',
+  '物理':'science','化学':'science','数学':'science','単位':'science',
+  '食材':'cooking','肉魚卵乳':'cooking','調理法':'cooking',
+  'アニメ漫画':'subcul','ゲーム':'subcul','サブカル':'subcul',
+  'クラシック':'music','ポップ音楽':'music','楽派':'music','邦楽':'music',
+  '名画':'arts','美術運動':'arts','建築':'arts','写真':'arts','建築用語':'arts',
+  '科学者':'people','文学者':'people','アスリート':'people','芸術家':'people',
+  '小1-3漢字':'kanji','小4-6漢字':'kanji','中学習漢字':'kanji','人名用漢字':'kanji','高校漢字':'kanji',
+  'カタカナ':'modern','専門用語':'science'
+};
 
 // ─── 📚 ぽもじ図鑑 ───
 let currentSort = 'count';
 let currentRarity = 'all';
+let currentCgroup = 'all';
 let currentColPage = 1;
 function openCollection() {
   currentColPage = 1;
@@ -3142,7 +3194,7 @@ let currentSearch = '';
 let lastSortRarity = '';
 function renderCollection(sortBy) {
   // ソート or フィルタ変更時はページリセット
-  const sigNow = sortBy + '|' + currentRarity + '|' + (document.getElementById('col-search')?.value || '');
+  const sigNow = sortBy + '|' + currentRarity + '|' + currentCgroup + '|' + (document.getElementById('col-search')?.value || '');
   if (sigNow !== lastSortRarity) {
     currentColPage = 1;
     lastSortRarity = sigNow;
@@ -3176,6 +3228,13 @@ function renderCollection(sortBy) {
     } else {
       filtered = filtered.filter(([, v]) => v.rare === currentRarity);
     }
+  }
+  // 大分類フィルタ
+  if (currentCgroup && currentCgroup !== 'all') {
+    filtered = filtered.filter(([text, v]) => {
+      const cat = v.category || categoryOf(text);
+      return CATEGORY_GROUP[cat] === currentCgroup;
+    });
   }
   // ソート
   let sorted = filtered.slice();
@@ -3540,7 +3599,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.6 カテゴリタグ追加','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.7 大分類フィルタ','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
