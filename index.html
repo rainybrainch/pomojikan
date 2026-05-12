@@ -46,6 +46,10 @@
 <script src="words-onomatopoeia.js"></script>
 <script src="words-history.js"></script>
 <script src="words-mythology.js"></script>
+<script src="words-medical.js"></script>
+<script src="words-modern.js"></script>
+<script src="words-world.js"></script>
+<script src="words-legal.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -571,7 +575,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気のぽもじ</span><span class="hint">「勉強する！」「頑張るぞ！」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほんのぽもじ</span><span class="hint">「のんびり」「お茶しよう」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"><span>☆ 伝説のぽもじ</span><span class="hint">七大罪徳＝レア・経験値多め</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">漢字・熟語・神話・歴史・オノマトペ… 約 11,000 種 収録中</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">漢字・熟語・神話・医療・現代・世界… 約 15,700 種 収録中</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自分で決める</span><span class="hint">自分の言葉を入れる（集中用/休憩用 別）</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365 の名言</span><span class="hint">読雨に書いた名言が降る</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋伝説＋名言 全部</span></label>
@@ -700,7 +704,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.8（百科ぽもじ・約 11,000 語 収録 / 22,000 へ拡張中）／ 作: rainybrainch<br>
+      ぽもじかん v1.9（百科ぽもじ・約 15,700 語 収録 / 22,000 へラスト 1 回）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1050,7 +1054,9 @@ const LEGENDARY_SET = new Set([...VIRTUES, ...SINS]);
 let _katakanaSet, _kogoSet, _senmonSet, _yojiSet, _kojiSet, _kotowazaSet, _kanyokuSet, _creativeSet, _kanjiG1G3Set, _kanjiG4G6Set, _kanjiMidSet, _kanjiJinmeiSet, _kanjiHighSet, _kigoSet,
     _birdSet, _fishSet, _floraSet, _insectSet, _animalSet, _foodSet, _bodySet, _placeSet, _colorSet, _emotionSet,
     _giongoSet, _gitaigoSet, _historicSet, _eraSet, _shintoSet, _buddhistSet, _greekSet, _northSet, _cosmosSet, _traditionSet,
-    _jobSet, _toolSet, _sportSet, _mineralSet, _weatherSet, _biologySet;
+    _jobSet, _toolSet, _sportSet, _mineralSet, _weatherSet, _biologySet,
+    _diseaseSet, _anatomySet, _drugSet, _medDeptSet, _techSet, _businessSet, _cultureSet,
+    _countrySet, _capitalSet, _landmarkSet, _geoSet, _lawSet, _financeSet, _politicsSet;
 function buildEncycSets() {
   if (_yojiSet) return;
   _yojiSet      = new Set(window.POMOJI_YOJI || []);
@@ -1100,6 +1106,24 @@ function buildEncycSets() {
   _mineralSet     = new Set(window.POMOJI_MINERAL || []);
   _weatherSet     = new Set(window.POMOJI_WEATHER || []);
   _biologySet     = new Set(window.POMOJI_BIOLOGY || []);
+  // 医療
+  _diseaseSet     = new Set(window.POMOJI_DISEASE || []);
+  _anatomySet     = new Set(window.POMOJI_ANATOMY || []);
+  _drugSet        = new Set(window.POMOJI_DRUG || []);
+  _medDeptSet     = new Set(window.POMOJI_MEDICAL_DEPT || []);
+  // 現代
+  _techSet        = new Set(window.POMOJI_TECH || []);
+  _businessSet    = new Set(window.POMOJI_BUSINESS || []);
+  _cultureSet     = new Set(window.POMOJI_CULTURE || []);
+  // 世界地理
+  _countrySet     = new Set(window.POMOJI_COUNTRY || []);
+  _capitalSet     = new Set(window.POMOJI_CAPITAL || []);
+  _landmarkSet    = new Set(window.POMOJI_LANDMARK || []);
+  _geoSet         = new Set(window.POMOJI_GEO || []);
+  // 法経政
+  _lawSet         = new Set(window.POMOJI_LAW || []);
+  _financeSet     = new Set(window.POMOJI_FINANCE || []);
+  _politicsSet    = new Set(window.POMOJI_POLITICS || []);
 }
 function isLegendary(text) {
   buildEncycSets();
@@ -1115,14 +1139,21 @@ function isLegendary(text) {
 }
 function isMythical(text) {
   buildEncycSets();
-  // 故事成語 / 古語 / 専門用語 / 歴史人物 / 時代 / 宇宙 / 生物分類 = 虹
+  // 故事成語 / 古語 / 専門用語 / 歴史人物 / 時代 / 宇宙 / 生物分類 / 病名 / 解剖 / 国名 / 首都 / 観光地 / 法律 / 政治 = 虹
   return (_kojiSet && _kojiSet.has(text)) ||
          (_kogoSet && _kogoSet.has(text)) ||
          (_senmonSet && _senmonSet.has(text)) ||
          (_historicSet && _historicSet.has(text)) ||
          (_eraSet && _eraSet.has(text)) ||
          (_cosmosSet && _cosmosSet.has(text)) ||
-         (_biologySet && _biologySet.has(text));
+         (_biologySet && _biologySet.has(text)) ||
+         (_diseaseSet && _diseaseSet.has(text)) ||
+         (_anatomySet && _anatomySet.has(text)) ||
+         (_countrySet && _countrySet.has(text)) ||
+         (_capitalSet && _capitalSet.has(text)) ||
+         (_landmarkSet && _landmarkSet.has(text)) ||
+         (_lawSet && _lawSet.has(text)) ||
+         (_politicsSet && _politicsSet.has(text));
 }
 function isGold(text) {
   buildEncycSets();
@@ -1145,7 +1176,14 @@ function isGold(text) {
          (_mineralSet && _mineralSet.has(text)) ||
          (_weatherSet && _weatherSet.has(text)) ||
          (_toolSet && _toolSet.has(text)) ||
-         (_sportSet && _sportSet.has(text));
+         (_sportSet && _sportSet.has(text)) ||
+         (_drugSet && _drugSet.has(text)) ||
+         (_medDeptSet && _medDeptSet.has(text)) ||
+         (_techSet && _techSet.has(text)) ||
+         (_businessSet && _businessSet.has(text)) ||
+         (_cultureSet && _cultureSet.has(text)) ||
+         (_geoSet && _geoSet.has(text)) ||
+         (_financeSet && _financeSet.has(text));
 }
 
 // レアリティ別経験値量
@@ -1289,6 +1327,24 @@ function getEncyclopediaPool() {
   if (window.POMOJI_MINERAL) pool.push(...window.POMOJI_MINERAL);
   if (window.POMOJI_WEATHER) pool.push(...window.POMOJI_WEATHER);
   if (window.POMOJI_BIOLOGY) pool.push(...window.POMOJI_BIOLOGY);
+  // 医療編
+  if (window.POMOJI_DISEASE)      pool.push(...window.POMOJI_DISEASE);
+  if (window.POMOJI_ANATOMY)      pool.push(...window.POMOJI_ANATOMY);
+  if (window.POMOJI_DRUG)         pool.push(...window.POMOJI_DRUG);
+  if (window.POMOJI_MEDICAL_DEPT) pool.push(...window.POMOJI_MEDICAL_DEPT);
+  // 現代編
+  if (window.POMOJI_TECH)     pool.push(...window.POMOJI_TECH);
+  if (window.POMOJI_BUSINESS) pool.push(...window.POMOJI_BUSINESS);
+  if (window.POMOJI_CULTURE)  pool.push(...window.POMOJI_CULTURE);
+  // 世界編
+  if (window.POMOJI_COUNTRY)  pool.push(...window.POMOJI_COUNTRY);
+  if (window.POMOJI_CAPITAL)  pool.push(...window.POMOJI_CAPITAL);
+  if (window.POMOJI_LANDMARK) pool.push(...window.POMOJI_LANDMARK);
+  if (window.POMOJI_GEO)      pool.push(...window.POMOJI_GEO);
+  // 法経政編
+  if (window.POMOJI_LAW)      pool.push(...window.POMOJI_LAW);
+  if (window.POMOJI_FINANCE)  pool.push(...window.POMOJI_FINANCE);
+  if (window.POMOJI_POLITICS) pool.push(...window.POMOJI_POLITICS);
   _encycPool = pool;
   log('[encyc] pool size:', pool.length);
   return pool;
@@ -3080,7 +3136,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v1.8 百科ぽもじ（拡張 11,000 語）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v1.9 百科ぽもじ（拡張 15,700 語）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
