@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0c1426" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#0c1426" media="(prefers-color-scheme: light)">
 <meta name="color-scheme" content="dark light">
@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.4（雨/泡 独立進捗・☆ 別解放）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.5（スマホアプリ化 サイクル 1：容量超過対策＋インストール）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -4174,6 +4174,73 @@ if (DEBUG) {
   console.log('%c🌑 ぽもじかん v2.9 育成ゲーム化（パーティ + 段階解放）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
+
+// v2.9.5: localStorage 容量超過対策
+// QuotaExceededError で全機能が止まらないように、書き込みをラップ
+const _safeSetItem = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      // 容量超過：図鑑の古いエントリを 10% 削減して再試行
+      try {
+        const col = JSON.parse(localStorage.getItem(KEY_COLLECTION) || '{}');
+        const entries = Object.entries(col).sort((a, b) => (a[1].count || 0) - (b[1].count || 0));
+        const drop = Math.floor(entries.length * 0.1);
+        for (let i = 0; i < drop; i++) delete col[entries[i][0]];
+        localStorage.setItem(KEY_COLLECTION, JSON.stringify(col));
+        localStorage.setItem(key, value);
+        flash('💾 ストレージ整理：使用頻度の低いぽもじを ' + drop + ' 件アーカイブしました');
+        return true;
+      } catch (e2) {
+        flash('⚠ ストレージ容量超過。設定→データ書出 でバックアップ推奨');
+        return false;
+      }
+    }
+    return false;
+  }
+};
+window._safeSetItem = _safeSetItem;
+
+// v2.9.5: PWA インストールプロンプト管理
+let _deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  // 起動 30 秒後に提案（うざくない）
+  setTimeout(() => {
+    if (!_deferredInstallPrompt) return;
+    if (localStorage.getItem('pomojikan_install_dismissed')) return;
+    showInstallToast();
+  }, 30000);
+});
+function showInstallToast() {
+  if (document.getElementById('install-toast')) return;
+  const t = document.createElement('div');
+  t.id = 'install-toast';
+  t.style.cssText = 'position:fixed;bottom:calc(60px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(12,20,38,0.96);color:var(--gold);padding:12px 18px;border:1px solid var(--gold);border-radius:8px;font-family:var(--serif);z-index:80;font-size:0.85rem;display:flex;gap:10px;align-items:center;max-width:90vw;box-shadow:0 4px 24px rgba(0,0,0,0.4);';
+  t.innerHTML = '📱 ホーム画面に追加してアプリ化 <button style="background:var(--gold);color:#0c1426;border:none;padding:5px 12px;border-radius:4px;font-weight:700;cursor:pointer;">追加</button><button style="background:transparent;color:var(--muted);border:1px solid var(--muted);padding:5px 10px;border-radius:4px;cursor:pointer;font-size:0.75rem;">×</button>';
+  const [addBtn, closeBtn] = t.querySelectorAll('button');
+  addBtn.onclick = async () => {
+    if (_deferredInstallPrompt) {
+      _deferredInstallPrompt.prompt();
+      _deferredInstallPrompt = null;
+    }
+    t.remove();
+  };
+  closeBtn.onclick = () => {
+    localStorage.setItem('pomojikan_install_dismissed', '1');
+    t.remove();
+  };
+  document.body.appendChild(t);
+}
+// インストール完了後
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('pomojikan_install_dismissed', '1');
+  _deferredInstallPrompt = null;
+  flash('🎉 ホーム画面に追加されました！');
+});
 
 // PWA + 更新検知（SW v23 以降の新バージョンを自動通知）
 if ('serviceWorker' in navigator) {
