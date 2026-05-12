@@ -52,19 +52,33 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.</pre>
 
 <h2>使用 API</h2>
 <ul>
-  <li>Web Audio API ── 雨音 BGM、完走チャイム、操作音</li>
+  <li>Web Audio API ── 雨音 BGM、完走チャイム、操作音、☆ レア発見サウンド</li>
   <li>Notifications API ── 完走通知</li>
   <li>Web Share API ── シェア機能</li>
-  <li>Vibration API ── ハプティック</li>
+  <li>Web Share Target API ── 他アプリから文字を受信（v2.9.13〜）</li>
+  <li>Vibration API ── ハプティック・レア発見振動</li>
   <li>Fullscreen API ── フォーカスモード</li>
   <li>Speech Synthesis API ── ナレーション</li>
-  <li>localStorage ── すべてのデータ保存</li>
+  <li>Service Worker + Cache API ── オフライン動作・自動更新検知</li>
+  <li>beforeinstallprompt ── PWA ホーム画面追加促進</li>
+  <li>localStorage ── すべてのデータ保存（自動 3 世代バックアップ）</li>
+</ul>
+
+<h2>データソース（百科ぽもじ・22,160 種類）</h2>
+<ul>
+  <li>学年別漢字 (1,011 字) ── 文部科学省「学年別漢字配当表」（PD）</li>
+  <li>中学習漢字・常用漢字 ── 文化庁「常用漢字表」（PD）</li>
+  <li>人名用漢字 ── 戸籍法に基づく（PD）</li>
+  <li>四字熟語 / 故事成語 / ことわざ / 慣用句 / 季語 / 古語 ── 古典由来（PD）</li>
+  <li>歴史人物・神話・古典作品名 ── PD</li>
+  <li>動植物・鉱物・天文・専門用語 ── 学術 PD</li>
+  <li>独自分類（カテゴリ・☆ レアリティ・解放級）── © 2026 rainybrainch</li>
 </ul>
 
 <h2>アイコン素材</h2>
-<p>すべての SVG アイコンは本プロジェクトで自作・コード生成しています。第三者ライセンスは使用していません。</p>
+<p>すべての SVG アイコン・スクリーンショット・OG 画像は本プロジェクトで自作・コード生成。第三者ライセンスは使用していません。</p>
 
-<p class="muted" style="margin-top:30px;">本アプリは個人プロジェクトです。商業利用・改変・再配布は MIT License に従って自由です。</p>
+<p class="muted" style="margin-top:30px;">本アプリは個人プロジェクトです。商業利用・改変・再配布は MIT License に従って自由です。v2.9 ／ 最終更新 2026-05-12</p>
 <p><a href="./">← アプリに戻る</a></p>
 </body>
 </html>
