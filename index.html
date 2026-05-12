@@ -532,14 +532,14 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <button class="btn small" data-preset="25/5">25/5</button>
     <button class="btn small" data-preset="50/10">50/10</button>
     <button class="btn small" data-preset="15/3">15/3</button>
-    <button class="btn small" id="btn-focus" title="集中モード（UI 最小化）">⛶ 集中</button>
+    <button class="btn small" id="btn-focus" title="集中モード（UI 最小化）" aria-label="集中モード（UI を最小化してフルスクリーン）">⛶ 集中</button>
   </div>
   <div class="settings settings-row2">
-    <button class="btn small" id="btn-collection" title="ぽもじ図鑑">📚</button>
-    <button class="btn small" id="btn-badges" title="達成バッジ">🏆</button>
-    <button class="btn small" id="btn-stats" title="統計">📊</button>
-    <button class="btn small" id="btn-share" title="シェア">📤</button>
-    <button class="btn small" id="btn-menu" title="メニュー">⚙</button>
+    <button class="btn small" id="btn-collection" title="ぽもじ図鑑" aria-label="ぽもじ図鑑を開く（C キーでも操作可）">📚</button>
+    <button class="btn small" id="btn-badges" title="達成バッジ" aria-label="達成バッジを開く（17 種の達成項目）">🏆</button>
+    <button class="btn small" id="btn-stats" title="統計" aria-label="統計を開く（S キーでも操作可）">📊</button>
+    <button class="btn small" id="btn-share" title="シェア" aria-label="シェア（P キーでも操作可）">📤</button>
+    <button class="btn small" id="btn-menu" title="メニュー" aria-label="メニューを開く（M キーでも操作可）">⚙</button>
   </div>
   <div class="poetic" id="poetic-line">ゆるく、文字を積もう。</div>
 </footer>
@@ -871,7 +871,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.26（store-description v2.9 完全反映）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.27（aria-label 補強・主要 6 ボタン）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
