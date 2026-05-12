@@ -1,0 +1,14 @@
+# セキュリティ脆弱性の報告先
+# Security vulnerability reporting
+
+Contact: https://github.com/rainybrainch/pomojikan/issues
+Expires: 2027-05-12T00:00:00.000Z
+Preferred-Languages: ja, en
+Canonical: https://rainybrainch.github.io/pomojikan/.well-known/security.txt
+Policy: https://github.com/rainybrainch/pomojikan/blob/main/SECURITY.md
+
+# このアプリは個人プロジェクトです。
+# 脆弱性を発見された場合は、上記 GitHub Issues に
+# 「Security」ラベル付きでご報告ください。
+# 本アプリはすべてのデータを端末ローカルに保存し、
+# サーバー送信は一切行いません（個人情報の漏洩経路がありません）。
