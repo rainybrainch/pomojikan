@@ -164,7 +164,10 @@ main {
   font-family: var(--serif); font-weight: 700; font-size: 0.78rem;
   letter-spacing: 0.1em; transition: all 0.15s; min-height: 38px;
 }
-.btn:hover, .btn:active { transform: translateY(-1px); background: var(--rain); color: var(--bg); }
+.btn:hover { transform: translateY(-1px); background: var(--rain); color: var(--bg); }
+/* v2.9.38 モバイルタップフィードバック：押された感の強化 */
+.btn:active { transform: scale(0.96) translateY(0); background: var(--rain); color: var(--bg); transition: transform 0.05s, background 0.05s; }
+.cf-btn:active, .theme-btn:active, .font-btn:active, .bgm-btn:active, .lang-btn:active { transform: scale(0.95); transition: transform 0.05s; }
 .btn.primary { background: linear-gradient(135deg, var(--gold), #b89940); color: var(--bg); border-color: var(--gold); }
 .btn.primary:hover { background: var(--gold); }
 .btn.small { padding: 8px 12px; font-size: 0.66rem; min-height: 36px; }
@@ -890,7 +893,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.37（長文字のフォントサイズ自動調整）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.38（ボタンタップフィードバック・押された感）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
