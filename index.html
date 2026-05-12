@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.2（雨/泡 視覚区別 + レアリティ振り直し）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.3（☆ 段階解放 + 序盤レア 千分の一の奇跡）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1612,6 +1612,7 @@ function updateClassLevel() {
   if (avgLv >= 11) newClass = 0; // 伝説解放
   if (newClass !== STATE.classLevel) {
     const advanced = newClass < STATE.classLevel;
+    const oldClass = STATE.classLevel;
     STATE.classLevel = newClass;
     localStorage.setItem(KEY_CLASSLEVEL, String(newClass));
     _encycPool = null; _encycPoolWork = null; _encycPoolRest = null; // pool 再構築
@@ -1619,18 +1620,33 @@ function updateClassLevel() {
       const label = newClass === 0 ? '☆ 伝説' : newClass + ' 級';
       flash(`🎓 ${label} 解放！新カテゴリの言葉が降ってきます`, 'gold');
       triggerRareEffect('gold');
+      // v2.9.3 レアリティ解放通知
+      // 6級到達 = 金解放 / 3級到達 = 伝説解放 / 1級到達 = 虹解放
+      if (oldClass > 6 && newClass <= 6) {
+        setTimeout(() => { flash('✨ 金のぽもじ が解放されました！', 'gold'); triggerRareEffect('gold'); }, 1200);
+      } else if (oldClass > 3 && newClass <= 3) {
+        setTimeout(() => { flash('☆ 伝説のぽもじ が解放されました！', 'legendary'); triggerRareEffect('legendary'); }, 1200);
+      } else if (oldClass > 1 && newClass <= 1) {
+        setTimeout(() => { flash('🌈 虹のぽもじ が解放されました！', 'rainbow'); triggerRareEffect('rainbow'); }, 1200);
+      }
     }
     renderClassBadge();
   }
 }
 
-// 解放級バッジ表示
+// 解放級バッジ表示（v2.9.3: ☆ レアリティ解放状態も表示）
 function renderClassBadge() {
   const el = document.getElementById('class-badge');
   if (!el) return;
   if (!STATE.party.initialized) { el.classList.add('hidden'); return; }
   const lv = STATE.classLevel;
-  el.textContent = lv === 0 ? '☆ 伝説' : lv + ' 級';
+  const classText = lv === 0 ? '☆5 伝説' : lv + ' 級';
+  // 解放されている星の最高ランク
+  let starText = '';
+  if (rarityAllowed('rainbow'))        starText = ' ☆5';
+  else if (rarityAllowed('legendary')) starText = ' ☆4';
+  else if (rarityAllowed('gold'))      starText = ' ☆3';
+  el.textContent = classText + starText;
   el.classList.remove('hidden');
 }
 
@@ -1743,22 +1759,71 @@ function expFor(rare) {
   }
 }
 
+// v2.9.3: ☆ レアリティ段階解放（パーティ平均 Lv → classLevel に連動）
+// 表示：☆1〜☆2 = 通常 / ☆3 = 金 / ☆4 = 伝説 / ☆5 = 虹
+// classLevel: 10=最下級 〜 0=伝説
+//   10-7 級: 基本は通常（☆1-2）のみ ＋ 序盤レアとして ☆3 が極低確率
+//   6-4 級: ☆3 解放
+//   3-2 級: + ☆4 解放
+//   1 級〜伝説: + ☆5 解放
+function rarityAllowed(rare) {
+  const cl = STATE.classLevel;
+  if (rare === 'rainbow')   return cl <= 1;
+  if (rare === 'legendary') return cl <= 3;
+  if (rare === 'gold')      return cl <= 6;
+  return true; // 通常はいつでも
+}
+
+// 序盤レア：未解放段階でも☆3が極低確率で出る抜け道
+// classLevel が高いほど低確率（序盤のひらめき・希望）
+function earlyStarRoll() {
+  const cl = STATE.classLevel;
+  // 段階解放済みなら通常確率に任せる
+  if (cl <= 6) return null;
+  // 未解放：☆3 が 0.1%（千分の一の奇跡）
+  if (Math.random() < 0.001) return 'gold';
+  return null;
+}
+
+// rare → ☆ 表示の対応
+function starOf(rare) {
+  if (rare === 'rainbow')   return '☆5';
+  if (rare === 'legendary') return '☆4';
+  if (rare === 'gold')      return '☆3';
+  return '';
+}
+
 function recordWord(text, type) {
   const now = new Date().toISOString();
   const existing = STATE.collection[text];
   let rare = existing ? existing.rare : null;
   if (!existing) {
     // 初出：レア判定（カテゴリ優先 → 確率レア）
-    if (isMythical(text))        rare = 'rainbow';
-    else if (isLegendary(text))  rare = 'legendary';
-    else if (isGold(text))       rare = 'gold';
+    let candidate = null;
+    if (isMythical(text))        candidate = 'rainbow';
+    else if (isLegendary(text))  candidate = 'legendary';
+    else if (isGold(text))       candidate = 'gold';
     else {
-      // v2.9.2 確率レア（カテゴリレアに該当しない通常語にも夢を）
+      // 確率レア（カテゴリレアに該当しない通常語にも夢を）
       const r = Math.random();
-      if (r < 0.003)      rare = 'rainbow';    // 0.3% (旧 0.2%)
-      else if (r < 0.012) rare = 'legendary';  // 0.9% 新規（カテゴリ外でも伝説に届く）
-      else if (r < 0.04)  rare = 'gold';       // 2.8% (旧 1%)
+      if (r < 0.003)      candidate = 'rainbow';    // 0.3%
+      else if (r < 0.012) candidate = 'legendary';  // 0.9%
+      else if (r < 0.04)  candidate = 'gold';       // 2.8%
     }
+    // 段階解放：未解放のレアリティは downgrade
+    if (candidate && !rarityAllowed(candidate)) {
+      // rainbow → legendary → gold → null と落とす
+      if (candidate === 'rainbow'   && rarityAllowed('legendary')) candidate = 'legendary';
+      else if (candidate === 'rainbow' && rarityAllowed('gold'))   candidate = 'gold';
+      else if (candidate === 'legendary' && rarityAllowed('gold')) candidate = 'gold';
+      else candidate = null;
+    }
+    // 序盤レア：未解放段階でも極低確率で☆3 を出す（千分の一の奇跡）
+    if (!candidate) {
+      const early = earlyStarRoll();
+      if (early) candidate = early;
+    }
+    rare = candidate;
   }
   const gain = expFor(rare);
   // カテゴリは初出時に判定して保存（再判定不要、Lookup を 1 回に）
@@ -2472,11 +2537,11 @@ function spawn() {
   updateDailyChallenge(text);
   if (entry.count % 5 === 0) checkAchievements();
   // レア新規発見ならフラッシュ
-  // 初出メッセージ（レアリティ別）＋ 画面エフェクト
+  // 初出メッセージ（☆ 表記）＋ 画面エフェクト
   if (entry.count === expFor(entry.rare) /* 初回直後 */) {
-    if (entry.rare === 'rainbow')        { triggerRareEffect('rainbow');   flash(`🌈 虹のぽもじを発見！「${text}」`, 'rainbow'); }
-    else if (entry.rare === 'legendary') { triggerRareEffect('legendary'); flash(`☆ 伝説のぽもじ！「${text}」`, 'legendary'); }
-    else if (entry.rare === 'gold')      { triggerRareEffect('gold');      flash(`✨ 金のぽもじを発見！「${text}」`, 'gold'); }
+    if (entry.rare === 'rainbow')        { triggerRareEffect('rainbow');   flash(`☆5 虹のぽもじ「${text}」`, 'rainbow'); }
+    else if (entry.rare === 'legendary') { triggerRareEffect('legendary'); flash(`☆4 伝説のぽもじ「${text}」`, 'legendary'); }
+    else if (entry.rare === 'gold')      { triggerRareEffect('gold');      flash(`☆3 金のぽもじ「${text}」`, 'gold'); }
     else                                  flash(`📚 新ぽもじ「${text}」`);
   } else if (entry.count >= 50 && entry.count - getLevel(entry.count - expFor(entry.rare)) > 0
              && getLevel(entry.count) > getLevel(entry.count - expFor(entry.rare))) {
