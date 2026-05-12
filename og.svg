@@ -22,27 +22,35 @@
   </g>
 
   <!-- タイトル -->
-  <g transform="translate(460, 220)" fill="#eef2ff" font-family="'Noto Serif JP', serif" font-weight="900">
+  <g transform="translate(460, 200)" fill="#eef2ff" font-family="'Noto Serif JP', serif" font-weight="900">
     <text font-size="92" letter-spacing="14">ぽもじかん</text>
-    <text y="62" font-size="32" fill="#c890d8" font-weight="700" letter-spacing="6">PMJ ／ 文字が降ってくる作業タイマー</text>
+    <text y="50" font-size="26" fill="#c9a84c" font-weight="700" letter-spacing="4">v2.9 ／ 22,160 種類の言葉が降る作業タイマー</text>
+    <text y="86" font-size="20" fill="#c890d8" font-weight="700" letter-spacing="3">漢字 ・ 古典 ・ 神話 ・ 科学 ・ 料理 ・ 美術 …</text>
   </g>
 
-  <!-- 文字の積み重ね（装飾） -->
+  <!-- 雨ぽもじ（落下） -->
   <g font-family="'Noto Serif JP', serif" font-weight="700">
-    <text x="490" y="395" font-size="34" fill="#e8c668" opacity="0.85">勤勉</text>
-    <text x="560" y="395" font-size="34" fill="#e8c668" opacity="0.65">節制</text>
-    <text x="630" y="395" font-size="34" fill="#e8c668" opacity="0.75">純潔</text>
-    <text x="700" y="395" font-size="34" fill="#e8c668" opacity="0.55">忍耐</text>
-    <text x="770" y="395" font-size="34" fill="#e8c668" opacity="0.7">慈悲</text>
-    <text x="490" y="450" font-size="30" fill="#e8c668" opacity="0.5">謙虚</text>
-    <text x="555" y="450" font-size="30" fill="#e8c668" opacity="0.45">親切</text>
-    <text x="620" y="450" font-size="30" fill="#e8c668" opacity="0.6">凝縮</text>
-    <text x="690" y="450" font-size="30" fill="#e8c668" opacity="0.4">廃人</text>
+    <text x="490" y="380" font-size="36" fill="#e8c668" opacity="0.9">桜</text>
+    <text x="550" y="380" font-size="36" fill="#e8c668" opacity="0.75">月</text>
+    <text x="610" y="380" font-size="32" fill="#ffd0f0" opacity="0.85">☆神</text>
+    <text x="690" y="380" font-size="36" fill="#e8c668" opacity="0.7">雲</text>
+    <text x="750" y="380" font-size="32" fill="#ffe28a" opacity="0.85">☆雨</text>
+    <text x="490" y="440" font-size="28" fill="#e8c668" opacity="0.55">古</text>
+    <text x="540" y="440" font-size="28" fill="#e8c668" opacity="0.6">道</text>
+    <text x="585" y="440" font-size="28" fill="#ffffff" opacity="0.9">🌈虹</text>
+    <text x="660" y="440" font-size="28" fill="#e8c668" opacity="0.5">真</text>
+    <text x="710" y="440" font-size="28" fill="#e8c668" opacity="0.45">理</text>
+  </g>
+  <!-- 泡ぽもじ（上昇）少量 -->
+  <g font-family="'Noto Serif JP', serif" font-weight="700">
+    <text x="800" y="480" font-size="28" fill="#ff8e8e" opacity="0.7">食</text>
+    <text x="850" y="480" font-size="28" fill="#ff8e8e" opacity="0.6">音</text>
+    <text x="900" y="480" font-size="28" fill="#ff8e8e" opacity="0.55">花</text>
   </g>
 
   <!-- フッタータグ -->
-  <g transform="translate(460, 530)" fill="#5a6890" font-family="'JetBrains Mono', monospace" font-size="22" letter-spacing="3">
-    <text>POMODORO × COLLECTION × PHYSICS</text>
+  <g transform="translate(460, 540)" fill="#c9a84c" font-family="'JetBrains Mono', monospace" font-size="18" letter-spacing="3">
+    <text>POMODORO × ENCYCLOPEDIA × PARTY × ☆ RARITY</text>
   </g>
 
   <!-- 雨粒装飾 -->
