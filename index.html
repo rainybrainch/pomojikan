@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.7（A11y：reduced-motion 対応）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.8（モバイル描画最適化・タッチ競合解消）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2498,7 +2498,12 @@ document.head.appendChild(style);
 // Canvas：罪徳の文字が落ちる/上がる
 // ═══════════════════════════════════════════════════
 const canvas = document.getElementById('field');
-const ctx = canvas.getContext('2d');
+// v2.9.8: 2d コンテキスト最適化（モバイル描画スループット向上）
+const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+// タッチジェスチャー競合を防ぐ（pinch zoom / pull-to-refresh 無効）
+canvas.style.touchAction = 'none';
+canvas.style.overscrollBehavior = 'none';
+document.body.style.overscrollBehavior = 'none';
 
 // 物理パラメータ（v1.2 画面サイズ正規化）
 const PHYSICS = {
