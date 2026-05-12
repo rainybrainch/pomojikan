@@ -895,7 +895,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.39（金色 tap-highlight・iOS UX 統一）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.40（完走時 紙吹雪エフェクト）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2399,6 +2399,24 @@ function autoBackup() {
   } catch(e) {}
 }
 
+// v2.9.40: 完走時の紙吹雪エフェクト
+function spawnConfetti() {
+  const N = 32;
+  const colors = ['#c9a84c', '#ffe28a', '#6bb6ff', '#c890d8', '#ffffff', '#e8c668'];
+  for (let i = 0; i < N; i++) {
+    const p = document.createElement('div');
+    const c = colors[i % colors.length];
+    const x = innerWidth / 2 + (Math.random() - 0.5) * 60;
+    const dx = (Math.random() - 0.5) * innerWidth * 0.8;
+    const dy = innerHeight * (0.5 + Math.random() * 0.5);
+    const rot = (Math.random() - 0.5) * 720;
+    const delay = Math.random() * 200;
+    p.style.cssText = 'position:fixed;left:' + x + 'px;top:35%;width:8px;height:14px;background:' + c + ';pointer-events:none;z-index:95;border-radius:2px;animation:confettiDrop 2.4s ' + delay + 'ms ease-out forwards;--cdx:' + dx + 'px;--cdy:' + dy + 'px;--crot:' + rot + 'deg;';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2400 + delay + 100);
+  }
+}
+
 function completePhase() {
   if (STATE.phase === 'work') {
     // 集中完了 → 完走+1・セッション数++
@@ -2411,6 +2429,7 @@ function completePhase() {
     try { localStorage.setItem(KEY_HOURLY, JSON.stringify(STATE.hourly)); } catch(e) {}
     checkAchievements();
     if (STATE.soundOn) playChime();
+    spawnConfetti();  // v2.9.40: 紙吹雪
     speakNarration();
     // 4 セッション完了で長休憩
     const isLong = STATE.currentSession >= STATE.sessionsBeforeLong;
@@ -2523,6 +2542,11 @@ style.textContent = `
 .rare-overlay-gold { background:radial-gradient(ellipse at center,transparent 45%,rgba(255,224,138,0.18) 95%); animation:rareOverlay 0.9s ease-out forwards; }
 @keyframes rareOverlay { 0%{opacity:0;} 20%{opacity:1;} 100%{opacity:0;} }
 @keyframes rainbowOverlay { 0%{opacity:0;filter:hue-rotate(0deg);} 15%{opacity:1;} 100%{opacity:0;filter:hue-rotate(180deg);} }
+@keyframes confettiDrop {
+  0%   { opacity: 0; transform: translate(0,0) rotate(0deg) scale(0.6); }
+  10%  { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translate(var(--cdx), var(--cdy)) rotate(var(--crot)) scale(0.8); }
+}
 /* v2.9.7 視覚過敏対応：reduced-motion でアニメーション最小化 */
 @media (prefers-reduced-motion: reduce) {
   .rare-overlay, .rare-overlay-rainbow, .rare-overlay-legendary, .rare-overlay-gold { animation-duration: 0.3s !important; }
