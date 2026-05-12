@@ -547,6 +547,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 <!-- 解放級バッジ (v2.9) -->
 <div id="class-badge" class="class-badge hidden">10 級</div>
 
+<!-- v2.9.25: A11y aria-live region（スクリーンリーダー用通知領域） -->
+<div id="aria-live-region" role="status" aria-live="polite" aria-atomic="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"></div>
+
 <!-- パーティステータスバー (v2.9) -->
 <div id="party-status-bar" class="hidden"></div>
 
@@ -868,7 +871,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.24（license.html v2.9 化・データ出典の明示）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.25（aria-live region・スクリーンリーダー対応）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2432,6 +2435,9 @@ function notify(title, body) {
 }
 
 function flash(msg, rare) {
+  // v2.9.25: スクリーンリーダー向けにも通知
+  const live = document.getElementById('aria-live-region');
+  if (live) { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 50); }
   const el = document.createElement('div');
   el.textContent = msg;
   let style = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:18px 28px;border-radius:6px;font-family:var(--serif);font-weight:700;font-size:1.1rem;z-index:100;animation:fadeOut 2.5s forwards;';
