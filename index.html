@@ -41,6 +41,8 @@
 <script src="words-kanji.js"></script>
 <script src="words-jukugo.js"></script>
 <script src="words-general.js"></script>
+<script src="words-nature.js"></script>
+<script src="words-life.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -566,7 +568,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気のぽもじ</span><span class="hint">「勉強する！」「頑張るぞ！」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほんのぽもじ</span><span class="hint">「のんびり」「お茶しよう」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"><span>☆ 伝説のぽもじ</span><span class="hint">七大罪徳＝レア・経験値多め</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">漢字・熟語・ことわざ・名詞… 約1万種 / 1年プロジェクト</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">漢字・熟語・ことわざ・動植物・色… 約 6,500 種 収録中</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自分で決める</span><span class="hint">自分の言葉を入れる（集中用/休憩用 別）</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365 の名言</span><span class="hint">読雨に書いた名言が降る</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋伝説＋名言 全部</span></label>
@@ -695,7 +697,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v1.6（百科ぽもじ・約 3,400 語 収録）／ 作: rainybrainch<br>
+      ぽもじかん v1.7（百科ぽもじ・約 6,500 語 収録 / 22,000 へ拡張中）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1042,7 +1044,8 @@ function levelStyle(lv, type, rare) {
 const LEGENDARY_SET = new Set([...VIRTUES, ...SINS]);
 
 // 百科ぽもじ用：カテゴリ別レアリティテーブル
-let _katakanaSet, _kogoSet, _senmonSet, _yojiSet, _kojiSet, _kotowazaSet, _kanyokuSet, _creativeSet, _kanjiG1G3Set, _kanjiG4G6Set, _kanjiMidSet;
+let _katakanaSet, _kogoSet, _senmonSet, _yojiSet, _kojiSet, _kotowazaSet, _kanyokuSet, _creativeSet, _kanjiG1G3Set, _kanjiG4G6Set, _kanjiMidSet, _kanjiJinmeiSet, _kigoSet,
+    _birdSet, _fishSet, _floraSet, _insectSet, _animalSet, _foodSet, _bodySet, _placeSet, _colorSet, _emotionSet;
 function buildEncycSets() {
   if (_yojiSet) return;
   _yojiSet      = new Set(window.POMOJI_YOJI || []);
@@ -1053,15 +1056,27 @@ function buildEncycSets() {
   _kogoSet      = new Set(window.POMOJI_KOGO || []);
   _senmonSet    = new Set(window.POMOJI_SENMON || []);
   _creativeSet  = new Set(window.POMOJI_CREATIVE || []);
+  _kigoSet      = new Set(window.POMOJI_KIGO || []);
+  _birdSet      = new Set(window.POMOJI_BIRD || []);
+  _fishSet      = new Set(window.POMOJI_FISH || []);
+  _floraSet     = new Set(window.POMOJI_FLORA || []);
+  _insectSet    = new Set(window.POMOJI_INSECT || []);
+  _animalSet    = new Set(window.POMOJI_ANIMAL || []);
+  _foodSet      = new Set(window.POMOJI_FOOD || []);
+  _bodySet      = new Set(window.POMOJI_BODY || []);
+  _placeSet     = new Set(window.POMOJI_PLACE || []);
+  _colorSet     = new Set(window.POMOJI_COLOR || []);
+  _emotionSet   = new Set(window.POMOJI_EMOTION || []);
   if (window.POMOJI_KANJI) {
     _kanjiG1G3Set = new Set([...(window.POMOJI_KANJI.g1||''), ...(window.POMOJI_KANJI.g2||''), ...(window.POMOJI_KANJI.g3||'')]);
     _kanjiG4G6Set = new Set([...(window.POMOJI_KANJI.g4||''), ...(window.POMOJI_KANJI.g5||''), ...(window.POMOJI_KANJI.g6||'')]);
   }
-  _kanjiMidSet = new Set([...(window.POMOJI_KANJI_MIDDLE||'')]);
+  _kanjiMidSet    = new Set([...(window.POMOJI_KANJI_MIDDLE||'')]);
+  _kanjiJinmeiSet = new Set([...(window.POMOJI_KANJI_JINMEI||'')]);
 }
 function isLegendary(text) {
   buildEncycSets();
-  // 七大罪徳 / 故事成語 / 古語 / 専門用語 / ことわざ / 創作系 = 伝説〜虹
+  // 四字熟語 / ことわざ / 創作系 / 七大罪徳 = 伝説
   return LEGENDARY_SET.has(text) ||
          (_yojiSet && _yojiSet.has(text)) ||
          (_kotowazaSet && _kotowazaSet.has(text)) ||
@@ -1069,15 +1084,25 @@ function isLegendary(text) {
 }
 function isMythical(text) {
   buildEncycSets();
+  // 故事成語 / 古語 / 専門用語 = 虹
   return (_kojiSet && _kojiSet.has(text)) ||
          (_kogoSet && _kogoSet.has(text)) ||
          (_senmonSet && _senmonSet.has(text));
 }
 function isGold(text) {
   buildEncycSets();
+  // カタカナ / 慣用句 / 季語 / 中学習漢字 / 人名用漢字 / 鳥魚花虫獣 / 色 = 金
   return (_katakanaSet && _katakanaSet.has(text)) ||
          (_kanyokuSet && _kanyokuSet.has(text)) ||
-         (_kanjiMidSet && _kanjiMidSet.has(text));
+         (_kigoSet && _kigoSet.has(text)) ||
+         (_kanjiMidSet && _kanjiMidSet.has(text)) ||
+         (_kanjiJinmeiSet && _kanjiJinmeiSet.has(text)) ||
+         (_birdSet && _birdSet.has(text)) ||
+         (_fishSet && _fishSet.has(text)) ||
+         (_floraSet && _floraSet.has(text)) ||
+         (_insectSet && _insectSet.has(text)) ||
+         (_animalSet && _animalSet.has(text)) ||
+         (_colorSet && _colorSet.has(text));
 }
 
 // レアリティ別経験値量
@@ -1174,7 +1199,8 @@ function getEncyclopediaPool() {
     pool.push(...[...(window.POMOJI_KANJI.g5||'')]);
     pool.push(...[...(window.POMOJI_KANJI.g6||'')]);
   }
-  if (window.POMOJI_KANJI_MIDDLE) pool.push(...[...(window.POMOJI_KANJI_MIDDLE)].slice(0, 400));
+  if (window.POMOJI_KANJI_MIDDLE) pool.push(...[...(window.POMOJI_KANJI_MIDDLE)]);
+  if (window.POMOJI_KANJI_JINMEI) pool.push(...[...(window.POMOJI_KANJI_JINMEI)]);
   if (window.POMOJI_YOJI) pool.push(...window.POMOJI_YOJI);
   if (window.POMOJI_KOJI) pool.push(...window.POMOJI_KOJI);
   if (window.POMOJI_KOTOWAZA) pool.push(...window.POMOJI_KOTOWAZA);
@@ -1187,6 +1213,18 @@ function getEncyclopediaPool() {
   if (window.POMOJI_KOGO) pool.push(...window.POMOJI_KOGO);
   if (window.POMOJI_SENMON) pool.push(...window.POMOJI_SENMON);
   if (window.POMOJI_CREATIVE) pool.push(...window.POMOJI_CREATIVE);
+  // 自然編
+  if (window.POMOJI_BIRD)    pool.push(...window.POMOJI_BIRD);
+  if (window.POMOJI_FISH)    pool.push(...window.POMOJI_FISH);
+  if (window.POMOJI_FLORA)   pool.push(...window.POMOJI_FLORA);
+  if (window.POMOJI_INSECT)  pool.push(...window.POMOJI_INSECT);
+  if (window.POMOJI_ANIMAL)  pool.push(...window.POMOJI_ANIMAL);
+  // 生活編
+  if (window.POMOJI_FOOD)    pool.push(...window.POMOJI_FOOD);
+  if (window.POMOJI_BODY)    pool.push(...window.POMOJI_BODY);
+  if (window.POMOJI_PLACE)   pool.push(...window.POMOJI_PLACE);
+  if (window.POMOJI_COLOR)   pool.push(...window.POMOJI_COLOR);
+  if (window.POMOJI_EMOTION) pool.push(...window.POMOJI_EMOTION);
   _encycPool = pool;
   log('[encyc] pool size:', pool.length);
   return pool;
@@ -2978,7 +3016,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v1.6 百科ぽもじ','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v1.7 百科ぽもじ（拡張 6,500 語）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
