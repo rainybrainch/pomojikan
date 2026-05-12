@@ -554,6 +554,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
       <button class="cf-btn" data-sort="rare">レア順</button>
       <button class="cf-btn" data-sort="fav">★ お気に入り</button>
     </div>
+    <div class="collection-filter" id="rarity-filter" style="margin-top:4px;">
+      <button class="cf-btn rf-btn active" data-rarity="all">全て</button>
+      <button class="cf-btn rf-btn" data-rarity="rainbow">🌈 虹</button>
+      <button class="cf-btn rf-btn" data-rarity="legendary">☆ 伝説</button>
+      <button class="cf-btn rf-btn" data-rarity="gold">✨ 金</button>
+      <button class="cf-btn rf-btn" data-rarity="normal">通常</button>
+    </div>
     <div class="collection-grid" id="collection-grid"></div>
     <div class="actions menu-actions">
       <button class="btn" id="col-close">閉じる</button>
@@ -711,7 +718,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.3（レアリティ演出強化・虹/伝説/金の発見エフェクト）／ 作: rainybrainch<br>
+      ぽもじかん v2.4（サウンド + 振動 + レアリティフィルタ）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1025,6 +1032,58 @@ function playChime() {
       osc.start(now + i * 0.08);
       osc.stop(now + i * 0.08 + 1.3);
     });
+  } catch (e) {}
+}
+
+// ─── レア発見サウンド（Web Audio） ───
+function playRareSound(rare) {
+  try {
+    chimeCtx = chimeCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = chimeCtx;
+    const now = ctx.currentTime;
+    let notes, dur, vol, type;
+    if (rare === 'rainbow') {
+      // 虹：5音きらめきアルペジオ（壮大）
+      notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+      dur = 1.8; vol = 0.20; type = 'triangle';
+    } else if (rare === 'legendary') {
+      // 伝説：和音4音（厳か）
+      notes = [392.0, 493.88, 587.33, 783.99];
+      dur = 1.4; vol = 0.18; type = 'sine';
+    } else {
+      // 金：2音だけ（軽快）
+      notes = [659.25, 880.0];
+      dur = 0.6; vol = 0.16; type = 'sine';
+    }
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      const start = now + i * 0.07;
+      gain.gain.setValueAtTime(0.0, start);
+      gain.gain.linearRampToValueAtTime(vol, start + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + dur + 0.05);
+    });
+    // 虹のみ：高音きらめき重ね
+    if (rare === 'rainbow') {
+      [2093.0, 2637.0, 3136.0].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = now + 0.3 + i * 0.15;
+        gain.gain.setValueAtTime(0.0, start);
+        gain.gain.linearRampToValueAtTime(0.08, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.7);
+      });
+    }
   } catch (e) {}
 }
 
@@ -1807,9 +1866,18 @@ function flash(msg, rare) {
   setTimeout(() => el.remove(), 2500);
 }
 
-// レア発見時の画面全体エフェクト（オーバーレイ）
+// レア発見時の画面全体エフェクト（オーバーレイ + サウンド + 振動）
 function triggerRareEffect(rare) {
   if (rare !== 'rainbow' && rare !== 'legendary' && rare !== 'gold') return;
+  // サウンド
+  try { playRareSound(rare); } catch (e) {}
+  // 振動（モバイル）
+  if (navigator.vibrate && STATE.vibrateOn) {
+    if (rare === 'rainbow')        navigator.vibrate([60,40,60,40,60,40,120]);
+    else if (rare === 'legendary') navigator.vibrate([80,40,80,40,180]);
+    else                            navigator.vibrate([50,30,80]);
+  }
+  // 画面オーバーレイ
   const overlay = document.createElement('div');
   overlay.className = 'rare-overlay rare-overlay-' + rare;
   document.body.appendChild(overlay);
@@ -2912,16 +2980,27 @@ document.getElementById('col-close').addEventListener('click', () => document.ge
 document.getElementById('overlay-collection').addEventListener('click', (e) => {
   if (e.target.id === 'overlay-collection') document.getElementById('overlay-collection').classList.remove('show');
 });
-document.querySelectorAll('.cf-btn').forEach(btn => {
+// ソート用 cf-btn（data-sort あり、rf-btn 除く）
+document.querySelectorAll('.cf-btn[data-sort]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.cf-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cf-btn[data-sort]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderCollection(btn.dataset.sort);
+  });
+});
+// レアリティフィルタ用 rf-btn
+document.querySelectorAll('.rf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.rf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRarity = btn.dataset.rarity;
+    renderCollection(currentSort);
   });
 });
 
 // ─── 📚 ぽもじ図鑑 ───
 let currentSort = 'count';
+let currentRarity = 'all';
 function openCollection() {
   document.getElementById('overlay-collection').classList.add('show');
   renderCollection(currentSort);
@@ -2949,6 +3028,14 @@ function renderCollection(sortBy) {
   if (currentSearch) {
     const q = currentSearch.toLowerCase();
     filtered = filtered.filter(([text]) => text.toLowerCase().includes(q));
+  }
+  // レアリティフィルタ
+  if (currentRarity && currentRarity !== 'all') {
+    if (currentRarity === 'normal') {
+      filtered = filtered.filter(([, v]) => !v.rare);
+    } else {
+      filtered = filtered.filter(([, v]) => v.rare === currentRarity);
+    }
   }
   // ソート
   let sorted = filtered.slice();
@@ -3303,7 +3390,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.3 レアリティ演出強化版（ユニーク 22,160 / 96 カテゴリ）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.4 演出 + フィルタ (ユニーク 22,160 / 96 カテゴリ)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
