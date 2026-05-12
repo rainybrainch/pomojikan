@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.5（スマホアプリ化 サイクル 1：容量超過対策＋インストール）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.6（自動バックアップ・完走時に 3 世代ローテ）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2344,6 +2344,26 @@ function reset() {
   localStorage.removeItem(KEY_PHASE);
   renderTimer();
 }
+// v2.9.6: 完走時の自動スナップショット（直近 3 世代をローテーション保持）
+function autoBackup() {
+  try {
+    const snapshot = {
+      v: '2.9.6',
+      at: new Date().toISOString(),
+      collection: STATE.collection,
+      party: STATE.party,
+      classLevelWork: STATE.classLevelWork,
+      classLevelRest: STATE.classLevelRest,
+      total: STATE.total,
+      streak: STATE.streak
+    };
+    // ローテーション：snap_0 ← snap_1 ← snap_2 ← new
+    try { localStorage.setItem('pomojikan_snap_0', localStorage.getItem('pomojikan_snap_1') || ''); } catch(e) {}
+    try { localStorage.setItem('pomojikan_snap_1', localStorage.getItem('pomojikan_snap_2') || ''); } catch(e) {}
+    _safeSetItem('pomojikan_snap_2', JSON.stringify(snapshot));
+  } catch(e) {}
+}
+
 function completePhase() {
   if (STATE.phase === 'work') {
     // 集中完了 → 完走+1・セッション数++
@@ -2351,6 +2371,7 @@ function completePhase() {
     STATE.total++;
     save();
     updateStreak();
+    autoBackup();  // v2.9.6: 完走ごとに自動バックアップ
     STATE.hourly[new Date().getHours()]++;
     try { localStorage.setItem(KEY_HOURLY, JSON.stringify(STATE.hourly)); } catch(e) {}
     checkAchievements();
