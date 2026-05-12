@@ -747,7 +747,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.7（大分類フィルタ・18 大分類で図鑑を俯瞰）／ 作: rainybrainch<br>
+      ぽもじかん v2.8（SW自動更新通知 + 表記統一）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -3599,15 +3599,52 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.7 大分類フィルタ','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.8 自動更新検知','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
-// PWA
+// PWA + 更新検知（SW v23 以降の新バージョンを自動通知）
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      // 初回 active SW がいない場合（初インストール）はスキップ
+      if (!navigator.serviceWorker.controller) return;
+      // 新 SW がインストールされたら検知
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed') {
+            // 古い controller が居る = 更新あり
+            showUpdateToast(reg);
+          }
+        });
+      });
+      // 起動時に明示的に check
+      reg.update().catch(() => {});
+    }).catch(() => {});
+    // active SW が切替わったら自動リロード
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
   });
+}
+
+function showUpdateToast(reg) {
+  // 既に表示中なら何もしない
+  if (document.getElementById('sw-update-toast')) return;
+  const t = document.createElement('div');
+  t.id = 'sw-update-toast';
+  t.style.cssText = 'position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(28,20,12,0.96);color:#ffe28a;padding:14px 22px;border:1px solid #ffe28a;border-radius:8px;font-family:var(--serif);z-index:200;cursor:pointer;font-size:0.95rem;box-shadow:0 0 20px rgba(255,224,138,0.45);max-width:90vw;text-align:center;';
+  t.innerHTML = '✨ 新バージョン利用可能 ── タップで更新';
+  t.onclick = () => {
+    if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+    t.textContent = '更新中…';
+  };
+  document.body.appendChild(t);
 }
 </script>
 </body>
