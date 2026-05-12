@@ -48,6 +48,20 @@
       "description": "完走の統計を見る",
       "url": "./?view=stats",
       "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "百科ぽもじを開始",
+      "short_name": "百科開始",
+      "description": "22,160 種類の言葉が降る集中モードへ",
+      "url": "./?view=start&mode=encyc",
+      "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "パーティ変更",
+      "short_name": "パーティ",
+      "description": "主人公・仲間 3 体を選び直す",
+      "url": "./?view=party",
+      "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }
   ],
   "screenshots": [

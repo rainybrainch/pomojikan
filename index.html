@@ -863,7 +863,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.13（Web Share Target・他アプリから文字受信）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.14（PWA shortcuts 4 種・長押しで直行）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -3688,12 +3688,20 @@ if (_origOnboardStart) {
     setTimeout(() => { if (!STATE.party.initialized) openPartySelect(); }, 300);
   });
 }
-// URLクエリ ?view=collection / ?view=stats を受け付け（PWA ショートカット用）
+// URLクエリ ?view=collection / stats / party / start (PWA ショートカット用)
 (function handleViewQuery() {
   const p = new URLSearchParams(location.search);
   const view = p.get('view');
+  const mode = p.get('mode');
   if (view === 'collection') setTimeout(openCollection, 300);
   else if (view === 'stats') setTimeout(openStats, 300);
+  else if (view === 'party') setTimeout(() => { if (typeof openPartySelect === 'function') openPartySelect(); }, 300);
+  else if (view === 'start') setTimeout(() => {
+    if (mode === 'encyc') STATE.wordMode = 'encyc';
+    // start ボタンを擬似クリック
+    const btn = document.getElementById('btn-start');
+    if (btn && !STATE.running) btn.click();
+  }, 500);
   if (view) history.replaceState({}, '', location.pathname);
 })();
 document.getElementById('col-close').addEventListener('click', () => document.getElementById('overlay-collection').classList.remove('show'));
