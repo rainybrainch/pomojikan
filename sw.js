@@ -6,7 +6,7 @@
 //   - api.github.com: ネットワークのみ（Gist 同期）
 //   - その他 cross-origin: network-first
 
-const CACHE_NAME = 'pomojikan-v19';
+const CACHE_NAME = 'pomojikan-v20';
 const PRECACHE = [
   './',
   './index.html',
@@ -32,7 +32,11 @@ const PRECACHE = [
   './words-medical.js',
   './words-modern.js',
   './words-world.js',
-  './words-legal.js'
+  './words-legal.js',
+  './words-classical.js',
+  './words-otaku.js',
+  './words-science.js',
+  './words-cooking.js'
 ];
 
 self.addEventListener('install', (event) => {
