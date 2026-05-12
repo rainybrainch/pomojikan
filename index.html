@@ -12,6 +12,7 @@
 <meta name="application-name" content="ぽもじかん">
 <meta name="format-detection" content="telephone=no">
 <meta name="referrer" content="no-referrer-when-downgrade">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://gist.githubusercontent.com; manifest-src 'self'; worker-src 'self'">
 <link rel="canonical" href="https://rainybrainch.github.io/pomojikan/">
 <meta name="description" content="文字が降ってくる作業タイマー。ポモドーロのリズムで文字を積み上げ、図鑑で集める。育成・コレクション・物理エンジン搭載の PWA。">
 <meta name="keywords" content="ぽもじかん,pomojikan,ポモドーロ,タイマー,作業,集中,文字,コレクション,PWA,図鑑">
@@ -863,7 +864,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.17（404 ページ刷新・迷ぽもじ）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.18（CSP・XSS 対策強化）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
