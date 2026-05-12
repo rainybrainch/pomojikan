@@ -505,7 +505,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 </style>
 </head>
 <body>
-<canvas id="field" aria-hidden="true"></canvas>
+<canvas id="field" role="img" aria-label="ぽもじが降る物理エリア。集中フェーズは上から文字が落ち、休憩フェーズは下から泡のように上昇します。タップ＆ドラッグで文字を動かせます。ダブルタップで消滅させて経験値に変換できます。"></canvas>
 <div id="fps-status" class="fps-status" style="display:none;">FPS: -- / Bodies: --</div>
 
 <header>
@@ -871,7 +871,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.27（aria-label 補強・主要 6 ボタン）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.28（canvas に role=img + aria-label）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
