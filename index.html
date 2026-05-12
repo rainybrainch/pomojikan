@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9（パーティ・段階解放・消滅 EXP・1秒単位・復帰演出）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.1（雨ぽもじ / 泡ぽもじ 4:1 分離）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1543,6 +1543,23 @@ function categoryOf(text) {
   return '';
 }
 
+// v2.9: 雨ぽもじ（集中）/ 泡ぽもじ（休憩）の分類
+// 22,160 種を 4.04 : 1 (WORK 17,766 / REST 4,394) で分割
+// REST = 軽い・遊び・癒し系（休憩で泡のように上がる）
+const REST_CATEGORIES = new Set([
+  '擬音語', '擬態語',                              // オノマトペ
+  '食べ物', '食材', '肉魚卵乳', '調理法',           // 料理
+  '動物', '魚', '鳥', '昆虫',                       // 動物
+  '色', '感情', '衣服', 'スポーツ',                  // 軽い系
+  'クラシック', 'ポップ音楽', '楽派', '邦楽',        // 音楽
+  'アニメ漫画', 'ゲーム'                            // サブカル一部
+]);
+// WORK = 学び・知・構築系（集中で雨のように降る）= 上記以外すべて
+function phaseOf(text) {
+  const cat = categoryOf(text);
+  return REST_CATEGORIES.has(cat) ? 'rest' : 'work';
+}
+
 // v2.9: カテゴリ → 解放級 (10=最下級, 1=最上級, 0=伝説)
 const CATEGORY_CLASS = {
   // 10 級：通常語のみ (最初から)
@@ -1597,7 +1614,7 @@ function updateClassLevel() {
     const advanced = newClass < STATE.classLevel;
     STATE.classLevel = newClass;
     localStorage.setItem(KEY_CLASSLEVEL, String(newClass));
-    _encycPool = null; // pool 再構築
+    _encycPool = null; _encycPoolWork = null; _encycPoolRest = null; // pool 再構築
     if (advanced) {
       const label = newClass === 0 ? '☆ 伝説' : newClass + ' 級';
       flash(`🎓 ${label} 解放！新カテゴリの言葉が降ってきます`, 'gold');
@@ -1806,8 +1823,26 @@ function seasonWords() {
   return ['冬', '雪', '霜', '寒', '凛', '静', '白', '深'];
 }
 
-// 百科ぽもじ語彙集約（全カテゴリ混在）
+// 百科ぽもじ語彙集約（v2.9 phase 別キャッシュ追加）
 let _encycPool = null;
+let _encycPoolWork = null;
+let _encycPoolRest = null;
+function getEncyclopediaPoolByPhase(phase) {
+  // phase = 'work' (雨ぽもじ・落下) or 'rest' (泡ぽもじ・上昇)
+  if (phase === 'rest' && _encycPoolRest) return _encycPoolRest;
+  if (phase === 'work' && _encycPoolWork) return _encycPoolWork;
+  const all = getEncyclopediaPool();
+  const work = [], rest = [];
+  for (const w of all) {
+    if (phaseOf(w) === 'rest') rest.push(w);
+    else work.push(w);
+  }
+  _encycPoolWork = work;
+  _encycPoolRest = rest;
+  log('[encyc] split work:', work.length, 'rest:', rest.length, '=', (work.length/rest.length).toFixed(2)+':1');
+  return phase === 'rest' ? rest : work;
+}
+
 function getEncyclopediaPool() {
   if (_encycPool) return _encycPool;
   buildEncycSets();
@@ -1936,8 +1971,8 @@ function getWordsForPhase(phase) {
   let words;
   switch (STATE.wordMode) {
     case 'encyc':
-      // 百科ぽもじ：全カテゴリ混在 ＋ v2.9 解放級フィルタ
-      words = getEncyclopediaPool();
+      // 百科ぽもじ v2.9：work/rest で別 pool（4:1 分割）＋ 解放級フィルタ
+      words = getEncyclopediaPoolByPhase(phase);
       // 解放級でフィルタ：classLevel 以上 (=数値が低い = 上級) のみ通過
       // 例: classLevel=10 → 10 級のみ / classLevel=5 → 10〜5 級
       words = words.filter(w => classOf(w) >= STATE.classLevel);
