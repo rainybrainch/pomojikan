@@ -89,7 +89,9 @@
   --serif: 'Noto Serif JP', serif;
   --mono: 'JetBrains Mono', monospace;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: rgba(201,168,76,0.18); user-select: none; -webkit-touch-callout: none; }
+/* v2.9.39 タッチエリアと canvas はハイライトなし (誤反応防止) */
+canvas, body, header, main, footer { -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; }
 body {
   background: var(--bg); color: var(--text);
@@ -893,7 +895,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.38（ボタンタップフィードバック・押された感）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.39（金色 tap-highlight・iOS UX 統一）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
