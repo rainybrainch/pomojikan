@@ -66,6 +66,20 @@
 <link rel="preload" href="words-general.js" as="script">
 <link rel="preload" href="words-jukugo.js" as="script">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- v2.9.30: 起動スプラッシュ（CSS 先行・白フラッシュ防止） -->
+<style>
+  html, body { background: #0c1426; color: #c8d0e8; margin: 0; }
+  #splash {
+    position: fixed; inset: 0; background: #0c1426;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s; color: #c9a84c;
+    font-family: serif; letter-spacing: 0.4em;
+  }
+  #splash.fade { opacity: 0; pointer-events: none; }
+  #splash .s-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 14px; }
+  #splash .s-dots { font-family: monospace; font-size: 0.8rem; color: #5a6890; letter-spacing: 0.6em; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+</style>
 <style>
 :root {
   --bg: #0c1426; --bg2: #131c33; --panel: #1a2440;
@@ -505,6 +519,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 </style>
 </head>
 <body>
+<!-- v2.9.30 起動スプラッシュ -->
+<div id="splash" aria-hidden="true">
+  <div class="s-title">ぽもじかん</div>
+  <div class="s-dots">・ ・ ・</div>
+</div>
 <canvas id="field" role="img" aria-label="ぽもじが降る物理エリア。集中フェーズは上から文字が落ち、休憩フェーズは下から泡のように上昇します。タップ＆ドラッグで文字を動かせます。ダブルタップで消滅させて経験値に変換できます。"></canvas>
 <div id="fps-status" class="fps-status" style="display:none;">FPS: -- / Bodies: --</div>
 
@@ -871,7 +890,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.29（meta / og / twitter を v2.9 反映）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.30（起動スプラッシュ・白フラッシュ防止）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -4229,6 +4248,13 @@ applyI18N();
 // 服牢365 Gist 名言を非同期で取得（読雨と連動）
 fetchFukurou365();
 renderTimer();
+// v2.9.30: スプラッシュ fade out
+requestAnimationFrame(() => {
+  const s = document.getElementById('splash');
+  if (s) {
+    setTimeout(() => { s.classList.add('fade'); setTimeout(() => s.remove(), 600); }, 250);
+  }
+});
 if (DEBUG) {
   console.log('%c🌑 ぽもじかん v2.9 育成ゲーム化（パーティ + 段階解放）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
