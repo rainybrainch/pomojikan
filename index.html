@@ -863,7 +863,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.12（preconnect・初回ロード高速化）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.13（Web Share Target・他アプリから文字受信）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -4209,6 +4209,32 @@ if (DEBUG) {
   console.log('%c🌑 ぽもじかん v2.9 育成ゲーム化（パーティ + 段階解放）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
+
+// v2.9.13: Web Share Target ── 他アプリから共有された文字をカスタム文字に追加
+(function handleShareTarget() {
+  const params = new URLSearchParams(window.location.search);
+  const sharedText = params.get('shared_text') || params.get('shared_title');
+  if (!sharedText) return;
+  // 短い文字列のみ（4 文字以内、1 個ずつ抽出）
+  const words = sharedText.split(/[\s,、。]+/).filter(w => w && [...w].length >= 1 && [...w].length <= 8).slice(0, 10);
+  if (words.length === 0) return;
+  // STATE 初期化を待ってからカスタム文字に追加
+  setTimeout(() => {
+    try {
+      if (!Array.isArray(STATE.customWorkWords)) STATE.customWorkWords = [];
+      const before = STATE.customWorkWords.length;
+      for (const w of words) {
+        if (!STATE.customWorkWords.includes(w)) STATE.customWorkWords.push(w);
+      }
+      STATE.customWorkWords = STATE.customWorkWords.slice(-50); // 最大 50
+      _safeSetItem(KEY_WORDS_WORK, JSON.stringify(STATE.customWorkWords));
+      const added = STATE.customWorkWords.length - before;
+      if (added > 0) flash(`📥 ${added} 件のぽもじを受信「${words.slice(0, 3).join('・')}」`);
+      // クエリを掃除（PWA 内で URL に残らないように）
+      history.replaceState(null, '', window.location.pathname);
+    } catch(e) { console.error(e); }
+  }, 500);
+})();
 
 // v2.9.10: グローバルエラーハンドラ（クラッシュ防止）
 let _errorCount = 0;

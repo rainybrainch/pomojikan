@@ -68,5 +68,14 @@
   ],
   "related_applications": [],
   "edge_side_panel": { "preferred_width": 480 },
-  "launch_handler": { "client_mode": "auto" }
+  "launch_handler": { "client_mode": "auto" },
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "params": {
+      "title": "shared_title",
+      "text": "shared_text",
+      "url": "shared_url"
+    }
+  }
 }
