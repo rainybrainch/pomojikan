@@ -18,7 +18,7 @@
   <circle cx="640" cy="360" r="120" fill="rgba(12,20,38,0.6)" stroke="#c9a84c" stroke-width="3"/>
   <text x="640" y="375" font-family="JetBrains Mono, monospace" font-size="72" font-weight="700" fill="#ffe28a" text-anchor="middle">25:00</text>
   <text x="640" y="410" font-family="Noto Serif JP, serif" font-size="14" fill="#5a6890" text-anchor="middle" letter-spacing="6">FOCUS / WORK</text>
-  <!-- 落ちる文字（雨ぽもじ） -->
+  <!-- 落ちる文字（集中ぽもじ） -->
   <g font-family="Noto Serif JP, serif" font-weight="900" opacity="0.9">
     <text x="220" y="280" font-size="42" fill="#e8c668">桜</text>
     <text x="320" y="450" font-size="36" fill="#ffe28a">月</text>
@@ -29,7 +29,7 @@
     <text x="180" y="380" font-size="30" fill="#e8c668">道</text>
     <text x="240" y="180" font-size="28" fill="#c890d8">風</text>
   </g>
-  <!-- 上がる文字（泡ぽもじ） -->
+  <!-- 上がる文字（休憩ぽもじ） -->
   <g font-family="Noto Serif JP, serif" font-weight="900" opacity="0.85">
     <text x="900" y="240" font-size="36" fill="#ff9b9b">食</text>
     <text x="980" y="320" font-size="32" fill="#ff8e8e">音</text>

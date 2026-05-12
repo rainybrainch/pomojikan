@@ -1014,8 +1014,8 @@ const STATE = {
     initialized: false    // 初期選択完了フラグ
   },
   classLevel: 10,         // 解放級 (10=最下級、1=最上級、0=伝説) ※全体（後方互換）
-  classLevelWork: 10,     // 雨ぽもじ（集中）の解放級
-  classLevelRest: 10,     // 泡ぽもじ（休憩）の解放級
+  classLevelWork: 10,     // 集中ぽもじ（集中）の解放級
+  classLevelRest: 10,     // 休憩ぽもじ（休憩）の解放級
   customWorkSec: 0,       // カスタム時間：分に追加する秒数
   customRestSec: 0
 };
@@ -1577,7 +1577,7 @@ function categoryOf(text) {
   return '';
 }
 
-// v2.9: 雨ぽもじ（集中）/ 泡ぽもじ（休憩）の分類
+// v2.9: 集中ぽもじ（集中）/ 休憩ぽもじ（休憩）の分類
 // 22,160 種を 4.04 : 1 (WORK 17,766 / REST 4,394) で分割
 // REST = 軽い・遊び・癒し系（休憩で泡のように上がる）
 const REST_CATEGORIES = new Set([
@@ -1816,7 +1816,7 @@ function expFor(rare) {
   }
 }
 
-// v2.9.4: ☆ レアリティ段階解放（雨ぽもじ/泡ぽもじ 独立進捗）
+// v2.9.4: ☆ レアリティ段階解放（集中ぽもじ/休憩ぽもじ 独立進捗）
 // 表示：☆1〜☆2 = 通常 / ☆3 = 金 / ☆4 = 伝説 / ☆5 = 虹
 // classLevel: 10=最下級 〜 0=伝説
 //   10-7 級: 通常 + ☆3 が 0.1%（序盤の奇跡）
@@ -1824,7 +1824,7 @@ function expFor(rare) {
 //   3-2 級: + ☆4 解放
 //   1 級〜伝説: + ☆5 解放
 //
-// 雨ぽもじ(集中)/泡ぽもじ(休憩) で 独立して進捗
+// 集中ぽもじ(集中)/休憩ぽもじ(休憩) で 独立して進捗
 function rarityAllowed(rare, phase) {
   const cl = (phase === 'rest') ? STATE.classLevelRest : STATE.classLevelWork;
   if (rare === 'rainbow')   return cl <= 1;
@@ -1956,7 +1956,7 @@ let _encycPool = null;
 let _encycPoolWork = null;
 let _encycPoolRest = null;
 function getEncyclopediaPoolByPhase(phase) {
-  // phase = 'work' (雨ぽもじ・落下) or 'rest' (泡ぽもじ・上昇)
+  // phase = 'work' (集中ぽもじ・落下) or 'rest' (休憩ぽもじ・上昇)
   if (phase === 'rest' && _encycPoolRest) return _encycPoolRest;
   if (phase === 'work' && _encycPoolWork) return _encycPoolWork;
   const all = getEncyclopediaPool();
@@ -2941,7 +2941,7 @@ function draw() {
                     : 'rgba(255,107,107,0.45)';
     ctx.lineWidth = b.rare ? 2 : 1.5;
     ctx.stroke();
-    // v2.9.2 視覚区別：泡ぽもじ (sin) は球体ハイライト + 内側の薄い輪
+    // v2.9.2 視覚区別：休憩ぽもじ (sin) は球体ハイライト + 内側の薄い輪
     if (b.type === 'sin') {
       // 上左に光沢ハイライト（球体感）
       const hg = ctx.createRadialGradient(-b.r*0.35, -b.r*0.4, 1, -b.r*0.35, -b.r*0.4, b.r*0.55);
@@ -2956,7 +2956,7 @@ function draw() {
       ctx.lineWidth = 1;
       ctx.stroke();
     } else if (b.type === 'virtue') {
-      // 雨ぽもじ：下端に微小な「しずく」感（縦長の影）
+      // 集中ぽもじ：下端に微小な「しずく」感（縦長の影）
       ctx.beginPath();
       ctx.ellipse(0, b.r * 0.25, b.r * 0.15, b.r * 0.35, 0, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(107,182,255,0.10)';
@@ -3008,6 +3008,26 @@ loop();
 // ─── タッチ/マウスで文字をドラッグ（物理ドラッグ）───
 let dragging = null;
 let dragLastX = 0, dragLastY = 0, dragLastT = 0;
+// v2.9.36: 長押しクリップボードコピー
+let _holdStartX = 0, _holdStartY = 0, _holdTimer = null;
+function _startHoldTimer(body) {
+  if (_holdTimer) clearTimeout(_holdTimer);
+  _holdTimer = setTimeout(async () => {
+    // ドラッグ距離が小さい場合のみコピー成立
+    const dx = (dragging ? dragging.x : 0) - _holdStartX;
+    const dy = (dragging ? dragging.y : 0) - _holdStartY;
+    if (Math.hypot(dx, dy) > 30) return; // 動かした = コピーキャンセル
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(body.text);
+        flash(`📋 「${body.text}」をコピー`);
+        if (navigator.vibrate && STATE.vibrateOn) navigator.vibrate([20, 50, 40]);
+      }
+    } catch(e) {}
+    _holdTimer = null;
+  }, 700);
+}
+function _cancelHoldTimer() { if (_holdTimer) { clearTimeout(_holdTimer); _holdTimer = null; } }
 function getEventPos(e) {
   const rect = canvas.getBoundingClientRect();
   if (e.touches && e.touches[0]) return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
@@ -3047,6 +3067,9 @@ function onDown(e) {
     b.vx = 0; b.vy = 0;
     dragLastX = p.x; dragLastY = p.y;
     dragLastT = performance.now();
+    // v2.9.36: 長押しクリップボードコピー
+    _holdStartX = b.x; _holdStartY = b.y;
+    _startHoldTimer(b);
     e.preventDefault();
   }
 }
@@ -3055,6 +3078,8 @@ function onMove(e) {
   const p = getEventPos(e);
   dragging.x = p.x;
   dragging.y = p.y;
+  // 動いたら長押しコピーキャンセル
+  if (_holdTimer && (Math.hypot(p.x - _holdStartX, p.y - _holdStartY) > 30)) _cancelHoldTimer();
   const now = performance.now();
   const dt = Math.max(1, now - dragLastT);
   // フリック用に速度を保持
@@ -3065,6 +3090,7 @@ function onMove(e) {
 }
 function onUp() {
   if (!dragging) return;
+  _cancelHoldTimer(); // v2.9.36
   // 投げた速度を適用
   dragging.vx = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, dragging._releaseVx || 0));
   dragging.vy = Math.max(-PHYSICS.maxV, Math.min(PHYSICS.maxV, dragging._releaseVy || 0));

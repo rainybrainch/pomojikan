@@ -28,7 +28,7 @@
     <text y="86" font-size="20" fill="#c890d8" font-weight="700" letter-spacing="3">漢字 ・ 古典 ・ 神話 ・ 科学 ・ 料理 ・ 美術 …</text>
   </g>
 
-  <!-- 雨ぽもじ（落下） -->
+  <!-- 集中ぽもじ（落下） -->
   <g font-family="'Noto Serif JP', serif" font-weight="700">
     <text x="490" y="380" font-size="36" fill="#e8c668" opacity="0.9">桜</text>
     <text x="550" y="380" font-size="36" fill="#e8c668" opacity="0.75">月</text>
@@ -41,7 +41,7 @@
     <text x="660" y="440" font-size="28" fill="#e8c668" opacity="0.5">真</text>
     <text x="710" y="440" font-size="28" fill="#e8c668" opacity="0.45">理</text>
   </g>
-  <!-- 泡ぽもじ（上昇）少量 -->
+  <!-- 休憩ぽもじ（上昇）少量 -->
   <g font-family="'Noto Serif JP', serif" font-weight="700">
     <text x="800" y="480" font-size="28" fill="#ff8e8e" opacity="0.7">食</text>
     <text x="850" y="480" font-size="28" fill="#ff8e8e" opacity="0.6">音</text>
