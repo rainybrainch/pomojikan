@@ -860,7 +860,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.8（モバイル描画最適化・タッチ競合解消）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.10（グローバルエラーハンドラ・クラッシュ防止）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -4206,6 +4206,29 @@ if (DEBUG) {
   console.log('%c🌑 ぽもじかん v2.9 育成ゲーム化（パーティ + 段階解放）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
+
+// v2.9.10: グローバルエラーハンドラ（クラッシュ防止）
+let _errorCount = 0;
+window.addEventListener('error', (e) => {
+  _errorCount++;
+  console.error('[pomojikan]', e.message, e.filename, e.lineno);
+  if (_errorCount === 1) {
+    // 初回のみユーザーに優しく通知（連発させない）
+    try { flash('⚠ 一時的なエラー（自動回復）'); } catch(_) {}
+  }
+  // 致命的エラーが連続する場合は SW 強制更新を提案
+  if (_errorCount >= 5) {
+    try {
+      const t = document.getElementById('sw-update-toast');
+      if (!t && typeof showUpdateToast === 'function') {
+        navigator.serviceWorker?.getRegistration?.().then(reg => reg && showUpdateToast(reg));
+      }
+    } catch(_) {}
+  }
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[pomojikan unhandled]', e.reason);
+});
 
 // v2.9.5: localStorage 容量超過対策
 // QuotaExceededError で全機能が止まらないように、書き込みをラップ
