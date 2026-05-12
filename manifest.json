@@ -57,6 +57,13 @@
       "type": "image/svg+xml",
       "form_factor": "narrow",
       "label": "メイン画面 ── タイマー + 文字の積み重ね"
+    },
+    {
+      "src": "screenshot-wide.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "PC・タブレット ── 雨ぽもじと泡ぽもじが両方降る百科事典タイマー"
     }
   ],
   "related_applications": [],

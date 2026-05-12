@@ -6,7 +6,7 @@
 //   - api.github.com: ネットワークのみ（Gist 同期）
 //   - その他 cross-origin: network-first
 
-const CACHE_NAME = 'pomojikan-v29-10';
+const CACHE_NAME = 'pomojikan-v29-11';
 const PRECACHE = [
   './',
   './index.html',
@@ -16,6 +16,7 @@ const PRECACHE = [
   './icon-maskable.svg',
   './og.svg',
   './screenshot.svg',
+  './screenshot-wide.svg',
   './privacy.html',
   './404.html',
   './help.html',
