@@ -718,7 +718,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.4（サウンド + 振動 + レアリティフィルタ）／ 作: rainybrainch<br>
+      ぽもじかん v2.5（レア文字大きく落ちる + 図鑑500件ページネーション）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1971,15 +1971,20 @@ addEventListener('orientationchange', () => setTimeout(() => {
 }, 100));
 
 // 文字の半径を文字数で計算（非線形・長文字も収まる）
-function radiusFor(text) {
+function radiusFor(text, rare) {
   const n = [...text].length;
   // 1-4文字：線形 / 5文字以上：log で緩やかに大きく
+  let r;
   if (n <= 4) {
-    return PHYSICS.sizeBase + n * PHYSICS.sizePerChar;
+    r = PHYSICS.sizeBase + n * PHYSICS.sizePerChar;
   } else {
-    return PHYSICS.sizeBase + 4 * PHYSICS.sizePerChar + Math.log2(n - 3) * 6;
+    r = PHYSICS.sizeBase + 4 * PHYSICS.sizePerChar + Math.log2(n - 3) * 6;
   }
-  // n=4: 32 / n=5: 32+6=38 / n=8: 32+9.5=42 / n=12: 32+13=45 / n=20: 32+18=50
+  // レアリティ倍率：虹 1.25 / 伝説 1.15 / 金 1.08
+  if (rare === 'rainbow')        r *= 1.25;
+  else if (rare === 'legendary') r *= 1.15;
+  else if (rare === 'gold')      r *= 1.08;
+  return r;
 }
 
 // 文字パーティクル生成（物理ボディとして）
@@ -2019,7 +2024,7 @@ function spawn() {
              && getLevel(entry.count) > getLevel(entry.count - expFor(entry.rare))) {
     flash(`🌟 「${text}」が Lv ${lv} に成長`);
   }
-  const r = radiusFor(text);
+  const r = radiusFor(text, entry.rare);
   const margin = r + 8;
   field.bodies.push({
     type, text, r,
@@ -2218,7 +2223,7 @@ function update() {
     if (!k) continue;
     // 進化：text 更新・半径拡大・質量増・記録
     k.text = m.newText;
-    k.r = radiusFor(m.newText);
+    k.r = radiusFor(m.newText, k.rare);
     k.mass = k.r * k.r;
     k.lv = (k.lv || 0) + 1;
     k.vrot = (Math.random() - 0.5) * 0.15;
@@ -3001,12 +3006,21 @@ document.querySelectorAll('.rf-btn').forEach(btn => {
 // ─── 📚 ぽもじ図鑑 ───
 let currentSort = 'count';
 let currentRarity = 'all';
+let currentColPage = 1;
 function openCollection() {
+  currentColPage = 1;
   document.getElementById('overlay-collection').classList.add('show');
   renderCollection(currentSort);
 }
 let currentSearch = '';
+let lastSortRarity = '';
 function renderCollection(sortBy) {
+  // ソート or フィルタ変更時はページリセット
+  const sigNow = sortBy + '|' + currentRarity + '|' + (document.getElementById('col-search')?.value || '');
+  if (sigNow !== lastSortRarity) {
+    currentColPage = 1;
+    lastSortRarity = sigNow;
+  }
   currentSort = sortBy;
   const searchEl = document.getElementById('col-search');
   if (searchEl) currentSearch = searchEl.value.trim();
@@ -3069,7 +3083,13 @@ function renderCollection(sortBy) {
     grid.innerHTML = '<div class="col-empty">まだ何も降っていない。<br>▶ 開始 で文字を集めはじめる。</div>';
     return;
   }
-  grid.innerHTML = sorted.map(([text, v]) => {
+  // パフォーマンス：500件を超える場合はページネーション
+  const PAGE_SIZE = 500;
+  const totalSorted = sorted.length;
+  const showing = sorted.slice(0, currentColPage * PAGE_SIZE);
+  const hasMore = totalSorted > showing.length;
+
+  grid.innerHTML = showing.map(([text, v]) => {
     const lv = getLevel(v.count);
     const classes = ['col-item'];
     if (v.rare === 'gold')         classes.push('col-gold');
@@ -3088,7 +3108,9 @@ function renderCollection(sortBy) {
         <span class="ci-fav ${favCls}" onclick="event.stopPropagation();toggleFavorite('${escape(text).replace(/'/g, "\\'")}')">${fav}</span>
       </div>
     `;
-  }).join('');
+  }).join('') + (hasMore ? `<button class="btn" id="col-load-more" style="grid-column:1/-1;margin-top:8px;">▼ もっと見る (${showing.length} / ${totalSorted})</button>` : '');
+  const moreBtn = document.getElementById('col-load-more');
+  if (moreBtn) moreBtn.addEventListener('click', () => { currentColPage++; renderCollection(currentSort); });
 }
 function escape(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -3390,7 +3412,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.4 演出 + フィルタ (ユニーク 22,160 / 96 カテゴリ)','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.5 物理サイズ強化 + 図鑑高速化','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
