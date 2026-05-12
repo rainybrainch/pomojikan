@@ -55,6 +55,8 @@
 <script src="words-science.js"></script>
 <script src="words-cooking.js"></script>
 <script src="words-music.js"></script>
+<script src="words-arts.js"></script>
+<script src="words-people.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -580,7 +582,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <label class="mode-row"><input type="radio" name="word-mode" value="yaruki"> <span>🔥 やる気のぽもじ</span><span class="hint">「勉強する！」「頑張るぞ！」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="nohohon"> <span>☁ のほほんのぽもじ</span><span class="hint">「のんびり」「お茶しよう」</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="zaitoku"><span>☆ 伝説のぽもじ</span><span class="hint">七大罪徳＝レア・経験値多め</span></label>
-    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">漢字・熟語・古典・神話・医療・科学・料理・音楽… 約 22,500 語（ユニーク 20,431）</span></label>
+    <label class="mode-row"><input type="radio" name="word-mode" value="encyc"><span>📚 百科ぽもじ</span><span class="hint">96 カテゴリ・ユニーク 22,160 種類 達成 / 真の百科事典級</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="custom"> <span>✏ 自分で決める</span><span class="hint">自分の言葉を入れる（集中用/休憩用 別）</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="fukurou365"> <span>🌧 服牢365 の名言</span><span class="hint">読雨に書いた名言が降る</span></label>
     <label class="mode-row"><input type="radio" name="word-mode" value="mixed"> <span>🌗 全部混ぜる</span><span class="hint">やる気＋のほほん＋伝説＋名言 全部</span></label>
@@ -709,7 +711,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.1（百科ぽもじ・収録 22,499 / ユニーク 20,431 種・重複精査済）／ 作: rainybrainch<br>
+      ぽもじかん v2.2（百科ぽもじ・ユニーク 22,160 種 / 真の 22,000 達成）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -1065,7 +1067,9 @@ let _katakanaSet, _kogoSet, _senmonSet, _yojiSet, _kojiSet, _kotowazaSet, _kanyo
     _utamakuraSet, _kotenSet, _hyakuninSet, _gagoSet, _kanshiSet,
     _animeSet, _gameSet, _subculSet, _physicsSet, _chemistrySet, _mathSet, _unitSet,
     _ingredientSet, _proteinSet, _cookingSet, _treeSet, _gemSet, _clothingSet,
-    _classicSet, _popMusicSet, _genreSet, _jpopSet;
+    _classicSet, _popMusicSet, _genreSet, _jpopSet,
+    _paintingSet, _artMovementSet, _architectureSet, _photoSet, _buildSet,
+    _scientistSet, _literatiSet, _athleteSet, _artistSet;
 function buildEncycSets() {
   if (_yojiSet) return;
   _yojiSet      = new Set(window.POMOJI_YOJI || []);
@@ -1161,6 +1165,17 @@ function buildEncycSets() {
   _popMusicSet    = new Set(window.POMOJI_POP_MUSIC || []);
   _genreSet       = new Set(window.POMOJI_GENRE || []);
   _jpopSet        = new Set(window.POMOJI_JPOP || []);
+  // 美術編
+  _paintingSet      = new Set(window.POMOJI_PAINTING || []);
+  _artMovementSet   = new Set(window.POMOJI_ART_MOVEMENT || []);
+  _architectureSet  = new Set(window.POMOJI_ARCHITECTURE || []);
+  _photoSet         = new Set(window.POMOJI_PHOTO || []);
+  _buildSet         = new Set(window.POMOJI_BUILD || []);
+  // 人物編
+  _scientistSet   = new Set(window.POMOJI_SCIENTIST || []);
+  _literatiSet    = new Set(window.POMOJI_LITERATI || []);
+  _athleteSet     = new Set(window.POMOJI_ATHLETE || []);
+  _artistSet      = new Set(window.POMOJI_ARTIST || []);
 }
 function isLegendary(text) {
   buildEncycSets();
@@ -1175,7 +1190,11 @@ function isLegendary(text) {
          (_northSet && _northSet.has(text)) ||
          (_kotenSet && _kotenSet.has(text)) ||
          (_hyakuninSet && _hyakuninSet.has(text)) ||
-         (_classicSet && _classicSet.has(text));
+         (_classicSet && _classicSet.has(text)) ||
+         (_paintingSet && _paintingSet.has(text)) ||
+         (_artMovementSet && _artMovementSet.has(text)) ||
+         (_literatiSet && _literatiSet.has(text)) ||
+         (_artistSet && _artistSet.has(text));
 }
 function isMythical(text) {
   buildEncycSets();
@@ -1199,7 +1218,9 @@ function isMythical(text) {
          (_kanshiSet && _kanshiSet.has(text)) ||
          (_physicsSet && _physicsSet.has(text)) ||
          (_chemistrySet && _chemistrySet.has(text)) ||
-         (_mathSet && _mathSet.has(text));
+         (_mathSet && _mathSet.has(text)) ||
+         (_architectureSet && _architectureSet.has(text)) ||
+         (_scientistSet && _scientistSet.has(text));
 }
 function isGold(text) {
   buildEncycSets();
@@ -1242,7 +1263,10 @@ function isGold(text) {
          (_clothingSet && _clothingSet.has(text)) ||
          (_popMusicSet && _popMusicSet.has(text)) ||
          (_genreSet && _genreSet.has(text)) ||
-         (_jpopSet && _jpopSet.has(text));
+         (_jpopSet && _jpopSet.has(text)) ||
+         (_photoSet && _photoSet.has(text)) ||
+         (_buildSet && _buildSet.has(text)) ||
+         (_athleteSet && _athleteSet.has(text));
 }
 
 // レアリティ別経験値量
@@ -1432,6 +1456,17 @@ function getEncyclopediaPool() {
   if (window.POMOJI_POP_MUSIC) pool.push(...window.POMOJI_POP_MUSIC);
   if (window.POMOJI_GENRE)     pool.push(...window.POMOJI_GENRE);
   if (window.POMOJI_JPOP)      pool.push(...window.POMOJI_JPOP);
+  // 美術編
+  if (window.POMOJI_PAINTING)     pool.push(...window.POMOJI_PAINTING);
+  if (window.POMOJI_ART_MOVEMENT) pool.push(...window.POMOJI_ART_MOVEMENT);
+  if (window.POMOJI_ARCHITECTURE) pool.push(...window.POMOJI_ARCHITECTURE);
+  if (window.POMOJI_PHOTO)        pool.push(...window.POMOJI_PHOTO);
+  if (window.POMOJI_BUILD)        pool.push(...window.POMOJI_BUILD);
+  // 人物編
+  if (window.POMOJI_SCIENTIST) pool.push(...window.POMOJI_SCIENTIST);
+  if (window.POMOJI_LITERATI)  pool.push(...window.POMOJI_LITERATI);
+  if (window.POMOJI_ATHLETE)   pool.push(...window.POMOJI_ATHLETE);
+  if (window.POMOJI_ARTIST)    pool.push(...window.POMOJI_ARTIST);
   _encycPool = pool;
   log('[encyc] pool size:', pool.length);
   return pool;
@@ -3223,7 +3258,7 @@ applyI18N();
 fetchFukurou365();
 renderTimer();
 if (DEBUG) {
-  console.log('%c🌑 ぽもじかん v2.1 百科ぽもじ 改良版（ユニーク 20,431 / 総 22,499）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
+  console.log('%c🌑 ぽもじかん v2.2 真の百科事典 完成（ユニーク 22,160）','color:#c9a84c;font-size:1.2rem;font-weight:900;');
   console.log('%c⌨ ショートカット: Space=開始 R=リセット M=メニュー C=図鑑 S=統計 P=シェア Esc=閉じる','color:#5a6890;font-size:0.85rem;');
 }
 
