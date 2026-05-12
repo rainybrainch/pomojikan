@@ -890,7 +890,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.36（長押しコピー + 雨/泡 → 集中/休憩 名称統一）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.37（長文字のフォントサイズ自動調整）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2972,7 +2972,14 @@ function draw() {
       ctx.shadowColor = b.type === 'virtue' ? 'rgba(201,168,76,0.7)' : 'rgba(255,107,107,0.6)';
       ctx.shadowBlur = 8;
     }
-    const fontSize = Math.max(11, b.r * 0.85);
+    // v2.9.37: 文字長に応じてフォントサイズ自動調整（長い言葉が円からはみ出ない）
+    const len = [...b.text].length;
+    let fontSize = Math.max(11, b.r * 0.85);
+    if (len >= 3) {
+      // 3 文字以上：直径 (2r) に収まるよう縮小
+      const maxByWidth = (b.r * 1.7) / len;
+      fontSize = Math.max(9, Math.min(fontSize, maxByWidth * 1.2));
+    }
     ctx.font = `${b.lv >= 5 ? 900 : 700} ${fontSize}px "Noto Serif JP", serif`;
     ctx.fillText(b.text, 0, 1);
     ctx.restore();
