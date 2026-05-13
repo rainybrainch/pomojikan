@@ -51,6 +51,53 @@ button:focus-visible, input:focus-visible{
 }
 ::selection{ background:rgba(240,212,138,.4); color:#1a1410; }
 
+/* ════════════════════ 全画面背景：雨 ＋ 泡 ════════════════════ */
+.rain-bg, .bubble-bg{
+  position:fixed; inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity 1.2s ease;
+  z-index:0;
+}
+body[data-mode="work"] .rain-bg{ opacity:.65; }
+body[data-mode="rest"] .bubble-bg{ opacity:.65; }
+
+.rain-bg .rd{
+  position:absolute; top:-30px;
+  width:1.2px; height:24px;
+  background:linear-gradient(to bottom, transparent, rgba(155,216,240,.7));
+  animation:rainFall linear infinite;
+}
+@keyframes rainFall{
+  0%   { transform:translateY(0);     opacity:0; }
+  10%  { opacity:.8; }
+  90%  { opacity:.8; }
+  100% { transform:translateY(110vh); opacity:0; }
+}
+
+.bubble-bg .bb{
+  position:absolute; bottom:-30px;
+  border-radius:50%;
+  border:1.2px solid rgba(255,255,255,.4);
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.25), transparent 65%);
+  animation:bgBubbleRise ease-in infinite;
+}
+@keyframes bgBubbleRise{
+  0%   { transform:translateY(0)     translateX(0);   opacity:0; }
+  10%  { opacity:.7; }
+  50%  { transform:translateY(-55vh) translateX(12px); }
+  90%  { opacity:.7; }
+  100% { transform:translateY(-110vh) translateX(-8px); opacity:0; }
+}
+
+/* メイン要素は z-index:1+ で前に */
+.app-header, .game-main, .complete-burst, .toast, .modal, .preview-banner{
+  position:relative; z-index:1;
+}
+.modal, .complete-burst, .toast, .preview-banner{ z-index:50; }
+.modal{ z-index:100; }
+
 /* ════════════════════ レアリティ色 ════════════════════ */
 .rarity-1{ --r-color:#9aa8b5; --r-glow:rgba(154,168,181,.5); }
 .rarity-2{ --r-color:#5cbfdf; --r-glow:rgba(92,191,223,.55); }

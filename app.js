@@ -226,6 +226,40 @@ function resetState() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// 全画面背景：雨（作業中）／ 泡（休憩中）
+// ═══════════════════════════════════════════════════════════════
+function buildBackgroundLayers() {
+  const rain = $('#rain-bg');
+  const bub  = $('#bubble-bg');
+  if (rain && !rain.children.length) {
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      const d = document.createElement('div');
+      d.className = 'rd';
+      d.style.left = (Math.random() * 100) + 'vw';
+      d.style.animationDuration = (0.9 + Math.random() * 1.4) + 's';
+      d.style.animationDelay = (-Math.random() * 2) + 's';
+      d.style.opacity = (0.3 + Math.random() * 0.5).toFixed(2);
+      rain.appendChild(d);
+    }
+  }
+  if (bub && !bub.children.length) {
+    const N = 28;
+    for (let i = 0; i < N; i++) {
+      const b = document.createElement('div');
+      b.className = 'bb';
+      const size = 6 + Math.random() * 14;
+      b.style.left = (Math.random() * 100) + 'vw';
+      b.style.width = size + 'px';
+      b.style.height = size + 'px';
+      b.style.animationDuration = (5 + Math.random() * 5) + 's';
+      b.style.animationDelay = (-Math.random() * 6) + 's';
+      bub.appendChild(b);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // パーティ共有（UGC 軽実装・Roblox 反省を踏まえた最小機能）
 // ── ランキングなし・競争なし・匿名匿名で他者参照のみ
 // ═══════════════════════════════════════════════════════════════
@@ -454,7 +488,7 @@ function openPartyPicker() {
     return;
   }
   const pool = window.KANJI_CODEX
-    .filter(k => k.rarity === '拾級')
+    .filter(k => k.rarity === '★1')
     .sort(() => Math.random() - 0.5)
     .slice(0, PARTY_PICKER_POOL_SIZE);
 
@@ -1402,6 +1436,7 @@ function init() {
   renderParty();
   updateUnlockTier();
   updateProgressPill();
+  buildBackgroundLayers();
   physicsStep();
 
   // First-launch: prompt party selection

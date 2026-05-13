@@ -1,8 +1,7 @@
 // ぽもじかん v29 Service Worker（network-first）
-const CACHE_NAME = 'pomojikan-20260513a';
+const CACHE_NAME = 'pomojikan-20260513b';
 const PRECACHE = [
-  './', './index.html', './manifest.json',
-  './icon.svg', './icon-192.svg', './icon-512.svg', './icon-maskable.svg',
+  './', './index.html', './manifest.json', './icon.svg',
   './style.css', './app.js', './codex.js'
 ];
 
