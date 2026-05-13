@@ -185,6 +185,7 @@ const DEFAULT_STATE = {
   audioOn: false,                 // BGM オン／オフ
   userId: null,                   // 初回起動時に発行
   userCreatedAt: null,            // 発行日時
+  onboardingDone: false,          // 初回オンボーディング完了
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -744,6 +745,41 @@ function onLevelUp(member, idx) {
   if (card) {
     card.classList.add('levelup-flash');
     setTimeout(() => card.classList.remove('levelup-flash'), 1000);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 初回オンボーディング（世界観 → パーティ選択）
+// ═══════════════════════════════════════════════════════════════
+let _obStep = 1;
+const _obMaxStep = 4;
+function openOnboarding() {
+  _obStep = 1;
+  showOnboardingStep();
+  $('#onboarding-modal').classList.add('show');
+}
+function showOnboardingStep() {
+  $$('.ob-step').forEach(s => s.hidden = (parseInt(s.dataset.step) !== _obStep));
+  $$('.ob-dot').forEach(d => d.classList.toggle('active', parseInt(d.dataset.dot) === _obStep));
+  $('#ob-next').textContent = (_obStep === _obMaxStep) ? '始める →' : '次へ →';
+}
+function obNext() {
+  if (_obStep < _obMaxStep) {
+    _obStep += 1;
+    showOnboardingStep();
+  } else {
+    finishOnboarding();
+  }
+}
+function obSkip() {
+  finishOnboarding();
+}
+function finishOnboarding() {
+  STATE.onboardingDone = true;
+  saveState();
+  $('#onboarding-modal').classList.remove('show');
+  if (!isPartyChosen()) {
+    setTimeout(() => openPartyPicker(), 300);
   }
 }
 
@@ -1834,6 +1870,8 @@ function bindEvents() {
   $('#btn-audio').addEventListener('click', toggleAudio);
   $('#btn-issue-code').addEventListener('click', copyTransferCode);
   $('#btn-apply-code').addEventListener('click', promptApplyTransferCode);
+  $('#ob-next').addEventListener('click', obNext);
+  $('#ob-skip').addEventListener('click', obSkip);
   $('#user-id-display').addEventListener('click', async () => {
     if (STATE.userId) {
       try { await navigator.clipboard.writeText(STATE.userId); toast('IDをコピー'); }
@@ -1874,8 +1912,10 @@ function init() {
   buildBackgroundLayers();
   physicsStep();
 
-  // First-launch: prompt party selection
-  if (!isPartyChosen()) {
+  // First-launch flow: onboarding → party picker
+  if (!STATE.onboardingDone) {
+    setTimeout(() => openOnboarding(), 500);
+  } else if (!isPartyChosen()) {
     setTimeout(() => openPartyPicker(), 600);
   }
 

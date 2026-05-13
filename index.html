@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260513k">
+<link rel="stylesheet" href="style.css?v=20260513l">
 </head>
 <body data-mode="idle">
 
@@ -174,6 +174,59 @@
   </div>
 </div>
 
+<!-- 初回オンボーディング -->
+<div class="modal" id="onboarding-modal" role="dialog" aria-modal="true">
+  <div class="modal-card onboarding-card">
+    <div class="ob-step" data-step="1">
+      <div class="ob-icon">🌧</div>
+      <h2 class="ob-title">ぽもじかん へようこそ</h2>
+      <p class="ob-text">
+        <strong>集中の時間</strong>に「字」が降ってきて、<br>
+        <strong>休憩の時間</strong>に「泡」となって育つ。<br>
+        ── ポモドーロと文字育成を合わせた集中アプリです。
+      </p>
+    </div>
+    <div class="ob-step" data-step="2" hidden>
+      <div class="ob-icon">🎯</div>
+      <h2 class="ob-title">3 つの操作だけ</h2>
+      <p class="ob-text">
+        <strong>① 始める</strong>でタイマー開始<br>
+        <strong>② 降ってきた字を ドラッグ</strong>で重ねると <span style="color:var(--gold)">融合</span><br>
+        <strong>③ タップ</strong>で消滅・経験値化
+      </p>
+    </div>
+    <div class="ob-step" data-step="3" hidden>
+      <div class="ob-icon">🌱</div>
+      <h2 class="ob-title">主人公を育てる</h2>
+      <p class="ob-text">
+        最初に <strong>主人公を 1 体</strong> 選びます（あとから仲間追加可）。<br>
+        作業中に貯めた字は、<strong>休憩中に泡となって浮上</strong>し、<br>
+        主人公の経験値になります。
+      </p>
+    </div>
+    <div class="ob-step" data-step="4" hidden>
+      <div class="ob-icon">✨</div>
+      <h2 class="ob-title">レベル帯で世界が広がる</h2>
+      <p class="ob-text">
+        パーティの平均 Lv が上がると、<br>
+        <strong>降る字のレアリティが変わります</strong>。<br>
+        ひらがな・カタカナ → 漢字 → 熟語級 → 神字。<br>
+        <small>「？遊び方」でいつでも確認できます。</small>
+      </p>
+    </div>
+    <div class="ob-dots">
+      <div class="ob-dot active" data-dot="1"></div>
+      <div class="ob-dot" data-dot="2"></div>
+      <div class="ob-dot" data-dot="3"></div>
+      <div class="ob-dot" data-dot="4"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ob-skip">スキップ</button>
+      <button class="btn-primary" id="ob-next">次へ →</button>
+    </div>
+  </div>
+</div>
+
 <!-- 遊び方モーダル -->
 <div class="modal" id="help-modal" role="dialog" aria-modal="true">
   <div class="modal-card modal-card-wide">
@@ -298,6 +351,14 @@
       <p class="share-note">他の人があなたのパーティ設定でぽもじかんを試せます。<br>進捗は持っていかれません（プレビュー扱い）。</p>
     </div>
 
+    <div class="legal-links">
+      <a href="privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>
+      <span>・</span>
+      <a href="license.html" target="_blank" rel="noopener">利用規約</a>
+      <span>・</span>
+      <a href="help.html" target="_blank" rel="noopener">ヘルプ</a>
+    </div>
+
     <div class="danger-zone">
       <h3 class="stats-section-title danger">⚠ 危険な操作</h3>
       <button class="btn-danger" id="btn-reset-all">全データを消去</button>
@@ -309,7 +370,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260513k" defer></script>
-<script src="app.js?v=20260513k" defer></script>
+<script src="codex.js?v=20260513l" defer></script>
+<script src="app.js?v=20260513l" defer></script>
 </body>
 </html>
