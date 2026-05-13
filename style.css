@@ -722,21 +722,22 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
 
 .pomoji{
   position:absolute;
-  width:44px;height:44px;
+  width:56px;height:56px;
   display:flex;align-items:center;justify-content:center;
   font-family:'Noto Serif JP', serif;
-  font-size:1.8rem;font-weight:700;
+  font-size:2rem;font-weight:700;
   color:var(--r-color);
   text-shadow:0 0 12px var(--r-glow);
-  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.18), rgba(0,0,0,.18));
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.22), rgba(0,0,0,.25));
   border:1.5px solid var(--r-color);
   border-radius:14px;
   cursor:grab;
   user-select:none;
   -webkit-user-select:none;
   touch-action:none;
+  pointer-events:auto !important;
   transition:box-shadow .15s, transform .1s;
-  z-index:2;
+  z-index:5;
   will-change:left, top;
 }
 .pomoji:active{ cursor:grabbing; }
@@ -811,6 +812,31 @@ body[data-mode="rest"] #tank{
 }
 body[data-mode="rest"] #tank{
   box-shadow:inset 0 0 30px rgba(232,154,168,.1);
+}
+
+/* 新発見バッジ */
+.pomoji-new-badge{
+  position:absolute;
+  top:-7px;left:-7px;
+  background:linear-gradient(135deg, var(--gold), #ffd6a5);
+  color:#1a1410;
+  font-size:.55rem;
+  font-weight:900;
+  font-family:'Zen Kaku Gothic New', sans-serif;
+  letter-spacing:.02em;
+  padding:2px 6px;
+  border-radius:99px;
+  box-shadow:0 0 8px var(--gold);
+  pointer-events:none;
+  animation:newBadgePulse 1.4s ease-in-out infinite;
+  z-index:6;
+}
+@keyframes newBadgePulse{
+  0%,100%{ transform:scale(1); opacity:1; }
+  50%{    transform:scale(1.15); opacity:.85; }
+}
+.pomoji.is-new{
+  box-shadow:0 0 0 2px var(--gold), 0 0 14px rgba(240,212,138,.5);
 }
 
 .pomoji.dissolve{

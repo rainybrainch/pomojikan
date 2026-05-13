@@ -34,7 +34,7 @@ const TIMER_PRESETS = [
 ];
 const PARTY_PICKER_POOL_SIZE = 24;
 const GRAVITY_BASE = 0.35;
-const SIZE_BASE = 44;
+const SIZE_BASE = 56;
 
 // ═══════════════════════════════════════════════════════════════
 // PERK SYSTEM ── ヴァンパイアサバイバー方式
@@ -1066,14 +1066,17 @@ function spawnPomoji(opts={}) {
     styleClass = EVO_STYLE[stage];
   }
 
+  const isFirstSee = !STATE.collection[char];
+
+  const newBadge = isFirstSee ? el('span', { class:'pomoji-new-badge' }, '新') : null;
   const node = el('div', {
-    class: `pomoji ${tierClass} font-${styleClass}`,
+    class: `pomoji ${tierClass} font-${styleClass}${isFirstSee ? ' is-new' : ''}`,
     dataset: { id, char, rarity, tier: tierIdx },
     style: { left: x+'px', top: y+'px' }
-  }, char);
+  }, char, newBadge);
   field.appendChild(node);
 
-  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.5, vy: 0, el: node, settled: false };
+  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.5, vy: 0, el: node, settled: false, isFirstSee };
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
@@ -1168,19 +1171,41 @@ function physicsStep() {
       p.el.style.top  = p.y + 'px';
       continue;
     }
-    // 落下ぽもじ：重力＋着底
-    // tier 別の落下倍率 × perk gravityMul
+    // 落下ぽもじ：重力＋着底＋積み重なり
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
     p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
     p.x += p.vx;
     p.y += p.vy;
     if (p.x < 0) { p.x = 0; p.vx *= -DAMP; }
     if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -DAMP; }
-    if (p.y > H - SIZE) {
+
+    // 他のぽもじとの衝突（積み重なり）
+    let stackedOn = null;
+    for (const other of livePomoji.values()) {
+      if (other.id === p.id || other.dragging || other.rising) continue;
+      if (Math.abs(other.x - p.x) >= SIZE * 0.92) continue;
+      if (other.y < p.y) continue;
+      const gap = other.y - p.y;
+      if (gap < SIZE && p.vy > 0) {
+        // 上に着地
+        p.y = other.y - SIZE * 0.98;
+        p.vy *= -DAMP * 0.5;
+        p.vx += (Math.random() - 0.5) * 0.6;
+        if (Math.abs(p.vy) < 0.7) {
+          p.vy = 0;
+          if (!p.settled) p.el.classList.add('settled');
+          p.settled = true;
+        }
+        stackedOn = other;
+        break;
+      }
+    }
+
+    // 床への着地
+    if (!stackedOn && p.y > H - SIZE) {
       p.y = H - SIZE; p.vy *= -DAMP; p.vx *= 0.92;
       if (Math.abs(p.vy) < 1) {
         p.vy = 0;
-        // 着地時 magnet perk: 近くの同字を引き寄せ
         if (!p.settled && agg.magnet) attractSameChar(p);
         if (!p.settled) p.el.classList.add('settled');
         p.settled = true;
