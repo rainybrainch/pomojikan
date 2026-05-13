@@ -694,56 +694,44 @@ function completePhase() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 上るぽもじ（休憩フェーズ）── 解放・浮遊
+// 休憩フェーズ：作業中に貯めたぽもじを泡化 → 浮上 → EXP化
+// 「集中で貯めて、休憩で育つ」
 // ═══════════════════════════════════════════════════════════════
-let risingTimer = 0;
 function startRisingPomoji() {
-  stopRisingPomoji();
-  spawnRisingOne();
-  risingTimer = setInterval(spawnRisingOne, 1400 + Math.random() * 600);
+  // 着底済の全ぽもじを順番に泡化
+  const settled = Array.from(livePomoji.values())
+    .filter(p => p.settled && !p.dragging && !p.rising)
+    .sort((a, b) => a.y - b.y); // 上にあるものから（演出順）
+  if (settled.length === 0) {
+    toast('泡にする字がない（集中で貯めよう）');
+    return;
+  }
+  settled.forEach((p, i) => {
+    setTimeout(() => convertToRising(p), i * 180);
+  });
+  toast(`${settled.length}粒の字が育つ`);
 }
 function stopRisingPomoji() {
-  if (risingTimer) { clearInterval(risingTimer); risingTimer = 0; }
+  // 上昇中の字を着底に戻す（一時停止用）— 実装簡略：そのまま継続でOK
 }
-function spawnRisingOne() {
-  if (STATE.mode !== 'rest') { stopRisingPomoji(); return; }
-  // パーティ字 50%、その他は現在band の字 50%
-  let k = null;
-  if (STATE.party && Math.random() < 0.5) {
-    k = pickPartyDrop();
-  } else {
-    k = pickKanjiForDrop();
-  }
-  if (!k) return;
-  const tank = $('#tank');
-  const rect = tank.getBoundingClientRect();
-  const x = 40 + Math.random() * (rect.width - 80);
-  const y = rect.height + 30;
-  const id = ++pomojiSeq;
-  const char = k.char || k.c;
-  const node = el('div', {
-    class: `pomoji rising rarity-${RARITY_TIERS.indexOf(k.rarity) + 1}`,
-    dataset: { id, char, rarity: k.rarity },
-    style: { left: x+'px', top: y+'px' }
-  }, char);
-  tank.appendChild(node);
-  const obj = { id, char, rarity: k.rarity, x, y, vx: (Math.random()-0.5)*.6, vy: -1.4 - Math.random()*0.8, el: node, rising: true };
-  livePomoji.set(id, obj);
-  // タップで弾ける（XPなし、ただ気持ちいい音と粒）
-  node.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    burstRising(obj);
-  });
-  // 自動で天井に達したら自然消滅
+function convertToRising(p) {
+  if (!p.el || !livePomoji.has(p.id)) return;
+  p.rising = true;
+  p.settled = false;
+  p.vy = -1.4 - Math.random() * 0.8;
+  p.vx = (Math.random() - 0.5) * 0.6;
+  p.el.classList.add('rising');
+  // タップでも弾ける（即時 EXP 化）
+  p.el.onpointerdown = (e) => { e.preventDefault(); awardRising(p); };
 }
-function burstRising(p) {
+function awardRising(p) {
+  const rIdx = RARITY_TIERS.indexOf(p.rarity);
+  const exp = Math.max(1, Math.pow(2, rIdx) * 6);
+  const tankRect = $('#tank').getBoundingClientRect();
+  spawnXpFloat(p.x + SIZE/2, Math.max(20, p.y), exp, p.rarity);
+  awardExpToParty(p.char, exp) || _orphanExp(exp);
   p.el.classList.add('burst');
-  setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 500);
-  // ご褒美：パーティ字なら極小 XP
-  const idx = partyContainsChar(p.char);
-  if (idx >= 0) {
-    awardExpToParty(p.char, 1);
-  }
+  setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 500);
 }
 
 function flashCompletionBurst(msg) {
@@ -885,21 +873,6 @@ function spawnCycleDrops() {
   saveState();
 }
 
-function spawnBackgroundCatchup(elapsedMs) {
-  // user came back from background; replay missed cycle drops in cascade
-  const cycles = Math.floor(elapsedMs / 1000 / Math.max(60, STATE.timer.workSec));
-  if (cycles <= 0) return;
-  const total = Math.min(15, cycles * 3);
-  toast(`おかえり！${cycles}サイクル分（${total}粒）落とします`);
-  const drops = [];
-  for (let i = 0; i < total; i++) {
-    const k = pickKanjiForDrop();
-    if (k) drops.push(k);
-  }
-  // バックグラウンド復帰は少し早めに、しかしレア順は維持
-  dropCascade(drops, 280, 480);
-}
-
 // ═══════════════════════════════════════════════════════════════
 // 物理 + 衝突 (rAF loop)
 // ═══════════════════════════════════════════════════════════════
@@ -921,10 +894,12 @@ function physicsStep() {
       p.x += p.vx;
       p.y += p.vy;
       if (p.x < 0 || p.x > W - SIZE) p.vx *= -0.7;
-      // 天井到達 → 自動消滅
+      // 天井到達 → 自動 EXP 化（育成の本体）
       if (p.y < -SIZE) {
-        p.el.remove();
-        livePomoji.delete(p.id);
+        if (!p._awarded) {
+          p._awarded = true;
+          awardRising(p);
+        }
         continue;
       }
       p.el.style.left = p.x + 'px';
@@ -1392,25 +1367,61 @@ function openStats() {
 function closeStats() { $('#stats-modal').classList.remove('show'); }
 
 // ═══════════════════════════════════════════════════════════════
-// バックグラウンド対応
+// バックグラウンド対応（v30c）── タイマーは継続、復帰時に 50% ボーナス
 // ═══════════════════════════════════════════════════════════════
 function handleVisibilityChange() {
   if (document.hidden) {
     if (STATE.mode === 'work' || STATE.mode === 'rest') {
       STATE.lastHiddenAt = Date.now();
-      pauseTimer();
+      // タイマーは進行継続（Date.now() ベース）
+      // ただし JS タイマー類は止める（再生不要・rAF はブラウザが自動で停止）
+      stopWorkSpawning();
+      cancelAnimationFrame(timerRaf);
       saveState();
     }
   } else {
-    if (STATE.lastHiddenAt) {
-      const elapsed = Date.now() - STATE.lastHiddenAt;
-      if (elapsed > 30 * 1000) {
-        spawnBackgroundCatchup(elapsed);
-      }
+    if (STATE.lastHiddenAt && (STATE.mode === 'work' || STATE.mode === 'rest')) {
+      const hiddenElapsed = Date.now() - STATE.lastHiddenAt;
+      const wasWorkBeforeHide = (STATE.mode === 'work');
       STATE.lastHiddenAt = null;
+
+      // 隠れている間にフェーズが終わってたら順次完了
+      let safety = 5;
+      while ((STATE.mode === 'work' || STATE.mode === 'rest')
+              && Date.now() >= STATE.phaseEnd
+              && safety-- > 0) {
+        completePhase();
+      }
+
+      // タイマー類を再開
+      if (STATE.mode === 'work') {
+        startWorkSpawning();
+      }
+      tick();
+
+      // オフラインボーナス（作業中に隠れていた時間に対して 50%）
+      if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS) {
+        const wouldHaveSpawned = Math.floor(hiddenElapsed / WORK_SPAWN_INTERVAL_MS);
+        const bonusCount = Math.min(20, Math.floor(wouldHaveSpawned * 0.5));
+        if (bonusCount > 0) {
+          offlineBonusCascade(bonusCount);
+        }
+      }
       saveState();
+    } else if (STATE.lastHiddenAt) {
+      STATE.lastHiddenAt = null;
     }
   }
+}
+
+function offlineBonusCascade(count) {
+  toast(`おかえり！オフラインボーナス ${count} 粒（50%）`);
+  const drops = [];
+  for (let i = 0; i < count; i++) {
+    const k = (STATE.party && i % 3 === 0) ? pickPartyDrop() : pickKanjiForDrop();
+    if (k) drops.push(k);
+  }
+  dropCascade(drops, 160, 260);
 }
 
 // ═══════════════════════════════════════════════════════════════
