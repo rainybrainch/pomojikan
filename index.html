@@ -876,6 +876,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
     <!-- データ管理 -->
     <div class="section-h">💾 データ</div>
+    <div id="storage-meter" style="font-size:0.7rem;color:var(--muted);margin-bottom:6px;padding:6px 8px;background:rgba(0,0,0,0.25);border-radius:3px;">
+      ストレージ使用量: <span id="storage-used">計測中…</span> <span id="storage-bar" style="display:inline-block;width:80px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;vertical-align:middle;margin-left:6px;overflow:hidden;"><span id="storage-fill" style="display:block;height:100%;width:0;background:var(--gold);transition:width 0.5s;"></span></span>
+    </div>
     <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
       <button class="btn small" id="btn-export">📤 書き出し</button>
       <button class="btn small" id="btn-import">📥 取り込み</button>
@@ -895,7 +898,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.41（完走メッセージ拡張・節目メッセージ）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.42（ストレージ容量メーター・メニュー表示）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -3284,12 +3287,41 @@ function refreshDailyChlInfo() {
     ? `✅ <strong>達成！</strong> 「${c.target}」を ${c.count} 個集めました（${c.date}）`
     : `「<strong style="color:var(--gold);">${c.target}</strong>」を ${c.count} 個集める ── 進捗 ${c.current} / ${c.count}`;
 }
+// v2.9.42: localStorage 容量計測（メニュー表示用）
+function measureStorageBytes() {
+  let total = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('pomojikan') || k && k.startsWith('zaitoku')) {
+        const v = localStorage.getItem(k) || '';
+        total += k.length + v.length; // UTF-16 概算（×2 が厳密だが UI 表示用なので簡略化）
+      }
+    }
+  } catch(e) {}
+  return total * 2; // UTF-16 bytes
+}
+
 function openMenu() {
   // 現在値を反映
   document.getElementById('cust-work').value = STATE.workMin;
   document.getElementById('cust-rest').value = STATE.restMin;
   const ws = document.getElementById('cust-work-sec'); if (ws) ws.value = STATE.customWorkSec || 0;
   const rs = document.getElementById('cust-rest-sec'); if (rs) rs.value = STATE.customRestSec || 0;
+  // ストレージ容量
+  const used = measureStorageBytes();
+  const usedEl = document.getElementById('storage-used');
+  const fillEl = document.getElementById('storage-fill');
+  if (usedEl) {
+    const kb = used / 1024;
+    usedEl.textContent = kb < 1024 ? kb.toFixed(1) + ' KB' : (kb / 1024).toFixed(2) + ' MB';
+    // 5 MB 想定の容量メーター
+    const pct = Math.min(100, (used / (5 * 1024 * 1024)) * 100);
+    if (fillEl) {
+      fillEl.style.width = pct + '%';
+      fillEl.style.background = pct > 80 ? '#ff8e8e' : pct > 50 ? '#ffd0f0' : 'var(--gold)';
+    }
+  }
   // テーマ
   document.querySelectorAll('.theme-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.theme === STATE.theme);
