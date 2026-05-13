@@ -895,7 +895,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.40（完走時 紙吹雪エフェクト）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.41（完走メッセージ拡張・節目メッセージ）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2442,8 +2442,22 @@ function completePhase() {
       flash(`🌳 長休憩！ ${STATE.longRestMin}分 ゆっくり`);
       notify('🌳 長休憩 開始', `${STATE.sessionsBeforeLong} セッション完走！ ${STATE.longRestMin}分 ゆっくり休憩。`);
     } else {
-      const cheers = ['🌸 おつかれ！', '🌿 いいぞ！', '☕ 休憩しよ', '⭐ 完走+1', '✨ ナイス！'];
-      flash(cheers[Math.floor(Math.random() * cheers.length)] + ` (${STATE.currentSession}/${STATE.sessionsBeforeLong})`);
+      const cheers = [
+        '🌸 おつかれ！', '🌿 いいぞ！', '☕ 休憩しよ', '⭐ 完走+1', '✨ ナイス！',
+        '🍵 ひと息', '🌧 雨の中で集中', '📚 + 1 ぽもじ', '🪴 育った', '🌟 ぽもじが舞った',
+        '💫 凝縮した', '🌙 月が見てた', '🎐 ふっと一息'
+      ];
+      // 節目（5/10/25/50/100/累計）は特別メッセージ
+      let msg;
+      if (STATE.total === 1)       msg = '🌱 はじめての完走！';
+      else if (STATE.total === 10)  msg = '🎊 累計 10 完走！';
+      else if (STATE.total === 25)  msg = '🏅 累計 25 完走！';
+      else if (STATE.total === 50)  msg = '🏆 累計 50 完走！';
+      else if (STATE.total === 100) msg = '👑 累計 100 完走！';
+      else if (STATE.today === 5)   msg = '🌅 今日 5 完走！';
+      else if (STATE.today === 10)  msg = '🌌 今日 10 完走！';
+      else msg = cheers[Math.floor(Math.random() * cheers.length)] + ` (${STATE.currentSession}/${STATE.sessionsBeforeLong})`;
+      flash(msg, msg.includes('累計') || msg.includes('はじめて') ? 'gold' : null);
       notify('🌸 おつかれ', `セッション ${STATE.currentSession}/${STATE.sessionsBeforeLong}。${STATE.restMin}分休憩。`);
     }
   } else {
@@ -2453,7 +2467,11 @@ function completePhase() {
     STATE.endAt = Date.now() + STATE.remaining * 1000;
     localStorage.setItem(KEY_END, STATE.endAt);
     localStorage.setItem(KEY_PHASE, STATE.phase);
-    const restarts = ['☂ さあ、もう一回', '🌧 ぽもじ再開', '✨ 次いってみよう', '🌿 ぼちぼちと'];
+    const restarts = [
+      '☂ さあ、もう一回', '🌧 ぽもじ再開', '✨ 次いってみよう', '🌿 ぼちぼちと',
+      '📖 続きを書こう', '🌧 雨を集めに', '🎯 次の 1 字へ', '💧 ひと滴ずつ',
+      '🌱 育てる時間'
+    ];
     flash(restarts[Math.floor(Math.random() * restarts.length)]);
     notify('☂ 再開', `${STATE.workMin}分のぽもじ、もう一回ゆるく。`);
     // セッション番号進める（長休憩明けは 1 にリセット）
