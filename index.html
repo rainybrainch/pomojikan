@@ -747,18 +747,18 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <div class="field-row">
       <label>集中 <span class="tag-gold">ぽもじが降る</span></label>
       <div style="display:flex;gap:4px;align-items:center;">
-        <input type="number" id="cust-work" min="0" max="180" value="25" style="width:62px;">
+        <input type="number" id="cust-work" min="0" max="180" value="25" inputmode="numeric" autocomplete="off" aria-label="集中時間（分）" style="width:62px;">
         <span style="font-size:0.7rem;color:var(--muted);">分</span>
-        <input type="number" id="cust-work-sec" min="0" max="59" value="0" style="width:54px;">
+        <input type="number" id="cust-work-sec" min="0" max="59" value="0" inputmode="numeric" autocomplete="off" aria-label="集中時間（秒）" style="width:54px;">
         <span style="font-size:0.7rem;color:var(--muted);">秒</span>
       </div>
     </div>
     <div class="field-row">
       <label>休憩 <span class="tag-sin">ぽもじが上がる</span></label>
       <div style="display:flex;gap:4px;align-items:center;">
-        <input type="number" id="cust-rest" min="0" max="60" value="5" style="width:62px;">
+        <input type="number" id="cust-rest" min="0" max="60" value="5" inputmode="numeric" autocomplete="off" aria-label="休憩時間（分）" style="width:62px;">
         <span style="font-size:0.7rem;color:var(--muted);">分</span>
-        <input type="number" id="cust-rest-sec" min="0" max="59" value="0" style="width:54px;">
+        <input type="number" id="cust-rest-sec" min="0" max="59" value="0" inputmode="numeric" autocomplete="off" aria-label="休憩時間（秒）" style="width:54px;">
         <span style="font-size:0.7rem;color:var(--muted);">秒</span>
       </div>
     </div>
@@ -905,7 +905,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.45（iOS rubber-banding 完全抑制）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.46（時間 input に inputmode=numeric + aria-label）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
