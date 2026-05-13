@@ -911,7 +911,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.52（次の節目まで表示・モチベ可視化）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.53（Storage Persistence・自動削除防止）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -4447,6 +4447,21 @@ if (DEBUG) {
       history.replaceState(null, '', window.location.pathname);
     } catch(e) { console.error(e); }
   }, 500);
+})();
+
+// v2.9.53: Storage Persistence API（自動削除防止）
+// ブラウザは容量逼迫時にサイトデータを自動削除することがある。
+// persist() で「重要データ」を宣言して保護。
+(async function requestPersistence() {
+  if (!navigator.storage?.persist) return;
+  try {
+    const persisted = await navigator.storage.persisted();
+    if (!persisted) {
+      // PWA 起動時のみ要求（Notification 通知許可がある場合は自動承認される）
+      const granted = await navigator.storage.persist();
+      log('[storage] persisted:', granted);
+    }
+  } catch (e) { log('[storage]', e); }
 })();
 
 // v2.9.10: グローバルエラーハンドラ（クラッシュ防止）
