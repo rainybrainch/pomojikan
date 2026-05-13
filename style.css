@@ -121,29 +121,45 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
 }
 .header-actions{ display:flex; gap:8px; }
 .icon-btn{
-  width:40px;height:40px;
-  border-radius:12px;
+  min-width:44px;
+  padding:5px 6px;
+  border-radius:10px;
   background:rgba(255,255,255,.04);
   border:1px solid var(--line);
   color:var(--ink);
-  font-size:1.1rem;
   cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;
   transition:transform .1s, background .15s, border-color .15s;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+.icon-btn .ib-emoji{ font-size:1rem; line-height:1; }
+.icon-btn .ib-label{
+  font-size:.56rem;
+  letter-spacing:.04em;
+  color:var(--ink-mute);
+  line-height:1.2;
+}
+.icon-btn:hover .ib-label{ color:var(--accent-2); }
 .icon-btn:hover{ background:var(--accent-dim); border-color:var(--accent); }
 .icon-btn:active{ transform:scale(.94); }
 
 /* ════════════════════ メイン ════════════════════ */
 .game-main{
-  display:flex;flex-direction:column;align-items:center;
-  gap:16px;
-  padding:18px 16px 24px;
+  display:flex;flex-direction:column;align-items:stretch;
+  gap:14px;
+  padding:14px 14px 14px;
   max-width:560px;
   margin:0 auto;
+  min-height:calc(100vh - 72px);
 }
+.game-main > .timer-zone,
+.game-main > .progress-pill,
+.game-main > .controls-row,
+.game-main > .party-bar{ flex:0 0 auto; align-self:center; }
+.game-main > .party-bar{ align-self:stretch; }
+.game-main > .tank-zone{ flex:1 1 auto; display:flex; min-height:280px; }
 
 /* ════════════════════ タイマーゾーン ════════════════════ */
 .timer-zone{
@@ -664,11 +680,12 @@ body[data-mode="rest"] .pr-fg{ stroke:var(--gold); }
 .cd-recruit:hover{ filter:brightness(1.1); }
 
 /* ════════════════════ 水槽 ＋ ぽもじ ════════════════════ */
-.tank-zone{ width:100%; }
+.tank-zone{ width:100%; flex:1; }
 #tank{
   position:relative;
   width:100%;
-  height:340px;
+  height:100%;
+  min-height:280px;
   background:
     linear-gradient(180deg, rgba(135,206,235,.03), rgba(135,206,235,.08) 40%, rgba(135,206,235,.16)),
     rgba(0,0,0,.18);
@@ -1198,6 +1215,47 @@ body[data-mode="rest"] #tank{
   position:relative;
 }
 
+/* パーティメンバー操作ポップ */
+.member-action-pop{
+  position:fixed;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(180deg, var(--bg-light), var(--bg-mid));
+  border:2px solid var(--r-color, var(--accent));
+  box-shadow:0 16px 48px rgba(0,0,0,.6), 0 0 24px var(--r-glow, transparent);
+  border-radius:16px;
+  padding:20px;
+  min-width:240px;max-width:320px;
+  z-index:140;
+  animation:popIn .3s cubic-bezier(.2,.9,.3,1.1);
+}
+.map-head{
+  display:flex;align-items:center;gap:14px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:12px;
+}
+.map-char{
+  font-family:'Noto Serif JP', serif;
+  font-size:2.8rem;font-weight:900;
+  color:var(--r-color);
+  text-shadow:0 0 16px var(--r-glow);
+  line-height:1;
+}
+.map-meta{ flex:1; }
+.map-name{ font-size:.72rem;color:var(--gold);font-weight:700; }
+.map-lv{ font-size:1rem;color:var(--ink);font-weight:700; }
+.map-perks{ font-size:.66rem;color:var(--ink-mute); }
+.map-buttons{ display:flex;flex-direction:column;gap:6px; }
+.mapop-btn{
+  width:100%;
+  padding:9px 14px;
+  font-size:.84rem;
+  border-radius:10px;
+  font-family:inherit;
+  cursor:pointer;
+}
+
 /* 字の詳細ポップ */
 .char-detail-pop{
   position:fixed;
@@ -1263,13 +1321,14 @@ body[data-mode="rest"] #tank{
 /* ════════════════════ スマホ調整 ════════════════════ */
 @media (max-width:480px){
   .brand{ font-size:.78rem; letter-spacing:.2em; }
-  .timer-zone{ width:200px; height:200px; }
-  .timer-text{ font-size:2.8rem; }
-  .main-btn{ min-width:160px; padding:13px 28px; font-size:.94rem; }
-  .sub-btn{ padding:10px 14px; font-size:.78rem; }
-  #tank{ height:280px; }
+  .timer-zone{ width:180px; height:180px; }
+  .timer-text{ font-size:2.4rem; }
+  .main-btn{ min-width:140px; padding:11px 22px; font-size:.92rem; }
+  .sub-btn{ padding:8px 12px; font-size:.74rem; }
   .modal-card{ padding:18px; max-height:92vh; }
   .pc-glyph{ font-size:1.55rem; }
+  .game-main{ gap:10px; padding:10px; }
+  .progress-pill{ font-size:.66rem; padding:5px 10px; }
 }
 
 /* ════════════════════ スクロールバー ════════════════════ */

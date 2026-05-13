@@ -472,9 +472,8 @@ function toggleAudio() {
 }
 
 function updateAudioButton() {
-  const btn = $('#btn-audio');
-  if (!btn) return;
-  btn.textContent = STATE.audioOn ? '🔊' : '🔇';
+  const emoji = $('#btn-audio .ib-emoji');
+  if (emoji) emoji.textContent = STATE.audioOn ? '🔊' : '🔇';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1360,7 +1359,8 @@ function renderParty() {
     const card = el('div', {
       class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}`,
       dataset: { idx },
-      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}`
+      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}`,
+      onclick: () => openPartyMemberAction(idx)
     },
       el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage]) : null),
       el('div', { class:'pc-meta' },
@@ -1392,6 +1392,57 @@ function renderParty() {
     );
     bar.appendChild(slot);
   }
+}
+
+// パーティメンバーの操作（タップで開く）
+function openPartyMemberAction(idx) {
+  if (!STATE.party) return;
+  const m = STATE.party.members[idx];
+  if (!m) return;
+  const isHero = (idx === STATE.party.hero);
+  const perkLabels = (m.perks || []).map(pid => PERKS[pid]?.name).filter(Boolean).join('・');
+
+  $$('.member-action-pop').forEach(e => e.remove());
+
+  const buttons = [];
+  if (isHero) {
+    buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
+      toast('主人公は解除できません（別の字を主人公にしたい時は再編成）');
+    }}, '主人公（解除不可）'));
+  } else {
+    buttons.push(el('button', { class:'btn-danger mapop-btn', onclick: () => {
+      if (confirm(`${m.char} をパーティから外しますか？\n（Lv. と経験値はリセットされます）`)) {
+        STATE.party.members.splice(idx, 1);
+        // hero index は順序維持
+        if (idx < STATE.party.hero) STATE.party.hero -= 1;
+        saveState();
+        renderParty();
+        toast(`${m.char} を解除しました`);
+      }
+      $$('.member-action-pop').forEach(e => e.remove());
+    }}, '解除する'));
+  }
+  buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
+    toast('図鑑で発見字をタップして別の字を仲間に追加');
+    $$('.member-action-pop').forEach(e => e.remove());
+    openCodex();
+  }}, '図鑑から仲間追加'));
+  buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
+    $$('.member-action-pop').forEach(e => e.remove());
+  }}, '閉じる'));
+
+  const pop = el('div', { class: `member-action-pop rarity-${RARITY_TIERS.indexOf(m.rarity) + 1}` },
+    el('div', { class:'map-head' },
+      el('div', { class:'map-char' }, m.char),
+      el('div', { class:'map-meta' },
+        el('div', { class:'map-name' }, isHero ? '★ 主人公' : 'パーティ字'),
+        el('div', { class:'map-lv' }, `Lv.${m.level}`),
+        el('div', { class:'map-perks' }, perkLabels),
+      )
+    ),
+    el('div', { class:'map-buttons' }, ...buttons)
+  );
+  document.body.appendChild(pop);
 }
 
 // 字をパーティに加える
