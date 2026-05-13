@@ -90,6 +90,9 @@
   --mono: 'JetBrains Mono', monospace;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: rgba(201,168,76,0.18); user-select: none; -webkit-touch-callout: none; }
+/* v2.9.43 Skip Link: 視覚的に隠す・キーボードフォーカスで表示 */
+.skip-link { position: fixed; top: -40px; left: 8px; background: var(--gold); color: var(--bg); padding: 8px 14px; border-radius: 4px; font-weight: 700; font-size: 0.78rem; z-index: 10000; transition: top 0.15s; text-decoration: none; }
+.skip-link:focus-visible, .skip-link:focus { top: 8px; outline: 2px solid var(--rain); outline-offset: 2px; }
 /* v2.9.39 タッチエリアと canvas はハイライトなし (誤反応防止) */
 canvas, body, header, main, footer { -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; }
@@ -524,6 +527,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 </style>
 </head>
 <body>
+<!-- v2.9.43 Skip to main content (A11y WCAG 2.4.1) -->
+<a href="#main" class="skip-link">メインコンテンツへスキップ</a>
 <!-- v2.9.30 起動スプラッシュ -->
 <div id="splash" aria-hidden="true">
   <div class="s-title">ぽもじかん</div>
@@ -537,7 +542,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   <div class="subtitle">PMJ  ／  ゆるく文字を積もう</div>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
   <div class="phase-label work" id="phase">🎯 集中</div>
   <div class="timer" id="timer">25:00</div>
   <div class="controls" role="group" aria-label="タイマーコントロール">
@@ -898,7 +903,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.42（ストレージ容量メーター・メニュー表示）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.43（Skip Link・WCAG 2.4.1 対応）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
