@@ -482,101 +482,80 @@ function onLevelUp(member, idx) {
 // ═══════════════════════════════════════════════════════════════
 // パーティ選択モーダル
 // ═══════════════════════════════════════════════════════════════
+let _pickerPool = null;
+let _pickerSelected = null;
+
 function openPartyPicker() {
   if (!window.KANJI_CODEX) {
     setTimeout(openPartyPicker, 200);
     return;
   }
-  const pool = window.KANJI_CODEX
+  rerollPickerPool();
+  renderPickerPool();
+  $('#party-picker-modal').classList.add('show');
+}
+
+function rerollPickerPool() {
+  _pickerPool = (window.KANJI_CODEX || [])
     .filter(k => k.rarity === '★1')
     .sort(() => Math.random() - 0.5)
     .slice(0, PARTY_PICKER_POOL_SIZE);
+  _pickerSelected = null;
+}
 
-  const picked = new Set();   // chars
-  let hero = null;             // char
-
-  const modal = $('#party-picker-modal');
+function renderPickerPool() {
   const grid = $('#party-picker-grid');
   const status = $('#party-picker-status');
   const confirmBtn = $('#party-picker-confirm');
   grid.innerHTML = '';
 
-  function refreshStatus() {
-    status.textContent = picked.size < 4
-      ? `${picked.size}/4 体 選択中`
-      : hero
-        ? `主人公: ${hero}（消えない・成長する）`
-        : '主人公を1体タップ';
-    confirmBtn.disabled = !(picked.size === 4 && hero);
-  }
-
-  pool.forEach(k => {
+  _pickerPool.forEach(k => {
+    const c = k.char || k.c;
     const card = el('div', {
-      class: 'pp-card',
-      dataset: { char: k.char || k.c },
+      class: 'pp-card' + (_pickerSelected === c ? ' picked hero' : ''),
+      dataset: { char: c },
       onclick: () => {
-        const c = card.dataset.char;
-        if (picked.has(c)) {
-          if (hero === c) hero = null;
-          picked.delete(c);
-          card.classList.remove('picked','hero');
-        } else if (picked.size < 4) {
-          picked.add(c);
-          card.classList.add('picked');
-        }
-        refreshStatus();
-      },
-      ondblclick: () => {
-        const c = card.dataset.char;
-        if (picked.has(c)) {
-          $$('.pp-card.hero').forEach(x => x.classList.remove('hero'));
-          card.classList.add('hero');
-          hero = c;
-          refreshStatus();
-        }
+        // 単一選択（ラジオ）
+        _pickerSelected = (_pickerSelected === card.dataset.char) ? null : card.dataset.char;
+        $$('.pp-card').forEach(x => {
+          x.classList.toggle('picked', x.dataset.char === _pickerSelected);
+          x.classList.toggle('hero',   x.dataset.char === _pickerSelected);
+        });
+        refreshPickerStatus();
       }
     },
-      el('div', { class:'pp-char' }, k.char || k.c),
+      el('div', { class:'pp-char' }, c),
       el('div', { class:'pp-rarity' }, k.rarity),
     );
-    // long-press = hero shortcut
-    let pressT = null;
-    card.addEventListener('pointerdown', () => {
-      pressT = setTimeout(() => {
-        const c = card.dataset.char;
-        if (picked.has(c)) {
-          $$('.pp-card.hero').forEach(x => x.classList.remove('hero'));
-          card.classList.add('hero');
-          hero = c;
-          refreshStatus();
-        }
-      }, 500);
-    });
-    card.addEventListener('pointerup', () => clearTimeout(pressT));
-    card.addEventListener('pointerleave', () => clearTimeout(pressT));
     grid.appendChild(card);
   });
+  refreshPickerStatus();
+
+  function refreshPickerStatus() {
+    if (_pickerSelected) {
+      const k = _pickerPool.find(p => (p.char||p.c) === _pickerSelected);
+      const perkId = pickInherentPerk(_pickerSelected);
+      const perkName = PERKS[perkId]?.name || '—';
+      status.innerHTML = `主人公：<strong>${_pickerSelected}</strong> ・ 特性：<strong>${perkName}</strong>`;
+      confirmBtn.disabled = false;
+    } else {
+      status.textContent = 'タップして 1 体選ぶ';
+      confirmBtn.disabled = true;
+    }
+  }
 
   confirmBtn.onclick = () => {
-    if (picked.size !== 4 || !hero) return;
-    const members = Array.from(picked).map(c => {
-      const k = pool.find(p => (p.char||p.c) === c);
-      const perk = pickInherentPerk(c);
-      return { char: c, rarity: k.rarity, level: 1, exp: 0, perks: [perk] };
-    });
-    const heroIdx = members.findIndex(m => m.char === hero);
-    // 主人公には guardian 追加
-    members[heroIdx].perks.push('guardian');
-    STATE.party = { hero: heroIdx, members };
+    if (!_pickerSelected) return;
+    const c = _pickerSelected;
+    const k = _pickerPool.find(p => (p.char||p.c) === c);
+    const perk = pickInherentPerk(c);
+    const hero = { char: c, rarity: k.rarity, level: 1, exp: 0, perks: [perk, 'guardian'] };
+    STATE.party = { hero: 0, members: [hero] };
     saveState();
-    modal.classList.remove('show');
+    $('#party-picker-modal').classList.remove('show');
     renderParty();
-    const perksMsg = members.map(m => `${m.char}=${PERKS[m.perks[0]].name}`).join(' / ');
-    toast(`パーティ結成！${perksMsg}`);
+    toast(`主人公 ${c} ── 特性「${PERKS[perk]?.name}」`);
   };
-
-  refreshStatus();
-  modal.classList.add('show');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1102,7 +1081,7 @@ function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
     bar.classList.add('empty');
-    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">パーティを編成する →</button>';
+    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">主人公を選ぶ →</button>';
     $('#party-pick-cta').onclick = () => openPartyPicker();
     return;
   }
@@ -1132,6 +1111,45 @@ function renderParty() {
     );
     bar.appendChild(card);
   });
+  // 空きスロット（最大 4 体まで）
+  const emptySlots = 4 - STATE.party.members.length;
+  for (let i = 0; i < emptySlots; i++) {
+    const slot = el('div', {
+      class: 'party-card empty-slot',
+      title: '図鑑で発見した字をタップして仲間に加える',
+      onclick: () => {
+        toast('図鑑📖 で発見済の字をタップして仲間に加えられます');
+        openCodex();
+      }
+    },
+      el('div', { class:'pc-glyph empty' }, '＋'),
+      el('div', { class:'pc-meta' },
+        el('span', { class:'pc-lv' }, '仲間枠'),
+      ),
+    );
+    bar.appendChild(slot);
+  }
+}
+
+// 字をパーティに加える
+function recruitToParty(c, rarity) {
+  if (!STATE.party) return false;
+  if (STATE.party.members.length >= 4) {
+    toast('パーティ枠は 4 体まで');
+    return false;
+  }
+  if (partyContainsChar(c) >= 0) {
+    toast(`${c} は既にパーティにいます`);
+    return false;
+  }
+  const perk = pickInherentPerk(c);
+  STATE.party.members.push({
+    char: c, rarity, level: 1, exp: 0, perks: [perk]
+  });
+  saveState();
+  renderParty();
+  toast(`${c} が仲間になった！特性「${PERKS[perk]?.name || '—'}」`);
+  return true;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1209,6 +1227,15 @@ function showCharDetail(c, rarity) {
   // 既存があれば削除
   $$('.char-detail-pop').forEach(e => e.remove());
 
+  const canRecruit = STATE.party && STATE.party.members.length < 4 && partyIdx < 0;
+  const recruitBtn = canRecruit
+    ? el('button', { class:'cd-recruit', onclick: () => {
+        recruitToParty(c, rarity);
+        $$('.char-detail-pop').forEach(e => e.remove());
+        renderCodex();
+      } }, '＋ パーティに加える')
+    : null;
+
   const pop = el('div', { class: `char-detail-pop rarity-${rIdx + 1}` },
     el('button', { class: 'cd-close', onclick: (e) => { e.target.parentElement.remove(); } }, '×'),
     el('div', { class:'cd-char' }, c),
@@ -1218,6 +1245,7 @@ function showCharDetail(c, rarity) {
     member ? el('div', { class:'cd-party' },
       `パーティ字 ・ Lv.${member.level} ・ 特性: ${(member.perks||[]).map(pid=>PERKS[pid]?.name).filter(Boolean).join('・')}`
     ) : null,
+    recruitBtn,
     el('div', { class:'cd-recipes' },
       el('div', { class:'cd-recipes-title' }, `熟語 ${recipes.length} 件`),
       el('div', { class:'cd-recipes-list' }, recipes.slice(0, 8).map(r => r.word).join(' ・ '))
@@ -1379,6 +1407,11 @@ function bindEvents() {
 
   $('#btn-codex').addEventListener('click', openCodex);
   $('#codex-close').addEventListener('click', closeCodex);
+
+  $('#party-picker-reroll').addEventListener('click', () => {
+    rerollPickerPool();
+    renderPickerPool();
+  });
   $$('.codex-tab').forEach(t => t.addEventListener('click', () => {
     codexFilter.tier = t.dataset.tier;
     $$('.codex-tab').forEach(x => x.classList.toggle('active', x === t));

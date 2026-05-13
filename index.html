@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260513b">
+<link rel="stylesheet" href="style.css?v=20260513c">
 </head>
 <body data-mode="idle">
 
@@ -88,19 +88,20 @@
 <!-- パーティ選択モーダル -->
 <div class="modal" id="party-picker-modal" role="dialog" aria-modal="true" aria-labelledby="pp-title">
   <div class="modal-card">
-    <h2 class="modal-title" id="pp-title">パーティ編成</h2>
+    <h2 class="modal-title" id="pp-title">主人公を選ぶ</h2>
     <p class="modal-desc">
-      4 体を連れていく字に選んでね。<br>
-      その中の<strong>1体は主人公</strong>（消えない・パーティの XP も少し受け取る）。<br>
-      <small>選んだ字には、字の意味から決まる<strong>特性</strong>が自動で付きます。</small>
+      最初の<strong>主人公</strong>を 1 体だけ選んでね。<br>
+      字の意味から決まる<strong>特性</strong>が自動で付きます。<br>
+      <small>残り 3 枠は、図鑑で発見した字を仲間にして埋めていきます。</small>
     </p>
     <p class="modal-desc" style="margin-top:6px;font-size:.78rem;color:var(--gold);">
-      ① タップ＝選択　／　② 選んだ後、ダブルタップ or 長押し＝主人公
+      気に入る字が無ければ「🎲 リロール」で並び替え
     </p>
     <div class="party-picker-grid" id="party-picker-grid"></div>
-    <div class="modal-status" id="party-picker-status">0/4 体 選択中</div>
+    <div class="modal-status" id="party-picker-status">タップして 1 体選ぶ</div>
     <div class="modal-actions">
-      <button class="btn-primary" id="party-picker-confirm" disabled>結成する</button>
+      <button class="btn-secondary" id="party-picker-reroll">🎲 リロール</button>
+      <button class="btn-primary" id="party-picker-confirm" disabled>この字で始める</button>
     </div>
   </div>
 </div>
@@ -288,7 +289,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260513b" defer></script>
-<script src="app.js?v=20260513b" defer></script>
+<script src="codex.js?v=20260513c" defer></script>
+<script src="app.js?v=20260513c" defer></script>
 </body>
 </html>

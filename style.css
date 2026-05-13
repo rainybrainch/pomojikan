@@ -572,6 +572,29 @@ body[data-mode="rest"] .pr-fg{ stroke:var(--gold); }
   background:linear-gradient(90deg, var(--r-color, var(--accent)), var(--accent-2));
   transition:width .35s;
 }
+.party-card.empty-slot{
+  cursor:pointer;
+  opacity:.45;
+  border-style:dashed;
+  transition:opacity .2s, border-color .2s;
+}
+.party-card.empty-slot:hover{ opacity:.8; border-color:var(--accent); }
+.pc-glyph.empty{
+  color:var(--ink-mute);
+  font-size:1.6rem;
+}
+.cd-recruit{
+  display:block;width:100%;
+  margin:10px 0;
+  padding:10px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  color:#06202e;
+  border:none;border-radius:10px;
+  font-family:inherit;font-weight:700;
+  cursor:pointer;
+  font-size:.86rem;
+}
+.cd-recruit:hover{ filter:brightness(1.1); }
 
 /* ════════════════════ 水槽 ＋ ぽもじ ════════════════════ */
 .tank-zone{ width:100%; }
