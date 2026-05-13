@@ -537,12 +537,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 <canvas id="field" role="img" aria-label="ぽもじが降る物理エリア。集中フェーズは上から文字が落ち、休憩フェーズは下から泡のように上昇します。タップ＆ドラッグで文字を動かせます。ダブルタップで消滅させて経験値に変換できます。"></canvas>
 <div id="fps-status" class="fps-status" style="display:none;">FPS: -- / Bodies: --</div>
 
-<header>
+<header role="banner" aria-label="アプリヘッダー">
   <div class="title">🌑 ぽもじかん</div>
   <div class="subtitle">PMJ  ／  ゆるく文字を積もう</div>
 </header>
 
-<main id="main" tabindex="-1">
+<main id="main" tabindex="-1" role="main" aria-label="ぽもじかんメインエリア">
   <div class="phase-label work" id="phase">🎯 集中</div>
   <div class="timer" id="timer">25:00</div>
   <div class="controls" role="group" aria-label="タイマーコントロール">
@@ -552,7 +552,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   </div>
 </main>
 
-<footer>
+<footer role="contentinfo" aria-label="フッター・操作ボタン">
   <div class="stats">
     <div><span class="num" id="today">0</span> 今日の完走</div>
     <div><span class="num" id="total">0</span> 累計</div>
@@ -903,7 +903,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.43（Skip Link・WCAG 2.4.1 対応）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.44（ARIA landmarks 強化・banner/main/contentinfo）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
