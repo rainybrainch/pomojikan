@@ -16,9 +16,9 @@ const TIER_ACHIEVEMENT = [
   '段位入り',       // ★5
   '七徳七大罪の領域', // ★6
 ];
-// レアごとの落下数（少ないほど希少感）
+// サイクル完了時のボーナス粒数（作業中の継続落下とは別）
 const TIER_DROP_COUNT = [
-  [8,12], [6,10], [5,8], [4,6], [3,5], [2,4]
+  [3,5], [3,4], [2,4], [2,3], [2,3], [1,3]
 ];
 // レアごとの落下速度倍率（高レアほどゆっくり、ドラマを作る）
 const TIER_FALL_MUL = [1.0, 0.92, 0.84, 0.76, 0.68, 0.6];
@@ -592,7 +592,35 @@ function startWork() {
   saveState();
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
+  startWorkSpawning();
   tick();
+}
+
+// 作業中の継続落下：10秒に1粒（3粒に1回はパーティ字保証）
+const WORK_SPAWN_INTERVAL_MS = 10000;
+let workSpawnTimer = 0;
+let workDropCount = 0;
+
+function startWorkSpawning() {
+  stopWorkSpawning();
+  workDropCount = 0;
+  // 最初の1粒は即落下（ユーザーが反応見られる）
+  setTimeout(workSpawnTick, 800);
+  workSpawnTimer = setInterval(workSpawnTick, WORK_SPAWN_INTERVAL_MS);
+}
+function stopWorkSpawning() {
+  if (workSpawnTimer) { clearInterval(workSpawnTimer); workSpawnTimer = 0; }
+}
+function workSpawnTick() {
+  if (STATE.mode !== 'work') return;
+  workDropCount++;
+  let k;
+  if (STATE.party && workDropCount % 3 === 0) {
+    k = pickPartyDrop();
+  } else {
+    k = pickKanjiForDrop();
+  }
+  if (k) spawnPomoji({ kanji: k });
 }
 
 function startRest() {
@@ -617,16 +645,17 @@ function pauseTimer() {
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
   stopRisingPomoji();
+  stopWorkSpawning();
 }
 
 function resumeTimer() {
   STATE.phaseEnd = Date.now() + STATE.pausedRemaining;
-  // restore prior mode (work or rest)
   if (document.body.dataset.mode === 'rest') {
     STATE.mode = 'rest';
     startRisingPomoji();
   } else {
     STATE.mode = 'work';
+    startWorkSpawning();
   }
   $('#main-btn').textContent = '⏸ 一時停止';
   $('#main-btn').dataset.state = 'running';
@@ -645,12 +674,14 @@ function stopTimer() {
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
   stopRisingPomoji();
+  stopWorkSpawning();
 }
 
 function completePhase() {
   if (STATE.mode === 'work') {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
+    stopWorkSpawning();
     spawnCycleDrops();
     updateProgressPill();
     flashCompletionBurst('☔ 凝縮 完了');
