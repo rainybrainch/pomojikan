@@ -370,6 +370,73 @@ body[data-mode="rest"] .pr-fg{ stroke:var(--gold); }
 }
 .hr-name{ color:var(--ink); }
 
+/* ユーザー ID ゾーン */
+.user-id-zone{
+  margin:18px 0;
+  padding:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.uiz-label{
+  font-size:.7rem;color:var(--ink-mute);
+  letter-spacing:.1em;margin-bottom:6px;
+}
+.uiz-id{
+  font-family:'JetBrains Mono', monospace;
+  font-size:1.3rem;font-weight:700;
+  color:var(--accent-2);
+  letter-spacing:.15em;
+  text-align:center;
+  padding:10px;
+  background:rgba(0,0,0,.25);
+  border-radius:8px;
+  cursor:pointer;
+  transition:background .15s;
+  user-select:all;
+}
+.uiz-id:hover{ background:rgba(135,206,235,.12); }
+.uiz-actions{
+  display:flex;gap:8px;margin-top:10px;
+}
+.uiz-btn{ flex:1; padding:9px; font-size:.78rem; }
+
+/* 引継ぎコードポップ */
+.code-popup{
+  position:fixed;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(180deg, var(--bg-light), var(--bg-mid));
+  border:2px solid var(--accent);
+  box-shadow:0 16px 48px rgba(0,0,0,.7), 0 0 30px rgba(135,206,235,.4);
+  border-radius:16px;
+  padding:24px;
+  width:min(90vw, 420px);
+  z-index:150;
+  animation:popIn .3s ease-out;
+}
+.cp-title{
+  margin:0 0 8px;
+  font-family:'Noto Serif JP', serif;
+  font-size:1.05rem;color:var(--accent-2);
+  letter-spacing:.08em;
+}
+.cp-note{
+  font-size:.78rem;color:var(--ink-mute);
+  margin:0 0 12px;line-height:1.7;
+}
+.cp-code{
+  width:100%;box-sizing:border-box;
+  background:rgba(0,0,0,.35);
+  border:1px solid var(--line);
+  color:var(--accent-2);
+  font-family:'JetBrains Mono', monospace;
+  font-size:.7rem;
+  padding:10px;border-radius:8px;
+  resize:none;
+  word-break:break-all;
+}
+
 /* 共有ゾーン（パーティ UGC） */
 .share-zone{
   margin-top:18px;

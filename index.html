@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260513e">
+<link rel="stylesheet" href="style.css?v=20260513f">
 </head>
 <body data-mode="idle">
 
@@ -26,6 +26,7 @@
 <header class="app-header">
   <div class="brand">ぽもじかん</div>
   <div class="header-actions">
+    <button class="icon-btn" id="btn-audio" aria-label="音響" title="音響オン／オフ">🔇</button>
     <button class="icon-btn" id="btn-help" aria-label="遊び方" title="遊び方">？</button>
     <button class="icon-btn" id="btn-stats" aria-label="記録" title="記録">📊</button>
     <button class="icon-btn" id="btn-codex" aria-label="図鑑" title="ぽも字図鑑">📖</button>
@@ -270,6 +271,16 @@
     <button class="modal-close" id="stats-close" aria-label="閉じる">×</button>
     <h2 class="modal-title">📊 記録</h2>
     <div class="stats-list" id="stats-list"></div>
+
+    <div class="user-id-zone">
+      <div class="uiz-label">ユーザー ID（お問い合わせ・引継ぎに使用）</div>
+      <div class="uiz-id" id="user-id-display">—</div>
+      <div class="uiz-actions">
+        <button class="btn-secondary uiz-btn" id="btn-issue-code">🔑 引継ぎコードを発行</button>
+        <button class="btn-secondary uiz-btn" id="btn-apply-code">📥 コードから復元</button>
+      </div>
+    </div>
+
     <h3 class="stats-section-title">解放した字</h3>
     <div class="stats-tiers" id="stats-tiers"></div>
     <div class="share-zone">
@@ -289,7 +300,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260513e" defer></script>
-<script src="app.js?v=20260513e" defer></script>
+<script src="codex.js?v=20260513f" defer></script>
+<script src="app.js?v=20260513f" defer></script>
 </body>
 </html>

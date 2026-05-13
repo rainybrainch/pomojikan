@@ -174,6 +174,9 @@ const DEFAULT_STATE = {
   stats: { totalDrops:0, totalCycles:0, totalExp:0 },
   lastHiddenAt: null,             // for background-aware drops
   permanentBuffs: [],             // 永続バフのリスト
+  audioOn: false,                 // BGM オン／オフ
+  userId: null,                   // 初回起動時に発行
+  userCreatedAt: null,            // 発行日時
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -215,14 +218,263 @@ function loadState() {
 function saveState() {
   // プレビューモード中は永続化しない（他人のパーティを試している間は自分のデータを守る）
   if (_previewMode) return;
+  // 初回保存時にユーザーID発行
+  if (!STATE.userId) {
+    STATE.userId = generateUserId();
+    STATE.userCreatedAt = new Date().toISOString();
+  }
   try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); }
   catch (e) { console.warn('saveState failed:', e); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ユーザーID ＋ 引継ぎコード（一般的なゲームアプリ方式）
+// ═══════════════════════════════════════════════════════════════
+function generateUserId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // O/0/I/1 を除外
+  let id = 'P-';
+  for (let i = 0; i < 4; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  id += '-';
+  for (let i = 0; i < 4; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function generateTransferCode() {
+  const minimal = {
+    v: 30,
+    uid: STATE.userId,
+    createdAt: STATE.userCreatedAt,
+    party: STATE.party,
+    collection: STATE.collection,
+    stats: STATE.stats,
+    cycles: STATE.cycles,
+    unlockedTier: STATE.unlockedTier,
+    timer: STATE.timer,
+    permanentBuffs: STATE.permanentBuffs,
+    audioOn: STATE.audioOn,
+    issuedAt: Date.now()
+  };
+  try {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(minimal))));
+  } catch (e) { return ''; }
+}
+
+async function copyTransferCode() {
+  const code = generateTransferCode();
+  if (!code) { toast('コード生成に失敗'); return; }
+  try {
+    await navigator.clipboard.writeText(code);
+    showTransferCodeModal(code);
+    toast('引継ぎコードをコピーしました');
+  } catch (e) {
+    showTransferCodeModal(code);
+  }
+}
+
+function showTransferCodeModal(code) {
+  $$('.code-popup').forEach(e => e.remove());
+  const pop = el('div', { class:'code-popup' },
+    el('button', { class:'cd-close', onclick: (e) => e.target.parentElement.remove() }, '×'),
+    el('h3', { class:'cp-title' }, '🔑 引継ぎコード'),
+    el('p', { class:'cp-note' }, '別の端末で「コードから復元」に貼り付けてください。<br>このコードでアカウントを移行できます。'),
+    el('textarea', { class:'cp-code', readonly:'readonly', rows:'5' }, code),
+    el('button', { class:'btn-primary', style: { width:'100%', marginTop:'10px' },
+      onclick: async () => {
+        try { await navigator.clipboard.writeText(code); toast('コピーしました'); }
+        catch (e) {}
+      }
+    }, '📋 もう一度コピー')
+  );
+  // innerHTML for the note (br tag)
+  pop.querySelector('.cp-note').innerHTML = '別の端末で「コードから復元」に貼り付けてください。<br>このコードでアカウントを移行できます。';
+  document.body.appendChild(pop);
+}
+
+function promptApplyTransferCode() {
+  const code = prompt('引継ぎコードを貼り付けてください：');
+  if (!code) return;
+  applyTransferCode(code.trim());
+}
+
+function applyTransferCode(code) {
+  let data;
+  try {
+    const json = decodeURIComponent(escape(atob(code)));
+    data = JSON.parse(json);
+  } catch (e) {
+    alert('コードを読み取れませんでした。形式が違うかもしれません。');
+    return false;
+  }
+  if (!data || data.v !== 30) {
+    alert('対応していないバージョンのコードです。');
+    return false;
+  }
+  if (!confirm(`ユーザー ${data.uid} のデータを復元します。\n現在のデータは上書きされます。続行しますか？`)) return false;
+  STATE.userId = data.uid;
+  STATE.userCreatedAt = data.createdAt;
+  STATE.party = data.party;
+  STATE.collection = data.collection || {};
+  STATE.stats = Object.assign({}, DEFAULT_STATE.stats, data.stats || {});
+  STATE.cycles = data.cycles || 0;
+  STATE.unlockedTier = data.unlockedTier || 0;
+  STATE.timer = Object.assign({}, DEFAULT_STATE.timer, data.timer || {});
+  STATE.permanentBuffs = data.permanentBuffs || [];
+  STATE.audioOn = !!data.audioOn;
+  saveState();
+  location.reload();
+  return true;
 }
 
 function resetState() {
   if (!confirm('全データを消去して最初から始めますか？')) return;
   localStorage.removeItem(LS_KEY);
   location.reload();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 音響（Web Audio API・合成・ファイル不要）
+// 集中=雨音（ピンクノイズ+LPF）／ 休憩=ぽこっと泡音
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null;
+let rainSrc = null;
+let rainGain = null;
+let bubbleTimer = 0;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
+    } catch (e) { return null; }
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
+  return audioCtx;
+}
+
+function makePinkNoise(ctx) {
+  // 2秒ぶんのピンクノイズバッファ
+  const bufferSize = 2 * ctx.sampleRate;
+  const buf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    b0 = 0.99886 * b0 + white * 0.0555179;
+    b1 = 0.99332 * b1 + white * 0.0750759;
+    b2 = 0.96900 * b2 + white * 0.1538520;
+    b3 = 0.86650 * b3 + white * 0.3104856;
+    b4 = 0.55000 * b4 + white * 0.5329522;
+    b5 = -0.7616 * b5 - white * 0.0168980;
+    data[i] = (b0+b1+b2+b3+b4+b5+b6 + white * 0.5362) * 0.11;
+    b6 = white * 0.115926;
+  }
+  return buf;
+}
+
+function startRainAudio() {
+  if (!STATE.audioOn) return;
+  const ctx = ensureAudio();
+  if (!ctx || rainSrc) return;
+  const buf = makePinkNoise(ctx);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.loop = true;
+  const lpf = ctx.createBiquadFilter();
+  lpf.type = 'lowpass';
+  lpf.frequency.value = 2200;
+  lpf.Q.value = 0.7;
+  const hpf = ctx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = 250;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 1.8);
+  src.connect(hpf); hpf.connect(lpf); lpf.connect(gain); gain.connect(ctx.destination);
+  src.start();
+  rainSrc = src;
+  rainGain = gain;
+}
+
+function stopRainAudio() {
+  if (!rainSrc || !rainGain || !audioCtx) return;
+  try {
+    rainGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+  } catch (e) {}
+  const src = rainSrc;
+  setTimeout(() => {
+    try { src.stop(); } catch (e) {}
+  }, 900);
+  rainSrc = null;
+  rainGain = null;
+}
+
+function playBubblePop() {
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const base = 500 + Math.random() * 500;
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(base, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(base * 0.45, ctx.currentTime + 0.12);
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + 0.16);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.18);
+}
+
+function startBubbleAudio() {
+  if (!STATE.audioOn) return;
+  stopBubbleAudio();
+  // 1.2〜2.4 秒間隔で時々ぽこっ
+  bubbleTimer = setInterval(() => {
+    if (STATE.mode === 'rest' && Math.random() < 0.5) playBubblePop();
+  }, 1400);
+}
+
+function stopBubbleAudio() {
+  if (bubbleTimer) { clearInterval(bubbleTimer); bubbleTimer = 0; }
+}
+
+function refreshAudioByMode() {
+  if (!STATE.audioOn) {
+    stopRainAudio(); stopBubbleAudio(); return;
+  }
+  if (STATE.mode === 'work') {
+    stopBubbleAudio();
+    startRainAudio();
+  } else if (STATE.mode === 'rest') {
+    stopRainAudio();
+    startBubbleAudio();
+  } else {
+    stopRainAudio(); stopBubbleAudio();
+  }
+}
+
+function toggleAudio() {
+  STATE.audioOn = !STATE.audioOn;
+  saveState();
+  updateAudioButton();
+  if (STATE.audioOn) {
+    ensureAudio();              // ユーザージェスチャで AudioContext 起動
+    refreshAudioByMode();
+    toast('🔊 音響オン（雨と泡）');
+  } else {
+    stopRainAudio();
+    stopBubbleAudio();
+    toast('🔇 音響オフ');
+  }
+}
+
+function updateAudioButton() {
+  const btn = $('#btn-audio');
+  if (!btn) return;
+  btn.textContent = STATE.audioOn ? '🔊' : '🔇';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -593,6 +845,7 @@ function startWork() {
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
   startWorkSpawning();
+  refreshAudioByMode();
   tick();
 }
 
@@ -632,6 +885,7 @@ function startRest() {
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
   startRisingPomoji();
+  refreshAudioByMode();
   tick();
 }
 
@@ -646,6 +900,8 @@ function pauseTimer() {
   cancelAnimationFrame(timerRaf);
   stopRisingPomoji();
   stopWorkSpawning();
+  stopRainAudio();
+  stopBubbleAudio();
 }
 
 function resumeTimer() {
@@ -660,6 +916,7 @@ function resumeTimer() {
   $('#main-btn').textContent = '⏸ 一時停止';
   $('#main-btn').dataset.state = 'running';
   saveState();
+  refreshAudioByMode();
   tick();
 }
 
@@ -1329,6 +1586,8 @@ function updateProgressPill() {
 // 記録モーダル
 // ═══════════════════════════════════════════════════════════════
 function openStats() {
+  const idEl = $('#user-id-display');
+  if (idEl) idEl.textContent = STATE.userId || '— (まだプレイ前)';
   const list = $('#stats-list');
   const discovered = Object.keys(STATE.collection || {}).length;
   const totalKanji = (window.KANJI_CODEX || []).length;
@@ -1482,6 +1741,16 @@ function bindEvents() {
   $('#btn-reset-all').addEventListener('click', resetState);
   $('#btn-share-party').addEventListener('click', copyShareURL);
 
+  $('#btn-audio').addEventListener('click', toggleAudio);
+  $('#btn-issue-code').addEventListener('click', copyTransferCode);
+  $('#btn-apply-code').addEventListener('click', promptApplyTransferCode);
+  $('#user-id-display').addEventListener('click', async () => {
+    if (STATE.userId) {
+      try { await navigator.clipboard.writeText(STATE.userId); toast('IDをコピー'); }
+      catch (e) {}
+    }
+  });
+
   document.addEventListener('visibilitychange', handleVisibilityChange);
 
   // close modals on backdrop click
@@ -1511,6 +1780,7 @@ function init() {
   renderParty();
   updateUnlockTier();
   updateProgressPill();
+  updateAudioButton();
   buildBackgroundLayers();
   physicsStep();
 
