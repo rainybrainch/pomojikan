@@ -150,12 +150,14 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-.icon-btn .ib-emoji{ font-size:1rem; line-height:1; }
+.icon-btn .ib-emoji{ font-size:1.05rem; line-height:1; margin-bottom:1px; }
 .icon-btn .ib-label{
-  font-size:.56rem;
-  letter-spacing:.04em;
-  color:var(--ink-mute);
-  line-height:1.2;
+  font-size:.62rem;
+  font-weight:600;
+  letter-spacing:.02em;
+  color:var(--ink);
+  line-height:1.1;
+  white-space:nowrap;
 }
 .icon-btn:hover .ib-label{ color:var(--accent-2); }
 .icon-btn:hover{ background:var(--accent-dim); border-color:var(--accent); }

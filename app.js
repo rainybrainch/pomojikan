@@ -681,7 +681,7 @@ function partyContainsChar(c) {
 }
 
 function isPartyChosen() {
-  return STATE.party && STATE.party.members && STATE.party.members.length === 4 && STATE.party.hero !== null;
+  return STATE.party && STATE.party.members && STATE.party.members.length >= 1 && STATE.party.hero !== null && STATE.party.hero !== undefined;
 }
 
 function awardExpToParty(c, exp, opts={}) {
