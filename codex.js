@@ -128,21 +128,31 @@ const KANJI_JUDAN_STR =
   '怠惰傲慢強欲色欲嫉妬暴食憤怒' +
   '永無極天道空聖真虚寂幽玄奥闇';
 
+const HIRAGANA_STR =
+  'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん' +
+  'がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ';
+const KATAKANA_STR =
+  'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン' +
+  'ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ';
+
 function buildKanjiCodex(){
   const all = [];
   const seen = new Set();
-  const addStr = (str, rarity) => {
+  const addStr = (str, rarity, tags) => {
     for (const c of str){
       if (seen.has(c)) continue;
       if (c === ' ' || c === '\n') continue;
       seen.add(c);
-      all.push({ id:'k_'+c, c, rarity, yomi:'', tags:[] });
+      all.push({ id:'k_'+c, c, rarity, yomi:'', tags: tags ? [...tags] : [] });
     }
   };
-  addStr(KANJI_10KYU_STR, '★1');
-  addStr(KANJI_5KYU_STR,  '★2');
-  addStr(KANJI_3KYU_STR,  '★3');
-  addStr(KANJI_1KYU_STR,  '★4');
+  // ★1 にはひらがな・カタカナ・拾級漢字すべて入れる（始まりの字＝あらゆる音と形）
+  addStr(HIRAGANA_STR,   '★1', ['ひらがな','音']);
+  addStr(KATAKANA_STR,   '★1', ['カタカナ','音']);
+  addStr(KANJI_10KYU_STR,'★1');
+  addStr(KANJI_5KYU_STR, '★2');
+  addStr(KANJI_3KYU_STR, '★3');
+  addStr(KANJI_1KYU_STR, '★4');
   addStr(KANJI_SHODAN_STR,'★5');
   addStr(KANJI_JUDAN_STR, '★6');
   return all;

@@ -70,6 +70,7 @@ const TAG_PERK_MAP = {
   '禅':'tag_zen', '神字':'tag_sacred', '武':'tag_war', '学':'tag_learn',
   '自然':'tag_nature', '植物':'tag_nature', '美':'tag_beauty', '宗教':'tag_sacred',
   '仏教':'tag_zen', '思想':'tag_learn', '哲学':'tag_learn', '道':'tag_war',
+  'ひらがな':'feather', 'カタカナ':'haste', '音':'wide',
 };
 
 // 各キャラのタグを YOJI_RECIPES から逆引き
@@ -77,12 +78,19 @@ let CHAR_TAGS = null;
 function buildCharTagsIndex() {
   if (CHAR_TAGS) return CHAR_TAGS;
   CHAR_TAGS = {};
+  // 熟語タグ（漢字）
   const recipes = window.YOJI_RECIPES || [];
   for (const r of recipes) {
     for (const c of (r.chars || [])) {
       if (!CHAR_TAGS[c]) CHAR_TAGS[c] = new Set();
       for (const t of (r.tags || [])) CHAR_TAGS[c].add(t);
     }
+  }
+  // 直接タグ（ひらがな・カタカナなど codex 側で付けたもの）
+  const codex = window.KANJI_CODEX || [];
+  for (const k of codex) {
+    if (!CHAR_TAGS[k.c]) CHAR_TAGS[k.c] = new Set();
+    for (const t of (k.tags || [])) CHAR_TAGS[k.c].add(t);
   }
   return CHAR_TAGS;
 }
