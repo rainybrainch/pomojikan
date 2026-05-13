@@ -680,14 +680,8 @@ function awardExpToParty(c, exp, opts={}) {
   const idx = partyContainsChar(c);
   if (idx < 0) return false;
   const agg = aggregatePartyPerks();
-  // 基本倍率
   let mul = agg.expMul || 1.0;
-  // タグアフィニティ：opts.tagMatch があれば追加倍率
-  if (opts.tagMatch) {
-    // 同タグ融合は +50%
-    mul *= 1.5;
-  }
-  // perk タグボーナス
+  if (opts.tagMatch) mul *= 1.5;
   const tags = getCharTags(c);
   for (const t of tags) {
     if (agg.tagBonus[t]) mul *= agg.tagBonus[t];
@@ -696,8 +690,7 @@ function awardExpToParty(c, exp, opts={}) {
   const m = STATE.party.members[idx];
   m.exp += actualExp;
   STATE.stats.totalExp = (STATE.stats.totalExp || 0) + actualExp;
-  // guardian perk: 主人公以外で受け取った XP の 20% を主人公にも分配
-  if (idx !== STATE.party.hero && STATE.party.members[STATE.party.hero].perks?.includes('guardian')) {
+  if (idx !== STATE.party.hero && STATE.party.members[STATE.party.hero]?.perks?.includes('guardian')) {
     const heroBonus = Math.floor(actualExp * 0.2);
     if (heroBonus > 0) {
       const hero = STATE.party.members[STATE.party.hero];
@@ -714,7 +707,23 @@ function awardExpToParty(c, exp, opts={}) {
     m.level += 1;
     onLevelUp(m, idx);
   }
+  updatePartyXpUI();   // ← 毎回 XP バー更新
   return true;
+}
+
+// XP バーと Lv だけを更新（軽量・renderParty を全再描画しない）
+function updatePartyXpUI() {
+  if (!STATE.party) return;
+  STATE.party.members.forEach((m, idx) => {
+    const card = document.querySelector(`.party-card[data-idx="${idx}"]`);
+    if (!card) return;
+    const needExp = expForLevel(m.level + 1);
+    const pct = Math.min(100, (m.exp / needExp) * 100);
+    const fill = card.querySelector('.pc-fill');
+    if (fill) fill.style.width = pct + '%';
+    const lvEl = card.querySelector('.pc-lv');
+    if (lvEl) lvEl.textContent = 'Lv.' + m.level;
+  });
 }
 
 function onLevelUp(member, idx) {
@@ -1040,17 +1049,16 @@ function spawnPomoji(opts={}) {
   const k = opts.kanji || pickKanjiForDrop();
   if (!k) return;
   enforcePomojiCap();
-  const tank = $('#tank');
-  const tankRect = tank.getBoundingClientRect();
+  const field = $('#play-field');
+  const W = window.innerWidth, H = window.innerHeight;
   const id = ++pomojiSeq;
   const char = k.char || k.c;
   const rarity = k.rarity;
   const tierIdx = RARITY_TIERS.indexOf(rarity);
   const tierClass = `rarity-${tierIdx + 1}`;
-  const x = (opts.x != null) ? opts.x : (40 + Math.random() * (tankRect.width - 80));
+  const x = (opts.x != null) ? opts.x : (40 + Math.random() * (W - 80));
   const y = (opts.y != null) ? opts.y : -40;
 
-  // 字に書体クラスを付与（パーティ内かつ Lv 達成時）
   let styleClass = 'kai';
   const partyIdx = partyContainsChar(char);
   if (partyIdx >= 0) {
@@ -1063,7 +1071,7 @@ function spawnPomoji(opts={}) {
     dataset: { id, char, rarity, tier: tierIdx },
     style: { left: x+'px', top: y+'px' }
   }, char);
-  tank.appendChild(node);
+  field.appendChild(node);
 
   const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.5, vy: 0, el: node, settled: false };
   livePomoji.set(id, obj);
@@ -1136,9 +1144,7 @@ const DAMP = 0.75;
 const SIZE = SIZE_BASE;
 let physicsRaf = 0;
 function physicsStep() {
-  const tank = $('#tank');
-  const rect = tank.getBoundingClientRect();
-  const W = rect.width, H = rect.height;
+  const W = window.innerWidth, H = window.innerHeight;
   // perk 適用
   const agg = aggregatePartyPerks();
   for (const p of livePomoji.values()) {
@@ -1229,18 +1235,16 @@ function attachDragHandlers(node, obj) {
     node.setPointerCapture(pointerId);
     obj.dragging = true;
     moved = false;
-    const r = $('#tank').getBoundingClientRect();
-    startX = e.clientX - r.left;
-    startY = e.clientY - r.top;
+    startX = e.clientX;
+    startY = e.clientY;
     origX = obj.x; origY = obj.y;
     node.classList.add('dragging');
   });
 
   node.addEventListener('pointermove', (e) => {
     if (!obj.dragging) return;
-    const r = $('#tank').getBoundingClientRect();
-    const dx = (e.clientX - r.left) - startX;
-    const dy = (e.clientY - r.top) - startY;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
     if (Math.abs(dx) + Math.abs(dy) > 10) moved = true;
     obj.x = origX + dx;
     obj.y = origY + dy;
@@ -1284,14 +1288,14 @@ function dissolvePomoji(p) {
 
 // 浮上する「+N XP」表示（ジューシー要素）
 function spawnXpFloat(x, y, amount, rarity) {
-  const tank = $('#tank');
-  if (!tank) return;
+  const field = $('#play-field');
+  if (!field) return;
   const rIdx = RARITY_TIERS.indexOf(rarity);
   const node = el('div', {
     class: `xp-float rarity-${rIdx + 1}`,
     style: { left: x + 'px', top: y + 'px' }
   }, `+${amount}`);
-  tank.appendChild(node);
+  field.appendChild(node);
   setTimeout(() => node.remove(), 1200);
 }
 
@@ -1300,11 +1304,13 @@ function _orphanExp(exp) {
   if (!STATE.party) return;
   const hero = STATE.party.members[STATE.party.hero];
   hero.exp += Math.floor(exp / 4);
+  STATE.stats.totalExp = (STATE.stats.totalExp || 0) + Math.floor(exp / 4);
   while (hero.exp >= expForLevel(hero.level + 1)) {
     hero.exp -= expForLevel(hero.level + 1);
     hero.level += 1;
     onLevelUp(hero, STATE.party.hero);
   }
+  updatePartyXpUI();
 }
 
 function mergePomoji(src, target) {

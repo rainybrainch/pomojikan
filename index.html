@@ -14,13 +14,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260513g">
+<link rel="stylesheet" href="style.css?v=20260513h">
 </head>
 <body data-mode="idle">
 
 <!-- 全画面背景：作業中=雨 / 休憩中=泡 -->
 <div class="rain-bg" id="rain-bg" aria-hidden="true"></div>
 <div class="bubble-bg" id="bubble-bg" aria-hidden="true"></div>
+
+<!-- ぽもじ プレイフィールド（全画面）-->
+<div id="play-field" aria-hidden="true"></div>
 
 <!-- ヘッダー -->
 <header class="app-header">
@@ -76,14 +79,10 @@
     <button class="party-pick-cta" id="party-pick-cta">パーティを編成する →</button>
   </div>
 
-  <!-- 水槽（ぽもじが落ちて貯まる場所） -->
-  <div class="tank-zone">
-    <div id="tank" role="region" aria-label="ぽもじ水槽">
-      <div class="tank-hint">
-        作業が終わると、字（ぽもじ）が降ってくる<br>
-        <small>ドラッグして重ねると <strong>融合</strong> ／ タップで <strong>消滅・経験値化</strong></small>
-      </div>
-    </div>
+  <!-- ヒント領域（ぽもじが無い時の案内）-->
+  <div class="tank-hint" id="tank-hint">
+    タイマー開始で <strong>字（ぽもじ）が画面に降ってくる</strong><br>
+    <small>ドラッグして重ねると <strong>融合</strong> ／ タップで <strong>消滅・経験値化</strong></small>
   </div>
 
 </main>
@@ -310,7 +309,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260513g" defer></script>
-<script src="app.js?v=20260513g" defer></script>
+<script src="codex.js?v=20260513h" defer></script>
+<script src="app.js?v=20260513h" defer></script>
 </body>
 </html>

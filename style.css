@@ -91,12 +91,23 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
   100% { transform:translateY(-110vh) translateX(-8px); opacity:0; }
 }
 
-/* メイン要素は z-index:1+ で前に */
-.app-header, .game-main, .complete-burst, .toast, .modal, .preview-banner{
-  position:relative; z-index:1;
+/* z-index 整理：背景 0 / ぽもじ 2 / UI 10 / トースト 50 / モーダル 100 */
+.app-header, .game-main, .preview-banner{
+  position:relative; z-index:10;
 }
-.modal, .complete-burst, .toast, .preview-banner{ z-index:50; }
+.party-bar, .controls-row, .timer-zone, .progress-pill, .tank-hint{
+  position:relative; z-index:10;
+}
+.complete-burst, .toast{ z-index:50; }
 .modal{ z-index:100; }
+.party-bar, .controls-row, .timer-zone{
+  background:rgba(7,17,28,.4);
+  backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);
+  border-radius:16px;
+}
+.timer-zone{ background:transparent; }   /* タイマーは透過のまま */
+.controls-row{ background:transparent; }
 
 /* ════════════════════ レアリティ色 ════════════════════ */
 .rarity-1{ --r-color:#9aa8b5; --r-glow:rgba(154,168,181,.5); }
@@ -111,6 +122,11 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 16px;
   border-bottom:1px solid var(--line);
+  background:rgba(7,17,28,.7);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  position:sticky;
+  top:0;
 }
 .brand{
   font-family:'Noto Serif JP', serif;
@@ -679,30 +695,30 @@ body[data-mode="rest"] .pr-fg{ stroke:var(--gold); }
 }
 .cd-recruit:hover{ filter:brightness(1.1); }
 
-/* ════════════════════ 水槽 ＋ ぽもじ ════════════════════ */
-.tank-zone{ width:100%; flex:1; }
-#tank{
-  position:relative;
-  width:100%;
-  height:100%;
-  min-height:280px;
-  background:
-    linear-gradient(180deg, rgba(135,206,235,.03), rgba(135,206,235,.08) 40%, rgba(135,206,235,.16)),
-    rgba(0,0,0,.18);
-  border:1px solid var(--line);
-  border-radius:18px;
+/* ════════════════════ プレイフィールド（全画面）＋ ぽもじ ════════════════════ */
+#play-field{
+  position:fixed;
+  inset:0;
+  pointer-events:none;       /* デフォルトはクリックスルー */
   overflow:hidden;
+  z-index:2;
   touch-action:none;
 }
+#play-field .pomoji{
+  pointer-events:auto;        /* ぽもじ単体はタップ可 */
+}
+
 .tank-hint{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  color:var(--ink-mute);font-size:.86rem;line-height:1.7;text-align:center;
-  pointer-events:none;
-  padding:20px;
+  text-align:center;
+  color:var(--ink-mute);
+  font-size:.86rem;
+  line-height:1.7;
+  padding:30px 16px;
+  margin-top:auto;
+  margin-bottom:auto;
 }
 .tank-hint small{ font-size:.72rem; opacity:.7; }
-#tank:has(.pomoji) .tank-hint{ display:none; }
+body:not([data-mode="idle"]) .tank-hint{ display:none; }
 
 .pomoji{
   position:absolute;
