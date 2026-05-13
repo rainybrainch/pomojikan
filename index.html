@@ -170,7 +170,10 @@ main {
   padding: 9px 18px; border-radius: 3px; cursor: pointer;
   font-family: var(--serif); font-weight: 700; font-size: 0.78rem;
   letter-spacing: 0.1em; transition: all 0.15s; min-height: 38px;
+  /* v2.9.51 モバイル 300ms click delay 解消 */
+  touch-action: manipulation;
 }
+button, .btn, .cf-btn, .theme-btn, .font-btn, .bgm-btn, .lang-btn, a.skip-link { touch-action: manipulation; }
 .btn:hover { transform: translateY(-1px); background: var(--rain); color: var(--bg); }
 /* v2.9.38 モバイルタップフィードバック：押された感の強化 */
 .btn:active { transform: scale(0.96) translateY(0); background: var(--rain); color: var(--bg); transition: transform 0.05s, background 0.05s; }
@@ -907,7 +910,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.50（err ヘルパー・本番ログ分離）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.51（touch-action manipulation・300ms 遅延解消）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
