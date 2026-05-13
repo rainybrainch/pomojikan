@@ -911,7 +911,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.53（Storage Persistence・自動削除防止）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.54（Storage Estimate API・容量メーター実数値化）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -3352,6 +3352,17 @@ function measureStorageBytes() {
   } catch(e) {}
   return total * 2; // UTF-16 bytes
 }
+// v2.9.54: Storage Estimate API で総容量を取得（メーター精度向上）
+let _storageQuotaCache = null;
+async function getStorageQuota() {
+  if (_storageQuotaCache !== null) return _storageQuotaCache;
+  if (!navigator.storage?.estimate) { _storageQuotaCache = 5 * 1024 * 1024; return _storageQuotaCache; }
+  try {
+    const est = await navigator.storage.estimate();
+    _storageQuotaCache = est.quota || 5 * 1024 * 1024;
+  } catch(e) { _storageQuotaCache = 5 * 1024 * 1024; }
+  return _storageQuotaCache;
+}
 
 function openMenu() {
   // 現在値を反映
@@ -3359,19 +3370,22 @@ function openMenu() {
   document.getElementById('cust-rest').value = STATE.restMin;
   const ws = document.getElementById('cust-work-sec'); if (ws) ws.value = STATE.customWorkSec || 0;
   const rs = document.getElementById('cust-rest-sec'); if (rs) rs.value = STATE.customRestSec || 0;
-  // ストレージ容量
+  // v2.9.54: ストレージ容量（実容量基準）
   const used = measureStorageBytes();
   const usedEl = document.getElementById('storage-used');
   const fillEl = document.getElementById('storage-fill');
   if (usedEl) {
-    const kb = used / 1024;
-    usedEl.textContent = kb < 1024 ? kb.toFixed(1) + ' KB' : (kb / 1024).toFixed(2) + ' MB';
-    // 5 MB 想定の容量メーター
-    const pct = Math.min(100, (used / (5 * 1024 * 1024)) * 100);
-    if (fillEl) {
-      fillEl.style.width = pct + '%';
-      fillEl.style.background = pct > 80 ? '#ff8e8e' : pct > 50 ? '#ffd0f0' : 'var(--gold)';
-    }
+    getStorageQuota().then(quota => {
+      const kb = used / 1024;
+      const totalMB = quota / (1024 * 1024);
+      const usedTxt = kb < 1024 ? kb.toFixed(1) + ' KB' : (kb / 1024).toFixed(2) + ' MB';
+      usedEl.textContent = usedTxt + ' / ' + (totalMB >= 1000 ? (totalMB/1024).toFixed(1) + ' GB' : Math.round(totalMB) + ' MB');
+      const pct = Math.min(100, (used / quota) * 100);
+      if (fillEl) {
+        fillEl.style.width = pct + '%';
+        fillEl.style.background = pct > 80 ? '#ff8e8e' : pct > 50 ? '#ffd0f0' : 'var(--gold)';
+      }
+    });
   }
   // テーマ
   document.querySelectorAll('.theme-btn').forEach(b => {
