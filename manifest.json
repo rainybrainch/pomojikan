@@ -1,107 +1,27 @@
 {
-  "id": "/pomojikan/",
-  "name": "ぽもじかん",
+  "name": "ぽもじかん ── 字を集め、育てる時の凝縮",
   "short_name": "ぽもじかん",
-  "description": "文字が降ってくる作業タイマー。漢字・古典・神話・科学… 22,160 種類の言葉が降って積み上がる、百科事典級のポモドーロ PWA。",
+  "description": "ポモドーロで字を集め、4体のパーティを育てる。22,000字の世界で凝縮と発散を行き来する文字育成アプリ。",
   "lang": "ja",
-  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
-  "orientation": "portrait-primary",
-  "theme_color": "#0c1426",
-  "background_color": "#0c1426",
-  "categories": ["productivity", "education", "games", "lifestyle", "utilities"],
-  "prefer_related_applications": false,
+  "orientation": "portrait",
+  "background_color": "#07111c",
+  "theme_color": "#0d1f2e",
+  "categories": ["productivity", "lifestyle", "games"],
   "icons": [
-    {
-      "src": "icon-192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-maskable.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-maskable.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "図鑑",
-      "short_name": "図鑑",
-      "description": "ぽもじ図鑑（コレクション）を開く",
-      "url": "./?view=collection",
-      "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
-    },
-    {
-      "name": "統計",
-      "short_name": "統計",
-      "description": "完走の統計を見る",
-      "url": "./?view=stats",
-      "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
-    },
-    {
-      "name": "百科ぽもじを開始",
-      "short_name": "百科開始",
-      "description": "22,160 種類の言葉が降る集中モードへ",
-      "url": "./?view=start&mode=encyc",
-      "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
-    },
-    {
-      "name": "パーティ変更",
-      "short_name": "パーティ",
-      "description": "主人公・仲間 3 体を選び直す",
-      "url": "./?view=party",
-      "icons": [{ "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
-    }
+    { "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ],
   "screenshots": [
-    {
-      "src": "screenshot.svg",
-      "sizes": "720x1280",
-      "type": "image/svg+xml",
-      "form_factor": "narrow",
-      "label": "メイン画面 ── タイマー + 文字の積み重ね"
-    },
-    {
-      "src": "screenshot-wide.svg",
-      "sizes": "1280x720",
-      "type": "image/svg+xml",
-      "form_factor": "wide",
-      "label": "PC・タブレット ── 集中ぽもじと休憩ぽもじが両方降る百科事典タイマー"
-    }
+    { "src": "screenshot.svg", "sizes": "1080x1920", "type": "image/svg+xml", "form_factor": "narrow" },
+    { "src": "screenshot-wide.svg", "sizes": "1920x1080", "type": "image/svg+xml", "form_factor": "wide" }
   ],
-  "related_applications": [],
-  "edge_side_panel": { "preferred_width": 480 },
-  "launch_handler": { "client_mode": "auto" },
-  "share_target": {
-    "action": "./",
-    "method": "GET",
-    "params": {
-      "title": "shared_title",
-      "text": "shared_text",
-      "url": "shared_url"
-    }
-  }
+  "shortcuts": [
+    { "name": "25分 集中", "short_name": "25分", "url": "./?work=25&autostart=1" },
+    { "name": "50分 深い凝縮", "short_name": "50分", "url": "./?work=50&autostart=1" }
+  ]
 }

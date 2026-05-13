@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5cbfdf"/>
+      <stop offset="1" stop-color="#1e7fa4"/>
+    </linearGradient>
+    <radialGradient id="drop" cx="0.35" cy="0.3" r="0.7">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#9bd8f0"/>
+      <stop offset="1" stop-color="#1e7fa4"/>
+    </radialGradient>
+  </defs>
+  <rect width="192" height="192" rx="36" fill="url(#sky)"/>
+  <!-- 水面 -->
+  <path d="M 0 130 Q 48 122 96 130 T 192 130 L 192 192 L 0 192 Z" fill="#0f4a68" opacity="0.55"/>
+  <!-- 大きなしずく -->
+  <path d="M 96 38 C 96 38 64 80 64 108 C 64 126 78 140 96 140 C 114 140 128 126 128 108 C 128 80 96 38 96 38 Z" fill="url(#drop)"/>
+  <!-- 小しずく2つ -->
+  <circle cx="50" cy="74" r="6" fill="#ffffff" opacity="0.7"/>
+  <circle cx="142" cy="60" r="4" fill="#ffffff" opacity="0.6"/>
+</svg>
