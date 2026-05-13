@@ -561,6 +561,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   <div class="stats">
     <div><span class="num" id="today">0</span> 今日の完走</div>
     <div><span class="num" id="total">0</span> 累計</div>
+    <div id="next-milestone" style="font-size:0.62rem;color:var(--muted);font-family:var(--mono);"></div>
   </div>
   <div class="settings settings-row1">
     <button class="btn small" data-preset="25/5">25/5</button>
@@ -910,7 +911,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.51（touch-action manipulation・300ms 遅延解消）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.52（次の節目まで表示・モチベ可視化）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
@@ -2354,6 +2355,13 @@ function renderTimer() {
   }
   document.getElementById('today').textContent = STATE.today;
   document.getElementById('total').textContent = STATE.total;
+  // v2.9.52: 次の節目まで
+  const nm = document.getElementById('next-milestone');
+  if (nm) {
+    const ms = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000].find(m => m > STATE.total);
+    if (ms) nm.textContent = '次の節目まで あと ' + (ms - STATE.total) + ' (' + ms + ')';
+    else nm.textContent = '🏆 全節目達成！';
+  }
   document.getElementById('btn-toggle').textContent = STATE.running ? '⏸ 一時停止' : '▶ 開始';
   document.getElementById('btn-sound').textContent = STATE.soundOn ? '🔊 音' : '🔇 無音';
 }
