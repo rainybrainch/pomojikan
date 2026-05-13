@@ -95,7 +95,9 @@
 .skip-link:focus-visible, .skip-link:focus { top: 8px; outline: 2px solid var(--rain); outline-offset: 2px; }
 /* v2.9.39 タッチエリアと canvas はハイライトなし (誤反応防止) */
 canvas, body, header, main, footer { -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: pan-y; }
+/* v2.9.45 iOS Safari の rubber-banding 完全抑制 */
+html { position: fixed; inset: 0; width: 100%; }
 body {
   background: var(--bg); color: var(--text);
   font-family: var(--serif); line-height: 1.5;
@@ -903,7 +905,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     <!-- 情報 -->
     <div class="section-h">ℹ️ 情報</div>
     <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;padding:0 4px 6px;">
-      ぽもじかん v2.9.44（ARIA landmarks 強化・banner/main/contentinfo）／ 作: rainybrainch<br>
+      ぽもじかん v2.9.45（iOS rubber-banding 完全抑制）／ 作: rainybrainch<br>
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--rain);">プライバシー</a> ／
       <a href="help.html" target="_blank" rel="noopener" style="color:var(--rain);">ヘルプ</a> ／
       <a href="changelog.html" target="_blank" rel="noopener" style="color:var(--rain);">変更履歴</a> ／
