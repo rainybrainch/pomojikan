@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260516k">
+<link rel="stylesheet" href="style.css?v=20260516l">
 </head>
 <body data-mode="idle">
 
@@ -43,6 +43,9 @@
     </button>
     <button class="icon-btn" id="btn-edit-party" aria-label="パーティ編成" title="パーティ再編成">
       <span class="ib-emoji">🛡️</span><span class="ib-label">編成</span>
+    </button>
+    <button class="icon-btn" id="btn-writings" aria-label="文章" title="集めた字で文章を編む">
+      <span class="ib-emoji">📝</span><span class="ib-label">文章</span>
     </button>
   </div>
 </header>
@@ -179,6 +182,38 @@
       <input type="checkbox" id="codex-only-seen"> <span>発見済のみ表示</span>
     </label>
     <div class="codex-grid" id="codex-grid"></div>
+  </div>
+</div>
+
+<!-- 文章モード v0.1（俳句構想 前倒し）-->
+<div class="modal" id="writings-modal" role="dialog" aria-modal="true">
+  <div class="modal-card modal-card-wide">
+    <button class="modal-close" id="writings-close" aria-label="閉じる">×</button>
+    <h2 class="modal-title">📝 文章を編む</h2>
+    <p class="modal-desc">
+      集めた字を選んで並べる。字数で <strong>俳句／短歌／漢詩</strong> 等が自動判定されます。<br>
+      <small>このモードはプロトタイプ（v0.1）── 将来はパーティ＝文章として育てられる予定。</small>
+    </p>
+
+    <div class="writings-current">
+      <div class="wc-label">編集中の文章 <span id="wc-genre" class="wc-genre">─</span></div>
+      <div class="wc-slots" id="wc-slots"></div>
+      <div class="wc-actions">
+        <button class="btn-secondary" id="wc-clear">クリア</button>
+        <button class="btn-secondary" id="wc-undo">← 取消</button>
+        <button class="btn-primary"   id="wc-save">📜 保存</button>
+      </div>
+    </div>
+
+    <div class="writings-pool">
+      <div class="wp-label">発見済の字（タップで追加）</div>
+      <div class="wp-grid" id="wp-grid"></div>
+    </div>
+
+    <div class="writings-history">
+      <div class="wh-label">保存した文章</div>
+      <div class="wh-list" id="wh-list"></div>
+    </div>
   </div>
 </div>
 
@@ -385,7 +420,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260516k" defer></script>
-<script src="app.js?v=20260516k" defer></script>
+<script src="codex.js?v=20260516l" defer></script>
+<script src="app.js?v=20260516l" defer></script>
 </body>
 </html>

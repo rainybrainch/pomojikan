@@ -236,6 +236,7 @@ const DEFAULT_STATE = {
   userId: null,                   // 初回起動時に発行
   userCreatedAt: null,            // 発行日時
   onboardingDone: false,          // 初回オンボーディング完了
+  writings: [],                   // 文章モード v0.1 ─ 保存した文章配列
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1829,6 +1830,121 @@ function applyTimerSettings() {
   closeTimerSettings();
   toast('時間を変更しました');
 }
+// ═══════════════════════════════════════════════════════════════
+// 文章モード v0.1（俳句構想 前倒し）
+// 集めた字を並べて文章を作る ── 字数でジャンル自動判定・保存
+// ═══════════════════════════════════════════════════════════════
+let _currentWriting = [];  // { char, rarity }
+
+function openWritings() {
+  if (!STATE.writings) STATE.writings = [];
+  renderWritingsModal();
+  $('#writings-modal').classList.add('show');
+}
+function closeWritings() { $('#writings-modal').classList.remove('show'); }
+
+function detectGenre(chars) {
+  const n = chars.length;
+  if (n === 0) return '─';
+  if (n <= 2)  return `一語（${n}字）`;
+  if (n === 3) return '三字熟語';
+  if (n === 4) return '四字熟語';
+  if (n === 5) return '五字 ・ 俳句の上の句';
+  if (n === 7) return '七字 ・ 俳句の中の句';
+  if (n === 17) return '俳句（5-7-5）';
+  if (n === 31) return '短歌（5-7-5-7-7）';
+  if (n >= 8 && n <= 16) return `短文（${n}字）`;
+  if (n >= 18 && n <= 30) return `詩（${n}字）`;
+  if (n > 31 && n <= 50) return `散文（${n}字）`;
+  return `長文（${n}字）`;
+}
+
+function renderWritingsModal() {
+  // 編集中
+  const slots = $('#wc-slots');
+  const genre = $('#wc-genre');
+  slots.innerHTML = '';
+  if (_currentWriting.length === 0) {
+    slots.appendChild(el('div', { class:'wc-empty' }, '下から字をタップして並べる…'));
+  } else {
+    _currentWriting.forEach((item, idx) => {
+      const rIdx = RARITY_TIERS.indexOf(item.rarity);
+      slots.appendChild(el('span', {
+        class: `wc-slot rarity-${rIdx + 1}`,
+        onclick: () => { _currentWriting.splice(idx, 1); renderWritingsModal(); }
+      }, item.char));
+    });
+  }
+  genre.textContent = detectGenre(_currentWriting.map(x=>x.char));
+
+  // 発見済プール
+  const pool = $('#wp-grid');
+  pool.innerHTML = '';
+  const codex = window.KANJI_CODEX || [];
+  const seen = codex.filter(k => (STATE.collection[k.char || k.c] || 0) > 0);
+  if (seen.length === 0) {
+    pool.appendChild(el('div', { class:'wc-empty' }, '字をまだ発見していません ── タイマーを開始してね'));
+  } else {
+    // レア順（低→高）でソート
+    seen.sort((a,b) => RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity));
+    seen.forEach(k => {
+      const c = k.char || k.c;
+      const rIdx = RARITY_TIERS.indexOf(k.rarity);
+      const cell = el('div', {
+        class: `wp-cell rarity-${rIdx + 1}`,
+        title: `${c} (${k.rarity})`,
+        onclick: () => {
+          _currentWriting.push({ char: c, rarity: k.rarity });
+          renderWritingsModal();
+        }
+      }, c);
+      pool.appendChild(cell);
+    });
+  }
+
+  // 履歴
+  const hist = $('#wh-list');
+  hist.innerHTML = '';
+  const writings = (STATE.writings || []).slice().reverse();  // 新しい順
+  if (writings.length === 0) {
+    hist.appendChild(el('div', { class:'wc-empty' }, 'まだ何も保存していません。'));
+  } else {
+    writings.forEach((w, i) => {
+      const idx = (STATE.writings.length - 1) - i;
+      hist.appendChild(el('div', { class:'wh-item' },
+        el('div', { class:'wh-text' }, w.text),
+        el('div', { class:'wh-meta' },
+          el('span', {}, w.genre),
+          el('span', {}, w.date),
+        ),
+        el('button', {
+          class:'wh-del', title:'削除',
+          onclick: () => {
+            if (!confirm('この文章を削除しますか？')) return;
+            STATE.writings.splice(idx, 1);
+            saveState();
+            renderWritingsModal();
+          }
+        }, '×')
+      ));
+    });
+  }
+}
+
+function saveCurrentWriting() {
+  if (_currentWriting.length === 0) { toast('字を 1 つ以上並べてください'); return; }
+  const text = _currentWriting.map(x => x.char).join('');
+  const genre = detectGenre(_currentWriting.map(x => x.char));
+  const today = new Date();
+  const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  if (!STATE.writings) STATE.writings = [];
+  STATE.writings.push({ text, genre, date, chars: _currentWriting.slice() });
+  saveState();
+  toast(`📜 保存：${genre}「${text}」`);
+  _currentWriting = [];
+  renderWritingsModal();
+}
+
 function applyPreset(idx) {
   const p = TIMER_PRESETS[idx];
   STATE.timer.workSec = p.work;
@@ -2079,6 +2195,18 @@ function bindEvents() {
 
   $('#btn-codex').addEventListener('click', openCodex);
   $('#codex-close').addEventListener('click', closeCodex);
+
+  // 文章モード（v0.1）
+  const btnW = $('#btn-writings');
+  if (btnW) btnW.addEventListener('click', openWritings);
+  const wClose = $('#writings-close');
+  if (wClose) wClose.addEventListener('click', closeWritings);
+  const wcClear = $('#wc-clear');
+  if (wcClear) wcClear.addEventListener('click', () => { _currentWriting = []; renderWritingsModal(); });
+  const wcUndo = $('#wc-undo');
+  if (wcUndo) wcUndo.addEventListener('click', () => { _currentWriting.pop(); renderWritingsModal(); });
+  const wcSave = $('#wc-save');
+  if (wcSave) wcSave.addEventListener('click', saveCurrentWriting);
 
   $('#party-picker-reroll').addEventListener('click', () => {
     rerollPickerPool();
