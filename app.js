@@ -1268,11 +1268,49 @@ function spawnPomoji(opts={}) {
   STATE.stats.totalDrops += 1;
   STATE.collection[char] = (STATE.collection[char] || 0) + 1;
 
-  // 新発見の一瞬通知（toast / 字の rarity 色帯）
+  // 新発見：一瞬通知 ＋ 二軸レベルの「発見ボーナス EXP」をパーティ全員に配分
   if (isFirstSee) {
     toast(`新！ ${char}`, rarity);
+    grantDiscoveryBonus(rarity, char);
   }
   return obj;
+}
+
+// 新発見ボーナス：字種を集める動機を作る（v40 俳句構想の前倒し）
+// rarity が高いほど大きい一回限りの EXP がパーティ全員に入る
+function grantDiscoveryBonus(rarity, char) {
+  if (!STATE.party || !STATE.party.members) return;
+  const rIdx = RARITY_TIERS.indexOf(rarity);
+  const bonus = 3 + Math.pow(2, rIdx);  // ★1=4 ★3=7 ★5=19 ★10=515
+  // 累計発見数 milestones（10 / 50 / 100 / 300 / 600 / 874）で追加ボーナス
+  const uniq = Object.keys(STATE.collection).length;
+  let milestoneMul = 1;
+  if (uniq === 10)  milestoneMul = 3;
+  if (uniq === 50)  milestoneMul = 5;
+  if (uniq === 100) milestoneMul = 8;
+  if (uniq === 300) milestoneMul = 15;
+  if (uniq === 600) milestoneMul = 25;
+  if (uniq === 874) milestoneMul = 100;
+  const total = bonus * milestoneMul;
+
+  // パーティ全員に均等配分（最低1）
+  const perMember = Math.max(1, Math.floor(total / STATE.party.members.length));
+  for (let i = 0; i < STATE.party.members.length; i++) {
+    const m = STATE.party.members[i];
+    m.exp = (m.exp || 0) + perMember;
+    while (m.exp >= expForLevel(m.level + 1)) {
+      m.exp -= expForLevel(m.level + 1);
+      m.level += 1;
+      onLevelUp(m, i);
+    }
+  }
+  STATE.stats.totalExp = (STATE.stats.totalExp || 0) + total;
+
+  if (milestoneMul > 1) {
+    toast(`✦ 発見 ${uniq} 種達成！ ボーナス ×${milestoneMul}`, rarity);
+  }
+  updatePartyXpUI();
+  renderParty();
 }
 
 // 低レア→高レア順に落とす（ドラマ型）
