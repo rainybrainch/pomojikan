@@ -1426,58 +1426,107 @@ function physicsStep() {
       expireAsExp(p);
       continue;
     }
-    // 落下ぽもじ：重力＋着底＋積み重なり
+    // 落下ぽもじ：重力＋衝突＋柔体物理
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
     p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
-    // 最大落下速度キャップ（ふわっと感維持）
     if (p.vy > MAX_FALL_VY) p.vy = MAX_FALL_VY;
-    // 横方向の摩擦：床滑り防止のため常時減衰
-    p.vx *= 0.94;
-    if (Math.abs(p.vx) < 0.05) p.vx = 0;
+    // 横方向の空気摩擦（柔らかめ：餅同士の押し合いを許す）
+    p.vx *= 0.985;
+    if (Math.abs(p.vx) < 0.02) p.vx = 0;
     p.x += p.vx;
     p.y += p.vy;
-    if (p.x < 0) { p.x = 0; p.vx *= -DAMP * 0.5; }
-    if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -DAMP * 0.5; }
+    if (p.x < 0)         { p.x = 0;         p.vx *= -DAMP * 0.6; squashEl(p, 'bumped'); }
+    if (p.x > W - SIZE)  { p.x = W - SIZE;  p.vx *= -DAMP * 0.6; squashEl(p, 'bumped'); }
 
-    // 他のぽもじとの衝突（積み重なり ・ 自動合体）
+    // 餅同士の衝突（円形ソフトボディ：重なったら離す力＋bumped 演出）
     let stackedOn = null;
     for (const other of livePomoji.values()) {
-      if (other.id === p.id || other.dragging || other.rising) continue;
-      if (Math.abs(other.x - p.x) >= SIZE * 0.92) continue;
-      if (other.y < p.y) continue;
-      const gap = other.y - p.y;
-      if (gap < SIZE && p.vy > 0) {
-        // 同字なら自動合体（タッチで重なる感）
-        if (other.char === p.char && !p._merging) {
+      if (other.id === p.id || other.rising) continue;
+      const dx = p.x - other.x;
+      const dy = p.y - other.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const minDist = SIZE * 0.94;  // 餅同士の最小距離（ちょっとめり込む）
+      if (dist > 0 && dist < minDist) {
+        // 同字なら自動合体（落下中の上→下のときだけ）
+        if (other.char === p.char && p.vy > 0 && !p._merging
+            && !other.dragging && Math.abs(dx) < SIZE * 0.5 && dy < 0) {
           p._merging = true;
           mergePomoji(p, other);
           stackedOn = other;
           break;
         }
-        // 通常の積み重なり（着地はピタッと止める・ランダム揺らし廃止）
-        p.y = other.y - SIZE * 0.98;
-        p.vy = 0;
-        p.vx = 0;
-        if (!p.settled) p.el.classList.add('settled');
-        p.settled = true;
-        stackedOn = other;
-        break;
+        // 押し離しベクトル（ソフトボディ）
+        const overlap = minDist - dist;
+        const nx = dx / (dist || 1);
+        const ny = dy / (dist || 1);
+        // 自分は動ける、相手が dragging 中なら自分だけ離れる
+        const otherStatic = other.dragging || other.persistent;
+        const myShare    = otherStatic ? 1.0 : 0.55;
+        const otherShare = otherStatic ? 0.0 : 0.45;
+        p.x += nx * overlap * myShare;
+        p.y += ny * overlap * myShare;
+        if (!otherStatic) {
+          other.x -= nx * overlap * otherShare;
+          other.y -= ny * overlap * otherShare;
+        }
+        // 衝突時の力交換（やわらかい弾性）
+        const relVy = p.vy - (other.vy || 0);
+        if (relVy > 0 && dy < 0) {
+          // 上から落ちてきた：自分は跳ね返り、相手は少し沈む
+          p.vy = -relVy * 0.35;     // 軽く跳ねる
+          if (!otherStatic) other.vy += relVy * 0.18;
+          // 上の餅は強めの squash、下の餅は bumped
+          squashEl(p, 'squash');
+          squashEl(other, 'bumped');
+        }
+        // 横の押し合い：相手が下にいるなら自分は乗る判定
+        if (dy < -SIZE * 0.5) {
+          stackedOn = other;
+          // 上に乗った状態でも vy が小さければ着地
+          if (Math.abs(p.vy) < 0.6) {
+            if (!p.settled) {
+              p.el.classList.add('settled');
+              squashEl(p, 'squash');
+            }
+            p.settled = true;
+          }
+        }
       }
     }
 
-    // 床への着地（ピタッと止める）
-    if (!stackedOn && p.y > H - SIZE) {
+    // 床への着地（柔らかいバウンド → 静止）
+    if (p.y > H - SIZE) {
       p.y = H - SIZE;
-      p.vy = 0;
-      p.vx = 0;
-      if (!p.settled && agg.magnet) attractSameChar(p);
-      if (!p.settled) p.el.classList.add('settled');
-      p.settled = true;
+      if (Math.abs(p.vy) > 1.4) {
+        // 大きい速度で着地：跳ね返る
+        p.vy *= -0.42;
+        squashEl(p, 'squash');
+      } else {
+        // 小さい速度：着地完了
+        p.vy = 0;
+        p.vx *= 0.6;
+        if (!p.settled && agg.magnet) attractSameChar(p);
+        if (!p.settled) {
+          p.el.classList.add('settled');
+          squashEl(p, 'squash');
+        }
+        p.settled = true;
+      }
     }
     p.el.style.left = p.x + 'px';
     p.el.style.top  = p.y + 'px';
   }
   physicsRaf = requestAnimationFrame(physicsStep);
+}
+
+// 餅の squash/bumped クラスを一瞬付ける（連発防止：直近 350ms 内は無視）
+function squashEl(p, cls) {
+  if (!p || !p.el) return;
+  const now = Date.now();
+  if (p._lastSquashAt && now - p._lastSquashAt < 350) return;
+  p._lastSquashAt = now;
+  p.el.classList.add(cls);
+  setTimeout(() => p.el?.classList.remove(cls), cls === 'squash' ? 550 : 400);
 }
 
 function checkMergeCollision(p) {
