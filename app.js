@@ -1213,7 +1213,7 @@ function spawnPomoji(opts={}) {
   }, char);
   field.appendChild(node);
 
-  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.0, vy: 0, el: node, settled: false, isFirstSee };
+  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.0, vy: 0, el: node, settled: false, isFirstSee, mergeLevel: 1 };
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
@@ -1321,7 +1321,7 @@ function physicsStep() {
     if (p.x < 0) { p.x = 0; p.vx *= -DAMP; }
     if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -DAMP; }
 
-    // 他のぽもじとの衝突（積み重なり）
+    // 他のぽもじとの衝突（積み重なり ・ 自動合体）
     let stackedOn = null;
     for (const other of livePomoji.values()) {
       if (other.id === p.id || other.dragging || other.rising) continue;
@@ -1329,7 +1329,14 @@ function physicsStep() {
       if (other.y < p.y) continue;
       const gap = other.y - p.y;
       if (gap < SIZE && p.vy > 0) {
-        // 上に着地
+        // 同字なら自動合体（タッチで重なる感）
+        if (other.char === p.char && !p._merging) {
+          p._merging = true;
+          mergePomoji(p, other);
+          stackedOn = other;
+          break;
+        }
+        // 通常の積み重なり
         p.y = other.y - SIZE * 0.98;
         p.vy *= -DAMP * 0.5;
         p.vx += (Math.random() - 0.5) * 0.6;
@@ -1483,15 +1490,42 @@ function _orphanExp(exp) {
 function mergePomoji(src, target) {
   // src dragged onto target with same char
   const rIdx = RARITY_TIERS.indexOf(src.rarity);
-  const exp = Math.max(1, Math.pow(2, rIdx) * 10);
+
+  // 2048/スイカ式：同レベル同士なら target.mergeLevel += 1（進化）
+  // 異レベル同士は src 吸収だけ（進化なし）
+  const srcLv = src.mergeLevel || 1;
+  const tgtLv = target.mergeLevel || 1;
+  const evolved = (srcLv === tgtLv);
+  if (evolved) {
+    target.mergeLevel = tgtLv + 1;
+  }
+  const newLv = target.mergeLevel || 1;
+
+  // EXP は mergeLevel に応じて指数増加：基礎 × 2^(level-1)
+  const exp = Math.max(1, Math.pow(2, rIdx) * 10 * Math.pow(2, newLv - 1));
   spawnXpFloat(target.x + SIZE/2, target.y, exp, src.rarity);
+
   // タグアフィニティ判定：src と target のタグ重複があれば +50%
   const srcTags = new Set(getCharTags(src.char));
   const tgtTags = new Set(getCharTags(target.char));
   let tagMatch = false;
   for (const t of srcTags) { if (tgtTags.has(t)) { tagMatch = true; break; } }
   awardExpToParty(src.char, exp, { tagMatch }) || _orphanExp(exp);
-  // Visual: src absorbs into target
+
+  // 進化エフェクト：target に merge-lv-N クラスを再付与
+  if (evolved) {
+    // 既存の merge-lv-* クラスを除去
+    target.el.classList.forEach(cls => {
+      if (cls.startsWith('merge-lv-')) target.el.classList.remove(cls);
+    });
+    target.el.classList.add(`merge-lv-${newLv}`);
+    target.el.classList.add('merge-evolve');
+    setTimeout(() => target.el.classList.remove('merge-evolve'), 600);
+    // 進化ごとに toast 通知
+    if (newLv >= 2) toast(`✦ 進化 ${target.char} Lv${newLv}`, src.rarity);
+  }
+
+  // 視覚：合体フラッシュ
   target.el.classList.add('merge-flash');
   if (tagMatch) target.el.classList.add('merge-resonate');
   setTimeout(() => {
@@ -1499,10 +1533,10 @@ function mergePomoji(src, target) {
     target.el.classList.remove('merge-resonate');
   }, 800);
   if (tagMatch) {
-    // 共通タグを表示
     const shared = Array.from(srcTags).find(t => tgtTags.has(t));
     toast(`✦ 同質共振「${shared}」XP+50%`);
   }
+
   src.el.classList.add('dissolve');
   setTimeout(() => { src.el.remove(); livePomoji.delete(src.id); }, 400);
   saveState();
