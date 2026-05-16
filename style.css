@@ -146,7 +146,7 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
     0 4px 12px rgba(0,0,0,.3),
     0 0 22px var(--r-glow);
 }
-/* ★10+ きらきら（多重 box-shadow で固定スパークル風）*/
+/* ★10+ きらきら（多重 box-shadow で固定スパークル）── アニメなし */
 .pomoji.rarity-10, .pomoji.rarity-11{
   text-shadow:0 1px 0 rgba(255,250,235,.9), 0 0 10px var(--r-color);
   box-shadow:
@@ -155,13 +155,8 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
     0 5px 14px rgba(0,0,0,.3),
     0 0 28px var(--r-glow),
     0 0 4px #fff inset;
-  animation:sparkleHover 2.4s ease-in-out infinite;
 }
-@keyframes sparkleHover{
-  0%, 100% { filter: drop-shadow(0 0 4px var(--r-color)); }
-  50%      { filter: drop-shadow(0 0 12px var(--r-color)) drop-shadow(0 0 4px white); }
-}
-/* ★12+ 黄金寄りの色＋複合グロー */
+/* ★12+ 黄金寄りの色＋複合グロー ── 静止 */
 .pomoji.rarity-12, .pomoji.rarity-13{
   color:#6a4830;
   text-shadow:
@@ -174,9 +169,8 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
     0 6px 18px rgba(0,0,0,.32),
     0 0 32px var(--r-glow),
     0 0 6px #fff inset;
-  animation:sparkleHover 2.0s ease-in-out infinite;
 }
-/* ★14+ 黄金文字＋虹相関アニメ */
+/* ★14+ 黄金文字 ── 静止グロー（虹色アニメ廃止：ぷにぷに優先）*/
 .pomoji.rarity-14, .pomoji.rarity-15{
   color:#5a3a20;
   background:
@@ -194,14 +188,8 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
     0 0 36px var(--r-glow),
     0 0 12px gold,
     0 0 6px #fff inset;
-  animation:rainbowHue 5s linear infinite, sparkleHover 1.6s ease-in-out infinite;
 }
-@keyframes rainbowHue{
-  0%   { filter:hue-rotate(0deg)   drop-shadow(0 0 10px gold); }
-  50%  { filter:hue-rotate(180deg) drop-shadow(0 0 14px #ff77ff); }
-  100% { filter:hue-rotate(360deg) drop-shadow(0 0 10px gold); }
-}
-/* ★16 脳汁モード ── 全部盛り */
+/* ★16 神字 ── 全部盛りグローだが静止（脈動アニメ廃止）*/
 .pomoji.rarity-16{
   color:#3a2a10;
   background:
@@ -221,30 +209,16 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
     0 0 50px gold,
     0 0 80px rgba(255,200,50,.6),
     0 0 14px #fff inset;
-  animation:brainJuice 1.8s ease-in-out infinite, rainbowHue 4s linear infinite;
 }
-@keyframes brainJuice{
-  0%, 100% {
-    transform:scale(1);
-    box-shadow:
-      inset 0 -5px 12px rgba(180,100,20,.5),
-      inset 0 4px 6px rgba(255,255,240,1),
-      0 10px 32px rgba(255,200,50,.55),
-      0 0 50px gold,
-      0 0 80px rgba(255,200,50,.6),
-      0 0 14px #fff inset;
-  }
-  50% {
-    transform:scale(1.08);
-    box-shadow:
-      inset 0 -5px 12px rgba(180,100,20,.55),
-      inset 0 4px 8px rgba(255,255,240,1),
-      0 14px 40px rgba(255,200,50,.8),
-      0 0 70px gold,
-      0 0 110px rgba(255,200,50,.8),
-      0 0 20px #fff inset,
-      0 0 30px white;
-  }
+/* sparkleHover / rainbowHue / brainJuice はパーティカード等で使い続けるので keyframes は残す */
+@keyframes sparkleHover{
+  0%, 100% { filter: drop-shadow(0 0 4px var(--r-color)); }
+  50%      { filter: drop-shadow(0 0 12px var(--r-color)) drop-shadow(0 0 4px white); }
+}
+@keyframes rainbowHue{
+  0%   { filter:hue-rotate(0deg)   drop-shadow(0 0 10px gold); }
+  50%  { filter:hue-rotate(180deg) drop-shadow(0 0 14px #ff77ff); }
+  100% { filter:hue-rotate(360deg) drop-shadow(0 0 10px gold); }
 }
 
 /* ════════════════════ ヘッダー ════════════════════ */
@@ -1165,18 +1139,20 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
   will-change:left, top, transform;
 }
 .pomoji:active{ cursor:grabbing; }
-/* 弾性アニメは廃止 ── 物理ループ任せでゆっくり転がる */
-/* 着地時の瞬間 squash だけ ごく微弱 に残す（無くてもOK程度の控えめ）*/
+/* 着地時の瞬間 squash だけ ── ぷにぷにシンプル */
 .pomoji.squash{
-  animation:mochi-squash .35s ease-out;
+  animation:mochi-squash .28s ease-out;
 }
 @keyframes mochi-squash{
   0%   { transform:scale(1.0, 1.0); }
-  40%  { transform:scale(1.06, 0.94); }   /* ほんの少し潰れる */
+  45%  { transform:scale(1.04, 0.96); }
   100% { transform:scale(1.0, 1.0); }
 }
-/* bumped は無効化（物理だけで十分）*/
-.pomoji.bumped{ /* no animation */ }
+.pomoji.bumped{ /* 無効 */ }
+.pomoji.settled{
+  /* 着地後は完全静止・揺れない */
+  animation:none;
+}
 
 /* ドラッグ中は控えめに浮き上がる */
 .pomoji.dragging{
@@ -1340,11 +1316,18 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
 .pomoji.evo-4 { box-shadow:inset 0 -4px 8px rgba(120,90,40,.3), inset 0 3px 4px rgba(255,250,230,.55), 0 0 24px var(--r-glow), 0 0 6px #fff inset; }
 .pomoji.evo-5 { box-shadow:inset 0 -4px 8px rgba(120,90,40,.3), inset 0 3px 4px rgba(255,250,230,.6),  0 0 32px var(--r-glow), 0 0 10px gold inset; }
 .pomoji.evo-6 { box-shadow:inset 0 -4px 8px rgba(120,90,40,.3), inset 0 3px 4px rgba(255,250,230,.7),  0 0 40px var(--r-glow), 0 0 14px gold inset, 0 0 50px rgba(255,200,50,.5); }
-.pomoji.evo-7 { animation:rainbowHue 5s linear infinite, sparkleHover 1.6s ease-in-out infinite; }
+/* evo-7+ の落下字 ── 静止 glow（ぷにぷに優先・アニメ廃止）*/
+.pomoji.evo-7,
 .pomoji.evo-8,
 .pomoji.evo-9,
-.pomoji.evo-10{ animation:brainJuice 1.6s ease-in-out infinite, rainbowHue 3s linear infinite; }
-/* パーティカードも段階で派手化 */
+.pomoji.evo-10{
+  box-shadow:
+    inset 0 -5px 12px rgba(180,100,20,.45),
+    inset 0 4px 6px rgba(255,255,240,.9),
+    0 8px 28px rgba(255,200,50,.5),
+    0 0 60px gold;
+}
+/* パーティカードは段階で派手化（カードはアニメ OK ─ ご褒美演出）*/
 .party-card.evo-5,
 .party-card.evo-6,
 .party-card.evo-7{ box-shadow:0 0 20px var(--r-glow), 0 0 6px gold inset; }
@@ -1404,17 +1387,12 @@ body.stream-mode .party-bar{
   100% { transform:scale(1); filter:brightness(1) drop-shadow(0 0 12px var(--r-glow)); }
 }
 
-/* ════════════════════ パーティ字 永続スポーン（v2 / 2026-05-16）════════════════════ */
-/* 主人公・仲間は消えない・金縁＋淡い脈動 */
+/* ════════════════════ パーティ字 永続スポーン ════════════════════ */
+/* 主人公・仲間：金縁＋静的グロー（呼吸アニメ廃止 ─ 落ち着き優先）*/
 .pomoji.persistent{
-  border-width:2.5px !important;
+  border-width:2px !important;
   border-color:#f0d48a !important;
-  box-shadow:0 0 0 1px rgba(240,212,138,.4), 0 0 14px rgba(240,212,138,.35);
-  animation:persistentBreath 3.2s ease-in-out infinite;
-}
-@keyframes persistentBreath{
-  0%,100%{ box-shadow:0 0 0 1px rgba(240,212,138,.4), 0 0 14px rgba(240,212,138,.35); }
-  50%   { box-shadow:0 0 0 2px rgba(240,212,138,.7), 0 0 22px rgba(240,212,138,.55); }
+  box-shadow:0 0 0 1px rgba(240,212,138,.4), 0 0 12px rgba(240,212,138,.3);
 }
 /* 消えない字をタップしたときの軽い跳ね */
 .pomoji.persistent-bump{

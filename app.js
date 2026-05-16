@@ -1515,6 +1515,16 @@ function physicsStep() {
   const agg = aggregatePartyPerks();
   for (const p of livePomoji.values()) {
     if (p.dragging) continue;
+    // settled な字は位置固定（穴：他字に押されて動く問題の解消）
+    if (p.settled && !p.rising) {
+      // 万一座標がズレていたら元に戻す
+      if (p.settledX != null) { p.x = p.settledX; }
+      if (p.settledY != null) { p.y = p.settledY; }
+      p.vx = 0; p.vy = 0;
+      p.el.style.left = p.x + 'px';
+      p.el.style.top  = p.y + 'px';
+      continue;
+    }
     if (p.rising) {
       // 上昇ぽもじ：軽い揺らぎ＋ゆっくり浮上
       p.vx += (Math.random() - 0.5) * 0.08;
@@ -1551,7 +1561,7 @@ function physicsStep() {
     if (p.x < 0)         { p.x = 0;         p.vx *= -0.4; }
     if (p.x > W - SIZE)  { p.x = W - SIZE;  p.vx *= -0.4; }
 
-    // 餅同士の衝突（円形ソフトボディ：重なったら離す力＋転がり）
+    // 餅同士の衝突（円形ソフトボディ ── 落下中の自分だけが動く）
     for (const other of livePomoji.values()) {
       if (other.id === p.id || other.rising) continue;
       const dx = p.x - other.x;
@@ -1570,7 +1580,8 @@ function physicsStep() {
         const overlap = minDist - dist;
         const nx = dx / (dist || 1);
         const ny = dy / (dist || 1);
-        const otherStatic = other.dragging || other.persistent;
+        // 相手が settled/persistent/dragging のいずれかなら不動 ── 自分だけが動く
+        const otherStatic = other.dragging || other.persistent || other.settled;
         const myShare    = otherStatic ? 1.0 : 0.55;
         const otherShare = otherStatic ? 0.0 : 0.45;
         p.x += nx * overlap * myShare;
@@ -1579,15 +1590,15 @@ function physicsStep() {
           other.x -= nx * overlap * otherShare;
           other.y -= ny * overlap * otherShare;
         }
-        // 衝突時の力交換 ── 転がり促進（接線方向に少し速度を渡す）
+        // 上から落ちて来た場合の力交換（軽め）
         const relVy = p.vy - (other.vy || 0);
         if (relVy > 0 && dy < 0) {
-          p.vy = -relVy * 0.18;                              // 軽くだけ跳ねる
+          p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // 接線方向に少し速度を回す（ny=0 で真上＝水平にコロッと）
-          const tangent = -ny;  // ny<0 のとき正：横へ転がる
-          p.vx += nx * 0.6;     // 法線横ベクトル分だけ x に
-          if (!otherStatic) other.vx -= nx * 0.4;
+          // 接線方向 ── 真上から落ちてきた時だけ少し横へ転がる
+          if (Math.abs(nx) > 0.1) {
+            p.vx += nx * 0.4;
+          }
         }
       }
     }
@@ -1596,19 +1607,26 @@ function physicsStep() {
     if (p.y > H - SIZE) {
       p.y = H - SIZE;
       if (Math.abs(p.vy) > 1.6) {
-        p.vy *= -0.22;          // 軽く跳ねる
-        squashEl(p, 'squash');  // 着地の瞬間だけ微弱 squash
+        p.vy *= -0.22;
+        squashEl(p, 'squash');
       } else {
         p.vy = 0;
-        // 床上の vx は摩擦で徐々に減衰（転がりを許す）
-        p.vx *= 0.92;
+        p.vx = 0;
         if (!p.settled && agg.magnet) attractSameChar(p);
         if (!p.settled) {
           p.el.classList.add('settled');
           squashEl(p, 'squash');
         }
         p.settled = true;
+        // 安定位置を記録（毎フレームここに戻すことで他字に押されても動かない）
+        p.settledX = p.x;
+        p.settledY = p.y;
       }
+    }
+    // 他字の上に積まれて着地している場合も settledX/Y を記録
+    if (p.settled && p.settledX == null) {
+      p.settledX = p.x;
+      p.settledY = p.y;
     }
     p.el.style.left = p.x + 'px';
     p.el.style.top  = p.y + 'px';
@@ -1673,6 +1691,11 @@ function attachDragHandlers(node, obj) {
     try { node.setPointerCapture(pointerId); } catch(_) {}
     obj.dragging = true;
     obj.vy = 0; obj.vx = 0;
+    // ドラッグ開始：settled を解除し、再着地で新しい位置に固定される
+    obj.settled = false;
+    obj.settledX = null;
+    obj.settledY = null;
+    obj.el.classList.remove('settled');
     moved = false;
     startX = e.clientX;
     startY = e.clientY;
