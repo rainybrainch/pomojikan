@@ -17,7 +17,23 @@ a { color: #6bb6ff; }
 </head>
 <body>
 <h1>📜 変更履歴 ── ぽもじかん</h1>
-<p class="muted">v0.95 → v2.9 で育成ゲーム + 百科事典級。スマホアプリ申請レベル。</p>
+<p class="muted">v0.1 から始まり v30 で「文字育成ポモドーロ」として再設計。Play Store 申請準備版。</p>
+
+<h2>v30 ── 文字育成ポモドーロへの全面リライト<span class="date">2026-05-13</span></h2>
+<ul>
+  <li>🌑 <strong>主人公制</strong>：最初に主人公 1 字（ひらがな・カタカナ・漢字）を選んで好きな名前を付ける。リロール可</li>
+  <li>🎭 <strong>4 体パーティ</strong>：主人公 1 ＋ 仲間 3。優先的に降り、消滅不可。EXP を 4 体に均等配分</li>
+  <li>⭐ <strong>★1〜★6 段階解放</strong>：UNLOCK_LV = 1/5/15/30/60/100。各帯に達成名「始まりの字／鍛錬の刻／才の覚醒／達者の道／段位入り／七徳七大罪の領域」</li>
+  <li>✦ <strong>書体進化</strong>：字が Lv 10／30／70 で楷書 → 行書 → 草書に進化（マーカー ✦／✧／☀）</li>
+  <li>🧪 <strong>特性スタッキング（ヴァンパイアサバイバー方式）</strong>：字のタグから固有パークが付き、4 体ぶん同時に積まれる（20 種以上）</li>
+  <li>🌧 <strong>同質共振</strong>：同じタグの字を融合すると XP+50%。タグ系パークがあるとさらに乗算</li>
+  <li>🔄 <strong>v29 → v30 マイグレーション</strong>：旧 ☆1-5 → ★1-★6 自動変換</li>
+  <li>📊 <strong>引継ぎコード</strong>：ユーザー ID（P-XXXX-XXXX）方式・別端末復元可</li>
+  <li>🪪 <strong>4 ステップ・オンボーディング</strong>：初回起動時にコンセプト → 操作 → 主人公 → レア帯 を 4 枚で説明</li>
+  <li>📦 <strong>Play Store 用 PNG アイコン</strong>：icon-512.png / icon-192.png / icon-maskable-512.png / feature-1024x500.png 生成</li>
+  <li>🛡 <strong>主人公選択バグ</strong>：1 体パーティ時の判定漏れを修正（length===4 → length>=1）</li>
+  <li>📖 <strong>ストア説明文 v30 リライト</strong>：旧「百科ぽもじ 22,160 種類」を実態（767 字 + 246 熟語）に整合</li>
+</ul>
 
 <h2>v2.9 系 ── 育成ゲーム化 + スマホアプリ最適化<span class="date">2026-05-12</span></h2>
 <ul>

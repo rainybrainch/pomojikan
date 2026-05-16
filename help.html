@@ -22,31 +22,36 @@ a { color: #6bb6ff; }
 <p class="muted">わからないことを Q&A 形式で。</p>
 
 <h2>基本</h2>
-<details><summary>Q. ぽもじかんって何？</summary><div class="body">A. ポモドーロ法のタイマー＋文字が物理エンジンで降る・積み上がる PWA。25分作業＋5分休憩のリズムで集中する装置。<br>v2.0 以降は <strong>📚 百科ぽもじモード</strong> がメイン：漢字・古典・神話・医療・科学・現代… <strong>ユニーク 22,160 種類</strong> の言葉が降ってきて、ぽもじ図鑑で集められる。</div></details>
-<details><summary>Q. 🎭 パーティって何？(v2.9〜)</summary><div class="body">A. 4 体のぽもじを選んで「育てる」システム：<br>・<strong>☆ 主人公</strong>（1 体）：消滅不可・最も成長<br>・<strong>仲間</strong>（3 体）：消滅不可・主人公と一緒に成長<br>この 4 体は<strong>優先的に降ってきます</strong>。集中フェーズで集めた経験が 🌧 集中ぽもじ の解放級に、休憩フェーズで集めた経験が 🫧 休憩ぽもじ の解放級に蓄積。メニュー →「主人公・仲間を変更」で再選択可能（Lv はリセット）。</div></details>
-<details><summary>Q. ☆ レアリティの段階解放って？(v2.9〜)</summary><div class="body">A. ぽもじは ☆1〜☆5 の段階で出現：<br>・<strong>☆1〜☆2</strong>：通常のぽもじ（最初から）<br>・<strong>☆3 金</strong>：6 級到達で解放（パーティ平均 Lv 4 で）<br>・<strong>☆4 伝説</strong>：3 級到達で解放（パーティ平均 Lv 7）<br>・<strong>☆5 虹</strong>：1 級到達で解放（パーティ平均 Lv 9）<br>序盤でも <strong>0.1%</strong> の確率で ☆3 が降ってくる「千分の一の奇跡」あり。<br>🌧 雨と 🫧 泡 は<strong>独立した解放進捗</strong>。集中ばかりなら雨のレアが先、休憩多めなら泡のレアが先に解放。</div></details>
-<details><summary>Q. ぽもじを消滅させるには？</summary><div class="body">A. 落ちている文字を<strong>ダブルタップ</strong>（350ms 以内に同じ文字を 2 回タップ）すると消滅して、その経験値がパーティ 4 体に均等配分されます。<br>主人公・仲間 4 体は消滅できません（誤タップ防止）。<br>シングルタップ＆ドラッグは既存の「指で投げる」操作のままです。</div></details>
-<details><summary>Q. 集中:休憩の比率と分類は？</summary><div class="body">A. 22,160 種類は<strong>4:1 で分割</strong>されています：<br>・<strong>🌧 集中ぽもじ（集中・落下）</strong> 17,766 種：漢字・熟語・古典・神話・科学・医療・法律・歴史・テクノロジー・世界地理・美術・人物など「学び・知・構築」系<br>・<strong>🫧 休憩ぽもじ（休憩・上昇）</strong> 4,394 種：オノマトペ・食べ物・動物魚鳥昆虫・色感情衣服・スポーツ・音楽・アニメ漫画・ゲームなど「軽い・遊び・癒し」系<br>視覚的にも雨は下にしずく型、泡は球体ハイライト付きで区別。</div></details>
-<details><summary>Q. ポモドーロ法を知らない</summary><div class="body">A. 25分作業→5分休憩を 4〜6 セット繰り返す時間管理術。ぽもじかんは時間設定を自由に変えられます（メニュー→時間）。</div></details>
-<details><summary>Q. 落ちる文字に意味はある？</summary><div class="body">A. 既定では「七大罪・七徳」。作業中は徳のしずく、休憩中は罪の泡。メニューの言葉モードで自由文字や服牢365 名言に切り替えられます。</div></details>
+<details><summary>Q. ぽもじかんって何？</summary><div class="body">A. 字を集め、育てる文字育成ポモドーロ。集中時間は <strong>「字」が画面に降って</strong>きて、休憩時間にそれが <strong>泡となって浮上し、主人公の経験値</strong>になります。25 分作業＋5 分休憩のリズムで集中する装置に、4 体パーティの育成ゲームを重ねた構造。</div></details>
+<details><summary>Q. 主人公とパーティって何？</summary><div class="body">A. 最初に <strong>主人公 1 字</strong>（ひらがな・カタカナ・漢字どれでも）を選び、好きな名前を付けます。あとから仲間を増やして <strong>最大 4 体</strong>のパーティに。<br>・<strong>主人公</strong>：消滅不可・最も成長する核<br>・<strong>仲間</strong>（最大 3 体）：消滅不可・主人公と一緒に育つ<br>この 4 体は<strong>優先的に降ってきます</strong>。集中で集めた字も、休憩で消えた字も、すべて 4 体の EXP として均等配分される。</div></details>
+<details><summary>Q. ★レアリティの段階解放って？</summary><div class="body">A. パーティの平均 Lv が上がるごとに、降ってくる字のレア度が広がります：<br>・<strong>★1</strong>（Lv 1〜）：ひらがな・カタカナ・教育漢字<br>・<strong>★2</strong>（Lv 5〜）：常用漢字・基礎熟語<br>・<strong>★3</strong>（Lv 15〜）：「才の覚醒」帯<br>・<strong>★4</strong>（Lv 30〜）：「達者の道」帯<br>・<strong>★5</strong>（Lv 60〜）：「段位入り」帯<br>・<strong>★6</strong>（Lv 100〜）：「七徳七大罪の領域」<br>レアほど落下速度がゆっくりになり、画面に長く留まります（最大 0.6 倍）。</div></details>
+<details><summary>Q. 字の数はいくつ？</summary><div class="body">A. <strong>767 字</strong>（★1=293 / ★2=208 / ★3=137 / ★4=97 / ★5=13 / ★6=19）。<br>そこから <strong>246 個の熟語レシピ</strong>が組める（同じ字どうしを衝突させると合成判定）。</div></details>
+<details><summary>Q. ぽもじを消滅させるには？</summary><div class="body">A. 落ちている字を<strong>ダブルタップ</strong>すると消滅し、その経験値がパーティ 4 体に均等配分されます。主人公・仲間 4 体は消滅できません（誤タップ防止）。シングルタップ＆ドラッグは「指で投げる」物理操作のままです。</div></details>
+<details><summary>Q. ポモドーロ法を知らない</summary><div class="body">A. 25分作業→5分休憩を 4〜6 セット繰り返す時間管理術。ぽもじかんは時間設定を自由に変えられます（プリセット 25/5・50/10・15/3 + カスタム秒）。</div></details>
+<details><summary>Q. 落ちる字に意味はある？</summary><div class="body">A. 字にはタグが付いています：七徳・七大罪・感情・時・禅・神字・武・学・自然・植物・美・宗教・仏教・思想 ほか。タグから自動で固有特性（パーク）が割り当てられ、パーティ 4 体ぶん同時に効果が積まれます（ヴァンパイアサバイバー方式）。</div></details>
+
+<h2>育成・パーク</h2>
+<details><summary>Q. 特性スタッキングって？</summary><div class="body">A. 主人公・仲間それぞれに、字のタグから固有パーク（特性）が付きます。例：七徳タグ → 「七徳の徳」（七徳熟語成立時 全員XP+50%）。同じパークをパーティが複数持つと効果が積まれます。 落下速度・合体判定範囲・EXP獲得・進化Lv閾値・落下数・特定タグへのボーナスなど、20 種以上のパークが組み合わせを生みます。</div></details>
+<details><summary>Q. 書体進化って？</summary><div class="body">A. 字が Lv 10・30・70 で書体進化します：楷書 → 行書 → 草書。進化マーカー（✦／✧／☀）が字の上に表示されます。</div></details>
+<details><summary>Q. 同質共振って？</summary><div class="body">A. 同じタグ（七徳・七大罪・感情・水・火など）の字を融合すると XP+50% のボーナスがつきます。タグ系のパークがあるとさらに乗算で増える。</div></details>
+<details><summary>Q. 新発見バッジ</summary><div class="body">A. 初めて見る字に金色の「新」マークがつきます。図鑑で達成率を確認できる。</div></details>
 
 <h2>操作</h2>
-<details><summary>Q. キーボードショートカット</summary><div class="body">A. Space=開始/停止 / R=リセット / M=メニュー / C=図鑑 / S=統計 / P=シェア / Esc=モーダル閉じる</div></details>
-<details><summary>Q. 文字をタッチで動かせる？</summary><div class="body">A. はい。指で掴んで投げられます。フリック速度で慣性が乗る物理ドラッグです。</div></details>
+<details><summary>Q. キーボードショートカット</summary><div class="body">A. Space=開始/停止 / R=リセット / Esc=モーダル閉じる など。詳しくはメニュー内のキーボードヘルプ。</div></details>
+<details><summary>Q. 字をタッチで動かせる？</summary><div class="body">A. はい。指で掴んで投げられます。フリック速度で慣性が乗る物理ドラッグです。</div></details>
 <details><summary>Q. モーダルの閉じ方</summary><div class="body">A. 「閉じる」ボタン / Esc キー / モーダル外の暗い部分をタップ / モーダルを下スワイプ。</div></details>
 
-<h2>遊び方</h2>
-<details><summary>Q. 文字が「大」になった</summary><div class="body">A. 同じ文字どうしが衝突して合体しました（スイカゲーム的）。「大→真→極」と3段階で進化します。</div></details>
-<details><summary>Q. レアな文字（金・虹）の出し方</summary><div class="body">A. 初出時に確率判定（金: 1%、虹: 0.2%）。たくさん作業して新しい文字を引いてください。</div></details>
-<details><summary>Q. アチーブメントは何種類？</summary><div class="body">A. 17種類。完走数・連続日数・図鑑種類数・レア発見・合体段階・Lv9 到達 など。</div></details>
+<h2>バックグラウンド・引継ぎ</h2>
+<details><summary>Q. アプリを閉じてもタイマーは続く？</summary><div class="body">A. はい。バックグラウンドでもタイマーは進みます。復帰時に、隠れていた時間ぶんの「オフラインボーナス」字（約 50%）が一気に降ってきます。</div></details>
+<details><summary>Q. ユーザー ID（P-XXXX-XXXX）って？</summary><div class="body">A. 初回プレイ時に自動発行される、あなただけの識別子です。サーバーには送られず端末内のみ。サポート依頼の際にこの ID を提示してください。</div></details>
+<details><summary>Q. 別の端末に移したい</summary><div class="body">A. 📊 記録 → 「引継ぎコード」を発行 → 別端末で同じコードから復元できます。</div></details>
 
 <h2>データ</h2>
-<details><summary>Q. データは送信される？</summary><div class="body">A. 一切送信されません。すべて端末の localStorage に保存。アクセス解析もありません。詳しくは <a href="privacy.html">プライバシーポリシー</a>。</div></details>
-<details><summary>Q. 別の端末に移したい</summary><div class="body">A. メニュー →「📤 書き出し」で JSON 取得 → 別端末で「📥 取り込み」。</div></details>
-<details><summary>Q. データをすべて消したい</summary><div class="body">A. メニュー → 「🌑 全リセット」（2段階確認あり）。</div></details>
+<details><summary>Q. データは送信される？</summary><div class="body">A. 一切送信されません。すべて端末の localStorage（キー名：<code>pomojikan_v30</code>）に保存。アクセス解析もありません。詳しくは <a href="privacy.html">プライバシーポリシー</a>。</div></details>
+<details><summary>Q. データをすべて消したい</summary><div class="body">A. 📊 記録 → 「危険な操作」→「全データを消去」（2 段階確認）。ブラウザの設定からサイトデータを削除しても全消去できます。</div></details>
 
 <h2>申請・配布</h2>
-<details><summary>Q. アプリストアで配布されてる？</summary><div class="body">A. 現在 Web 版（PWA）のみ公開中。Microsoft Store / Google Play への申請を準備中です。</div></details>
+<details><summary>Q. アプリストアで配布されてる？</summary><div class="body">A. 現在 Web 版（PWA）のみ公開中：<a href="https://rainybrainch.github.io/pomojikan/">rainybrainch.github.io/pomojikan/</a>。Google Play への申請を準備中です。</div></details>
 <details><summary>Q. ホーム画面に追加したい</summary><div class="body">A. iOS Safari：共有→ホーム画面に追加 ／ Android Chrome：⋮→アプリをインストール。</div></details>
 
 <p class="muted" style="margin-top:30px;">バグ報告・改善要望は <a href="https://github.com/rainybrainch/pomojikan/issues" target="_blank">GitHub Issues</a> へ。</p>
