@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260516m">
+<link rel="stylesheet" href="style.css?v=20260516n">
 </head>
 <body data-mode="idle">
 
@@ -158,12 +158,18 @@
       <span class="cl-row rarity-2"><span class="cl-tag">★2</span>カタカナ</span>
       <span class="cl-row rarity-3"><span class="cl-tag">★3</span>数字</span>
       <span class="cl-row rarity-4"><span class="cl-tag">★4</span>英語</span>
-      <span class="cl-row rarity-5"><span class="cl-tag">★5</span>五段</span>
-      <span class="cl-row rarity-6"><span class="cl-tag">★6</span>六段</span>
-      <span class="cl-row rarity-7"><span class="cl-tag">★7</span>七段</span>
-      <span class="cl-row rarity-8"><span class="cl-tag">★8</span>八段</span>
-      <span class="cl-row rarity-9"><span class="cl-tag">★9</span>九段</span>
-      <span class="cl-row rarity-10"><span class="cl-tag">★10</span>拾段</span>
+      <span class="cl-row rarity-5"><span class="cl-tag">★5</span>ローマ</span>
+      <span class="cl-row rarity-6"><span class="cl-tag">★6</span>小1</span>
+      <span class="cl-row rarity-7"><span class="cl-tag">★7</span>小2</span>
+      <span class="cl-row rarity-8"><span class="cl-tag">★8</span>小3</span>
+      <span class="cl-row rarity-9"><span class="cl-tag">★9</span>小4</span>
+      <span class="cl-row rarity-10"><span class="cl-tag">★10</span>小5</span>
+      <span class="cl-row rarity-11"><span class="cl-tag">★11</span>小6</span>
+      <span class="cl-row rarity-12"><span class="cl-tag">★12</span>中学</span>
+      <span class="cl-row rarity-13"><span class="cl-tag">★13</span>高校</span>
+      <span class="cl-row rarity-14"><span class="cl-tag">★14</span>人名</span>
+      <span class="cl-row rarity-15"><span class="cl-tag">★15</span>古典</span>
+      <span class="cl-row rarity-16"><span class="cl-tag">★16</span>神字</span>
     </div>
     <div class="codex-tabs" id="codex-tabs">
       <button class="codex-tab active" data-tier="all">全て</button>
@@ -177,6 +183,12 @@
       <button class="codex-tab" data-tier="7">★8</button>
       <button class="codex-tab" data-tier="8">★9</button>
       <button class="codex-tab" data-tier="9">★10</button>
+      <button class="codex-tab" data-tier="10">★11</button>
+      <button class="codex-tab" data-tier="11">★12</button>
+      <button class="codex-tab" data-tier="12">★13</button>
+      <button class="codex-tab" data-tier="13">★14</button>
+      <button class="codex-tab" data-tier="14">★15</button>
+      <button class="codex-tab" data-tier="15">★16</button>
     </div>
     <label class="codex-toggle">
       <input type="checkbox" id="codex-only-seen"> <span>発見済のみ表示</span>
@@ -347,22 +359,29 @@
     </section>
 
     <section class="help-section">
-      <h3 class="help-h">⑤ レア度（文字種で世界が広がる ・ ★1-★10）</h3>
+      <h3 class="help-h">⑤ レア度（★1-★16・字種＋学年別）</h3>
       <div class="help-rarities">
         <div class="hr-row rarity-1"><span class="hr-tag">★1</span><span class="hr-name">ひらがな / 始まりの音（Lv 1〜）</span></div>
-        <div class="hr-row rarity-2"><span class="hr-tag">★2</span><span class="hr-name">カタカナ / もうひとつの音（Lv 3〜）</span></div>
-        <div class="hr-row rarity-3"><span class="hr-tag">★3</span><span class="hr-name">数字 / 量と順序（Lv 6〜）</span></div>
-        <div class="hr-row rarity-4"><span class="hr-tag">★4</span><span class="hr-name">英語 / 異邦の文字（Lv 10〜）</span></div>
-        <div class="hr-row rarity-5"><span class="hr-tag">★5</span><span class="hr-name">五段 / 基礎の漢字（Lv 15〜）</span></div>
-        <div class="hr-row rarity-6"><span class="hr-tag">★6</span><span class="hr-name">六段 / 日常の漢字（Lv 22〜）</span></div>
-        <div class="hr-row rarity-7"><span class="hr-tag">★7</span><span class="hr-name">七段 / 慣用の漢字（Lv 30〜）</span></div>
-        <div class="hr-row rarity-8"><span class="hr-tag">★8</span><span class="hr-name">八段 / 深まりの漢字（Lv 45〜）</span></div>
-        <div class="hr-row rarity-9"><span class="hr-tag">★9</span><span class="hr-name">九段 / 美と古典（Lv 65〜）</span></div>
-        <div class="hr-row rarity-10"><span class="hr-tag">★10</span><span class="hr-name">拾段 / 七徳七大罪・神字（Lv 100〜）</span></div>
+        <div class="hr-row rarity-2"><span class="hr-tag">★2</span><span class="hr-name">カタカナ（Lv 3〜）</span></div>
+        <div class="hr-row rarity-3"><span class="hr-tag">★3</span><span class="hr-name">数字（半角＋漢数字）（Lv 6〜）</span></div>
+        <div class="hr-row rarity-4"><span class="hr-tag">★4</span><span class="hr-name">英語 A-Z / a-z（Lv 10〜）</span></div>
+        <div class="hr-row rarity-5"><span class="hr-tag">★5</span><span class="hr-name">ローマ数字 Ⅰ-Ⅹ（Lv 14〜）</span></div>
+        <div class="hr-row rarity-6"><span class="hr-tag">★6</span><span class="hr-name">小1漢字（Lv 18〜）</span></div>
+        <div class="hr-row rarity-7"><span class="hr-tag">★7</span><span class="hr-name">小2漢字（Lv 24〜）</span></div>
+        <div class="hr-row rarity-8"><span class="hr-tag">★8</span><span class="hr-name">小3漢字（Lv 32〜）</span></div>
+        <div class="hr-row rarity-9"><span class="hr-tag">★9</span><span class="hr-name">小4漢字（Lv 42〜）</span></div>
+        <div class="hr-row rarity-10"><span class="hr-tag">★10</span><span class="hr-name">小5漢字（Lv 55〜）</span></div>
+        <div class="hr-row rarity-11"><span class="hr-tag">★11</span><span class="hr-name">小6漢字（Lv 70〜）</span></div>
+        <div class="hr-row rarity-12"><span class="hr-tag">★12</span><span class="hr-name">中学漢字（Lv 90〜）</span></div>
+        <div class="hr-row rarity-13"><span class="hr-tag">★13</span><span class="hr-name">高校漢字（Lv 115〜）</span></div>
+        <div class="hr-row rarity-14"><span class="hr-tag">★14</span><span class="hr-name">人名漢字（Lv 145〜）</span></div>
+        <div class="hr-row rarity-15"><span class="hr-tag">★15</span><span class="hr-name">古典 ・ 古字（Lv 180〜）</span></div>
+        <div class="hr-row rarity-16"><span class="hr-tag">★16</span><span class="hr-name">神字 ・ 七徳七大罪（Lv 220〜）</span></div>
       </div>
       <p class="help-text" style="margin-top:8px;">
-        最初は <strong>★1 ひらがなだけ</strong>。Lv が上がると下の段階も追加で降ってくる（累積式）。<br>
-        Lv 100 で <strong>★10（七徳七大罪・神字）</strong>まで全解放。
+        最初は <strong>★1 ひらがなだけ</strong>。Lv が上がると下の段階も追加で降る（累積式）。<br>
+        字を <strong>ストックするごと</strong>にパーティ EXP が貯まる。<br>
+        Lv 220 で <strong>★16 神字</strong>まで全解放。将来 ★100 まで拡張予定。
       </p>
     </section>
 
@@ -420,7 +439,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260516m" defer></script>
-<script src="app.js?v=20260516m" defer></script>
+<script src="codex.js?v=20260516n" defer></script>
+<script src="app.js?v=20260516n" defer></script>
 </body>
 </html>
