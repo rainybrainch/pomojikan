@@ -2608,9 +2608,39 @@ function saveCurrentWriting() {
   STATE.writings.push({ text, genre, date, chars: _currentWriting.slice() });
   saveState();
   toast(`📜 保存：${genre}「${text}」`);
+  // 読雨連携：BroadcastChannel 'rainybrain' で文章を放流（読雨側で受信可）
+  publishToYomu({ text, genre, date, chars: _currentWriting.slice() });
   _currentWriting = [];
   renderWritingsModal();
   refreshPCPanels();
+}
+
+// 読雨 (YOMU) との接続 ── 同オリジン Channel API
+// RBAI 公式構想：保存文章を読雨「刻む」モーダルに自動投入
+let _yomuChannel = null;
+function publishToYomu(writing) {
+  try {
+    if (!_yomuChannel && 'BroadcastChannel' in window) {
+      _yomuChannel = new BroadcastChannel('rainybrain');
+    }
+    if (!_yomuChannel) return;
+    _yomuChannel.postMessage({
+      type: 'pomo',
+      event: 'writing_saved',
+      source: 'pomojikan',
+      app: 'pomojikan',
+      version: 'v30.6',
+      payload: {
+        text: writing.text,
+        genre: writing.genre,
+        date: writing.date,
+        chars: writing.chars,
+        hero_char: isPartyChosen() ? STATE.party.members[STATE.party.hero||0].char : null,
+        user_id: STATE.userId || null,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (e) { /* 読雨未起動・他オリジン等は静かに無視 */ }
 }
 
 function applyPreset(idx) {
