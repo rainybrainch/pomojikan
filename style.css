@@ -182,12 +182,160 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
   margin:0 auto;
   min-height:calc(100vh - 72px);
 }
-.game-main > .timer-zone,
-.game-main > .progress-pill,
-.game-main > .controls-row,
-.game-main > .party-bar{ flex:0 0 auto; align-self:center; }
-.game-main > .party-bar{ align-self:stretch; }
-.game-main > .tank-zone{ flex:1 1 auto; display:flex; min-height:280px; }
+.game-center{
+  display:flex;flex-direction:column;align-items:stretch;gap:14px;
+}
+.game-center > .timer-zone,
+.game-center > .progress-pill,
+.game-center > .controls-row,
+.game-center > .party-bar{ flex:0 0 auto; align-self:center; }
+.game-center > .party-bar{ align-self:stretch; }
+
+/* スマホでは PC パネルを非表示 */
+.pc-panel{ display:none; }
+
+/* ════════════════════ PC モード（≥1024px）3カラム grid ════════════════════ */
+@media (min-width: 1024px){
+  .game-main{
+    display:grid;
+    grid-template-columns: 280px minmax(420px, 1fr) 320px;
+    gap:18px;
+    padding:18px;
+    max-width:1500px;
+    align-items:start;
+  }
+  .game-center{
+    min-height:calc(100vh - 100px);
+  }
+  .pc-panel{
+    display:flex; flex-direction:column;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(135,206,235,.18);
+    border-radius:10px;
+    padding:14px;
+    max-height:calc(100vh - 100px);
+    overflow-y:auto;
+  }
+  .pc-panel-title{
+    color:var(--gold);
+    font-size:.85rem;
+    letter-spacing:.12em;
+    margin:0 0 8px;
+    font-weight:700;
+    border-bottom:1px dashed rgba(201,168,76,.3);
+    padding-bottom:4px;
+  }
+  /* 左パネル */
+  .pc-presets{ display:flex; flex-direction:column; gap:6px; }
+  .pc-preset-btn{
+    background:rgba(135,206,235,.08);
+    border:1px solid rgba(135,206,235,.25);
+    color:var(--ink); padding:8px 12px; border-radius:6px;
+    cursor:pointer; font-family:inherit; font-size:.88rem;
+    transition:background .15s;
+  }
+  .pc-preset-btn:hover{ background:rgba(135,206,235,.18); }
+  .psm-row{
+    display:flex; justify-content:space-between;
+    font-size:.82rem; padding:4px 0;
+    border-bottom:1px dotted rgba(255,255,255,.06);
+  }
+  .psm-row b{ color:var(--gold); font-family:'JetBrains Mono', monospace; }
+
+  /* 右パネル：文章ミニ */
+  .pc-writings-mini{
+    background:rgba(0,0,0,.25);
+    border:1px dashed rgba(240,212,138,.35);
+    border-radius:8px; padding:10px;
+  }
+  .pwm-genre{
+    color:var(--gold); font-size:.78rem; font-weight:700;
+    margin-bottom:6px; text-align:right;
+  }
+  .pwm-slots{
+    display:flex; flex-wrap:wrap; gap:4px;
+    min-height:36px; padding:6px 4px;
+    background:rgba(0,0,0,.3); border-radius:5px;
+    align-items:center;
+  }
+  .pwm-slot{
+    font-family:'Noto Serif JP', serif;
+    font-size:1.4rem; font-weight:900;
+    color:var(--r-color, var(--gold));
+    cursor:pointer; padding:0 4px;
+    transition:transform .12s;
+  }
+  .pwm-slot:hover{ transform:scale(1.15); }
+  .pwm-empty{ color:var(--ink-mute); font-size:.78rem; padding:4px; }
+  .pwm-actions{
+    display:flex; gap:4px; margin-top:8px; flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+  .pc-mini-btn{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    color:var(--ink-mute);
+    padding:4px 8px; border-radius:4px;
+    cursor:pointer; font-family:inherit;
+    font-size:.74rem;
+  }
+  .pc-mini-btn:hover{ background:rgba(255,255,255,.1); color:var(--ink); }
+  .pc-mini-btn.primary{
+    background:rgba(240,212,138,.18);
+    border-color:rgba(240,212,138,.4);
+    color:var(--gold);
+  }
+  .pwm-stock{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(32px, 1fr));
+    gap:3px;
+    background:rgba(0,0,0,.2); border-radius:6px; padding:6px;
+    max-height:220px; overflow-y:auto;
+  }
+  .pwm-stock-cell{
+    position:relative;
+    aspect-ratio:1/1;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--r-color, rgba(255,255,255,.1));
+    border-radius:4px;
+    color:var(--r-color, var(--ink));
+    font-family:'Noto Serif JP', serif;
+    font-size:.95rem; font-weight:700;
+    cursor:pointer;
+    transition:transform .12s;
+    user-select:none;
+  }
+  .pwm-stock-cell:hover{ transform:scale(1.15); box-shadow:0 0 6px var(--r-glow); }
+  .pwm-stock-cell .pwm-stock-n{
+    position:absolute; bottom:0; right:0;
+    font-size:.5rem; font-weight:900;
+    color:var(--ink-mute);
+    background:rgba(0,0,0,.6);
+    padding:0 2px; border-radius:3px;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .pwm-recent{
+    display:flex; flex-direction:column; gap:5px;
+    max-height:180px; overflow-y:auto;
+  }
+  .pwm-recent-item{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:5px;
+    padding:6px 8px;
+    font-family:'Noto Serif JP', serif;
+    font-size:.92rem; font-weight:700;
+    color:var(--ink); line-height:1.35;
+  }
+  .pwm-recent-meta{
+    font-size:.62rem; color:var(--ink-mute);
+    font-family:'JetBrains Mono', monospace;
+    display:block; margin-top:2px;
+  }
+
+  /* PC ヘッダーは控えめに */
+  body{ font-size:15px; }
+}
 
 /* ════════════════════ タイマーゾーン ════════════════════ */
 .timer-zone{

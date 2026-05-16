@@ -1648,6 +1648,8 @@ function addStock(char) {
     }
     STATE.stats.totalExp = (STATE.stats.totalExp || 0) + expPerStock;
   }
+  // PC 右パネルの所有字を即時更新
+  if (isPCMode()) refreshPCPanels();
 }
 
 // 浮上する「+N XP」表示（ジューシー要素）
@@ -1796,6 +1798,7 @@ function renderParty() {
     );
     bar.appendChild(slot);
   }
+  refreshPCPanels();
 }
 
 // パーティメンバーの操作（タップで開く）
@@ -1913,6 +1916,141 @@ function applyTimerSettings() {
   closeTimerSettings();
   toast('時間を変更しました');
 }
+// ═══════════════════════════════════════════════════════════════
+// PC パネル（≥1024px）── 左：パーティ詳細＋累計 / 右：文章ミニ＋所有字＋直近
+// ═══════════════════════════════════════════════════════════════
+function isPCMode(){ return window.matchMedia && window.matchMedia('(min-width: 1024px)').matches; }
+
+function renderPCLeftPanel(){
+  if (!isPCMode()) return;
+  const detail = $('#pc-party-detail');
+  if (!detail) return;
+  if (!isPartyChosen()) {
+    detail.innerHTML = '<div style="color:var(--ink-mute);font-size:.86rem;">まずは主人公を選んでね</div>';
+  } else {
+    detail.innerHTML = '';
+    STATE.party.members.forEach((m, idx) => {
+      const isHero = idx === (STATE.party.hero || 0);
+      const tierIdx = RARITY_TIERS.indexOf(m.rarity);
+      const needExp = expForLevel(m.level + 1);
+      const perkLabels = (m.perks || []).map(pid => PERKS[pid]?.name).filter(Boolean).join(' / ');
+      const row = el('div', {
+        class:`pc-party-row rarity-${tierIdx + 1}`,
+        style:{
+          display:'flex', alignItems:'center', gap:'8px',
+          padding:'6px 8px', marginBottom:'4px',
+          background: isHero ? 'rgba(240,212,138,.08)' : 'rgba(255,255,255,.03)',
+          border:'1px solid '+(isHero ? 'rgba(240,212,138,.4)' : 'rgba(255,255,255,.08)'),
+          borderRadius:'6px',
+        }
+      },
+        el('span', { style:{ fontSize:'1.6rem', fontFamily:'Noto Serif JP, serif', color:'var(--r-color)' } }, m.char),
+        el('div', { style:{ flex:'1', minWidth:0 } },
+          el('div', { style:{ fontSize:'.74rem', color:'var(--ink-mute)' } },
+            (isHero ? '★ リーダー ' : '仲間 ') + `Lv.${m.level} (${m.rarity})`),
+          el('div', { style:{
+            background:'rgba(0,0,0,.3)', height:'4px', borderRadius:'2px', overflow:'hidden', marginTop:'3px'
+          } },
+            el('div', { style:{
+              width: Math.min(100, (m.exp / needExp) * 100) + '%',
+              height:'100%', background:'var(--r-color)'
+            } })
+          ),
+          perkLabels ? el('div', { style:{ fontSize:'.66rem', color:'var(--ink-mute)', marginTop:'2px' } }, perkLabels) : null,
+        )
+      );
+      detail.appendChild(row);
+    });
+  }
+  // 累計
+  const totalStock = Object.values(STATE.stock || {}).reduce((a,b)=>a+b,0);
+  const uniq = Object.keys(STATE.collection || {}).length;
+  const set = (id, v) => { const e = $(id); if (e) e.textContent = v; };
+  set('#psm-cycles', STATE.stats?.totalCycles || 0);
+  set('#psm-drops',  STATE.stats?.totalDrops || 0);
+  set('#psm-stock',  totalStock);
+  set('#psm-uniq',   `${uniq} / ${(window.KANJI_CODEX || []).length}`);
+}
+
+function renderPCRightPanel(){
+  if (!isPCMode()) return;
+  // 文章ミニ（現在の編集中）
+  const slots = $('#pwm-slots');
+  const genre = $('#pwm-genre');
+  if (slots) {
+    slots.innerHTML = '';
+    if (_currentWriting.length === 0) {
+      slots.appendChild(el('span', { class:'pwm-empty' }, '所有字を下からタップ'));
+    } else {
+      _currentWriting.forEach((item, idx) => {
+        const rIdx = RARITY_TIERS.indexOf(item.rarity);
+        slots.appendChild(el('span', {
+          class:`pwm-slot rarity-${rIdx + 1}`,
+          onclick: () => { _currentWriting.splice(idx, 1); renderPCRightPanel(); renderWritingsModal(); }
+        }, item.char));
+      });
+    }
+  }
+  if (genre) genre.textContent = detectGenre(_currentWriting.map(x => x.char));
+
+  // 所有字
+  const stockEl = $('#pwm-stock');
+  if (stockEl) {
+    stockEl.innerHTML = '';
+    const codex = window.KANJI_CODEX || [];
+    if (!STATE.stock) STATE.stock = {};
+    const tempUsed = {};
+    for (const it of _currentWriting) tempUsed[it.char] = (tempUsed[it.char]||0) + 1;
+    const owned = codex.filter(k => {
+      const c = k.char || k.c;
+      return ((STATE.stock[c]||0) - (tempUsed[c]||0)) > 0;
+    });
+    if (owned.length === 0) {
+      stockEl.appendChild(el('span', { class:'pwm-empty' }, '字をストックしていない'));
+    } else {
+      owned.sort((a,b) => RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity));
+      owned.forEach(k => {
+        const c = k.char || k.c;
+        const rIdx = RARITY_TIERS.indexOf(k.rarity);
+        const remain = (STATE.stock[c]||0) - (tempUsed[c]||0);
+        const cell = el('div', {
+          class:`pwm-stock-cell rarity-${rIdx + 1}`,
+          title:`${c} (${k.rarity}) ・ 所有 ${remain}`,
+          onclick: () => {
+            _currentWriting.push({ char: c, rarity: k.rarity });
+            renderPCRightPanel();
+            renderWritingsModal();
+          }
+        }, c, el('span', { class:'pwm-stock-n' }, String(remain)));
+        stockEl.appendChild(cell);
+      });
+    }
+  }
+
+  // 直近の文章（最新3件）
+  const recent = $('#pwm-recent');
+  if (recent) {
+    recent.innerHTML = '';
+    const all = STATE.writings || [];
+    if (all.length === 0) {
+      recent.appendChild(el('span', { class:'pwm-empty' }, 'まだ刻んでいない'));
+    } else {
+      all.slice(-3).reverse().forEach(w => {
+        recent.appendChild(el('div', { class:'pwm-recent-item' },
+          w.text,
+          el('span', { class:'pwm-recent-meta' }, `${w.genre} ・ ${w.date}`)
+        ));
+      });
+    }
+  }
+}
+
+function refreshPCPanels(){
+  if (!isPCMode()) return;
+  renderPCLeftPanel();
+  renderPCRightPanel();
+}
+
 // ═══════════════════════════════════════════════════════════════
 // 文章モード v0.1（俳句構想 前倒し）
 // 集めた字を並べて文章を作る ── 字数でジャンル自動判定・保存
@@ -2057,6 +2195,7 @@ function saveCurrentWriting() {
   toast(`📜 保存：${genre}「${text}」`);
   _currentWriting = [];
   renderWritingsModal();
+  refreshPCPanels();
 }
 
 function applyPreset(idx) {
@@ -2319,11 +2458,37 @@ function bindEvents() {
   const wClose = $('#writings-close');
   if (wClose) wClose.addEventListener('click', closeWritings);
   const wcClear = $('#wc-clear');
-  if (wcClear) wcClear.addEventListener('click', () => { _currentWriting = []; renderWritingsModal(); });
+  if (wcClear) wcClear.addEventListener('click', () => { _currentWriting = []; renderWritingsModal(); refreshPCPanels(); });
   const wcUndo = $('#wc-undo');
-  if (wcUndo) wcUndo.addEventListener('click', () => { _currentWriting.pop(); renderWritingsModal(); });
+  if (wcUndo) wcUndo.addEventListener('click', () => { _currentWriting.pop(); renderWritingsModal(); refreshPCPanels(); });
   const wcSave = $('#wc-save');
   if (wcSave) wcSave.addEventListener('click', saveCurrentWriting);
+
+  // PC 右パネル：文章ミニのアクション
+  const pwmClear = $('#pwm-clear');
+  if (pwmClear) pwmClear.addEventListener('click', () => { _currentWriting = []; refreshPCPanels(); });
+  const pwmUndo = $('#pwm-undo');
+  if (pwmUndo) pwmUndo.addEventListener('click', () => { _currentWriting.pop(); refreshPCPanels(); });
+  const pwmSave = $('#pwm-save');
+  if (pwmSave) pwmSave.addEventListener('click', () => { saveCurrentWriting(); refreshPCPanels(); });
+  const pwmFull = $('#pwm-full');
+  if (pwmFull) pwmFull.addEventListener('click', openWritings);
+
+  // PC 左パネル：プリセット
+  document.querySelectorAll('.pc-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.preset);
+      applyPreset(idx);
+      refreshPCPanels();
+    });
+  });
+
+  // リサイズ時に PC パネル再描画（スマホ↔PC 切替対応）
+  let _resizeT = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeT);
+    _resizeT = setTimeout(refreshPCPanels, 150);
+  });
 
   $('#party-picker-reroll').addEventListener('click', () => {
     rerollPickerPool();

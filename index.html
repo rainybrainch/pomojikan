@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260516q">
+<link rel="stylesheet" href="style.css?v=20260516r">
 </head>
 <body data-mode="idle">
 
@@ -50,43 +50,85 @@
   </div>
 </header>
 
-<!-- メインゲームエリア -->
+<!-- メインゲームエリア（PC では3カラム grid）-->
 <main class="game-main">
 
-  <!-- タイマー＋進捗リング -->
-  <div class="timer-zone">
-    <svg class="progress-svg" viewBox="0 0 100 100" aria-hidden="true">
-      <circle class="pr-bg" cx="50" cy="50" r="47"/>
-      <circle class="pr-fg" id="progress-fg" cx="50" cy="50" r="47" stroke-dasharray="295.31" stroke-dashoffset="295.31" transform="rotate(-90 50 50)"/>
-    </svg>
-    <div class="timer-text" id="timer-text">25:00</div>
-    <button class="timer-cog" id="btn-timer-settings" aria-label="時間設定" title="時間設定">⚙</button>
+  <!-- 【PC専用】左パネル：パーティ詳細 -->
+  <aside class="pc-panel pc-left">
+    <h3 class="pc-panel-title">★ パーティ</h3>
+    <div id="pc-party-detail">主人公を選んでね</div>
+    <h3 class="pc-panel-title" style="margin-top:18px;">⏱ プリセット</h3>
+    <div class="pc-presets">
+      <button class="pc-preset-btn" data-preset="0">25 / 5</button>
+      <button class="pc-preset-btn" data-preset="1">50 / 10</button>
+      <button class="pc-preset-btn" data-preset="2">15 / 3</button>
+    </div>
+    <h3 class="pc-panel-title" style="margin-top:18px;">📊 累計</h3>
+    <div id="pc-stats-mini">
+      <div class="psm-row"><span>サイクル</span><b id="psm-cycles">0</b></div>
+      <div class="psm-row"><span>累計ぽもじ</span><b id="psm-drops">0</b></div>
+      <div class="psm-row"><span>所有字</span><b id="psm-stock">0</b></div>
+      <div class="psm-row"><span>発見字種</span><b id="psm-uniq">0</b></div>
+    </div>
+  </aside>
+
+  <!-- 中央：プレイフィールド・タイマー -->
+  <div class="game-center">
+    <div class="timer-zone">
+      <svg class="progress-svg" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="pr-bg" cx="50" cy="50" r="47"/>
+        <circle class="pr-fg" id="progress-fg" cx="50" cy="50" r="47" stroke-dasharray="295.31" stroke-dashoffset="295.31" transform="rotate(-90 50 50)"/>
+      </svg>
+      <div class="timer-text" id="timer-text">25:00</div>
+      <button class="timer-cog" id="btn-timer-settings" aria-label="時間設定" title="時間設定">⚙</button>
+    </div>
+
+    <div class="progress-pill" id="progress-pill">
+      <span class="pp-band" id="pp-band">★1帯</span>
+      <span class="pp-sep">・</span>
+      <span class="pp-cycles" id="pp-cycles">0 回完了</span>
+    </div>
+
+    <div class="controls-row">
+      <button class="main-btn" id="main-btn" data-state="idle">▶ 始める</button>
+      <button class="sub-btn" id="btn-skip">⏭ 次へ</button>
+      <button class="sub-btn" id="btn-reset">↺ 停止</button>
+    </div>
+
+    <div class="party-bar empty" id="party-bar">
+      <button class="party-pick-cta" id="party-pick-cta">パーティを編成する →</button>
+    </div>
+
+    <div class="tank-hint" id="tank-hint">
+      タイマー開始で <strong>字（ぽもじ）が画面に降ってくる</strong><br>
+      <small>ドラッグして重ねると <strong>融合</strong> ／ タップで <strong>消滅・経験値化</strong></small>
+    </div>
   </div>
 
-  <!-- 進捗ピル（現在の帯・累計サイクル） -->
-  <div class="progress-pill" id="progress-pill">
-    <span class="pp-band" id="pp-band">★1帯</span>
-    <span class="pp-sep">・</span>
-    <span class="pp-cycles" id="pp-cycles">0 回完了</span>
-  </div>
+  <!-- 【PC専用】右パネル：文章モード常時＋所有字＋直近文章 -->
+  <aside class="pc-panel pc-right">
+    <h3 class="pc-panel-title">📝 文章を編む</h3>
+    <div class="pc-writings-mini">
+      <div class="pwm-genre" id="pwm-genre">─</div>
+      <div class="pwm-slots" id="pwm-slots"><span class="pwm-empty">所有字を下からタップ</span></div>
+      <div class="pwm-actions">
+        <button class="pc-mini-btn" id="pwm-clear">クリア</button>
+        <button class="pc-mini-btn" id="pwm-undo">←</button>
+        <button class="pc-mini-btn primary" id="pwm-save">📜 刻む</button>
+        <button class="pc-mini-btn" id="pwm-full">詳細</button>
+      </div>
+    </div>
 
-  <!-- 操作行 -->
-  <div class="controls-row">
-    <button class="main-btn" id="main-btn" data-state="idle">▶ 始める</button>
-    <button class="sub-btn" id="btn-skip">⏭ 次へ</button>
-    <button class="sub-btn" id="btn-reset">↺ 停止</button>
-  </div>
+    <h3 class="pc-panel-title" style="margin-top:14px;">🪙 所有字</h3>
+    <div class="pwm-stock" id="pwm-stock">
+      <span class="pwm-empty">字をストックしていない</span>
+    </div>
 
-  <!-- パーティバー -->
-  <div class="party-bar empty" id="party-bar">
-    <button class="party-pick-cta" id="party-pick-cta">パーティを編成する →</button>
-  </div>
-
-  <!-- ヒント領域（ぽもじが無い時の案内）-->
-  <div class="tank-hint" id="tank-hint">
-    タイマー開始で <strong>字（ぽもじ）が画面に降ってくる</strong><br>
-    <small>ドラッグして重ねると <strong>融合</strong> ／ タップで <strong>消滅・経験値化</strong></small>
-  </div>
+    <h3 class="pc-panel-title" style="margin-top:14px;">📜 直近の文章</h3>
+    <div class="pwm-recent" id="pwm-recent">
+      <span class="pwm-empty">まだ刻んでいない</span>
+    </div>
+  </aside>
 
 </main>
 
@@ -439,7 +481,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260516q" defer></script>
-<script src="app.js?v=20260516q" defer></script>
+<script src="codex.js?v=20260516r" defer></script>
+<script src="app.js?v=20260516r" defer></script>
 </body>
 </html>
