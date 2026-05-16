@@ -1981,6 +1981,17 @@ body[data-mode="rest"] #tank{
   padding:2px 7px; border-radius:8px;
 }
 .perk-card.locked .pck-lv{ color:var(--ink-mute); }
+.pck-cat{
+  display:inline-block;
+  font-size:.62rem; font-weight:700; letter-spacing:.08em;
+  padding:2px 7px; border-radius:9px;
+  background:rgba(135,206,235,.12);
+  color:#a0c4dc;
+  align-self:flex-start;
+}
+.perk-card.cat-tag .pck-cat    { background:rgba(155,122,208,.18); color:#c5acea; }
+.perk-card.cat-rare .pck-cat   { background:rgba(240,212,138,.22); color:var(--gold); }
+.perk-card.cat-special .pck-cat{ background:rgba(255,150,90,.18);  color:#ffb888; }
 .pck-desc{ font-size:.78rem; color:var(--ink-mute); line-height:1.45; }
 .pck-grow{
   font-size:.7rem; color:#a0c4dc;
