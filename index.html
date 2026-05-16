@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260516a">
+<link rel="stylesheet" href="style.css?v=20260516b">
 </head>
 <body data-mode="idle">
 
@@ -100,9 +100,9 @@
   <div class="modal-card">
     <h2 class="modal-title" id="pp-title">主人公を選ぶ</h2>
     <p class="modal-desc">
-      最初の<strong>主人公</strong>を 1 体だけ選んでね。<br>
+      最初の<strong>主人公</strong>は、<strong>ひらがな</strong>から 1 体。<br>
       字の意味から決まる<strong>特性</strong>が自動で付きます。<br>
-      <small>残り 3 枠は、図鑑で発見した字を仲間にして埋めていきます。</small>
+      <small>残り 3 枠は、Lv が上がって解放される字（カタカナ → 数字 → 英語 → 漢字…）から仲間にできます。</small>
     </p>
     <p class="modal-desc" style="margin-top:6px;font-size:.78rem;color:var(--gold);">
       気に入る字が無ければ「🎲 リロール」で並び替え
@@ -166,6 +166,10 @@
       <button class="codex-tab" data-tier="3">★4</button>
       <button class="codex-tab" data-tier="4">★5</button>
       <button class="codex-tab" data-tier="5">★6</button>
+      <button class="codex-tab" data-tier="6">★7</button>
+      <button class="codex-tab" data-tier="7">★8</button>
+      <button class="codex-tab" data-tier="8">★9</button>
+      <button class="codex-tab" data-tier="9">★10</button>
     </div>
     <label class="codex-toggle">
       <input type="checkbox" id="codex-only-seen"> <span>発見済のみ表示</span>
@@ -206,12 +210,14 @@
     </div>
     <div class="ob-step" data-step="4" hidden>
       <div class="ob-icon">✨</div>
-      <h2 class="ob-title">レベル帯で世界が広がる</h2>
+      <h2 class="ob-title">★ 段階で世界が広がる</h2>
       <p class="ob-text">
-        パーティの平均 Lv が上がると、<br>
-        <strong>降る字のレアリティが変わります</strong>。<br>
-        ひらがな・カタカナ → 漢字 → 熟語級 → 神字。<br>
-        <small>「？遊び方」でいつでも確認できます。</small>
+        最初は <strong>★1 ひらがな</strong>だけ。<br>
+        パーティの Lv が上がるたび、降る字の種類が広がる：<br>
+        <small style="line-height:1.7;display:inline-block;margin-top:6px;">
+        ★2 カタカナ ・ ★3 数字 ・ ★4 英語 ・<br>
+        ★5〜 漢字（基礎→日常→深淵）・ ★10 神字。
+        </small>
       </p>
     </div>
     <div class="ob-dots">
@@ -370,7 +376,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260516a" defer></script>
-<script src="app.js?v=20260516a" defer></script>
+<script src="codex.js?v=20260516b" defer></script>
+<script src="app.js?v=20260516b" defer></script>
 </body>
 </html>

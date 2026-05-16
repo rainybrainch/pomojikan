@@ -1209,15 +1209,16 @@ body[data-mode="rest"] #tank{
   display:flex; gap:4px; margin:12px 0 8px; flex-wrap:wrap;
 }
 .codex-tab{
-  padding:6px 10px;
+  padding:5px 9px;
   background:rgba(255,255,255,.04);
   border:1px solid var(--line);
   color:var(--ink-mute);
   border-radius:99px;
   font-family:inherit;
-  font-size:.74rem;
+  font-size:.72rem;
   cursor:pointer;
   transition:all .15s;
+  white-space:nowrap;
 }
 .codex-tab:hover{ background:var(--accent-dim); color:var(--ink); }
 .codex-tab.active{
@@ -1226,6 +1227,17 @@ body[data-mode="rest"] #tank{
   color:var(--accent-2);
   font-weight:700;
 }
+/* タブごとのレアリティ色アクセント（★が増えるほど金色寄りに） */
+.codex-tab[data-tier="0"].active{ border-color:#9aa8b5; color:#cfd6df; }
+.codex-tab[data-tier="1"].active{ border-color:#83b8d6; color:#bfe2f2; }
+.codex-tab[data-tier="2"].active{ border-color:#6ba6c7; color:#a8d4e7; }
+.codex-tab[data-tier="3"].active{ border-color:#5b8be0; color:#a0b7f0; }
+.codex-tab[data-tier="4"].active{ border-color:#5b78c8; color:#9ab0e0; }
+.codex-tab[data-tier="5"].active{ border-color:#7a6cc4; color:#b09cdf; }
+.codex-tab[data-tier="6"].active{ border-color:#9b7ad0; color:#c5acea; }
+.codex-tab[data-tier="7"].active{ border-color:#c89ae8; color:#dabcf0; }
+.codex-tab[data-tier="8"].active{ border-color:#e0b3d8; color:#eccae5; }
+.codex-tab[data-tier="9"].active{ border-color:#f0d48a; color:#f0d48a; box-shadow:0 0 8px rgba(240,212,138,.4); }
 .codex-toggle{
   display:flex;align-items:center;gap:8px;
   font-size:.76rem;color:var(--ink-mute);

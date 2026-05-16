@@ -1087,10 +1087,32 @@ let pomojiSeq = 0;
 const livePomoji = new Map(); // id -> { id, char, rarity, x, y, vx, vy, el }
 
 function pickKanjiForDrop() {
-  // 単一ティア（現在のレベル帯）から抽選
-  const tier = RARITY_TIERS[STATE.unlockedTier];
-  const pool = (window.KANJI_CODEX || []).filter(k => k.rarity === tier);
-  if (!pool.length) return null;
+  // ★1〜現在の unlockedTier 全部のプールから重み付き抽選
+  // POMOJI_RARITY[r].weight に応じて高 tier ほど低確率
+  const codex = window.KANJI_CODEX || [];
+  const rarityMeta = window.POMOJI_RARITY || {};
+  const allowedTiers = RARITY_TIERS.slice(0, STATE.unlockedTier + 1);
+  if (!allowedTiers.length) return null;
+  // tier ごとの重みを累積
+  const weighted = [];
+  let total = 0;
+  for (const tierName of allowedTiers) {
+    const w = (rarityMeta[tierName]?.weight) || 1;
+    total += w;
+    weighted.push({ tier: tierName, cum: total });
+  }
+  // 累積重みで抽選 → その tier の中からランダム1字
+  const r = Math.random() * total;
+  let chosenTier = allowedTiers[0];
+  for (const w of weighted) {
+    if (r <= w.cum) { chosenTier = w.tier; break; }
+  }
+  const pool = codex.filter(k => k.rarity === chosenTier);
+  if (!pool.length) {
+    // フォールバック：全許可 tier から
+    const fallback = codex.filter(k => allowedTiers.includes(k.rarity));
+    return fallback.length ? choose(fallback) : null;
+  }
   return choose(pool);
 }
 
@@ -1204,9 +1226,9 @@ function spawnCycleDrops() {
     const k = pickKanjiForDrop();
     if (k) drops.push(k);
   }
-  // 祝詞 perk: 5サイクル毎に上位レア追加
+  // 祝詞 perk: 5サイクル毎に上位レア追加（未解放の1つ上から1粒だけドラマ的に贈る）
   if (agg.blessing && STATE.cycles > 0 && STATE.cycles % agg.blessing === 0) {
-    const higherTier = Math.min(5, tier + 1);
+    const higherTier = Math.min(RARITY_TIERS.length - 1, tier + 1);
     const higherPool = (window.KANJI_CODEX||[]).filter(k => k.rarity === RARITY_TIERS[higherTier]);
     if (higherPool.length) drops.push(choose(higherPool));
   }
