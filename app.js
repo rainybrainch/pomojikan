@@ -1404,52 +1404,61 @@ function attractSameChar(p) {
 // ═══════════════════════════════════════════════════════════════
 function attachDragHandlers(node, obj) {
   let startX = 0, startY = 0, origX = 0, origY = 0, moved = false, pointerId = null;
+  let onMove = null, onUp = null;
 
-  node.addEventListener('pointerdown', (e) => {
+  const startDrag = (e) => {
+    if (obj.dragging) return;
     e.preventDefault();
+    e.stopPropagation();
     pointerId = e.pointerId;
-    node.setPointerCapture(pointerId);
+    try { node.setPointerCapture(pointerId); } catch(_) {}
     obj.dragging = true;
+    obj.vy = 0; obj.vx = 0;
     moved = false;
     startX = e.clientX;
     startY = e.clientY;
     origX = obj.x; origY = obj.y;
     node.classList.add('dragging');
-  });
+    // setPointerCapture が効かない環境向け：document に bind して追従保証
+    onMove = (ev) => {
+      if (!obj.dragging) return;
+      if (ev.pointerId !== pointerId) return;
+      ev.preventDefault();
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+      obj.x = origX + dx;
+      obj.y = origY + dy;
+      node.style.left = obj.x + 'px';
+      node.style.top  = obj.y + 'px';
+      const target = checkMergeCollision(obj);
+      $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
+      if (target) target.el.classList.add('merge-glow');
+    };
+    onUp = (ev) => {
+      if (ev.pointerId !== pointerId) return;
+      try { node.releasePointerCapture(pointerId); } catch(_) {}
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+      pointerId = null;
+      obj.dragging = false;
+      obj.vy = 0; obj.vx = 0;
+      node.classList.remove('dragging');
+      $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
+      if (!moved) {
+        dissolvePomoji(obj);
+        return;
+      }
+      const target = checkMergeCollision(obj);
+      if (target) mergePomoji(obj, target);
+    };
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup',   onUp);
+    document.addEventListener('pointercancel', onUp);
+  };
 
-  node.addEventListener('pointermove', (e) => {
-    if (!obj.dragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    if (Math.abs(dx) + Math.abs(dy) > 10) moved = true;
-    obj.x = origX + dx;
-    obj.y = origY + dy;
-    node.style.left = obj.x + 'px';
-    node.style.top  = obj.y + 'px';
-
-    // highlight potential merge target
-    const target = checkMergeCollision(obj);
-    $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
-    if (target) target.el.classList.add('merge-glow');
-  });
-
-  node.addEventListener('pointerup', (e) => {
-    if (pointerId != null) try { node.releasePointerCapture(pointerId); } catch(_) {}
-    pointerId = null;
-    obj.dragging = false;
-    obj.vy = 0; obj.vx = 0;
-    node.classList.remove('dragging');
-    $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
-
-    if (!moved) {
-      // Tap = dissolve
-      dissolvePomoji(obj);
-      return;
-    }
-    // Drop = check for merge
-    const target = checkMergeCollision(obj);
-    if (target) mergePomoji(obj, target);
-  });
+  node.addEventListener('pointerdown', startDrag);
 }
 
 function dissolvePomoji(p) {

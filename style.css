@@ -771,10 +771,19 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
   transition:filter .4s;
 }
 .pomoji.dragging{
-  z-index:10;
+  z-index:9999 !important;
   cursor:grabbing;
-  transform:scale(1.15);
+  transform:scale(1.18);
   box-shadow:0 8px 24px rgba(0,0,0,.4), 0 0 22px var(--r-glow);
+  opacity:.92;
+}
+/* タッチ hit-area を少し広げる（透明な padding 風）── tapped で確実に掴める */
+.pomoji::before{
+  content:'';
+  position:absolute;
+  inset:-8px;
+  border-radius:18px;
+  pointer-events:none;
 }
 .pomoji.merge-glow{
   box-shadow:0 0 0 3px var(--gold), 0 0 22px rgba(240,212,138,.6);
