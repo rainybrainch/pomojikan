@@ -2469,6 +2469,50 @@ function renderCodex() {
   const seasonMatch = (k) =>
     codexFilter.season === 'all' || (k.season || 'S1') === codexFilter.season;
 
+  // 特性図鑑：全 PERKS をカードで表示
+  if (codexFilter.season === 'PERKS') {
+    const perks = Object.entries(PERKS);
+    const section = el('div', { class:'codex-section' },
+      el('h3', { class:'codex-section-title' }, `✦ 特性図鑑（${perks.length} 個 ・ 字をストックして育つ）`)
+    );
+    const list = el('div', { class:'perk-codex-list' });
+    // パーティ持ち特性を先頭に
+    const ownedPerks = new Set();
+    if (STATE.party && STATE.party.members) {
+      for (const m of STATE.party.members) for (const pid of (m.perks||[])) ownedPerks.add(pid);
+    }
+    perks.sort((a,b) => {
+      const oa = ownedPerks.has(a[0]) ? 0 : 1;
+      const ob = ownedPerks.has(b[0]) ? 0 : 1;
+      if (oa !== ob) return oa - ob;
+      if (!!a[1].rare !== !!b[1].rare) return a[1].rare ? -1 : 1;
+      return 0;
+    });
+    perks.forEach(([pid, p]) => {
+      const lv = perkLv(pid);
+      const pw = perkPower(pid);
+      const isRare = !!p.rare;
+      const isOwned = ownedPerks.has(pid);
+      const card = el('div', { class:'perk-card' + (isRare ? ' rare' : '') + (isOwned ? ' owned' : ' locked') },
+        el('div', { class:'pck-head' },
+          el('span', { class:'pck-name' }, (isRare ? '✦ ' : '') + p.name),
+          el('span', { class:'pck-lv' }, isOwned ? (lv > 0 ? `Lv.${lv} ×${pw.toFixed(2)}` : '未育成') : '未獲得'),
+        ),
+        el('div', { class:'pck-desc' }, p.desc || ''),
+        el('div', { class:'pck-grow' },
+          p.tag ? `育て方：「${p.tag}」タグの字をストック`
+                : '育て方：どの字でもストックすると +0.5'
+        ),
+        isRare ? el('div', { class:'pck-rare-note' }, '✦ レア特性 ── ★9 以降の字を仲間にすると稀に付与') : null,
+      );
+      list.appendChild(card);
+    });
+    section.appendChild(list);
+    grid.appendChild(section);
+    $('#codex-summary').textContent = `特性 ${perks.length} 種 ／ パーティ獲得 ${ownedPerks.size} 種`;
+    return;
+  }
+
   // S3/S4（熟語）が選ばれているときは熟語をリスト表示
   if (codexFilter.season === 'S3' || codexFilter.season === 'S4') {
     const recipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
