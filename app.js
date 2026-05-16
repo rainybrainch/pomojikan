@@ -1426,40 +1426,37 @@ function physicsStep() {
       expireAsExp(p);
       continue;
     }
-    // 落下ぽもじ：重力＋衝突＋柔体物理
+    // 落下ぽもじ：重力＋円形ソフトボディ衝突（控えめ弾性／ゆっくり転がる）
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
     p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
     if (p.vy > MAX_FALL_VY) p.vy = MAX_FALL_VY;
-    // 横方向の空気摩擦（柔らかめ：餅同士の押し合いを許す）
-    p.vx *= 0.985;
-    if (Math.abs(p.vx) < 0.02) p.vx = 0;
+    // 空気摩擦（vx 緩減衰：転がりを残す）
+    p.vx *= 0.99;
+    if (Math.abs(p.vx) < 0.015) p.vx = 0;
     p.x += p.vx;
     p.y += p.vy;
-    if (p.x < 0)         { p.x = 0;         p.vx *= -DAMP * 0.6; squashEl(p, 'bumped'); }
-    if (p.x > W - SIZE)  { p.x = W - SIZE;  p.vx *= -DAMP * 0.6; squashEl(p, 'bumped'); }
+    if (p.x < 0)         { p.x = 0;         p.vx *= -0.4; }
+    if (p.x > W - SIZE)  { p.x = W - SIZE;  p.vx *= -0.4; }
 
-    // 餅同士の衝突（円形ソフトボディ：重なったら離す力＋bumped 演出）
-    let stackedOn = null;
+    // 餅同士の衝突（円形ソフトボディ：重なったら離す力＋転がり）
     for (const other of livePomoji.values()) {
       if (other.id === p.id || other.rising) continue;
       const dx = p.x - other.x;
       const dy = p.y - other.y;
       const dist = Math.sqrt(dx*dx + dy*dy);
-      const minDist = SIZE * 0.94;  // 餅同士の最小距離（ちょっとめり込む）
+      const minDist = SIZE * 0.94;
       if (dist > 0 && dist < minDist) {
         // 同字なら自動合体（落下中の上→下のときだけ）
         if (other.char === p.char && p.vy > 0 && !p._merging
             && !other.dragging && Math.abs(dx) < SIZE * 0.5 && dy < 0) {
           p._merging = true;
           mergePomoji(p, other);
-          stackedOn = other;
           break;
         }
-        // 押し離しベクトル（ソフトボディ）
+        // 押し離しベクトル
         const overlap = minDist - dist;
         const nx = dx / (dist || 1);
         const ny = dy / (dist || 1);
-        // 自分は動ける、相手が dragging 中なら自分だけ離れる
         const otherStatic = other.dragging || other.persistent;
         const myShare    = otherStatic ? 1.0 : 0.55;
         const otherShare = otherStatic ? 0.0 : 0.45;
@@ -1469,42 +1466,29 @@ function physicsStep() {
           other.x -= nx * overlap * otherShare;
           other.y -= ny * overlap * otherShare;
         }
-        // 衝突時の力交換（やわらかい弾性）
+        // 衝突時の力交換 ── 転がり促進（接線方向に少し速度を渡す）
         const relVy = p.vy - (other.vy || 0);
         if (relVy > 0 && dy < 0) {
-          // 上から落ちてきた：自分は跳ね返り、相手は少し沈む
-          p.vy = -relVy * 0.35;     // 軽く跳ねる
-          if (!otherStatic) other.vy += relVy * 0.18;
-          // 上の餅は強めの squash、下の餅は bumped
-          squashEl(p, 'squash');
-          squashEl(other, 'bumped');
-        }
-        // 横の押し合い：相手が下にいるなら自分は乗る判定
-        if (dy < -SIZE * 0.5) {
-          stackedOn = other;
-          // 上に乗った状態でも vy が小さければ着地
-          if (Math.abs(p.vy) < 0.6) {
-            if (!p.settled) {
-              p.el.classList.add('settled');
-              squashEl(p, 'squash');
-            }
-            p.settled = true;
-          }
+          p.vy = -relVy * 0.18;                              // 軽くだけ跳ねる
+          if (!otherStatic) other.vy += relVy * 0.10;
+          // 接線方向に少し速度を回す（ny=0 で真上＝水平にコロッと）
+          const tangent = -ny;  // ny<0 のとき正：横へ転がる
+          p.vx += nx * 0.6;     // 法線横ベクトル分だけ x に
+          if (!otherStatic) other.vx -= nx * 0.4;
         }
       }
     }
 
-    // 床への着地（柔らかいバウンド → 静止）
+    // 床への着地（控えめバウンド → 静止）
     if (p.y > H - SIZE) {
       p.y = H - SIZE;
-      if (Math.abs(p.vy) > 1.4) {
-        // 大きい速度で着地：跳ね返る
-        p.vy *= -0.42;
-        squashEl(p, 'squash');
+      if (Math.abs(p.vy) > 1.6) {
+        p.vy *= -0.22;          // 軽く跳ねる
+        squashEl(p, 'squash');  // 着地の瞬間だけ微弱 squash
       } else {
-        // 小さい速度：着地完了
         p.vy = 0;
-        p.vx *= 0.6;
+        // 床上の vx は摩擦で徐々に減衰（転がりを許す）
+        p.vx *= 0.92;
         if (!p.settled && agg.magnet) attractSameChar(p);
         if (!p.settled) {
           p.el.classList.add('settled');
@@ -1519,14 +1503,15 @@ function physicsStep() {
   physicsRaf = requestAnimationFrame(physicsStep);
 }
 
-// 餅の squash/bumped クラスを一瞬付ける（連発防止：直近 350ms 内は無視）
+// 着地の瞬間だけ squash クラスを付ける（連発防止：500ms 以内は無視）
 function squashEl(p, cls) {
   if (!p || !p.el) return;
+  if (cls !== 'squash') return;  // bumped は無効化（物理だけで十分）
   const now = Date.now();
-  if (p._lastSquashAt && now - p._lastSquashAt < 350) return;
+  if (p._lastSquashAt && now - p._lastSquashAt < 500) return;
   p._lastSquashAt = now;
   p.el.classList.add(cls);
-  setTimeout(() => p.el?.classList.remove(cls), cls === 'squash' ? 550 : 400);
+  setTimeout(() => p.el?.classList.remove(cls), 350);
 }
 
 function checkMergeCollision(p) {

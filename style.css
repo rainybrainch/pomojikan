@@ -777,57 +777,30 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
   will-change:left, top, transform;
 }
 .pomoji:active{ cursor:grabbing; }
-/* 落下中はわずかに上下に揺れる */
-.pomoji:not(.rising):not(.dragging):not(.settled):not(.squash){
-  animation:mochi-fall-wobble 1.6s ease-in-out infinite;
-}
-@keyframes mochi-fall-wobble{
-  0%,100%{ transform:scale(1, 1); }
-  50%   { transform:scale(1.04, 0.96); }
-}
-/* 着地後は ポよポよ と弾性 */
-.pomoji.settled:not(.squash):not(.bumped){
-  animation:mochi-jiggle 3.2s ease-in-out infinite;
-}
-@keyframes mochi-jiggle{
-  0%, 100%{ transform:scale(1, 1); }
-  20%    { transform:scale(1.05, 0.95); }
-  40%    { transform:scale(0.97, 1.03); }
-  60%    { transform:scale(1.02, 0.98); }
-  80%    { transform:scale(0.99, 1.01); }
-}
-/* 着地の瞬間の squash（落ちる → 潰れる → 跳ね返る → 戻る）*/
+/* 弾性アニメは廃止 ── 物理ループ任せでゆっくり転がる */
+/* 着地時の瞬間 squash だけ ごく微弱 に残す（無くてもOK程度の控えめ）*/
 .pomoji.squash{
-  animation:mochi-squash .55s cubic-bezier(.22,1.6,.36,1) !important;
+  animation:mochi-squash .35s ease-out;
 }
 @keyframes mochi-squash{
   0%   { transform:scale(1.0, 1.0); }
-  30%  { transform:scale(1.30, 0.65); }   /* ぺちゃっと潰れる */
-  55%  { transform:scale(0.88, 1.14); }   /* 跳ね返って縦長 */
-  78%  { transform:scale(1.06, 0.94); }   /* 二跳ね目 */
+  40%  { transform:scale(1.06, 0.94); }   /* ほんの少し潰れる */
   100% { transform:scale(1.0, 1.0); }
 }
-/* 下の餅が上から押された時の bumped（伝播）*/
-.pomoji.bumped{
-  animation:mochi-bumped .4s cubic-bezier(.22,1.6,.36,1) !important;
-}
-@keyframes mochi-bumped{
-  0%   { transform:scale(1.0, 1.0); }
-  40%  { transform:scale(1.12, 0.88); }   /* 軽く潰れる */
-  100% { transform:scale(1.0, 1.0); }
-}
-/* ドラッグ中は重みを感じる縦長 ＋ scale 1.18 で持ち上げ感 */
+/* bumped は無効化（物理だけで十分）*/
+.pomoji.bumped{ /* no animation */ }
+
+/* ドラッグ中は控えめに浮き上がる */
 .pomoji.dragging{
   z-index:9999 !important;
   cursor:grabbing;
-  transform:scale(1.10, 1.22) !important;   /* 縦長 ＋ 全体拡大 */
+  transform:scale(1.06);
   box-shadow:
     inset 0 -4px 8px rgba(120,90,40,.32),
     inset 0 3px 4px rgba(255,250,230,.55),
-    0 12px 28px rgba(0,0,0,.45),
-    0 0 22px var(--r-glow);
-  opacity:.95;
-  animation:none !important;
+    0 10px 22px rgba(0,0,0,.4),
+    0 0 18px var(--r-glow);
+  opacity:.96;
 }
 .pomoji.dragging{
   z-index:9999 !important;
