@@ -71,6 +71,10 @@ const PERKS = {
   tag_learn:   { name:'求道',    desc:'学字を融合時 EXP+75%',                 tag:'学'    },
   tag_nature:  { name:'自然律',  desc:'自然字を融合時 落下数+1',              tag:'自然'  },
   tag_beauty:  { name:'幽美',    desc:'美字を融合時 書体即時進化',            tag:'美'    },
+  // 文字種ベース ── v2 体系 追加（2026-05-16）
+  tag_numeral: { name:'計算',    desc:'数字字を融合時 サイクル EXP +20',       tag:'数字'  },
+  tag_english: { name:'発音',    desc:'英語字を融合時 落下速度 -15%',          tag:'英語'  },
+  tag_order:   { name:'順序',    desc:'順序タグ字 を持つと早押し EXP +10%',    tag:'順序'  },
 };
 
 // タグ → 固有 perk の対応
@@ -79,7 +83,10 @@ const TAG_PERK_MAP = {
   '禅':'tag_zen', '神字':'tag_sacred', '武':'tag_war', '学':'tag_learn',
   '自然':'tag_nature', '植物':'tag_nature', '美':'tag_beauty', '宗教':'tag_sacred',
   '仏教':'tag_zen', '思想':'tag_learn', '哲学':'tag_learn', '道':'tag_war',
+  // v2 文字種タグ
   'ひらがな':'feather', 'カタカナ':'haste', '音':'wide',
+  '数字':'tag_numeral', '数':'tag_numeral', '順序':'tag_order',
+  '英語':'tag_english', '異邦':'tag_english',
 };
 
 // 各キャラのタグを YOJI_RECIPES から逆引き
@@ -109,8 +116,37 @@ function getCharTags(c) {
   return Array.from(idx[c] || []);
 }
 
+// ひらがな・カタカナの音韻列 → 固有 perk マッピング
+// 「あ・い・う・え・お」と「か行」では性質が違う、という意味付け
+const KANA_ROW_PERK = {
+  // 母音（あ行）── feather（軽やか）
+  'あいうえおぁぃぅぇぉアイウエオァィゥェォ': 'feather',
+  // か行・が行 ── haste（速い・破裂音）
+  'かきくけこがぎぐげごカキクケコガギグゲゴ': 'haste',
+  // さ行・ざ行 ── wide（広がる・摩擦音）
+  'さしすせそざじずぜぞサシスセソザジズゼゾ': 'wide',
+  // た行・だ行 ── magnet（吸引・舌音）
+  'たちつてとだぢづでどタチツテトダヂヅデドっッ': 'magnet',
+  // な行 ── tag_emo（感応・鼻音）
+  'なにぬねのナニヌネノ': 'tag_emo',
+  // は行・ば行・ぱ行 ── bounty（豊穣・破裂と摩擦）
+  'はひふへほばびぶべぼぱぴぷぺぽハヒフヘホバビブベボパピプペポ': 'bounty',
+  // ま行 ── scholar（積み重ね・鼻音）
+  'まみむめもマミムメモ': 'scholar',
+  // や行・拗音 ── chain（連鎖・半母音）
+  'やゆよゃゅょゎヤユヨャュョヮ': 'chain',
+  // ら行 ── prodigy（神童・流音）
+  'らりるれろラリルレロ': 'prodigy',
+  // わ・を・ん・長音 ── blessing（祝詞・余韻）
+  'わをんワヲンー': 'blessing',
+};
+
 function pickInherentPerk(c) {
-  // この字に主タグからの固有 perk を割り当て
+  // ひらがな・カタカナは音韻列で判定（先に評価して画一化を防ぐ）
+  for (const [row, perk] of Object.entries(KANA_ROW_PERK)) {
+    if (row.includes(c)) return perk;
+  }
+  // タグからマッチ（漢字・数字・英語など）
   const tags = getCharTags(c);
   for (const t of tags) {
     if (TAG_PERK_MAP[t]) return TAG_PERK_MAP[t];
@@ -159,6 +195,10 @@ function aggregatePartyPerks() {
         case 'tag_sacred': agg.tagBonus['神字'] = (agg.tagBonus['神字']||1) + 0.5; break;
         case 'tag_time':   agg.tagBonus['時']   = (agg.tagBonus['時']||1) + 0.3; break;
         case 'tag_virtue': agg.tagBonus['七徳'] = (agg.tagBonus['七徳']||1) + 0.5; break;
+        // v2 文字種パーク
+        case 'tag_numeral': agg.expMul *= 1.05; agg.tagBonus['数字'] = (agg.tagBonus['数字']||1) + 0.3; break;
+        case 'tag_english': agg.gravityMul *= 0.85; agg.tagBonus['英語'] = (agg.tagBonus['英語']||1) + 0.3; break;
+        case 'tag_order':   agg.expMul *= 1.10; break;
       }
     }
   }
