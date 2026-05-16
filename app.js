@@ -42,7 +42,8 @@ const TIMER_PRESETS = [
   { label:'15/3', work:15*60, rest:3*60 },
 ];
 const PARTY_PICKER_POOL_SIZE = 24;
-const GRAVITY_BASE = 0.18;  // v2: 0.35→0.18 ふわっと降らせる
+const GRAVITY_BASE = 0.07;  // v2.2: 0.35→0.18→0.07 もっとふわっと
+const MAX_FALL_VY  = 2.6;   // 最大落下速度キャップ（ふわっと感の維持）
 const SIZE_BASE = 56;
 
 // ═══════════════════════════════════════════════════════════════
@@ -1316,10 +1317,15 @@ function physicsStep() {
     // 落下ぽもじ：重力＋着底＋積み重なり
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
     p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
+    // 最大落下速度キャップ（ふわっと感維持）
+    if (p.vy > MAX_FALL_VY) p.vy = MAX_FALL_VY;
+    // 横方向の摩擦：床滑り防止のため常時減衰
+    p.vx *= 0.94;
+    if (Math.abs(p.vx) < 0.05) p.vx = 0;
     p.x += p.vx;
     p.y += p.vy;
-    if (p.x < 0) { p.x = 0; p.vx *= -DAMP; }
-    if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -DAMP; }
+    if (p.x < 0) { p.x = 0; p.vx *= -DAMP * 0.5; }
+    if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -DAMP * 0.5; }
 
     // 他のぽもじとの衝突（積み重なり ・ 自動合体）
     let stackedOn = null;
@@ -1336,29 +1342,25 @@ function physicsStep() {
           stackedOn = other;
           break;
         }
-        // 通常の積み重なり
+        // 通常の積み重なり（着地はピタッと止める・ランダム揺らし廃止）
         p.y = other.y - SIZE * 0.98;
-        p.vy *= -DAMP * 0.5;
-        p.vx += (Math.random() - 0.5) * 0.6;
-        if (Math.abs(p.vy) < 0.7) {
-          p.vy = 0;
-          if (!p.settled) p.el.classList.add('settled');
-          p.settled = true;
-        }
+        p.vy = 0;
+        p.vx = 0;
+        if (!p.settled) p.el.classList.add('settled');
+        p.settled = true;
         stackedOn = other;
         break;
       }
     }
 
-    // 床への着地
+    // 床への着地（ピタッと止める）
     if (!stackedOn && p.y > H - SIZE) {
-      p.y = H - SIZE; p.vy *= -DAMP; p.vx *= 0.92;
-      if (Math.abs(p.vy) < 1) {
-        p.vy = 0;
-        if (!p.settled && agg.magnet) attractSameChar(p);
-        if (!p.settled) p.el.classList.add('settled');
-        p.settled = true;
-      }
+      p.y = H - SIZE;
+      p.vy = 0;
+      p.vx = 0;
+      if (!p.settled && agg.magnet) attractSameChar(p);
+      if (!p.settled) p.el.classList.add('settled');
+      p.settled = true;
     }
     p.el.style.left = p.x + 'px';
     p.el.style.top  = p.y + 'px';
