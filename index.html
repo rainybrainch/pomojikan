@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260516t">
+<link rel="stylesheet" href="style.css?v=20260516u">
 </head>
 <body data-mode="idle">
 
@@ -25,54 +25,38 @@
 <!-- ぽもじ プレイフィールド（全画面）-->
 <div id="play-field" aria-hidden="true"></div>
 
-<!-- ヘッダー -->
+<!-- ヘッダー：☰ + タイトル のみ（シンプル）-->
 <header class="app-header">
+  <button class="hamburger-btn" id="btn-menu" aria-label="メニュー" aria-haspopup="true" aria-expanded="false">
+    <span class="hb-line"></span>
+    <span class="hb-line"></span>
+    <span class="hb-line"></span>
+  </button>
   <div class="brand">ぽもじかん</div>
-  <div class="header-actions">
-    <button class="icon-btn" id="btn-audio" aria-label="音響" title="音響オン／オフ">
-      <span class="ib-emoji">🔇</span><span class="ib-label">音</span>
-    </button>
-    <button class="icon-btn" id="btn-help" aria-label="遊び方" title="遊び方">
-      <span class="ib-emoji">？</span><span class="ib-label">遊び方</span>
-    </button>
-    <button class="icon-btn" id="btn-stats" aria-label="記録" title="記録">
-      <span class="ib-emoji">📊</span><span class="ib-label">記録</span>
-    </button>
-    <button class="icon-btn" id="btn-codex" aria-label="図鑑" title="ぽも字図鑑">
-      <span class="ib-emoji">📖</span><span class="ib-label">図鑑</span>
-    </button>
-    <button class="icon-btn" id="btn-edit-party" aria-label="パーティ編成" title="パーティ再編成">
-      <span class="ib-emoji">🛡️</span><span class="ib-label">編成</span>
-    </button>
-    <button class="icon-btn" id="btn-writings" aria-label="文章" title="集めた字で文章を編む">
-      <span class="ib-emoji">📝</span><span class="ib-label">文章</span>
-    </button>
-  </div>
+  <div class="header-spacer"></div>
 </header>
 
-<!-- メインゲームエリア（PC では3カラム grid）-->
+<!-- ドロワーメニュー（右からスライド）-->
+<div class="menu-drawer" id="menu-drawer" aria-hidden="true">
+  <div class="menu-backdrop" id="menu-backdrop"></div>
+  <nav class="menu-panel">
+    <button class="menu-close" id="menu-close" aria-label="閉じる">×</button>
+    <h3 class="menu-title">メニュー</h3>
+    <ul class="menu-list">
+      <li><button class="menu-item" id="m-audio"><span class="mi-emoji" id="m-audio-emoji">🔇</span><span class="mi-label">音響</span><span class="mi-state" id="m-audio-state">オフ</span></button></li>
+      <li><button class="menu-item" id="m-help"><span class="mi-emoji">❓</span><span class="mi-label">遊び方</span></button></li>
+      <li><button class="menu-item" id="m-stats"><span class="mi-emoji">📊</span><span class="mi-label">記録</span></button></li>
+      <li><button class="menu-item" id="m-codex"><span class="mi-emoji">📖</span><span class="mi-label">ぽも字図鑑</span></button></li>
+      <li><button class="menu-item" id="m-edit-party"><span class="mi-emoji">🛡️</span><span class="mi-label">パーティ編成</span></button></li>
+      <li><button class="menu-item" id="m-writings"><span class="mi-emoji">📝</span><span class="mi-label">文章を編む</span></button></li>
+      <li><button class="menu-item" id="m-timer"><span class="mi-emoji">⏱</span><span class="mi-label">時間設定</span></button></li>
+    </ul>
+    <div class="menu-foot">v30 ・ <a href="changelog.html" target="_blank" rel="noopener">変更履歴</a></div>
+  </nav>
+</div>
+
+<!-- メインゲームエリア：全画面プレイ重視・シンプル単一カラム -->
 <main class="game-main">
-
-  <!-- 【PC専用】左パネル：パーティ詳細 -->
-  <aside class="pc-panel pc-left">
-    <h3 class="pc-panel-title">★ パーティ</h3>
-    <div id="pc-party-detail">主人公を選んでね</div>
-    <h3 class="pc-panel-title" style="margin-top:18px;">⏱ プリセット</h3>
-    <div class="pc-presets">
-      <button class="pc-preset-btn" data-preset="0">25 / 5</button>
-      <button class="pc-preset-btn" data-preset="1">50 / 10</button>
-      <button class="pc-preset-btn" data-preset="2">15 / 3</button>
-    </div>
-    <h3 class="pc-panel-title" style="margin-top:18px;">📊 累計</h3>
-    <div id="pc-stats-mini">
-      <div class="psm-row"><span>サイクル</span><b id="psm-cycles">0</b></div>
-      <div class="psm-row"><span>累計ぽもじ</span><b id="psm-drops">0</b></div>
-      <div class="psm-row"><span>所有字</span><b id="psm-stock">0</b></div>
-      <div class="psm-row"><span>発見字種</span><b id="psm-uniq">0</b></div>
-    </div>
-  </aside>
-
-  <!-- 中央：プレイフィールド・タイマー -->
   <div class="game-center">
     <div class="timer-zone">
       <svg class="progress-svg" viewBox="0 0 100 100" aria-hidden="true">
@@ -104,32 +88,6 @@
       <small>ドラッグして重ねると <strong>融合</strong> ／ タップで <strong>消滅・経験値化</strong></small>
     </div>
   </div>
-
-  <!-- 【PC専用】右パネル：文章モード常時＋所有字＋直近文章 -->
-  <aside class="pc-panel pc-right">
-    <h3 class="pc-panel-title">📝 文章を編む</h3>
-    <div class="pc-writings-mini">
-      <div class="pwm-genre" id="pwm-genre">─</div>
-      <div class="pwm-slots" id="pwm-slots"><span class="pwm-empty">所有字を下からタップ</span></div>
-      <div class="pwm-actions">
-        <button class="pc-mini-btn" id="pwm-clear">クリア</button>
-        <button class="pc-mini-btn" id="pwm-undo">←</button>
-        <button class="pc-mini-btn primary" id="pwm-save">📜 刻む</button>
-        <button class="pc-mini-btn" id="pwm-full">詳細</button>
-      </div>
-    </div>
-
-    <h3 class="pc-panel-title" style="margin-top:14px;">🪙 所有字</h3>
-    <div class="pwm-stock" id="pwm-stock">
-      <span class="pwm-empty">字をストックしていない</span>
-    </div>
-
-    <h3 class="pc-panel-title" style="margin-top:14px;">📜 直近の文章</h3>
-    <div class="pwm-recent" id="pwm-recent">
-      <span class="pwm-empty">まだ刻んでいない</span>
-    </div>
-  </aside>
-
 </main>
 
 <!-- 完了バースト -->
@@ -489,7 +447,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260516t" defer></script>
-<script src="app.js?v=20260516t" defer></script>
+<script src="codex.js?v=20260516u" defer></script>
+<script src="app.js?v=20260516u" defer></script>
 </body>
 </html>

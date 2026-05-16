@@ -564,8 +564,14 @@ function toggleAudio() {
 }
 
 function updateAudioButton() {
+  // 旧ヘッダー（残ってる場合のみ）
   const emoji = $('#btn-audio .ib-emoji');
   if (emoji) emoji.textContent = STATE.audioOn ? '🔊' : '🔇';
+  // 新ドロワーメニュー
+  const mEmoji = $('#m-audio-emoji');
+  if (mEmoji) mEmoji.textContent = STATE.audioOn ? '🔊' : '🔇';
+  const mState = $('#m-audio-state');
+  if (mState) mState.textContent = STATE.audioOn ? 'オン' : 'オフ';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2518,7 +2524,48 @@ function bindEvents() {
     btn.addEventListener('click', () => applyPreset(parseInt(btn.dataset.preset)));
   });
 
-  $('#btn-codex').addEventListener('click', openCodex);
+  // ── ハンバーガー＆ドロワーメニュー ──────────────────────────
+  const drawer = $('#menu-drawer');
+  const hamburger = $('#btn-menu');
+  const openDrawer = () => {
+    drawer.classList.add('show');
+    drawer.setAttribute('aria-hidden', 'false');
+    hamburger.setAttribute('aria-expanded', 'true');
+  };
+  const closeDrawer = () => {
+    drawer.classList.remove('show');
+    drawer.setAttribute('aria-hidden', 'true');
+    hamburger.setAttribute('aria-expanded', 'false');
+  };
+  if (hamburger) hamburger.addEventListener('click', openDrawer);
+  const menuClose = $('#menu-close');
+  if (menuClose) menuClose.addEventListener('click', closeDrawer);
+  const menuBackdrop = $('#menu-backdrop');
+  if (menuBackdrop) menuBackdrop.addEventListener('click', closeDrawer);
+  // 各メニュー項目（押したらドロワーを閉じてから機能発火）
+  const menuClick = (id, fn) => {
+    const e = $(id);
+    if (!e) return;
+    e.addEventListener('click', () => { closeDrawer(); setTimeout(fn, 60); });
+  };
+  menuClick('#m-audio',      toggleAudio);
+  menuClick('#m-help',       () => $('#help-modal').classList.add('show'));
+  menuClick('#m-stats',      openStats);
+  menuClick('#m-codex',      openCodex);
+  menuClick('#m-writings',   openWritings);
+  menuClick('#m-timer',      openTimerSettings);
+  menuClick('#m-edit-party', () => {
+    if (confirm('パーティを再編成しますか？（現在のメンバーはリセット）')) {
+      STATE.party = null;
+      saveState();
+      renderParty();
+      openPartyPicker();
+    }
+  });
+
+  // ── 旧ヘッダー個別ボタン（HTML から削除済 ・防御的に null チェック）──
+  const bindOpt = (id, fn) => { const e = $(id); if (e) e.addEventListener('click', fn); };
+  bindOpt('#btn-codex', openCodex);
   $('#codex-close').addEventListener('click', closeCodex);
 
   // 文章モード（v0.1）
@@ -2581,13 +2628,13 @@ function bindEvents() {
     renderCodex();
   });
 
-  $('#btn-stats').addEventListener('click', openStats);
+  bindOpt('#btn-stats', openStats);
   $('#stats-close').addEventListener('click', closeStats);
 
-  $('#btn-help').addEventListener('click', () => $('#help-modal').classList.add('show'));
+  bindOpt('#btn-help', () => $('#help-modal').classList.add('show'));
   $('#help-close').addEventListener('click', () => $('#help-modal').classList.remove('show'));
 
-  $('#btn-edit-party').addEventListener('click', () => {
+  bindOpt('#btn-edit-party', () => {
     if (confirm('パーティを再編成しますか？（現在のメンバーはリセット）')) {
       STATE.party = null;
       saveState();
@@ -2596,12 +2643,12 @@ function bindEvents() {
     }
   });
 
-  $('#btn-reset-all').addEventListener('click', resetState);
-  $('#btn-share-party').addEventListener('click', copyShareURL);
+  bindOpt('#btn-reset-all', resetState);
+  bindOpt('#btn-share-party', copyShareURL);
 
-  $('#btn-audio').addEventListener('click', toggleAudio);
-  $('#btn-issue-code').addEventListener('click', copyTransferCode);
-  $('#btn-apply-code').addEventListener('click', promptApplyTransferCode);
+  bindOpt('#btn-audio', toggleAudio);
+  bindOpt('#btn-issue-code', copyTransferCode);
+  bindOpt('#btn-apply-code', promptApplyTransferCode);
   $('#ob-next').addEventListener('click', obNext);
   $('#ob-skip').addEventListener('click', obSkip);
   $('#user-id-display').addEventListener('click', async () => {
