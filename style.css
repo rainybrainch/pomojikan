@@ -1210,6 +1210,55 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
 }
 .wh-del:hover{ color:#ff6868; }
 
+/* ════════════════════ PC 配信モード（?stream=1）── OBS オーバーレイ用 ════════════════════ */
+/* RBAI 公式構想：PC タイマーモード＝配信・YouTube 連携 */
+body.stream-mode{
+  background:transparent !important;
+}
+body.stream-mode .app-header,
+body.stream-mode .pc-panel,
+body.stream-mode #tank-hint,
+body.stream-mode .controls-row,
+body.stream-mode .progress-pill,
+body.stream-mode .rain-bg,
+body.stream-mode .bubble-bg,
+body.stream-mode .modal{
+  display:none !important;
+}
+body.stream-mode .game-main{
+  display:block; max-width:none; padding:0;
+}
+body.stream-mode .game-center{
+  display:flex; flex-direction:column; align-items:center; gap:18px;
+  padding:24px;
+}
+body.stream-mode .timer-zone{
+  width:200px; height:200px;
+}
+body.stream-mode .timer-text{
+  text-shadow:0 0 8px #000, 0 2px 6px #000;
+}
+body.stream-mode #play-field{
+  /* 配信モードでも降下は維持・パーティのみハイライト */
+}
+body.stream-mode .party-bar{
+  background:rgba(0,0,0,.4);
+  border:2px solid rgba(240,212,138,.6);
+  border-radius:12px; padding:8px;
+}
+
+/* ════════════════════ ポモドーロ完了時のパーティ光放射 ════════════════════ */
+/* RBAI 公式構想：「ポモドーロ完了時に文字がパーッと光る」*/
+.pomoji.persistent.cycle-burst{
+  animation:cycleBurst 1.6s cubic-bezier(.22,1.4,.36,1);
+}
+@keyframes cycleBurst{
+  0%   { transform:scale(1); filter:brightness(1) drop-shadow(0 0 12px var(--r-glow)); }
+  20%  { transform:scale(1.5); filter:brightness(2.2) drop-shadow(0 0 30px gold) drop-shadow(0 0 12px white); }
+  50%  { transform:scale(1.25); filter:brightness(1.8) drop-shadow(0 0 24px gold); }
+  100% { transform:scale(1); filter:brightness(1) drop-shadow(0 0 12px var(--r-glow)); }
+}
+
 /* ════════════════════ パーティ字 永続スポーン（v2 / 2026-05-16）════════════════════ */
 /* 主人公・仲間は消えない・金縁＋淡い脈動 */
 .pomoji.persistent{

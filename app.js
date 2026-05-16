@@ -1110,11 +1110,22 @@ function completePhase() {
     spawnCycleDrops();
     updateProgressPill();
     flashCompletionBurst('☔ 凝縮 完了');
+    burstPartyPersistents();  // ポモドーロ完了時：パーティ字がパーッと光る（公式構想）
     startRest();
   } else if (STATE.mode === 'rest') {
     flashCompletionBurst('🫧 発散 完了');
     stopRisingPomoji();
     stopTimer();
+  }
+}
+
+// パーティ字（永続）にサイクル完了の光放射を一斉発火
+function burstPartyPersistents(){
+  for (const p of livePomoji.values()){
+    if (p.persistent && p.el){
+      p.el.classList.add('cycle-burst');
+      setTimeout(() => p.el?.classList.remove('cycle-burst'), 1700);
+    }
   }
 }
 
@@ -2177,6 +2188,38 @@ function renderWritingsModal() {
   }
 }
 
+// 文章群を JSON で出力（Blender / 読雨 / 外部ツール連携用）
+// RBAI 公式構想：完成俳句を 3D アニメ化／読雨に「刻む」
+function exportWritingsJSON() {
+  if (!STATE.writings || STATE.writings.length === 0) {
+    toast('保存された文章がありません');
+    return;
+  }
+  const payload = {
+    app: 'pomojikan',
+    version: 'v30.4',
+    exported_at: new Date().toISOString(),
+    user_id: STATE.userId || null,
+    writings: STATE.writings.map(w => ({
+      text: w.text,
+      genre: w.genre,
+      date: w.date,
+      chars: w.chars,        // [{ char, rarity, season? }, ...]
+      char_count: w.chars?.length || 0,
+      lv: w.lv || 1,
+    })),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pomojikan-writings-${payload.exported_at.slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 500);
+  toast(`📥 ${STATE.writings.length} 件の文章を JSON 出力`);
+}
+
 function saveCurrentWriting() {
   if (_currentWriting.length === 0) { toast('字を 1 つ以上並べてください'); return; }
   const text = _currentWriting.map(x => x.char).join('');
@@ -2489,6 +2532,8 @@ function bindEvents() {
   if (wcUndo) wcUndo.addEventListener('click', () => { _currentWriting.pop(); renderWritingsModal(); refreshPCPanels(); });
   const wcSave = $('#wc-save');
   if (wcSave) wcSave.addEventListener('click', saveCurrentWriting);
+  const wcExport = $('#wc-export');
+  if (wcExport) wcExport.addEventListener('click', exportWritingsJSON);
 
   // PC 右パネル：文章ミニのアクション
   const pwmClear = $('#pwm-clear');
@@ -2588,6 +2633,11 @@ function init() {
   STATE.pausedRemaining = 0;
   STATE.lastHiddenAt = null;
   document.body.dataset.mode = 'idle';
+  // 配信モード判定（?stream=1）── OBS 用透過オーバーレイ
+  try {
+    const params = new URLSearchParams(location.search);
+    if (params.get('stream') === '1') document.body.classList.add('stream-mode');
+  } catch(_) {}
   bindEvents();
   $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
   // 共有 URL チェック（自分のパーティ読み込み後）
