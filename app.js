@@ -42,7 +42,7 @@ const TIMER_PRESETS = [
   { label:'15/3', work:15*60, rest:3*60 },
 ];
 const PARTY_PICKER_POOL_SIZE = 24;
-const GRAVITY_BASE = 0.35;
+const GRAVITY_BASE = 0.18;  // v2: 0.35→0.18 ふわっと降らせる
 const SIZE_BASE = 56;
 
 // ═══════════════════════════════════════════════════════════════
@@ -1204,20 +1204,26 @@ function spawnPomoji(opts={}) {
 
   const isFirstSee = !STATE.collection[char];
 
-  const newBadge = isFirstSee ? el('span', { class:'pomoji-new-badge' }, '新') : null;
+  // 「新」バッジは常時表示しない（v2 / 2026-05-16 ユーザー要望）
+  // 出会った瞬間に toast で一瞬「新！ {char}」と通知するだけ
   const node = el('div', {
-    class: `pomoji ${tierClass} font-${styleClass}${isFirstSee ? ' is-new' : ''}`,
+    class: `pomoji ${tierClass} font-${styleClass}`,
     dataset: { id, char, rarity, tier: tierIdx },
     style: { left: x+'px', top: y+'px' }
-  }, char, newBadge);
+  }, char);
   field.appendChild(node);
 
-  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.5, vy: 0, el: node, settled: false, isFirstSee };
+  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.0, vy: 0, el: node, settled: false, isFirstSee };
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
   STATE.stats.totalDrops += 1;
   STATE.collection[char] = (STATE.collection[char] || 0) + 1;
+
+  // 新発見の一瞬通知（toast / 字の rarity 色帯）
+  if (isFirstSee) {
+    toast(`新！ ${char}`, rarity);
+  }
   return obj;
 }
 
