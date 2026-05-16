@@ -1383,6 +1383,56 @@ body.stream-mode .party-bar{
   border-radius:12px; padding:8px;
 }
 
+/* ════════════════════ 新発見マイルストーン祝祭 ════════════════════ */
+.milestone-burst{
+  position:absolute;
+  width:260px; height:160px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:18px 24px;
+  font-family:'Noto Serif JP', serif;
+  background:radial-gradient(ellipse at center,
+    rgba(60,40,15,.92) 0%,
+    rgba(30,20,10,.7) 60%,
+    rgba(0,0,0,.4) 100%);
+  border:2px solid rgba(240,212,138,.7);
+  border-radius:18px;
+  box-shadow:
+    0 0 60px rgba(255,200,50,.55),
+    0 0 120px rgba(255,200,50,.25),
+    inset 0 0 24px rgba(240,212,138,.2);
+  pointer-events:none;
+  z-index:60;
+  animation:milestoneBurst 2.5s cubic-bezier(.22,1.2,.36,1) forwards;
+}
+.milestone-burst .mb-num{
+  font-size:3.2rem; font-weight:900;
+  color:#fff5b0;
+  text-shadow:
+    0 0 24px gold,
+    0 0 8px white,
+    0 2px 4px rgba(0,0,0,.5);
+  font-variant-numeric:tabular-nums;
+  line-height:1;
+}
+.milestone-burst .mb-label{
+  font-size:.95rem; color:#fff;
+  letter-spacing:.2em;
+  margin-top:4px;
+}
+.milestone-burst .mb-mul{
+  font-size:1.1rem; font-weight:700;
+  color:var(--gold);
+  margin-top:8px;
+  text-shadow:0 0 8px gold;
+}
+@keyframes milestoneBurst{
+  0%   { opacity:0; transform:scale(.5) rotate(-5deg); }
+  15%  { opacity:1; transform:scale(1.18) rotate(2deg); }
+  30%  { transform:scale(1.0) rotate(-1deg); }
+  75%  { opacity:1; transform:scale(1.02); }
+  100% { opacity:0; transform:scale(.92) translateY(-40px); }
+}
+
 /* ════════════════════ 書体進化バースト（onLevelUp で evoStage が上がった瞬間）════════════════════ */
 .evolution-burst{
   position:absolute;
@@ -2348,14 +2398,49 @@ body[data-mode="rest"] #tank{
   background:rgba(135,206,235,.08);
   padding:6px 10px;border-radius:8px;
 }
+.cd-desc{
+  text-align:center;
+  font-family:'Noto Serif JP', serif;
+  font-size:.92rem; color:#fff5dc;
+  font-style:italic;
+  background:rgba(240,212,138,.06);
+  padding:8px 12px;
+  border-radius:6px;
+  border-left:2px solid var(--gold);
+  border-right:2px solid var(--gold);
+  margin:8px 0;
+}
+.cd-stats-row{
+  display:flex; justify-content:space-between;
+  font-size:.78rem; color:var(--ink-mute);
+  background:rgba(0,0,0,.25);
+  padding:6px 12px; border-radius:6px;
+  margin:6px 0;
+}
 .cd-recipes{ margin-top:10px; }
 .cd-recipes-title{
   font-size:.74rem;color:var(--ink-mute);
-  margin-bottom:4px;letter-spacing:.05em;
+  margin-bottom:6px;letter-spacing:.05em;
 }
 .cd-recipes-list{
-  font-size:.82rem;color:var(--ink);
-  line-height:1.7;
+  display:flex; flex-wrap:wrap; gap:5px;
+  line-height:1.5;
+}
+.cd-recipe{
+  font-family:'Noto Serif JP', serif;
+  font-size:.92rem; font-weight:700;
+  color:var(--r-color, var(--ink));
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--r-color, rgba(255,255,255,.12));
+  padding:3px 8px;
+  border-radius:5px;
+  cursor:default;
+}
+.cd-recipes-empty{
+  font-size:.78rem; color:var(--ink-mute);
+  text-align:center;
+  margin-top:8px;
+  opacity:.6;
 }
 
 /* ════════════════════ スマホ調整 ════════════════════ */

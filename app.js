@@ -1495,9 +1495,27 @@ function grantDiscoveryBonus(rarity, char) {
 
   if (milestoneMul > 1) {
     toast(`✦ 発見 ${uniq} 種達成！ ボーナス ×${milestoneMul}`, rarity);
+    spawnMilestoneBurst(uniq, milestoneMul);
   }
   updatePartyXpUI();
   renderParty();
+}
+
+// 新発見マイルストーン祝祭（画面中央に大数字 + ベル + 光放射）
+function spawnMilestoneBurst(uniq, mul) {
+  const field = $('#play-field');
+  if (!field) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  const node = el('div', {
+    class: 'milestone-burst',
+    style: { left: (W/2 - 130) + 'px', top: (H/2 - 80) + 'px' },
+  },
+    el('div', { class: 'mb-num' }, String(uniq)),
+    el('div', { class: 'mb-label' }, '種 発見'),
+    el('div', { class: 'mb-mul' }, `ボーナス ×${mul}`),
+  );
+  field.appendChild(node);
+  setTimeout(() => node.remove(), 2500);
 }
 
 // 低レア→高レア順に落とす（ドラマ型）
@@ -2517,11 +2535,15 @@ function showCharDetail(c, rarity) {
   const tags = getCharTags(c);
   const recipes = (window.YOJI_RECIPES || []).filter(r => r.chars && r.chars.includes(c));
   const seen = STATE.collection[c] || 0;
+  const stock = (STATE.stock || {})[c] || 0;
   const partyIdx = partyContainsChar(c);
   const rIdx = RARITY_TIERS.indexOf(rarity);
   const member = partyIdx >= 0 ? STATE.party.members[partyIdx] : null;
+  const codex = window.KANJI_CODEX || [];
+  const k = codex.find(x => (x.char||x.c) === c);
+  const desc = k?.desc || '';
+  const season = k?.season || '';
 
-  // 既存があれば削除
   $$('.char-detail-pop').forEach(e => e.remove());
 
   const canRecruit = STATE.party && STATE.party.members.length < 4 && partyIdx < 0;
@@ -2533,20 +2555,33 @@ function showCharDetail(c, rarity) {
       } }, '＋ パーティに加える')
     : null;
 
+  // 関連熟語をレア順 ・ クリックでテキストコピー
+  const recipeNodes = recipes.slice(0, 10).map(r => {
+    const rrIdx = RARITY_TIERS.indexOf(r.rarity);
+    return el('span', {
+      class:`cd-recipe rarity-${rrIdx + 1}`,
+      title: r.desc || r.word,
+    }, r.word);
+  });
+
   const pop = el('div', { class: `char-detail-pop rarity-${rIdx + 1}` },
     el('button', { class: 'cd-close', onclick: (e) => { e.target.parentElement.remove(); } }, '×'),
     el('div', { class:'cd-char' }, c),
-    el('div', { class:'cd-rarity' }, rarity),
-    el('div', { class:'cd-tags' }, tags.length ? tags.slice(0, 5).join(' / ') : '—'),
-    el('div', { class:'cd-stat' }, `発見 ${seen} 回`),
+    el('div', { class:'cd-rarity' }, `${rarity}${season ? ' ・ ' + season : ''}`),
+    desc ? el('div', { class:'cd-desc' }, desc) : null,
+    el('div', { class:'cd-tags' }, tags.length ? '◆ ' + tags.slice(0, 6).join(' / ') : '—'),
+    el('div', { class:'cd-stats-row' },
+      el('span', {}, `発見 ${seen} 回`),
+      el('span', { style:{ color: stock > 0 ? 'var(--gold)' : 'inherit' } }, `所有 ${stock}`),
+    ),
     member ? el('div', { class:'cd-party' },
-      `パーティ字 ・ Lv.${member.level} ・ 特性: ${(member.perks||[]).map(pid=>PERKS[pid]?.name).filter(Boolean).join('・')}`
+      `パーティ字 ・ Lv.${member.level} ・ ${(member.perks||[]).map(pid=>PERKS[pid]?.name).filter(Boolean).join('・')}`
     ) : null,
     recruitBtn,
-    el('div', { class:'cd-recipes' },
-      el('div', { class:'cd-recipes-title' }, `熟語 ${recipes.length} 件`),
-      el('div', { class:'cd-recipes-list' }, recipes.slice(0, 8).map(r => r.word).join(' ・ '))
-    )
+    recipes.length > 0 ? el('div', { class:'cd-recipes' },
+      el('div', { class:'cd-recipes-title' }, `🔗 関連熟語 ${recipes.length} 件${recipes.length > 10 ? '（上位10）' : ''}`),
+      el('div', { class:'cd-recipes-list' }, ...recipeNodes)
+    ) : el('div', { class:'cd-recipes-empty' }, '関連熟語なし'),
   );
   $('#codex-modal .modal-card').appendChild(pop);
 }
