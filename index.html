@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ぽもじかん">
-<meta name="description" content="字を集め、育てる、時を凝縮するポモドーロ。ひらがなから始まり、カタカナ・数字・英語・漢字へ★1-★10 で段階解放。874字+274熟語、4体パーティ育成。">
+<meta name="description" content="字（ぽもじ）が餅のように降るポモドーロ。★1〜★16 で字種が広がり、ストックして文章モードで日記・俳句・短歌に編める。育つ特性・無限Lv・PWA対応。">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260516x">
+<link rel="stylesheet" href="style.css?v=20260516y">
 </head>
 <body data-mode="idle">
 
@@ -69,6 +69,8 @@
 
     <div class="progress-pill" id="progress-pill">
       <span class="pp-band" id="pp-band">★1帯</span>
+      <span class="pp-sep">・</span>
+      <span class="pp-leader" id="pp-leader">主人公 未選択</span>
       <span class="pp-sep">・</span>
       <span class="pp-cycles" id="pp-cycles">0 回完了</span>
     </div>
@@ -238,47 +240,49 @@
   </div>
 </div>
 
-<!-- 初回オンボーディング -->
+<!-- 初回オンボーディング ── v4 体系（4ステップ）-->
 <div class="modal" id="onboarding-modal" role="dialog" aria-modal="true">
   <div class="modal-card onboarding-card">
     <div class="ob-step" data-step="1">
       <div class="ob-icon">🌧</div>
       <h2 class="ob-title">ぽもじかん へようこそ</h2>
       <p class="ob-text">
-        <strong>集中の時間</strong>に「字」が降ってきて、<br>
-        <strong>休憩の時間</strong>に「泡」となって育つ。<br>
-        ── ポモドーロと文字育成を合わせた集中アプリです。
+        集中の時間 ── <strong>字（ぽもじ）</strong>が餅のように降ってくる。<br>
+        休憩の時間 ── 字が <strong>泡</strong>となって主人公を育てる。<br>
+        <small>ポモドーロ × 文字育成 × 文章モード。重力と引力の物理可視化。</small>
       </p>
     </div>
     <div class="ob-step" data-step="2" hidden>
       <div class="ob-icon">🎯</div>
-      <h2 class="ob-title">3 つの操作だけ</h2>
+      <h2 class="ob-title">3 つの操作</h2>
       <p class="ob-text">
-        <strong>① 始める</strong>でタイマー開始<br>
-        <strong>② 降ってきた字を ドラッグ</strong>で重ねると <span style="color:var(--gold)">融合</span><br>
-        <strong>③ タップ</strong>で消滅・経験値化
+        <strong>① ▶ 始める</strong> でタイマー開始<br>
+        <strong>② ドラッグして重ねる</strong> ── 同じ字なら <span style="color:var(--gold)">合体・進化</span>（2048式）<br>
+        <strong>③ タップ</strong> ── 字が <span style="color:#ff9090">はじけて</span> ストック＋経験値化<br>
+        <small>字をストックすると、パーティ字も特性も育ちます。</small>
       </p>
     </div>
     <div class="ob-step" data-step="3" hidden>
       <div class="ob-icon">🌱</div>
-      <h2 class="ob-title">主人公を育てる</h2>
+      <h2 class="ob-title">主人公とパーティ</h2>
       <p class="ob-text">
-        最初に <strong>ひらがな 1 体</strong> を主人公に選ぶ。<br>
-        作業中に貯めた字は、<strong>休憩中に泡となって浮上</strong>し、<br>
-        主人公の経験値になります。<br>
-        <small>仲間 3 体は、後から解放される字を追加できます。</small>
+        まず <strong>ひらがな 1 字</strong>を主人公に選ぶ（リーダー）。<br>
+        休憩で泡が浮上 → 主人公の経験値に。<br>
+        <small>★1=1個 ／ ★8=2個 ／ ★16=3個＋✦レア特性 持ち。<br>
+        高レアな字を仲間にするほど、特性も派手になる。</small>
       </p>
     </div>
     <div class="ob-step" data-step="4" hidden>
       <div class="ob-icon">✨</div>
-      <h2 class="ob-title">★ 段階で世界が広がる</h2>
+      <h2 class="ob-title">★1-★16・無限 Lv</h2>
       <p class="ob-text">
-        最初は <strong>★1 ひらがな</strong>だけ。<br>
-        パーティの Lv が上がるたび、降る字の種類が広がる：<br>
+        最初は <strong>★1 ひらがな</strong>だけ。リーダー Lv に応じて：<br>
         <small style="line-height:1.7;display:inline-block;margin-top:6px;">
-        ★2 カタカナ ・ ★3 数字 ・ ★4 英語 ・<br>
-        ★5〜 漢字（基礎→日常→深淵）・ ★10 神字。
+        ★2 カタカナ → ★3 数字 → ★4 英語 → ★5 ローマ<br>
+        ★6〜★11 小1〜小6漢字 ・ ★12 中学 ・ ★13 高校<br>
+        ★14 人名 ・ ★15 古典 ・ ★16 神字（七徳七大罪）
         </small>
+        <br>Lv に上限なし。<strong>𓂀 Lv 10000</strong> まで字も特性も育つ。
       </p>
     </div>
     <div class="ob-dots">
@@ -501,7 +505,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260516x" defer></script>
-<script src="app.js?v=20260516x" defer></script>
+<script src="codex.js?v=20260516y" defer></script>
+<script src="app.js?v=20260516y" defer></script>
 </body>
 </html>

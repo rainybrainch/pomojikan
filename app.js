@@ -2594,6 +2594,16 @@ function updateProgressPill() {
     '⌛ 準備中';
   bandEl.textContent = `${modeLabel} ・ ${tierName}帯 ${achName}`;
   cycEl.textContent = `${STATE.stats.totalCycles || 0} 回完了`;
+  // リーダー Lv を表示
+  const ldrEl = $('#pp-leader');
+  if (ldrEl) {
+    if (isPartyChosen()) {
+      const hero = STATE.party.members[STATE.party.hero || 0];
+      ldrEl.textContent = `${hero.char} Lv.${hero.level}`;
+    } else {
+      ldrEl.textContent = '主人公 未選択';
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2858,6 +2868,45 @@ function bindEvents() {
   });
 
   document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // キーボードショートカット（PC向け）
+  document.addEventListener('keydown', (e) => {
+    // input/textarea にフォーカスがあるときは無効
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) return;
+    // 修飾キーは無視
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    switch (e.key) {
+      case 'Escape':
+        // 開いているモーダルを閉じる、なければドロワー閉じる
+        $$('.modal.show').forEach(m => m.classList.remove('show'));
+        const dr = $('#menu-drawer');
+        if (dr && dr.classList.contains('show')) {
+          dr.classList.remove('show');
+          $('#btn-menu')?.setAttribute('aria-expanded', 'false');
+        }
+        break;
+      case ' ': // Space = 開始/停止
+        e.preventDefault();
+        $('#main-btn')?.click();
+        break;
+      case 'm': case 'M':
+        $('#btn-menu')?.click();
+        break;
+      case 'b': case 'B':
+        openCodex();
+        break;
+      case 'h': case 'H': case '?':
+        $('#help-modal')?.classList.add('show');
+        break;
+      case 'w': case 'W':
+        openWritings();
+        break;
+      case 's': case 'S':
+        openStats();
+        break;
+    }
+  });
 
   // close modals on backdrop click
   $$('.modal').forEach(modal => {
