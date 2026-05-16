@@ -2211,7 +2211,7 @@ function applyPreset(idx) {
 // ═══════════════════════════════════════════════════════════════
 // 図鑑
 // ═══════════════════════════════════════════════════════════════
-let codexFilter = { tier: 'all', onlySeen: false };
+let codexFilter = { tier: 'all', season: 'all', onlySeen: false };
 function openCodex() {
   $('#codex-modal').classList.add('show');
   renderCodex();
@@ -2262,10 +2262,36 @@ function renderCodex() {
   const codex = window.KANJI_CODEX || [];
   const onlyShow = (tierIdx) =>
     codexFilter.tier === 'all' || String(tierIdx) === codexFilter.tier;
+  const seasonMatch = (k) =>
+    codexFilter.season === 'all' || (k.season || 'S1') === codexFilter.season;
+
+  // S3/S4（熟語）が選ばれているときは熟語をリスト表示
+  if (codexFilter.season === 'S3' || codexFilter.season === 'S4') {
+    const recipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    const section = el('div', { class:'codex-section' },
+      el('h3', { class:'codex-section-title' },
+        `${codexFilter.season} ${codexFilter.season === 'S3' ? '熟語' : '四字熟語'}（${recipes.length} 個）`)
+    );
+    const list = el('div', { class:'codex-yoji-list' });
+    recipes.forEach(r => {
+      const rIdx = RARITY_TIERS.indexOf(r.rarity);
+      const item = el('div', { class:`codex-yoji-item rarity-${rIdx+1}` },
+        el('span', { class:'cy-text' }, r.word),
+        el('span', { class:'cy-meta' }, `${r.rarity} ${r.desc || ''}`)
+      );
+      list.appendChild(item);
+    });
+    section.appendChild(list);
+    grid.appendChild(section);
+    const discovered = Object.keys(STATE.collection).length;
+    const totalKanji = codex.length;
+    $('#codex-summary').textContent = `発見 ${discovered} / ${totalKanji} 字 ／ 熟語 ${recipes.length} 個`;
+    return;
+  }
 
   RARITY_TIERS.forEach((tier, tierIdx) => {
     if (!onlyShow(tierIdx)) return;
-    const tierKanji = codex.filter(k => k.rarity === tier);
+    const tierKanji = codex.filter(k => k.rarity === tier && seasonMatch(k));
     const visible = tierKanji.filter(k => {
       if (!codexFilter.onlySeen) return true;
       const c = k.char || k.c;
@@ -2497,6 +2523,12 @@ function bindEvents() {
   $$('.codex-tab').forEach(t => t.addEventListener('click', () => {
     codexFilter.tier = t.dataset.tier;
     $$('.codex-tab').forEach(x => x.classList.toggle('active', x === t));
+    renderCodex();
+  }));
+  // シーズンタブ（RBAI 公式構想）
+  $$('.codex-season').forEach(s => s.addEventListener('click', () => {
+    codexFilter.season = s.dataset.season;
+    $$('.codex-season').forEach(x => x.classList.toggle('active', x === s));
     renderCodex();
   }));
   $('#codex-only-seen').addEventListener('change', (e) => {
