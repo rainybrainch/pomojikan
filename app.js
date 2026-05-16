@@ -40,9 +40,26 @@ const TIER_DROP_COUNT = [
 // レアごとの落下速度倍率（高レアほどゆっくり、ドラマを作る）
 const TIER_FALL_MUL = [1.0, 0.97, 0.94, 0.90, 0.86, 0.82, 0.78, 0.74, 0.70, 0.66, 0.62, 0.58, 0.54, 0.50, 0.46, 0.42];
 
-const EVO_STAGE_LV = [10, 30, 70];          // Stage 1 / 2 / 3 の Lv 閾値
-const EVO_GLYPH = ['', '✦', '✧', '☀'];      // 進化マーカー
-const EVO_STYLE = ['kai', 'gyo', 'sou', 'sou'];  // 楷／行／草／（最上位も草で十分）
+// 無限 Lv 設計（v4 / 2026-05-16）── ★は16段階で頭打ちでも Lv は無限に育つ
+const EVO_STAGE_LV = [
+  10,    // 1: 楷書
+  30,    // 2: 行書
+  70,    // 3: 草書
+  150,   // 4: 篆書
+  300,   // 5: 甲骨
+  600,   // 6: 神代文字
+  1000,  // 7: 超越
+  2000,  // 8: 星屑
+  5000,  // 9: 神話
+  10000, // 10: 創造主
+];
+const EVO_GLYPH = ['', '✦', '✧', '☀', '☆', '✯', '✪', '❂', '✺', '✹', '𓂀'];
+const EVO_STYLE = ['kai', 'gyo', 'sou', 'tens', 'kou', 'shin', 'choetsu', 'hoshi', 'shinwa', 'sozo', 'sozo'];
+
+// Lv に応じた動的グロー半径（対数的に増える ・ Lv 100 で約 30px、Lv 10000 で約 80px）
+function lvGlowRadius(lv) {
+  return Math.min(120, 8 + Math.log10(Math.max(1, lv)) * 22);
+}
 
 const TIMER_PRESETS = [
   { label:'25/5', work:25*60, rest:5*60 },
@@ -217,9 +234,10 @@ function aggregatePartyPerks() {
 // EXP 関数
 const expForLevel = (lv) => Math.floor(10 * Math.pow(lv, 1.6));
 const evolutionStage = (lv) => {
-  if (lv >= EVO_STAGE_LV[2]) return 3;
-  if (lv >= EVO_STAGE_LV[1]) return 2;
-  if (lv >= EVO_STAGE_LV[0]) return 1;
+  // 0=未進化、1〜10=各書体段階。無限 Lv 対応（10000+ は全て stage 10）
+  for (let i = EVO_STAGE_LV.length - 1; i >= 0; i--) {
+    if (lv >= EVO_STAGE_LV[i]) return i + 1;
+  }
   return 0;
 };
 
@@ -1276,20 +1294,28 @@ function spawnPomoji(opts={}) {
   const y = (opts.y != null) ? opts.y : -40;
 
   let styleClass = 'kai';
+  let evoStage = 0;
+  let partyLv = 0;
   const partyIdx = partyContainsChar(char);
   if (partyIdx >= 0) {
-    const stage = evolutionStage(STATE.party.members[partyIdx].level);
-    styleClass = EVO_STYLE[stage];
+    partyLv = STATE.party.members[partyIdx].level;
+    evoStage = evolutionStage(partyLv);
+    styleClass = EVO_STYLE[evoStage] || 'kai';
   }
 
   const isFirstSee = !STATE.collection[char];
 
-  // 「新」バッジは常時表示しない（v2 / 2026-05-16 ユーザー要望）
-  // 出会った瞬間に toast で一瞬「新！ {char}」と通知するだけ
+  // パーティ字で高 Lv なら追加グロー（対数スケール ・ 無限対応）
+  const styleObj = { left: x+'px', top: y+'px' };
+  if (partyLv > 50) {
+    const glow = lvGlowRadius(partyLv);
+    styleObj.filter = `drop-shadow(0 0 ${glow}px var(--r-color))`;
+  }
+
   const node = el('div', {
-    class: `pomoji ${tierClass} font-${styleClass}`,
-    dataset: { id, char, rarity, tier: tierIdx },
-    style: { left: x+'px', top: y+'px' }
+    class: `pomoji ${tierClass} font-${styleClass}${evoStage > 0 ? ` evo-${evoStage}` : ''}`,
+    dataset: { id, char, rarity, tier: tierIdx, evo: evoStage },
+    style: styleObj
   }, char);
   field.appendChild(node);
 
@@ -1775,20 +1801,20 @@ function renderParty() {
   STATE.party.members.forEach((m, idx) => {
     const isHero = (idx === STATE.party.hero);
     const stage = evolutionStage(m.level);
-    const styleClass = EVO_STYLE[stage];
+    const styleClass = EVO_STYLE[stage] || 'kai';
     const needExp = expForLevel(m.level + 1);
     const tierIdx = RARITY_TIERS.indexOf(m.rarity);
     const perkLabels = (m.perks || []).map(pid => PERKS[pid]?.name).filter(Boolean).join('・');
     const card = el('div', {
-      class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}`,
-      dataset: { idx },
+      class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}${stage > 0 ? ' evo-' + stage : ''}`,
+      dataset: { idx, evo: stage, lv: m.level },
       title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}`,
       onclick: () => openPartyMemberAction(idx)
     },
-      el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage]) : null),
+      el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage] || '𓂀') : null),
       el('div', { class:'pc-meta' },
         el('span', { class:'pc-name' }, isHero ? '★ ' + m.char : m.char),
-        el('span', { class:'pc-lv' }, 'Lv.' + m.level),
+        el('span', { class: 'pc-lv' + (m.level >= 1000 ? ' lv-godly' : m.level >= 100 ? ' lv-high' : '') }, 'Lv.' + m.level),
       ),
       // 通常画面では特性ラベル非表示（編成モーダル内でだけ見える）
       el('div', { class:'pc-bar' },

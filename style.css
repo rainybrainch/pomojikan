@@ -1310,6 +1310,31 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
 }
 .wh-del:hover{ color:#ff6868; }
 
+/* ════════════════════ 無限 Lv 段階エフェクト（v4 / 2026-05-16）════════════════════ */
+/* パーティカードの Lv 表示色 */
+.pc-lv{ font-family:'JetBrains Mono', monospace; }
+.pc-lv.lv-high  { color:#f0c8a8; text-shadow:0 0 6px rgba(240,200,168,.6); font-weight:700; }
+.pc-lv.lv-godly { color:#fff5b0; text-shadow:0 0 10px gold, 0 0 4px white; font-weight:900; animation:rainbowHue 4s linear infinite; }
+
+/* 字（落下中・着地後）の進化段階別グロー（evo-4 以降は無限スケール対数 + 段階追加演出）*/
+.pomoji.evo-4 { box-shadow:inset 0 -4px 8px rgba(120,90,40,.3), inset 0 3px 4px rgba(255,250,230,.55), 0 0 24px var(--r-glow), 0 0 6px #fff inset; }
+.pomoji.evo-5 { box-shadow:inset 0 -4px 8px rgba(120,90,40,.3), inset 0 3px 4px rgba(255,250,230,.6),  0 0 32px var(--r-glow), 0 0 10px gold inset; }
+.pomoji.evo-6 { box-shadow:inset 0 -4px 8px rgba(120,90,40,.3), inset 0 3px 4px rgba(255,250,230,.7),  0 0 40px var(--r-glow), 0 0 14px gold inset, 0 0 50px rgba(255,200,50,.5); }
+.pomoji.evo-7 { animation:rainbowHue 5s linear infinite, sparkleHover 1.6s ease-in-out infinite; }
+.pomoji.evo-8,
+.pomoji.evo-9,
+.pomoji.evo-10{ animation:brainJuice 1.6s ease-in-out infinite, rainbowHue 3s linear infinite; }
+/* パーティカードも段階で派手化 */
+.party-card.evo-5,
+.party-card.evo-6,
+.party-card.evo-7{ box-shadow:0 0 20px var(--r-glow), 0 0 6px gold inset; }
+.party-card.evo-8,
+.party-card.evo-9,
+.party-card.evo-10{
+  box-shadow:0 0 30px gold, 0 0 14px white inset;
+  animation:rainbowHue 4s linear infinite;
+}
+
 /* ════════════════════ PC 配信モード（?stream=1）── OBS オーバーレイ用 ════════════════════ */
 /* RBAI 公式構想：PC タイマーモード＝配信・YouTube 連携 */
 body.stream-mode{
