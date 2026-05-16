@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260517c">
+<link rel="stylesheet" href="style.css?v=20260517d">
 </head>
 <body data-mode="idle">
 
@@ -200,9 +200,12 @@
       <button class="codex-tab" data-tier="14">★15</button>
       <button class="codex-tab" data-tier="15">★16</button>
     </div>
-    <label class="codex-toggle">
-      <input type="checkbox" id="codex-only-seen"> <span>発見済のみ表示</span>
-    </label>
+    <div class="codex-controls">
+      <input type="search" id="codex-search" class="codex-search" placeholder="🔍 字・タグ・熟語で絞り込み">
+      <label class="codex-toggle">
+        <input type="checkbox" id="codex-only-seen"> <span>発見済のみ</span>
+      </label>
+    </div>
     <div class="codex-grid" id="codex-grid"></div>
   </div>
 </div>
@@ -505,7 +508,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260517c" defer></script>
-<script src="app.js?v=20260517c" defer></script>
+<script src="codex.js?v=20260517d" defer></script>
+<script src="app.js?v=20260517d" defer></script>
 </body>
 </html>

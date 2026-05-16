@@ -1383,6 +1383,39 @@ body.stream-mode .party-bar{
   border-radius:12px; padding:8px;
 }
 
+/* ════════════════════ 書体進化バースト（onLevelUp で evoStage が上がった瞬間）════════════════════ */
+.evolution-burst{
+  position:absolute;
+  width:120px; height:180px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'Noto Serif JP', serif;
+  font-weight:900;
+  font-size:5rem;
+  color:var(--r-color, gold);
+  text-shadow:
+    0 0 24px gold,
+    0 0 12px white,
+    0 2px 8px rgba(0,0,0,.5);
+  pointer-events:none;
+  z-index:60;
+  animation:evolutionBurst 1.7s cubic-bezier(.22,1.2,.36,1) forwards;
+  filter:drop-shadow(0 0 30px gold);
+}
+.evolution-burst .eb-glyph{
+  font-size:1.6rem;
+  color:#fff5b0;
+  margin-top:8px;
+  letter-spacing:.2em;
+  text-shadow:0 0 12px gold;
+}
+@keyframes evolutionBurst{
+  0%   { opacity:0; transform:scale(.3) rotate(-12deg); filter:drop-shadow(0 0 8px gold) blur(8px); }
+  20%  { opacity:1; transform:scale(1.4) rotate(4deg); filter:drop-shadow(0 0 50px gold) drop-shadow(0 0 20px white) blur(0); }
+  50%  { opacity:1; transform:scale(1.1) rotate(-1deg); filter:drop-shadow(0 0 36px gold); }
+  85%  { opacity:.8; transform:scale(.95) translateY(-30px); }
+  100% { opacity:0; transform:scale(.7) translateY(-80px); filter:drop-shadow(0 0 8px gold) blur(6px); }
+}
+
 /* ════════════════════ ポモドーロ完了時のパーティ光放射 ════════════════════ */
 /* RBAI 公式構想：「ポモドーロ完了時に文字がパーッと光る」*/
 .pomoji.persistent.cycle-burst{
@@ -2096,6 +2129,27 @@ body[data-mode="rest"] #tank{
 .codex-tab[data-tier="13"].active{ border-color:#ecc1d4; color:#f0d3e0; }
 .codex-tab[data-tier="14"].active{ border-color:#f0c8a8; color:#f4d6bb; }
 .codex-tab[data-tier="15"].active{ border-color:#f0d48a; color:#f0d48a; box-shadow:0 0 8px rgba(240,212,138,.5); }
+.codex-controls{
+  display:flex; gap:10px; align-items:center; margin:8px 0;
+  flex-wrap:wrap;
+}
+.codex-search{
+  flex:1; min-width:180px;
+  background:rgba(0,0,0,.3);
+  border:1px solid rgba(135,206,235,.3);
+  color:var(--ink);
+  padding:7px 12px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:.85rem;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.codex-search::placeholder{ color:var(--ink-mute); }
+.codex-search:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 2px rgba(240,212,138,.18);
+}
 .codex-toggle{
   display:flex;align-items:center;gap:8px;
   font-size:.76rem;color:var(--ink-mute);

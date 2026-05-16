@@ -938,16 +938,44 @@ function updatePartyXpUI() {
 }
 
 function onLevelUp(member, idx) {
+  // 書体進化を判定（前 Lv との比較）
+  const prevStage = evolutionStage(member.level - 1);
+  const newStage  = evolutionStage(member.level);
+  const evolved = (newStage > prevStage);
+
   toast(`${member.char} → Lv.${member.level}`, member.rarity);
   updateUnlockTier();
   renderParty();
   updateProgressPill();
+
   // Flash the leveled card
   const card = document.querySelector(`.party-card[data-idx="${idx}"]`);
   if (card) {
     card.classList.add('levelup-flash');
     setTimeout(() => card.classList.remove('levelup-flash'), 1000);
   }
+
+  // 書体進化時 ── 派手な祝祭演出（フィールド全体に光放射）
+  if (evolved) {
+    const stageNames = ['', '楷書', '行書', '草書', '篆書', '甲骨', '神代文字', '超越', '星屑', '神話', '創造主'];
+    const glyph = EVO_GLYPH[newStage] || '𓂀';
+    toast(`${glyph} 書体進化「${stageNames[newStage] || ''}」 ${member.char}`, '★16');
+    spawnEvolutionBurst(member.char, glyph, member.rarity);
+  }
+}
+
+// 書体進化のフィールドバースト（中央に大きく字＋光が放射）
+function spawnEvolutionBurst(char, glyph, rarity) {
+  const field = $('#play-field');
+  if (!field) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  const rIdx = RARITY_TIERS.indexOf(rarity);
+  const node = el('div', {
+    class: `evolution-burst rarity-${rIdx + 1}`,
+    style: { left: (W/2 - 60) + 'px', top: (H/2 - 90) + 'px' },
+  }, char, el('span', { class:'eb-glyph' }, glyph));
+  field.appendChild(node);
+  setTimeout(() => node.remove(), 1700);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2477,7 +2505,7 @@ function applyPreset(idx) {
 // ═══════════════════════════════════════════════════════════════
 // 図鑑
 // ═══════════════════════════════════════════════════════════════
-let codexFilter = { tier: 'all', season: 'all', onlySeen: false };
+let codexFilter = { tier: 'all', season: 'all', onlySeen: false, query: '' };
 function openCodex() {
   $('#codex-modal').classList.add('show');
   renderCodex();
@@ -2607,9 +2635,22 @@ function renderCodex() {
     return;
   }
 
+  const q = (codexFilter.query || '').trim().toLowerCase();
+  const matchQuery = (k) => {
+    if (!q) return true;
+    const c = (k.char || k.c).toLowerCase();
+    if (c.includes(q)) return true;
+    if ((k.tags || []).some(t => t.toLowerCase().includes(q))) return true;
+    if ((k.desc || '').toLowerCase().includes(q)) return true;
+    // 熟語に含まれる字も検索（CHAR_TO_WORDS）
+    const words = (window.CHAR_TO_WORDS || {})[k.char || k.c] || [];
+    if (words.some(w => w.word.toLowerCase().includes(q))) return true;
+    return false;
+  };
+
   RARITY_TIERS.forEach((tier, tierIdx) => {
     if (!onlyShow(tierIdx)) return;
-    const tierKanji = codex.filter(k => k.rarity === tier && seasonMatch(k));
+    const tierKanji = codex.filter(k => k.rarity === tier && seasonMatch(k) && matchQuery(k));
     const visible = tierKanji.filter(k => {
       if (!codexFilter.onlySeen) return true;
       const c = k.char || k.c;
@@ -2925,6 +2966,18 @@ function bindEvents() {
     codexFilter.onlySeen = e.target.checked;
     renderCodex();
   });
+  // 図鑑検索バー（debounce 150ms）
+  const cs = $('#codex-search');
+  if (cs) {
+    let _csT = 0;
+    cs.addEventListener('input', (e) => {
+      clearTimeout(_csT);
+      _csT = setTimeout(() => {
+        codexFilter.query = e.target.value;
+        renderCodex();
+      }, 150);
+    });
+  }
 
   bindOpt('#btn-stats', openStats);
   $('#stats-close').addEventListener('click', closeStats);
