@@ -181,11 +181,11 @@ function buildKanjiCodex(){
   addStr(KATAKANA_STR,     '★2',  ['カタカナ','音']);
   addStr(NUMERAL_STR,      '★3',  ['数字','数']);
   addStr(ALPHABET_STR,     '★4',  ['英語','異邦']);
-  addStr(KANJI_10KYU_STR,  '★5',  ['漢字','拾級','基礎']);
-  addStr(KANJI_5KYU_STR,   '★6',  ['漢字','五級','日常']);
-  addStr(KANJI_3KYU_STR,   '★7',  ['漢字','三級']);
-  addStr(KANJI_1KYU_STR,   '★8',  ['漢字','一級','深']);
-  addStr(KANJI_SHODAN_STR, '★9',  ['漢字','初段','美']);
+  addStr(KANJI_10KYU_STR,  '★5',  ['漢字','五段','基礎']);
+  addStr(KANJI_5KYU_STR,   '★6',  ['漢字','六段','日常']);
+  addStr(KANJI_3KYU_STR,   '★7',  ['漢字','七段','慣用']);
+  addStr(KANJI_1KYU_STR,   '★8',  ['漢字','八段','深']);
+  addStr(KANJI_SHODAN_STR, '★9',  ['漢字','九段','美']);
   addStr(KANJI_JUDAN_STR,  '★10', ['漢字','拾段','神字']);
   return all;
 }

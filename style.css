@@ -857,6 +857,7 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
   padding:8px;
 }
 .wp-cell{
+  position:relative;
   aspect-ratio:1/1;
   display:flex; align-items:center; justify-content:center;
   background:rgba(255,255,255,.04);
@@ -871,6 +872,18 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
 }
 .wp-cell:hover{ transform:scale(1.1); box-shadow:0 0 8px var(--r-glow); }
 .wp-cell:active{ transform:scale(.95); }
+.wp-count{
+  position:absolute;
+  bottom:1px; right:2px;
+  font-size:.55rem;
+  font-weight:900;
+  color:var(--ink-mute);
+  background:rgba(0,0,0,.6);
+  padding:0 3px;
+  border-radius:6px;
+  font-family:'JetBrains Mono', monospace;
+  line-height:1.3;
+}
 
 .writings-history{ margin-top:16px; }
 .wh-label{ font-size:.78rem; color:var(--ink-mute); margin-bottom:6px; }

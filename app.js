@@ -18,12 +18,12 @@ const TIER_ACHIEVEMENT = [
   'もうひとつの音',     // ★2 カタカナ
   '量と順序',           // ★3 数字
   '異邦の文字',         // ★4 英語
-  '学びの初日',         // ★5 拾級漢字
-  '日常の漢字',         // ★6 五級漢字
-  '使い慣れた漢字',     // ★7 三級漢字
-  '深まりの漢字',       // ★8 一級漢字
-  '美と古典',           // ★9 初段漢字
-  '七徳七大罪の領域',   // ★10 拾段漢字
+  '五段 ・ 基礎の漢字', // ★5
+  '六段 ・ 日常の漢字', // ★6
+  '七段 ・ 慣用の漢字', // ★7
+  '八段 ・ 深まりの漢字', // ★8
+  '九段 ・ 美と古典',   // ★9
+  '拾段 ・ 七徳七大罪・神字', // ★10
 ];
 // サイクル完了時のボーナス粒数（作業中の継続落下とは別）
 const TIER_DROP_COUNT = [
@@ -237,6 +237,7 @@ const DEFAULT_STATE = {
   userCreatedAt: null,            // 発行日時
   onboardingDone: false,          // 初回オンボーディング完了
   writings: [],                   // 文章モード v0.1 ─ 保存した文章配列
+  stock: {},                      // 文章モード v0.2 ─ 字の所有数 { char: N }
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -292,6 +293,8 @@ function loadState() {
       STATE.timer = Object.assign({}, DEFAULT_STATE.timer, saved.timer||{});
       STATE.stats = Object.assign({}, DEFAULT_STATE.stats, saved.stats||{});
       STATE.collection = saved.collection || {};
+      STATE.writings   = saved.writings || [];
+      STATE.stock      = saved.stock || {};
     }
   } catch (e) { console.warn('loadState failed:', e); }
 }
@@ -1216,6 +1219,7 @@ function expireAsExp(p) {
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
   const exp = Math.max(1, Math.pow(2, rIdx) * 2);  // dissolve より控えめ（自然吸収）
   awardExpToParty(p.char, exp) || _orphanExp(exp);
+  addStock(p.char);  // ストックに加算
   if (p.el) {
     p.el.classList.add('dissolve');
     spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, p.rarity);
@@ -1564,8 +1568,15 @@ function dissolvePomoji(p) {
   const exp = Math.max(1, Math.pow(2, rIdx) * 3);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
+  addStock(p.char);  // ストックに加算（文章モードで使える）
   p.el.classList.add('dissolve');
   setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
+}
+
+// 字のストック加算（文章モード v0.2 ─ 所有数）
+function addStock(char) {
+  if (!STATE.stock) STATE.stock = {};
+  STATE.stock[char] = (STATE.stock[char] || 0) + 1;
 }
 
 // 浮上する「+N XP」表示（ジューシー要素）
@@ -1651,6 +1662,7 @@ function mergePomoji(src, target) {
     toast(`✦ 同質共振「${shared}」XP+50%`);
   }
 
+  addStock(src.char);  // 合体で消える側もストックに（書ける字を増やす）
   src.el.classList.add('dissolve');
   setTimeout(() => { src.el.remove(); livePomoji.delete(src.id); }, 400);
   saveState();
@@ -1688,7 +1700,7 @@ function renderParty() {
         el('span', { class:'pc-name' }, isHero ? '★ ' + m.char : m.char),
         el('span', { class:'pc-lv' }, 'Lv.' + m.level),
       ),
-      el('div', { class:'pc-perks' }, perkLabels),
+      // 通常画面では特性ラベル非表示（編成モーダル内でだけ見える）
       el('div', { class:'pc-bar' },
         el('div', { class:'pc-fill', style: { width: Math.min(100, (m.exp / needExp) * 100) + '%' } })
       ),
@@ -1877,27 +1889,52 @@ function renderWritingsModal() {
   }
   genre.textContent = detectGenre(_currentWriting.map(x=>x.char));
 
-  // 発見済プール
+  // 所有ストックプール（stock > 0 の字だけ・消費は保存時に確定）
   const pool = $('#wp-grid');
   pool.innerHTML = '';
   const codex = window.KANJI_CODEX || [];
-  const seen = codex.filter(k => (STATE.collection[k.char || k.c] || 0) > 0);
-  if (seen.length === 0) {
-    pool.appendChild(el('div', { class:'wc-empty' }, '字をまだ発見していません ── タイマーを開始してね'));
+  if (!STATE.stock) STATE.stock = {};
+  // 編集中で既に使っている分を仮消費（プール上の残数を正しく見せる）
+  const tempUsed = {};
+  for (const item of _currentWriting) {
+    tempUsed[item.char] = (tempUsed[item.char] || 0) + 1;
+  }
+  const owned = codex.filter(k => {
+    const c = k.char || k.c;
+    const stockN = STATE.stock[c] || 0;
+    const usedN  = tempUsed[c] || 0;
+    return (stockN - usedN) > 0;
+  });
+  if (owned.length === 0) {
+    const totalStock = Object.values(STATE.stock).reduce((a,b)=>a+b,0);
+    const msg = totalStock === 0
+      ? '所有している字がまだありません ── タイマーで字を消すと所有数 +1（5分寿命でも吸収時 +1）'
+      : '使える字を全部使い切りました。クリアまたは保存してください。';
+    pool.appendChild(el('div', { class:'wc-empty' }, msg));
   } else {
-    // レア順（低→高）でソート
-    seen.sort((a,b) => RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity));
-    seen.forEach(k => {
+    // レア順（低→高）→ 同レアは所有数の多い順
+    owned.sort((a,b) => {
+      const dr = RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity);
+      if (dr !== 0) return dr;
+      const ca = a.char || a.c, cb = b.char || b.c;
+      return (STATE.stock[cb]||0) - (STATE.stock[ca]||0);
+    });
+    owned.forEach(k => {
       const c = k.char || k.c;
       const rIdx = RARITY_TIERS.indexOf(k.rarity);
+      const stockN = STATE.stock[c] || 0;
+      const usedN  = tempUsed[c] || 0;
+      const remain = stockN - usedN;
       const cell = el('div', {
         class: `wp-cell rarity-${rIdx + 1}`,
-        title: `${c} (${k.rarity})`,
+        title: `${c} (${k.rarity}) ・ 所有 ${remain}/${stockN}`,
         onclick: () => {
           _currentWriting.push({ char: c, rarity: k.rarity });
           renderWritingsModal();
         }
-      }, c);
+      }, c,
+        el('span', { class:'wp-count' }, remain)
+      );
       pool.appendChild(cell);
     });
   }
@@ -1938,6 +1975,12 @@ function saveCurrentWriting() {
   const today = new Date();
   const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   if (!STATE.writings) STATE.writings = [];
+  if (!STATE.stock) STATE.stock = {};
+  // ストック消費を確定（使った字を所有数から引く）
+  for (const item of _currentWriting) {
+    STATE.stock[item.char] = Math.max(0, (STATE.stock[item.char] || 0) - 1);
+    if (STATE.stock[item.char] === 0) delete STATE.stock[item.char];
+  }
   STATE.writings.push({ text, genre, date, chars: _currentWriting.slice() });
   saveState();
   toast(`📜 保存：${genre}「${text}」`);
