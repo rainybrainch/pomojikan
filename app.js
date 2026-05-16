@@ -312,6 +312,13 @@ function aggregatePartyPerks() {
     agg.expMul *= m;
     agg.dropCountAdd = Math.floor(agg.dropCountAdd * m);
   }
+  // パーティコンボボーナス（熟語成立で乗算）
+  const combo = getComboBonus();
+  if (combo.expMul > 1.0) {
+    agg.expMul *= combo.expMul;
+    agg.evoDiscount += combo.evoBoost;
+    agg.activeCombos = combo.combos;
+  }
   return agg;
 }
 
@@ -910,6 +917,83 @@ const weightedChoose = (items, weights) => {
 function partyAverageLevel() {
   if (!STATE.party || !STATE.party.members.length) return 0;
   return STATE.party.members.reduce((s,m) => s + m.level, 0) / STATE.party.members.length;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// パーティコンボ ── 主人公+仲間の字組み合わせが熟語と一致したら発動
+// 公式構想：4体パーティで「春夏秋冬」「諸行無常」等の四字熟語コンボ
+// ═══════════════════════════════════════════════════════════════
+function detectPartyCombos() {
+  if (!STATE.party || !STATE.party.members.length) return [];
+  const partyChars = STATE.party.members.map(m => m.char);
+  const partySet = new Set(partyChars);
+  const recipes = window.YOJI_RECIPES || [];
+  const matches = [];
+  for (const r of recipes) {
+    if (!r.chars || r.chars.length === 0) continue;
+    // r.chars すべてがパーティに含まれるか
+    if (r.chars.every(c => partySet.has(c))) {
+      matches.push(r);
+    }
+  }
+  // レア順（高い順）→ 字数（多い順）でソート
+  matches.sort((a,b) => {
+    const ra = RARITY_TIERS.indexOf(a.rarity);
+    const rb = RARITY_TIERS.indexOf(b.rarity);
+    if (ra !== rb) return rb - ra;
+    return b.chars.length - a.chars.length;
+  });
+  return matches;
+}
+
+// コンボのボーナス倍率合計（EXP × multiplier ＋ 進化加速）
+function getComboBonus() {
+  const combos = detectPartyCombos();
+  let expMul = 1.0;
+  let evoBoost = 0;
+  for (const r of combos) {
+    const n = r.chars.length;
+    if (n === 2)      expMul += 0.10;  // 二字熟語：EXP +10%
+    else if (n === 3) expMul += 0.30;  // 三字熟語：EXP +30%
+    else if (n === 4) { expMul += 0.60; evoBoost += 0.10; }  // 四字熟語：EXP +60% & 進化加速
+    else if (n >= 5)  { expMul += 1.0;  evoBoost += 0.20; }  // 五字以上：EXP +100% & 大加速
+  }
+  return { combos, expMul, evoBoost };
+}
+
+// パーティ Lv up / 編成変更時にチェック ── 初発動なら祝祭演出
+let _comboPrev = new Set();
+function checkComboPickup() {
+  const combos = detectPartyCombos();
+  const current = new Set(combos.map(r => r.word));
+  // 新規発動した熟語
+  for (const r of combos) {
+    if (!_comboPrev.has(r.word)) {
+      // 初発動
+      spawnComboBurst(r);
+      playSFX(r.chars.length >= 4 ? 'milestone' : 'merge');
+      toast(`⚡ コンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
+    }
+  }
+  _comboPrev = current;
+}
+
+// コンボ発動演出（画面中央バースト）
+function spawnComboBurst(recipe) {
+  const field = $('#play-field');
+  if (!field) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  const rIdx = RARITY_TIERS.indexOf(recipe.rarity);
+  const node = el('div', {
+    class: `combo-burst rarity-${rIdx + 1}`,
+    style: { left: (W/2 - 150) + 'px', top: (H/2 - 70) + 'px' },
+  },
+    el('div', { class:'cb-label' }, '⚡ コンボ発動'),
+    el('div', { class:'cb-word' }, recipe.word),
+    recipe.desc ? el('div', { class:'cb-desc' }, recipe.desc) : null,
+  );
+  field.appendChild(node);
+  setTimeout(() => node.remove(), 2200);
 }
 
 // リーダー（主人公）の Lv ── 落下プール tier の判定基準（v3 / 2026-05-16）
@@ -2157,6 +2241,43 @@ function renderParty() {
     bar.appendChild(slot);
   }
   refreshPCPanels();
+  // コンボ発動チェック（編成変化時）
+  checkComboPickup();
+  renderComboBar();
+}
+
+// パーティバー下にコンボ表示帯（発動中の熟語）
+function renderComboBar() {
+  let bar = $('#combo-bar');
+  if (!isPartyChosen()) {
+    if (bar) bar.remove();
+    return;
+  }
+  const combos = detectPartyCombos();
+  if (combos.length === 0) {
+    if (bar) bar.remove();
+    return;
+  }
+  if (!bar) {
+    bar = el('div', { id:'combo-bar', class:'combo-bar' });
+    const partyBar = $('#party-bar');
+    if (partyBar && partyBar.parentNode) {
+      partyBar.parentNode.insertBefore(bar, partyBar.nextSibling);
+    }
+  }
+  bar.innerHTML = '';
+  bar.appendChild(el('span', { class:'cb-bar-label' }, '⚡ コンボ'));
+  // 最大 4 件表示
+  combos.slice(0, 4).forEach(r => {
+    const rIdx = RARITY_TIERS.indexOf(r.rarity);
+    bar.appendChild(el('span', {
+      class: `cb-bar-item rarity-${rIdx + 1}`,
+      title: r.desc || r.word,
+    }, r.word));
+  });
+  if (combos.length > 4) {
+    bar.appendChild(el('span', { class:'cb-bar-more' }, `他 ${combos.length - 4}`));
+  }
 }
 
 // パーティメンバーの操作（タップで開く）
@@ -3235,6 +3356,10 @@ function bindEvents() {
 // ═══════════════════════════════════════════════════════════════
 function init() {
   loadState();
+  // 起動時の既存コンボは _comboPrev に登録（誤発火防止）
+  setTimeout(() => {
+    try { _comboPrev = new Set(detectPartyCombos().map(r => r.word)); } catch(_) {}
+  }, 100);
   // reset transient state across reloads
   STATE.mode = 'idle';
   STATE.phaseStart = 0;
