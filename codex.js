@@ -548,6 +548,48 @@ const YOJI_RECIPES = [
   { word:'諸法無我', chars:['諸','法','無','我'], rarity:'★6', tags:['四字熟語','仏教','禅'], desc:'すべては実体を持たない' }
 ];
 
+// ─── 新レシピ群（v2 体系・★1-★4 シフト対象外）2026-05-16 追加 ───
+// 既存熟語は +4 シフトされるが、これらは _RARITY_SHIFT 適用後に push するため固定
+const _YOJI_NEW_V2 = [
+  // ★1 ひらがな熟語（小さな日本語の核）
+  { word:'あい',     chars:['あ','い'],         rarity:'★1', tags:['ひらがな','感情'], desc:'愛・対の音' },
+  { word:'うた',     chars:['う','た'],         rarity:'★1', tags:['ひらがな','文化'], desc:'歌・音の形' },
+  { word:'ひと',     chars:['ひ','と'],         rarity:'★1', tags:['ひらがな','人'],   desc:'人・存在の最小' },
+  { word:'こころ',   chars:['こ','こ','ろ'],   rarity:'★2', tags:['ひらがな','心'],   desc:'心・動く源' },
+  { word:'みらい',   chars:['み','ら','い'],   rarity:'★2', tags:['ひらがな','時'],   desc:'未来・まだ来ぬ時' },
+  { word:'やすらぎ', chars:['や','す','ら','ぎ'], rarity:'★3', tags:['ひらがな','心'], desc:'安らぎ・整う時' },
+
+  // ★2 カタカナ熟語（外来語・現代の核）
+  { word:'アイ',     chars:['ア','イ'],         rarity:'★2', tags:['カタカナ'],         desc:'AI・I・愛のローマ字' },
+  { word:'ユメ',     chars:['ユ','メ'],         rarity:'★2', tags:['カタカナ','夢'],   desc:'夢のカタカナ' },
+  { word:'コトバ',   chars:['コ','ト','バ'],   rarity:'★3', tags:['カタカナ','文化'], desc:'言葉・音と意味' },
+  { word:'カオス',   chars:['カ','オ','ス'],   rarity:'★3', tags:['カタカナ','哲学'], desc:'混沌・整わぬ始まり' },
+  { word:'ミライ',   chars:['ミ','ラ','イ'],   rarity:'★3', tags:['カタカナ','時'],   desc:'未来のカタカナ・希望寄り' },
+
+  // ★3 数字熟語（量・順序の物語）
+  { word:'012',      chars:['0','1','2'],       rarity:'★3', tags:['数字','順序'],     desc:'始まりの3つ' },
+  { word:'10',       chars:['1','0'],           rarity:'★3', tags:['数字','十'],       desc:'一の次の世界' },
+  { word:'100',      chars:['1','0','0'],       rarity:'★4', tags:['数字','百'],       desc:'三桁の壁' },
+  { word:'一二三',   chars:['一','二','三'],   rarity:'★3', tags:['漢数字','順序'],   desc:'順に積む数' },
+  { word:'壱億',     chars:['壱','億'],         rarity:'★4', tags:['漢数字','大字'],   desc:'数の海' },
+  { word:'ⅠⅡⅢ',     chars:['Ⅰ','Ⅱ','Ⅲ'],       rarity:'★3', tags:['ローマ数字'],       desc:'ローマの三' },
+
+  // ★4 英語熟語（異邦の単語）
+  { word:'AI',       chars:['A','I'],           rarity:'★4', tags:['英語','技術'],     desc:'人工知能・愛と同じ綴り' },
+  { word:'GO',       chars:['G','O'],           rarity:'★4', tags:['英語','行動'],     desc:'行け・始めよ' },
+  { word:'OK',       chars:['O','K'],           rarity:'★4', tags:['英語','合意'],     desc:'承諾の二文字' },
+  { word:'YES',      chars:['Y','E','S'],       rarity:'★4', tags:['英語','合意'],     desc:'肯定の音' },
+  { word:'cat',      chars:['c','a','t'],       rarity:'★4', tags:['英語','動物'],     desc:'猫・小さき友' },
+  { word:'dog',      chars:['d','o','g'],       rarity:'★4', tags:['英語','動物'],     desc:'犬・忠の友' },
+  { word:'sea',      chars:['s','e','a'],       rarity:'★4', tags:['英語','自然'],     desc:'海・すべてを抱く' },
+  { word:'sky',      chars:['s','k','y'],       rarity:'★4', tags:['英語','自然'],     desc:'空・上の世界' },
+
+  // ★5 クロス字種（ひらがな×カタカナ・★1+★2）── 異種衝突で覚醒
+  { word:'あア',     chars:['あ','ア'],         rarity:'★5', tags:['ひらがな','カタカナ','クロス'], desc:'同音 異形 ── 始まりの双子' },
+  { word:'ひらがな', chars:['ひ','ら','が','な'], rarity:'★6', tags:['ひらがな','メタ'], desc:'文字種そのもの' },
+  { word:'カタカナ', chars:['カ','タ','カ','ナ'], rarity:'★6', tags:['カタカナ','メタ'], desc:'文字種そのもの' },
+];
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
@@ -563,11 +605,21 @@ if (typeof window !== 'undefined'){
   window.CHAR_TO_WORDS = CHAR_TO_WORDS;
 }
 
-// 熟語レシピを★10 体系に合わせて +4 シフト（★1 → ★5 …… ★6 → ★10）
-// 熟語は漢字のみで構成されるので、漢字レアの底辺（★5=拾級）と一致させる
+// 既存熟語（漢字のみ構成）を★10 体系に合わせて +4 シフト
+// _YOJI_NEW_V2 はシフト対象外（v2 体系で書かれているため）── push 後に結合
 const _RARITY_SHIFT = { '★1':'★5', '★2':'★6', '★3':'★7', '★4':'★8', '★5':'★9', '★6':'★10' };
 for (const r of YOJI_RECIPES){
   if (_RARITY_SHIFT[r.rarity]) r.rarity = _RARITY_SHIFT[r.rarity];
+}
+// 新 v2 レシピを結合（シフト後）
+for (const r of _YOJI_NEW_V2) YOJI_RECIPES.push(r);
+
+// CHAR_TO_WORDS を再構築（新レシピ反映）
+for (const r of _YOJI_NEW_V2){
+  for (const c of r.chars){
+    if (!CHAR_TO_WORDS[c]) CHAR_TO_WORDS[c] = [];
+    CHAR_TO_WORDS[c].push(r);
+  }
 }
 
 (function summary(){
