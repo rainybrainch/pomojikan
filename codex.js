@@ -859,9 +859,10 @@ for (const r of _YOJI_NEW_V2){
   }
 }
 
-// 熟語に season フィールドを付与（字数 ・ タグから自動判定）
+// 熟語に season フィールドを付与（既存設定は保持・自動判定は未設定分のみ）
 // 1-2字 = S3 熟語 / 3-4字 = S4 四字熟語 / 5字+ = S4
 for (const r of YOJI_RECIPES) {
+  if (r.season) continue;  // 既に S5/S6/S7 等が設定されているものはスキップ
   const n = r.chars.length;
   if (r.tags && r.tags.includes('四字熟語')) r.season = 'S4';
   else if (n >= 4) r.season = 'S4';
