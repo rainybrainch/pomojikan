@@ -1040,9 +1040,15 @@ function renderPickerPool() {
   function refreshPickerStatus() {
     if (_pickerSelected) {
       const k = _pickerPool.find(p => (p.char||p.c) === _pickerSelected);
-      const perkId = pickInherentPerk(_pickerSelected);
-      const perkName = PERKS[perkId]?.name || '—';
-      status.innerHTML = `主人公：<strong>${_pickerSelected}</strong> ・ 特性：<strong>${perkName}</strong>`;
+      // 決定論的に primary 特性をプレビュー（ランダム要素なし）
+      const primary = pickInherentPerk(_pickerSelected);
+      const pName = PERKS[primary]?.name || '—';
+      const pDesc = PERKS[primary]?.desc || '';
+      status.innerHTML = `
+        主人公候補：<strong style="font-size:1.1rem">${_pickerSelected}</strong>（${k.rarity}）<br>
+        基本特性：<strong style="color:var(--gold)">${pName}</strong>＋<strong style="color:#ffb888">守護</strong>（主人公専用）<br>
+        <small style="color:var(--ink-mute);font-size:.7rem">${pDesc}</small>
+      `;
       confirmBtn.disabled = false;
     } else {
       status.textContent = 'タップして 1 体選ぶ';
@@ -1055,13 +1061,14 @@ function renderPickerPool() {
     const c = _pickerSelected;
     const k = _pickerPool.find(p => (p.char||p.c) === c);
     const perks = pickInherentPerks(c, k.rarity);
-    if (!perks.includes('guardian')) perks.push('guardian');  // 主人公は守護必須
+    if (!perks.includes('guardian')) perks.push('guardian');
     const hero = { char: c, rarity: k.rarity, level: 1, exp: 0, perks };
     STATE.party = { hero: 0, members: [hero] };
     saveState();
     $('#party-picker-modal').classList.remove('show');
     renderParty();
-    toast(`主人公 ${c} ── 特性「${PERKS[perk]?.name}」`);
+    const perkNames = perks.map(p => PERKS[p]?.name).filter(Boolean).join('・');
+    toast(`主人公 ${c} ── ${perkNames}`);
   };
 }
 
@@ -2657,12 +2664,17 @@ function updateProgressPill() {
     '⌛ 準備中';
   bandEl.textContent = `${modeLabel} ・ ${tierName}帯 ${achName}`;
   cycEl.textContent = `${STATE.stats.totalCycles || 0} 回完了`;
-  // リーダー Lv を表示
+  // リーダー Lv ＋ 次解放までの差分
   const ldrEl = $('#pp-leader');
   if (ldrEl) {
     if (isPartyChosen()) {
       const hero = STATE.party.members[STATE.party.hero || 0];
-      ldrEl.textContent = `${hero.char} Lv.${hero.level}`;
+      const nextTierName = RARITY_TIERS[tier + 1];
+      const nextLv = nextTierName ? UNLOCK_LV[nextTierName] : null;
+      const remain = nextLv != null ? nextLv - hero.level : null;
+      ldrEl.textContent = nextTierName && remain > 0
+        ? `${hero.char} Lv.${hero.level}（${nextTierName} まで -${remain}）`
+        : `${hero.char} Lv.${hero.level}（全解放）`;
     } else {
       ldrEl.textContent = '主人公 未選択';
     }
@@ -2681,18 +2693,32 @@ function openStats() {
   const heroLv = isPartyChosen() ? partyHeroLevel() : 0;
   const partyAvg = isPartyChosen() ? Math.round(partyAverageLevel() * 10) / 10 : 0;
   const heroChar = isPartyChosen() ? STATE.party.members[STATE.party.hero || 0]?.char || '—' : '—';
+  const totalStock = Object.values(STATE.stock || {}).reduce((a,b)=>a+b, 0);
+  const writings = (STATE.writings || []).length;
+  // 特性 Lv トップ 3
+  const topPerks = Object.entries(STATE.perkLevels || {})
+    .filter(([pid, lv]) => lv >= 1 && PERKS[pid])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([pid, lv]) => `${PERKS[pid].name} Lv.${Math.floor(lv)}`)
+    .join(' / ') || '─';
   list.innerHTML = '';
   const cells = [
     { label:'累計サイクル', value: STATE.stats.totalCycles || 0 },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
     { label:'発見字', value: `${discovered} / ${totalKanji}` },
+    { label:'所有字 合計', value: totalStock.toLocaleString() },
+    { label:'保存した文章', value: writings },
     { label:'★ リーダー', value: `${heroChar} Lv.${heroLv}` },
     { label:'仲間 平均Lv', value: partyAvg },
     { label:'現在の帯', value: `${RARITY_TIERS[STATE.unlockedTier]} ${TIER_ACHIEVEMENT[STATE.unlockedTier] || ''}` },
+    { label:'特性 Lv トップ', value: topPerks, span:2 },
   ];
   cells.forEach(c => {
-    list.appendChild(el('div', { class:'stats-cell' },
+    list.appendChild(el('div', {
+      class:'stats-cell' + (c.span === 2 ? ' span-2' : ''),
+    },
       el('div', { class:'stats-cell-label' }, c.label),
       el('div', { class:'stats-cell-value' }, String(c.value))
     ));

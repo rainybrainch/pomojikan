@@ -629,6 +629,14 @@ body[data-mode="rest"] .timer-text{
   border-radius:12px;
   text-align:center;
 }
+.stats-cell.span-2{
+  grid-column:span 2;
+}
+.stats-cell.span-2 .stats-cell-value{
+  font-size:.95rem;
+  font-weight:700;
+  letter-spacing:.04em;
+}
 .stats-cell-label{
   font-size:.65rem; color:var(--ink-mute);
   letter-spacing:.1em;
