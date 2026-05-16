@@ -748,33 +748,53 @@ body[data-mode="rest"] .pr-fg{ stroke:var(--gold); }
 body:not([data-mode="idle"]) .tank-hint{ display:none; }
 
 .pomoji{
+  /* 信玄餅っぽい まんまる ポよポよ ── v3 / 2026-05-16 */
   position:absolute;
-  width:56px;height:56px;
+  width:60px;height:60px;
   display:flex;align-items:center;justify-content:center;
   font-family:'Noto Serif JP', serif;
-  font-size:2rem;font-weight:700;
-  color:var(--r-color);
-  text-shadow:0 0 12px var(--r-glow);
-  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.22), rgba(0,0,0,.25));
+  font-size:1.85rem;font-weight:900;
+  color:#5b4a30;                       /* 餅の上の文字は焦げ茶 */
+  text-shadow:0 1px 0 rgba(255,250,235,.85), 0 0 6px var(--r-glow);
+  /* きな粉まぶしの白餅 ─ レアリティ色は外側の発光と縁にだけ反映 */
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,250,.7) 0%, rgba(255,250,230,.35) 22%, transparent 55%),
+    radial-gradient(circle at 50% 55%, #f3e7c8 0%, #e6d3a8 60%, #c9b285 100%);
   border:1.5px solid var(--r-color);
-  border-radius:14px;
+  border-radius:50%;                   /* まんまる */
+  box-shadow:
+    inset 0 -4px 8px rgba(120,90,40,.32),     /* 下側の影で凸感 */
+    inset 0 3px 4px rgba(255,250,230,.55),    /* 上側の照り */
+    0 4px 10px rgba(0,0,0,.28),               /* 落とし影 */
+    0 0 12px var(--r-glow);                   /* レアリティ色の柔らかい外光 */
   cursor:grab;
   user-select:none;
   -webkit-user-select:none;
   touch-action:none;
   pointer-events:auto !important;
-  transition:box-shadow .15s, transform .1s;
+  transition:box-shadow .15s;
   z-index:5;
-  will-change:left, top;
+  will-change:left, top, transform;
 }
 .pomoji:active{ cursor:grabbing; }
-/* 落下中（settled になるまで）の光跡 */
-.pomoji:not(.rising):not(.dragging){
-  filter:drop-shadow(0 -6px 6px var(--r-glow));
+/* 落下中はわずかに上下に揺れる */
+.pomoji:not(.rising):not(.dragging):not(.settled){
+  animation:mochi-fall-wobble 1.6s ease-in-out infinite;
 }
+@keyframes mochi-fall-wobble{
+  0%,100%{ transform:scale(1, 1); }
+  50%   { transform:scale(1.04, 0.96); }   /* ふくらみ→平たく */
+}
+/* 着地後は ポよポよ と弾性 */
 .pomoji.settled{
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.3));
-  transition:filter .4s;
+  animation:mochi-jiggle 3s ease-in-out infinite;
+}
+@keyframes mochi-jiggle{
+  0%, 100%{ transform:scale(1, 1); }
+  20%    { transform:scale(1.06, 0.94); }
+  40%    { transform:scale(0.97, 1.03); }
+  60%    { transform:scale(1.02, 0.98); }
+  80%    { transform:scale(0.99, 1.01); }
 }
 .pomoji.dragging{
   z-index:9999 !important;

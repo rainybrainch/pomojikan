@@ -735,11 +735,20 @@ function partyAverageLevel() {
   return STATE.party.members.reduce((s,m) => s + m.level, 0) / STATE.party.members.length;
 }
 
+// リーダー（主人公）の Lv ── 落下プール tier の判定基準（v3 / 2026-05-16）
+function partyHeroLevel() {
+  if (!STATE.party || !STATE.party.members.length) return 0;
+  const heroIdx = STATE.party.hero || 0;
+  const hero = STATE.party.members[heroIdx];
+  return hero ? hero.level : 0;
+}
+
 function currentDropTier() {
-  const avg = partyAverageLevel();
+  // リーダー Lv 基準で帯を決める（旧：パーティ平均）
+  const lv = partyHeroLevel();
   let band = 0;
   for (let i = 0; i < RARITY_TIERS.length; i++) {
-    if (avg >= UNLOCK_LV[RARITY_TIERS[i]]) band = i;
+    if (lv >= UNLOCK_LV[RARITY_TIERS[i]]) band = i;
   }
   return band;
 }
@@ -2149,15 +2158,18 @@ function openStats() {
   const list = $('#stats-list');
   const discovered = Object.keys(STATE.collection || {}).length;
   const totalKanji = (window.KANJI_CODEX || []).length;
+  const heroLv = isPartyChosen() ? partyHeroLevel() : 0;
   const partyAvg = isPartyChosen() ? Math.round(partyAverageLevel() * 10) / 10 : 0;
+  const heroChar = isPartyChosen() ? STATE.party.members[STATE.party.hero || 0]?.char || '—' : '—';
   list.innerHTML = '';
   const cells = [
     { label:'累計サイクル', value: STATE.stats.totalCycles || 0 },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
     { label:'発見字', value: `${discovered} / ${totalKanji}` },
-    { label:'パーティ平均Lv', value: partyAvg },
-    { label:'現在の帯', value: RARITY_TIERS[STATE.unlockedTier] },
+    { label:'★ リーダー', value: `${heroChar} Lv.${heroLv}` },
+    { label:'仲間 平均Lv', value: partyAvg },
+    { label:'現在の帯', value: `${RARITY_TIERS[STATE.unlockedTier]} ${TIER_ACHIEVEMENT[STATE.unlockedTier] || ''}` },
   ];
   cells.forEach(c => {
     list.appendChild(el('div', { class:'stats-cell' },
