@@ -1,12 +1,20 @@
 'use strict';
 
+// ═══════════════════════════════════════════════════════════════
+// レアリティ体系 v2（2026-05-16）── 文字種ベース段階解放
+// 配列順 = 解放順。★1-★10 → 将来 ★100 まで動的拡張可能設計
+// ═══════════════════════════════════════════════════════════════
 const POMOJI_RARITY = {
-  '★1': { stars: 1, exp: 1,    weight: 70.0, color: '#9aa8b5', label: '★1', tier: 1 },
-  '★2': { stars: 2, exp: 5,    weight: 18.0, color: '#5cbfdf', label: '★2', tier: 2 },
-  '★3': { stars: 3, exp: 25,   weight: 8.0,  color: '#5b8be0', label: '★3', tier: 3 },
-  '★4': { stars: 4, exp: 75,   weight: 3.0,  color: '#7a6cc4', label: '★4', tier: 4 },
-  '★5': { stars: 5, exp: 250,  weight: 0.9,  color: '#c89ae8', label: '★5', tier: 5 },
-  '★6': { stars: 6, exp: 1500, weight: 0.1,  color: '#f0d48a', label: '★6', tier: 6 }
+  '★1':  { stars: 1,  exp: 1,    weight: 70.0, color: '#9aa8b5', label: '★1',  tier: 1  },
+  '★2':  { stars: 2,  exp: 3,    weight: 50.0, color: '#83b8d6', label: '★2',  tier: 2  },
+  '★3':  { stars: 3,  exp: 8,    weight: 35.0, color: '#6ba6c7', label: '★3',  tier: 3  },
+  '★4':  { stars: 4,  exp: 18,   weight: 22.0, color: '#5b8be0', label: '★4',  tier: 4  },
+  '★5':  { stars: 5,  exp: 40,   weight: 14.0, color: '#5b78c8', label: '★5',  tier: 5  },
+  '★6':  { stars: 6,  exp: 90,   weight: 8.0,  color: '#7a6cc4', label: '★6',  tier: 6  },
+  '★7':  { stars: 7,  exp: 200,  weight: 4.0,  color: '#9b7ad0', label: '★7',  tier: 7  },
+  '★8':  { stars: 8,  exp: 450,  weight: 1.8,  color: '#c89ae8', label: '★8',  tier: 8  },
+  '★9':  { stars: 9,  exp: 900,  weight: 0.6,  color: '#e0b3d8', label: '★9',  tier: 9  },
+  '★10': { stars: 10, exp: 2000, weight: 0.15, color: '#f0d48a', label: '★10', tier: 10 }
 };
 
 const KANJI_10KYU_STR =
@@ -128,12 +136,33 @@ const KANJI_JUDAN_STR =
   '怠惰傲慢強欲色欲嫉妬暴食憤怒' +
   '永無極天道空聖真虚寂幽玄奥闇';
 
+// ─── ★1: ひらがな（始まりの音）───
+// 清音46 + 濁音20 + 半濁音5 + 小書き9 = 80字
 const HIRAGANA_STR =
   'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん' +
-  'がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ';
+  'がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ' +
+  'ぁぃぅぇぉっゃゅょゎ';
+
+// ─── ★2: カタカナ（もうひとつの音）───
+// 清音46 + 濁音20 + 半濁音5 + 小書き9 + 長音1 = 81字
 const KATAKANA_STR =
   'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン' +
-  'ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ';
+  'ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ' +
+  'ァィゥェォッャュョヮー';
+
+// ─── ★3: 数字（量と順序）───
+// 半角アラビア10 + 漢数字14 + ローマ数字10 = 34字
+const NUMERAL_STR =
+  '0123456789' +
+  '〇零壱弐参肆伍陸漆捌玖拾' +
+  '億兆' +
+  'ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ';
+
+// ─── ★4: 英語（異邦の文字）───
+// 大文字26 + 小文字26 = 52字
+const ALPHABET_STR =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+  'abcdefghijklmnopqrstuvwxyz';
 
 function buildKanjiCodex(){
   const all = [];
@@ -146,15 +175,18 @@ function buildKanjiCodex(){
       all.push({ id:'k_'+c, c, rarity, yomi:'', tags: tags ? [...tags] : [] });
     }
   };
-  // ★1 にはひらがな・カタカナ・拾級漢字すべて入れる（始まりの字＝あらゆる音と形）
-  addStr(HIRAGANA_STR,   '★1', ['ひらがな','音']);
-  addStr(KATAKANA_STR,   '★1', ['カタカナ','音']);
-  addStr(KANJI_10KYU_STR,'★1');
-  addStr(KANJI_5KYU_STR, '★2');
-  addStr(KANJI_3KYU_STR, '★3');
-  addStr(KANJI_1KYU_STR, '★4');
-  addStr(KANJI_SHODAN_STR,'★5');
-  addStr(KANJI_JUDAN_STR, '★6');
+  // 文字種で段階解放（v2 / 2026-05-16）
+  // 順番が大切：先に登録された rarity が優先される（seen.has で重複判定）
+  addStr(HIRAGANA_STR,     '★1',  ['ひらがな','音']);
+  addStr(KATAKANA_STR,     '★2',  ['カタカナ','音']);
+  addStr(NUMERAL_STR,      '★3',  ['数字','数']);
+  addStr(ALPHABET_STR,     '★4',  ['英語','異邦']);
+  addStr(KANJI_10KYU_STR,  '★5',  ['漢字','拾級','基礎']);
+  addStr(KANJI_5KYU_STR,   '★6',  ['漢字','五級','日常']);
+  addStr(KANJI_3KYU_STR,   '★7',  ['漢字','三級']);
+  addStr(KANJI_1KYU_STR,   '★8',  ['漢字','一級','深']);
+  addStr(KANJI_SHODAN_STR, '★9',  ['漢字','初段','美']);
+  addStr(KANJI_JUDAN_STR,  '★10', ['漢字','拾段','神字']);
   return all;
 }
 
@@ -509,10 +541,19 @@ if (typeof window !== 'undefined'){
   window.CHAR_TO_WORDS = CHAR_TO_WORDS;
 }
 
+// 熟語レシピを★10 体系に合わせて +4 シフト（★1 → ★5 …… ★6 → ★10）
+// 熟語は漢字のみで構成されるので、漢字レアの底辺（★5=拾級）と一致させる
+const _RARITY_SHIFT = { '★1':'★5', '★2':'★6', '★3':'★7', '★4':'★8', '★5':'★9', '★6':'★10' };
+for (const r of YOJI_RECIPES){
+  if (_RARITY_SHIFT[r.rarity]) r.rarity = _RARITY_SHIFT[r.rarity];
+}
+
 (function summary(){
   const byR = {};
   for (const k of KANJI_CODEX){ byR[k.rarity] = (byR[k.rarity]||0) + 1; }
-  console.log('%c☔ codex.js v14 読込み完了', 'color:#f0d48a;font-weight:900;');
-  console.log(`  漢字: ${KANJI_CODEX.length} 字  ${JSON.stringify(byR)}`);
-  console.log(`  熟語: ${YOJI_RECIPES.length} 個`);
+  const byRYoji = {};
+  for (const r of YOJI_RECIPES){ byRYoji[r.rarity] = (byRYoji[r.rarity]||0) + 1; }
+  console.log('%c☔ codex.js v15 ── 文字種ベース10段階レアリティ', 'color:#f0d48a;font-weight:900;');
+  console.log(`  字: ${KANJI_CODEX.length} 字  ${JSON.stringify(byR)}`);
+  console.log(`  熟語: ${YOJI_RECIPES.length} 個  ${JSON.stringify(byRYoji)}`);
 })();

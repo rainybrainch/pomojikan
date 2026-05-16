@@ -109,13 +109,17 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
 .timer-zone{ background:transparent; }   /* タイマーは透過のまま */
 .controls-row{ background:transparent; }
 
-/* ════════════════════ レアリティ色 ════════════════════ */
-.rarity-1{ --r-color:#9aa8b5; --r-glow:rgba(154,168,181,.5); }
-.rarity-2{ --r-color:#5cbfdf; --r-glow:rgba(92,191,223,.55); }
-.rarity-3{ --r-color:#5b8be0; --r-glow:rgba(91,139,224,.6); }
-.rarity-4{ --r-color:#7a6cc4; --r-glow:rgba(122,108,196,.6); }
-.rarity-5{ --r-color:#c89ae8; --r-glow:rgba(200,154,232,.65); }
-.rarity-6{ --r-color:#f0d48a; --r-glow:rgba(240,212,138,.7); }
+/* ════════════════════ レアリティ色 ★1-★10（v2 文字種ベース）════════════════════ */
+.rarity-1{  --r-color:#9aa8b5; --r-glow:rgba(154,168,181,.5);  } /* ★1 ひらがな */
+.rarity-2{  --r-color:#83b8d6; --r-glow:rgba(131,184,214,.55); } /* ★2 カタカナ */
+.rarity-3{  --r-color:#6ba6c7; --r-glow:rgba(107,166,199,.55); } /* ★3 数字 */
+.rarity-4{  --r-color:#5b8be0; --r-glow:rgba(91,139,224,.6);   } /* ★4 英語 */
+.rarity-5{  --r-color:#5b78c8; --r-glow:rgba(91,120,200,.6);   } /* ★5 拾級漢字 */
+.rarity-6{  --r-color:#7a6cc4; --r-glow:rgba(122,108,196,.6);  } /* ★6 五級漢字 */
+.rarity-7{  --r-color:#9b7ad0; --r-glow:rgba(155,122,208,.62); } /* ★7 三級漢字 */
+.rarity-8{  --r-color:#c89ae8; --r-glow:rgba(200,154,232,.65); } /* ★8 一級漢字 */
+.rarity-9{  --r-color:#e0b3d8; --r-glow:rgba(224,179,216,.68); } /* ★9 初段漢字（美と古典） */
+.rarity-10{ --r-color:#f0d48a; --r-glow:rgba(240,212,138,.72); } /* ★10 拾段漢字（神字）*/
 
 /* ════════════════════ ヘッダー ════════════════════ */
 .app-header{
@@ -982,12 +986,16 @@ body[data-mode="rest"] #tank{
   box-shadow:0 8px 24px rgba(0,0,0,.45);
 }
 .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-.toast.rarity-6{
-  border-color:rgba(240,212,138,.85);
-  box-shadow:0 0 24px rgba(240,212,138,.5), 0 8px 24px rgba(0,0,0,.5);
+/* レア発見トーストの発光 ── ★10 を頂点に逓減 */
+.toast.rarity-10{
+  border-color:rgba(240,212,138,.9);
+  box-shadow:0 0 28px rgba(240,212,138,.6), 0 8px 24px rgba(0,0,0,.5);
 }
-.toast.rarity-5{ border-color:rgba(200,154,232,.7); box-shadow:0 0 18px rgba(200,154,232,.4); }
-.toast.rarity-4{ border-color:rgba(122,108,196,.6); }
+.toast.rarity-9{ border-color:rgba(224,179,216,.78); box-shadow:0 0 22px rgba(224,179,216,.5); }
+.toast.rarity-8{ border-color:rgba(200,154,232,.72); box-shadow:0 0 18px rgba(200,154,232,.4); }
+.toast.rarity-7{ border-color:rgba(155,122,208,.65); box-shadow:0 0 14px rgba(155,122,208,.32); }
+.toast.rarity-6{ border-color:rgba(122,108,196,.55); }
+.toast.rarity-5{ border-color:rgba(91,120,200,.45); }
 
 /* ════════════════════ モーダル共通 ════════════════════ */
 .modal{

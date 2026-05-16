@@ -6,22 +6,31 @@
 // 定数
 // ═══════════════════════════════════════════════════════════════
 const LS_KEY = 'pomojikan_v30';
-const RARITY_TIERS = ['★1','★2','★3','★4','★5','★6'];
-const UNLOCK_LV    = { '★1':1, '★2':5, '★3':15, '★4':30, '★5':60, '★6':100 };
+// ─── レアリティ体系 v2（2026-05-16）── 文字種ベース段階解放・★1-★10 ───
+// 配列順 = 解放順。将来 ★100 まで動的拡張可能設計
+const RARITY_TIERS = ['★1','★2','★3','★4','★5','★6','★7','★8','★9','★10'];
+const UNLOCK_LV    = {
+  '★1':1, '★2':3, '★3':6, '★4':10, '★5':15,
+  '★6':22, '★7':30, '★8':45, '★9':65, '★10':100
+};
 const TIER_ACHIEVEMENT = [
-  '始まりの字',     // ★1
-  '鍛錬の刻',       // ★2
-  '才の覚醒',       // ★3
-  '達者の道',       // ★4
-  '段位入り',       // ★5
-  '七徳七大罪の領域', // ★6
+  '始まりの音',         // ★1 ひらがな
+  'もうひとつの音',     // ★2 カタカナ
+  '量と順序',           // ★3 数字
+  '異邦の文字',         // ★4 英語
+  '学びの初日',         // ★5 拾級漢字
+  '日常の漢字',         // ★6 五級漢字
+  '使い慣れた漢字',     // ★7 三級漢字
+  '深まりの漢字',       // ★8 一級漢字
+  '美と古典',           // ★9 初段漢字
+  '七徳七大罪の領域',   // ★10 拾段漢字
 ];
 // サイクル完了時のボーナス粒数（作業中の継続落下とは別）
 const TIER_DROP_COUNT = [
-  [3,5], [3,4], [2,4], [2,3], [2,3], [1,3]
+  [3,5], [3,4], [3,4], [2,4], [2,3], [2,3], [1,3], [1,3], [1,2], [1,2]
 ];
 // レアごとの落下速度倍率（高レアほどゆっくり、ドラマを作る）
-const TIER_FALL_MUL = [1.0, 0.92, 0.84, 0.76, 0.68, 0.6];
+const TIER_FALL_MUL = [1.0, 0.96, 0.92, 0.86, 0.80, 0.74, 0.68, 0.62, 0.56, 0.50];
 
 const EVO_STAGE_LV = [10, 30, 70];          // Stage 1 / 2 / 3 の Lv 閾値
 const EVO_GLYPH = ['', '✦', '✧', '☀'];      // 進化マーカー
@@ -57,7 +66,7 @@ const PERKS = {
   tag_emo:     { name:'感応',    desc:'感情字を融合時 XP+100%',                tag:'感情'  },
   tag_time:    { name:'時の継',  desc:'時字を融合時 サイクル時間-10秒',        tag:'時'    },
   tag_zen:     { name:'禅静',    desc:'禅字を持つと休憩中の上昇泡が2倍',       tag:'禅'    },
-  tag_sacred:  { name:'神威',    desc:'神字を融合時 ★6 解放を 10Lv 早める',    tag:'神字'  },
+  tag_sacred:  { name:'神威',    desc:'神字を融合時 ★10 解放を 10Lv 早める',   tag:'神字'  },
   tag_war:     { name:'闘気',    desc:'武字を融合時 連鎖判定+1字',             tag:'武'    },
   tag_learn:   { name:'求道',    desc:'学字を融合時 EXP+75%',                 tag:'学'    },
   tag_nature:  { name:'自然律',  desc:'自然字を融合時 落下数+1',              tag:'自然'  },
@@ -199,8 +208,8 @@ function loadState() {
       if (oldRaw) {
         try {
           const old = JSON.parse(oldRaw);
-          // パーティ字のレア名を旧→新に変換
-          const oldToNew = { '拾級':'★1','五級':'★2','三級':'★3','一級':'★4','初段':'★5','拾段':'★6' };
+          // 旧名 → ★1-★6 → さらに ★5-★10（v2 文字種ベース体系に押し出し）
+          const oldToNew = { '拾級':'★5','五級':'★6','三級':'★7','一級':'★8','初段':'★9','拾段':'★10' };
           if (old.party && old.party.members) {
             old.party.members.forEach(m => {
               if (oldToNew[m.rarity]) m.rarity = oldToNew[m.rarity];
@@ -212,6 +221,27 @@ function loadState() {
           raw = JSON.stringify(old);
         } catch(_) {}
       }
+    }
+    // ★1-★6 → ★5-★10 マイグレーション（既存 v30 ユーザー向け・2026-05-16）
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.party && parsed.party.members) {
+          const rarityShift = { '★1':'★5', '★2':'★6', '★3':'★7', '★4':'★8', '★5':'★9', '★6':'★10' };
+          let migrated = false;
+          for (const m of parsed.party.members) {
+            // 既に ★1-★4 が漢字でない場合（v30 旧体系）→ シフト
+            if (m.rarity && rarityShift[m.rarity] && m.char && /[一-龥々〆]/.test(m.char)) {
+              m.rarity = rarityShift[m.rarity];
+              migrated = true;
+            }
+          }
+          if (migrated) {
+            localStorage.setItem(LS_KEY, JSON.stringify(parsed));
+            raw = JSON.stringify(parsed);
+          }
+        }
+      } catch(_) {}
     }
     if (raw) {
       const saved = JSON.parse(raw);
