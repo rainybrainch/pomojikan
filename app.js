@@ -550,6 +550,73 @@ function ensureAudio() {
   return audioCtx;
 }
 
+// SFX：合体・進化・新発見・はじけ ・ マイルストーン
+// 音響オンのときだけ鳴る ・ シンセ生成（外部ファイル不要）
+function playSFX(type) {
+  if (!STATE.audioOn) return;
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  const t0 = ctx.currentTime;
+
+  const playTone = (freq, dur, type='sine', vol=0.08, attack=0.005, decay=null) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(vol, t0 + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + (decay || dur));
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  };
+  const playSweep = (f1, f2, dur, type='sine', vol=0.08) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(f1, t0);
+    osc.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(vol, t0 + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  };
+
+  switch (type) {
+    case 'merge':       // 合体：上昇 chime
+      playSweep(440, 880, 0.25, 'triangle', 0.10);
+      playTone(660, 0.18, 'sine', 0.05, 0.005, 0.18);
+      break;
+    case 'evolve':      // 進化：5音アルペジオ
+      [523, 659, 784, 988, 1175].forEach((f, i) => {
+        setTimeout(() => playTone(f, 0.18, 'triangle', 0.08), i * 70);
+      });
+      break;
+    case 'discover':    // 新発見：軽い高音 chime
+      playTone(880, 0.12, 'sine', 0.08);
+      playTone(1175, 0.18, 'sine', 0.05);
+      break;
+    case 'pop':         // タップ消滅：ぽっ
+      playSweep(330, 110, 0.12, 'sine', 0.06);
+      break;
+    case 'milestone':   // マイルストーン達成：和音
+      [523, 659, 784].forEach(f => playTone(f, 0.6, 'sine', 0.06, 0.01, 0.55));
+      setTimeout(() => playTone(1175, 0.5, 'triangle', 0.05), 200);
+      break;
+    case 'cycle':       // ポモドーロ完了：祝祭
+      [392, 494, 587, 784].forEach((f, i) => {
+        setTimeout(() => playTone(f, 0.4, 'triangle', 0.08), i * 100);
+      });
+      break;
+    case 'unlock':      // ★解放：低→高の華やか上昇
+      playSweep(220, 880, 0.4, 'sawtooth', 0.06);
+      setTimeout(() => playTone(1175, 0.3, 'sine', 0.05), 150);
+      break;
+  }
+}
+
 function makePinkNoise(ctx) {
   // 2秒ぶんのピンクノイズバッファ
   const bufferSize = 2 * ctx.sampleRate;
@@ -874,6 +941,7 @@ function updateUnlockTier() {
     setTimeout(() => {
       toast(`✦ 実績解除：「${achName}」  ${tierName} が降ります`, tierName);
       flashCompletionBurst(`✦ ${achName} ✦`);
+      playSFX('unlock');
     }, 400);
   }
 }
@@ -961,6 +1029,7 @@ function onLevelUp(member, idx) {
     const glyph = EVO_GLYPH[newStage] || '𓂀';
     toast(`${glyph} 書体進化「${stageNames[newStage] || ''}」 ${member.char}`, '★16');
     spawnEvolutionBurst(member.char, glyph, member.rarity);
+    playSFX('evolve');
   }
 }
 
@@ -1256,13 +1325,43 @@ function completePhase() {
     spawnCycleDrops();
     updateProgressPill();
     flashCompletionBurst('☔ 凝縮 完了');
-    burstPartyPersistents();  // ポモドーロ完了時：パーティ字がパーッと光る（公式構想）
+    burstPartyPersistents();
+    playSFX('cycle');
+    writeSharedRbJikoku();   // 5本柱接続：時刻メトリクスを共有
     startRest();
   } else if (STATE.mode === 'rest') {
     flashCompletionBurst('🫧 発散 完了');
     stopRisingPomoji();
     stopTimer();
+    writeSharedRbJikoku();
   }
+}
+
+// 5本柱接続（RBAI 公式構想）── shared_rb_jikoku に時刻メトリクスを書き出し
+// 雨域 (UIKI) / マネぼう / YouTube が将来この localStorage を読んで連携
+function writeSharedRbJikoku() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const hero = isPartyChosen() ? STATE.party.members[STATE.party.hero || 0] : null;
+    const data = {
+      app: 'pomojikan',
+      version: 'v30.5',
+      date: today,
+      last_updated: new Date().toISOString(),
+      cycles_total:      STATE.stats?.totalCycles || 0,
+      drops_total:       STATE.stats?.totalDrops || 0,
+      exp_total:         STATE.stats?.totalExp || 0,
+      chars_discovered:  Object.keys(STATE.collection || {}).length,
+      stock_total:       Object.values(STATE.stock || {}).reduce((a,b)=>a+b, 0),
+      writings_total:    (STATE.writings || []).length,
+      hero_char:         hero?.char || null,
+      hero_level:        hero?.level || 0,
+      hero_rarity:       hero?.rarity || null,
+      unlocked_tier:     RARITY_TIERS[STATE.unlockedTier] || null,
+      user_id:           STATE.userId || null,
+    };
+    localStorage.setItem('shared_rb_jikoku', JSON.stringify(data));
+  } catch(_) {}
 }
 
 // パーティ字（永続）にサイクル完了の光放射を一斉発火
@@ -1458,6 +1557,7 @@ function spawnPomoji(opts={}) {
   // 新発見：一瞬通知 ＋ 二軸レベルの「発見ボーナス EXP」をパーティ全員に配分
   if (isFirstSee) {
     toast(`新！ ${char}`, rarity);
+    playSFX('discover');
     grantDiscoveryBonus(rarity, char);
   }
   return obj;
@@ -1496,6 +1596,7 @@ function grantDiscoveryBonus(rarity, char) {
   if (milestoneMul > 1) {
     toast(`✦ 発見 ${uniq} 種達成！ ボーナス ×${milestoneMul}`, rarity);
     spawnMilestoneBurst(uniq, milestoneMul);
+    playSFX('milestone');
   }
   updatePartyXpUI();
   renderParty();
@@ -1826,6 +1927,7 @@ function dissolvePomoji(p) {
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);  // ストックに加算（文章モードで使える）
+  playSFX('pop');
   p.el.classList.add('dissolve');
   setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
 }
@@ -1959,6 +2061,7 @@ function mergePomoji(src, target) {
     target.el.classList.add('merge-evolve');
     setTimeout(() => target.el.classList.remove('merge-evolve'), 600);
     if (newLv >= 2) toast(`✦ 進化 ${target.char} Lv${newLv}`, src.rarity);
+    playSFX('merge');
   }
 
   // 連鎖（chain rare 特性）：mergeLevel 3 以上で全員 Lv+1（大爆発）

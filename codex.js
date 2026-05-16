@@ -851,8 +851,23 @@ for (const r of YOJI_RECIPES){
 // 新 v2 レシピを結合
 for (const r of _YOJI_NEW_V2) YOJI_RECIPES.push(r);
 
-// CHAR_TO_WORDS を再構築（新レシピ反映）
-for (const r of _YOJI_NEW_V2){
+// 重複熟語を削除（同じ word は後勝ち：新しい情報が優先）
+(function dedupeYoji(){
+  const seenWords = new Set();
+  const kept = [];
+  for (let i = YOJI_RECIPES.length - 1; i >= 0; i--) {
+    const r = YOJI_RECIPES[i];
+    if (seenWords.has(r.word)) continue;
+    seenWords.add(r.word);
+    kept.unshift(r);
+  }
+  YOJI_RECIPES.length = 0;
+  for (const r of kept) YOJI_RECIPES.push(r);
+})();
+
+// CHAR_TO_WORDS を再構築（重複削除後の YOJI_RECIPES から）
+for (const key of Object.keys(CHAR_TO_WORDS)) delete CHAR_TO_WORDS[key];
+for (const r of YOJI_RECIPES){
   for (const c of r.chars){
     if (!CHAR_TO_WORDS[c]) CHAR_TO_WORDS[c] = [];
     CHAR_TO_WORDS[c].push(r);
