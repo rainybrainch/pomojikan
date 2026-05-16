@@ -2646,12 +2646,16 @@ function renderCodex() {
     return;
   }
 
-  // S3/S4（熟語）が選ばれているときは熟語をリスト表示
-  if (codexFilter.season === 'S3' || codexFilter.season === 'S4') {
+  // S3/S4/S5/S6/S7（熟語シーズン）が選ばれているときは熟語をリスト表示
+  if (['S3','S4','S5','S6','S7'].includes(codexFilter.season)) {
     const recipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    const SEASON_LABEL = {
+      S3:'熟語', S4:'四字熟語',
+      S5:'昭和文化', S6:'令和現代', S7:'未来（萌芽）'
+    };
     const section = el('div', { class:'codex-section' },
       el('h3', { class:'codex-section-title' },
-        `${codexFilter.season} ${codexFilter.season === 'S3' ? '熟語' : '四字熟語'}（${recipes.length} 個）`)
+        `${codexFilter.season} ${SEASON_LABEL[codexFilter.season] || ''}（${recipes.length} 個）`)
     );
     const list = el('div', { class:'codex-yoji-list' });
     recipes.forEach(r => {

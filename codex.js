@@ -98,33 +98,43 @@ const KANJI_1KYU_STR =
   '袈袴袷裡裟襖訊訣訛詑誼誰諏諒譚讃豹貰賑赳跨蹄輔輯辰辻迂迪逗逢遁遥遼邑邦邪郁郷醇醐醒采釉釘銑鋒鋲錨鎚鏑鑓閃陀隈隼霞靖'+
   '鞄鞍鞘鞠韮韻頁頚頒頗鳩鳳鳶鴇鴎鴬鴻鵜鵠鵡鵬鶯鷲鷺鷹麒麟麿黎黛黝鼎';
 
-// 古典・古字（万葉集・古事記・古今集・能・俳諧）
+// 古典・古字（万葉集・古事記・古今集・能・俳諧 ・ 古字 拡充）
 const KANJI_SHODAN_STR =
   // 古典に頻出する優美な字
-  '叡睿哲聖賢哲'+
-  '繍錦綺綾繡綴緞緋紺翠'+
-  '雛燕鳳凰麒麟龍獅鶴'+
-  '黎曙暁晨宵昏暮黄昏黎明'+
+  '叡睿哲聖賢仙'+
+  '繍錦綺綾繡綴緞緋紺翠紗紬絹'+
+  '雛燕鳳凰麒麟龍獅鶴鴎'+
+  '黎曙暁晨宵昏暮霞露'+
   '幽玄奥秘妙繊微塵雅'+
-  '驚駭慟憤慨哀愁憂愛恋'+
-  '燦爛輝燿煌耀眩眩耀'+
+  '驚駭慟憤慨哀愁憂'+
+  '燦爛輝燿煌耀眩'+
   '殷富裕貴賤栄枯'+
-  '叡慧聖賢仙'+
-  '寂寞蓼蓼然侘び寂び'+
-  '澪渚浬汀洲潟瀬'+
+  '寂寞蓼侘'+
+  '澪渚浬汀洲潟瀬淵'+
   '蒼穹瑶藍碧'+
   '寥刹那永劫'+
   // 古字・万葉仮名・歌の字
   '言問鳥森隠'+
-  '春霞夏雲秋風冬月雪'+
-  '花鳥風月雪月花'+
-  // 神々の名・神話
-  '天照月読須佐之男大国主因幡少彦名'+
+  '霞夢幻'+
+  // 神々の名・神話（数文字だけ）
+  '天照月読'+
   '伊邪那岐伊邪那美'+
-  // 茶道・能・武道の古字
-  '茶道華道書道剣道弓道'+
-  '能狂歌舞伎雅楽'+
-  '幽玄侘寂';
+  // 茶道・能・武道
+  '舞伎雅楽'+
+  // 雅やかな自然・季節
+  '朧霧雫露霜雪霰雹'+
+  '紅葉桜花蓮蕾'+
+  '梅竹松鶴亀'+
+  // 古い詩語
+  '哉也焉乎矣'+
+  '其乃之也'+
+  // 五行・陰陽
+  '陰陽木火土金水'+
+  // 雅やかな感情
+  '愍憐慟惻憫'+
+  '欣愉怡懌'+
+  // 古典数字・序列
+  '甲乙丙丁戊己庚辛壬癸';
 
 // 神字 ── 七徳・七大罪・神域の核字（★16 拾段の頂点）
 const KANJI_JUDAN_STR =
@@ -133,12 +143,17 @@ const KANJI_JUDAN_STR =
   // 七大罪
   '怠惰傲慢強欲色欲嫉妬暴食憤怒'+
   // 神域の核
-  '永無極天道空聖真虚寂幽玄奥闇'+
-  // 上位概念
-  '無常諸行涅槃般若菩提解脱輪廻'+
-  // 創造主の言葉（重力・引力・凝縮・キメラ・利他）
-  '創造重力引力凝縮拡散溢出'+
-  '雨砂泥海生命魂';
+  '永無極天道空聖真虚寂闇'+
+  // 上位概念（仏教）
+  '涅槃般若菩提輪廻'+
+  // 創造主の核字（重力・引力・凝縮・キメラ・利他）
+  '創造拡散溢'+
+  // 泥雨生命理論 5要素
+  '砂泥魂'+
+  // 究極の字
+  '禅悟覚醒'+
+  // 神
+  '神';
 
 // ─── ★1: ひらがな（始まりの音）───
 // 清音46 + 濁音20 + 半濁音5 + 小書き9 = 80字
@@ -211,13 +226,13 @@ function buildKanjiCodex(){
 
 // シーズン定義（RBAI 公式構想 S1-S7+）
 const POMOJI_SEASONS = {
-  'S1': { label:'S1 字種', desc:'ひらがな・カタカナ・数字・英語・ローマ', color:'#83b8d6', unlocked:true  },
-  'S2': { label:'S2 漢字', desc:'小1〜小6・中学・高校・人名・古典・神字', color:'#c89ae8', unlocked:true  },
-  'S3': { label:'S3 熟語', desc:'2字〜3字熟語・基礎の組み合わせ',         color:'#e0b3d8', unlocked:true  },
-  'S4': { label:'S4 四字熟語', desc:'故事成語・四字熟語・名句',           color:'#f0c8a8', unlocked:true  },
-  'S5': { label:'S5 昭和流行語', desc:'（将来追加）',                     color:'#9b7ad0', unlocked:false },
-  'S6': { label:'S6 平成', desc:'（将来追加）',                           color:'#7a6cc4', unlocked:false },
-  'S7': { label:'S7 令和', desc:'（将来追加）',                           color:'#5b78c8', unlocked:false },
+  'S1': { label:'S1 字種',       desc:'ひらがな・カタカナ・数字・英語・ローマ', color:'#83b8d6', unlocked:true },
+  'S2': { label:'S2 漢字',       desc:'小1〜小6・中学・高校・人名・古典・神字', color:'#c89ae8', unlocked:true },
+  'S3': { label:'S3 熟語',       desc:'2字〜3字熟語・基礎の組み合わせ',         color:'#e0b3d8', unlocked:true },
+  'S4': { label:'S4 四字熟語',   desc:'故事成語・四字熟語・名句',               color:'#f0c8a8', unlocked:true },
+  'S5': { label:'S5 昭和文化',   desc:'根性／三種の神器／万博／歌謡／銭湯',     color:'#ff9a4c', unlocked:true },
+  'S6': { label:'S6 令和現代',   desc:'推し／映え／多様性／絆／AI／バズ／草',   color:'#5cbfdf', unlocked:true },
+  'S7': { label:'S7 未来',       desc:'量子／仮想／人工知能 ─ 萌芽',           color:'#9b7ad0', unlocked:true },
 };
 
 const KANJI_CODEX = buildKanjiCodex();
@@ -762,6 +777,54 @@ const _YOJI_NEW_V2 = [
   { word:'画竜点睛', chars:['画','竜','点','睛'], rarity:'★15', tags:['四字熟語'],     desc:'最後の仕上げ' },
   { word:'蛇足',     chars:['蛇','足'],         rarity:'★13', tags:['二字熟語','古典'], desc:'余計なもの' },
   { word:'矛盾',     chars:['矛','盾'],         rarity:'★12', tags:['古典','思想'],    desc:'相反する理' },
+
+  // ─── S5 昭和の流行語・文化（★10-★12 範囲）────────────
+  { word:'憧憬',     chars:['憧','憬'],         rarity:'★13', tags:['昭和','感情'], desc:'憧れの心', season:'S5' },
+  { word:'青春',     chars:['青','春'],         rarity:'★10', tags:['昭和','時代'], desc:'若き日々', season:'S5' },
+  { word:'根性',     chars:['根','性'],         rarity:'★10', tags:['昭和','思想'], desc:'やり抜く力', season:'S5' },
+  { word:'三種の神器', chars:['三','種','の','神','器'], rarity:'★12', tags:['昭和','文化'], desc:'テレビ・冷蔵庫・洗濯機', season:'S5' },
+  { word:'高度成長',   chars:['高','度','成','長'],   rarity:'★11', tags:['昭和','経済'], desc:'1960年代の経済成長', season:'S5' },
+  { word:'万博',     chars:['万','博'],         rarity:'★10', tags:['昭和','文化'], desc:'1970年大阪万博', season:'S5' },
+  { word:'歌謡',     chars:['歌','謡'],         rarity:'★11', tags:['昭和','音楽'], desc:'歌謡曲', season:'S5' },
+  { word:'銭湯',     chars:['銭','湯'],         rarity:'★11', tags:['昭和','文化'], desc:'公衆浴場', season:'S5' },
+  { word:'紙芝居',   chars:['紙','芝','居'],   rarity:'★11', tags:['昭和','文化'], desc:'子供の娯楽', season:'S5' },
+  { word:'駄菓子',   chars:['駄','菓','子'],   rarity:'★11', tags:['昭和','食'],   desc:'子供のおやつ', season:'S5' },
+  { word:'長屋',     chars:['長','屋'],         rarity:'★10', tags:['昭和','住'],   desc:'下町の住居', season:'S5' },
+  { word:'下町',     chars:['下','町'],         rarity:'★10', tags:['昭和','文化'], desc:'庶民の街', season:'S5' },
+  { word:'高度経済', chars:['高','度','経','済'], rarity:'★11', tags:['昭和','経済'], desc:'戦後の急成長', season:'S5' },
+  { word:'冷戦',     chars:['冷','戦'],         rarity:'★11', tags:['昭和','歴史'], desc:'米ソ対立', season:'S5' },
+  { word:'万歳',     chars:['万','歳'],         rarity:'★10', tags:['昭和','祝'],   desc:'長寿祝い', season:'S5' },
+  { word:'熱血',     chars:['熱','血'],         rarity:'★11', tags:['昭和','感情'], desc:'情熱の血', season:'S5' },
+  { word:'勝負',     chars:['勝','負'],         rarity:'★10', tags:['昭和','武'],   desc:'勝ち負け', season:'S5' },
+  { word:'昭和',     chars:['昭','和'],         rarity:'★12', tags:['昭和','時代'], desc:'1926-1989', season:'S5' },
+
+  // ─── S6 令和・現代（★10-★13 範囲）────────────────
+  { word:'推し',     chars:['推','し'],         rarity:'★10', tags:['令和','感情'], desc:'応援する対象', season:'S6' },
+  { word:'映え',     chars:['映','え'],         rarity:'★10', tags:['令和','文化'], desc:'写真映え', season:'S6' },
+  { word:'共感',     chars:['共','感'],         rarity:'★11', tags:['令和','感情'], desc:'相手と感じ合う', season:'S6' },
+  { word:'多様性',   chars:['多','様','性'],   rarity:'★12', tags:['令和','思想'], desc:'ダイバーシティ', season:'S6' },
+  { word:'格差',     chars:['格','差'],         rarity:'★11', tags:['令和','社会'], desc:'差の広がり', season:'S6' },
+  { word:'孤独死',   chars:['孤','独','死'],   rarity:'★13', tags:['令和','社会'], desc:'現代の影', season:'S6' },
+  { word:'絆',       chars:['絆'],               rarity:'★12', tags:['令和','感情'], desc:'人と人の結び', season:'S6' },
+  { word:'令和',     chars:['令','和'],         rarity:'★12', tags:['令和','時代'], desc:'2019-', season:'S6' },
+  { word:'平和',     chars:['平','和'],         rarity:'★10', tags:['令和','思想'], desc:'戦のない世', season:'S6' },
+  { word:'環境',     chars:['環','境'],         rarity:'★11', tags:['令和','社会'], desc:'地球の課題', season:'S6' },
+  { word:'多文化',   chars:['多','文','化'],   rarity:'★12', tags:['令和','思想'], desc:'文化の混合', season:'S6' },
+  { word:'AI',       chars:['A','I'],           rarity:'★10', tags:['令和','技術','英語'], desc:'人工知能（令和の象徴）', season:'S6' },
+  { word:'スマホ',   chars:['ス','マ','ホ'],   rarity:'★10', tags:['令和','技術','カタカナ'], desc:'スマートフォン', season:'S6' },
+  { word:'働き方',   chars:['働','き','方'],   rarity:'★12', tags:['令和','社会'], desc:'働き方改革', season:'S6' },
+  { word:'リモート', chars:['リ','モ','ー','ト'], rarity:'★12', tags:['令和','技術','カタカナ'], desc:'遠隔', season:'S6' },
+  { word:'ＳＮＳ',   chars:['Ｓ','Ｎ','Ｓ'],   rarity:'★11', tags:['令和','技術'], desc:'ソーシャルネットワーク', season:'S6' },
+  { word:'バズる',   chars:['バ','ズ','る'],   rarity:'★12', tags:['令和','文化','カタカナ'], desc:'急に話題に', season:'S6' },
+  { word:'ガチ',     chars:['ガ','チ'],         rarity:'★10', tags:['令和','文化','カタカナ'], desc:'本気', season:'S6' },
+  { word:'草',       chars:['草'],               rarity:'★10', tags:['令和','文化'], desc:'笑い（ネット）', season:'S6' },
+  { word:'神',       chars:['神'],               rarity:'★12', tags:['令和','感情'], desc:'最高（ネット）', season:'S6' },
+
+  // ─── S7 未来（v3.0 予約 ・ ごく少数）────────────────
+  { word:'量子',     chars:['量','子'],         rarity:'★13', tags:['未来','科学'], desc:'量子の世界', season:'S7' },
+  { word:'宇宙',     chars:['宇','宙'],         rarity:'★12', tags:['未来','天体'], desc:'すべての場', season:'S7' },
+  { word:'仮想',     chars:['仮','想'],         rarity:'★12', tags:['未来','技術'], desc:'仮想現実', season:'S7' },
+  { word:'人工知能', chars:['人','工','知','能'], rarity:'★13', tags:['未来','技術'], desc:'AI', season:'S7' },
 ];
 
 const CHAR_TO_WORDS = {};
