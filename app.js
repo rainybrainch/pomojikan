@@ -967,9 +967,33 @@ function startWork() {
   saveState();
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
+  spawnPartyPersistents();   // パーティ字を1つずつ永続スポーン（重複防止あり）
   startWorkSpawning();
   refreshAudioByMode();
   tick();
+}
+
+// パーティ字（主人公＋仲間）を 1 つずつ永続スポーン
+// 既に画面上にいる持続字はスキップ
+function spawnPartyPersistents() {
+  if (!STATE.party || !STATE.party.members) return;
+  const codex = window.KANJI_CODEX || [];
+  // 現存する persistent の char セット
+  const existing = new Set(
+    Array.from(livePomoji.values()).filter(p => p.persistent).map(p => p.char)
+  );
+  const W = window.innerWidth;
+  let idx = 0;
+  for (const m of STATE.party.members) {
+    if (existing.has(m.char)) continue;
+    const k = codex.find(c => (c.char || c.c) === m.char) || { char: m.char, c: m.char, rarity: m.rarity };
+    // 横方向に均等配置（パーティ4体なら 1/5, 2/5, 3/5, 4/5）
+    const slot = (idx + 1) / (STATE.party.members.length + 1);
+    const x = Math.round(slot * W) - SIZE/2;
+    // 時間差で1つずつ降らせる
+    setTimeout(() => spawnPomoji({ kanji: k, x, persistent: true }), 200 * idx);
+    idx++;
+  }
 }
 
 // 作業中の継続落下：10秒に1粒（3粒に1回はパーティ字保証）
@@ -1167,19 +1191,35 @@ function pickPartyDrop() {
   return found || { char: m.char, c: m.char, rarity: m.rarity };
 }
 
-// ぽもじ上限（負荷管理：60体超えたら最古を消滅）
-const MAX_LIVE_POMOJI = 60;
+// ぽもじ上限（負荷管理：persistent パーティ字を除いて 30体超えたら最古を消滅）
+const MAX_LIVE_POMOJI = 30;
+// 一般ぽもじ寿命：5分（300 秒）。経過したら経験値吸収して消える
+const POMOJI_LIFETIME_MS = 5 * 60 * 1000;
+
 function enforcePomojiCap() {
-  if (livePomoji.size <= MAX_LIVE_POMOJI) return;
-  const settled = Array.from(livePomoji.values()).filter(p => p.settled && !p.dragging && !p.rising);
-  // 古い順（id 昇順）から消す
+  // persistent は除外して数える
+  const nonPersistent = Array.from(livePomoji.values()).filter(p => !p.persistent);
+  if (nonPersistent.length <= MAX_LIVE_POMOJI) return;
+  const settled = nonPersistent.filter(p => p.settled && !p.dragging && !p.rising);
   settled.sort((a,b) => a.id - b.id);
-  const toRemove = livePomoji.size - MAX_LIVE_POMOJI;
+  const toRemove = nonPersistent.length - MAX_LIVE_POMOJI;
   for (let i = 0; i < toRemove && i < settled.length; i++) {
-    const p = settled[i];
-    p.el.classList.add('dissolve');
-    setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 600);
+    expireAsExp(settled[i]);
   }
+}
+
+// 寿命切れ／キャップ越え：経験値として吸収して消す
+function expireAsExp(p) {
+  if (!p || p._expiring) return;
+  p._expiring = true;
+  const rIdx = RARITY_TIERS.indexOf(p.rarity);
+  const exp = Math.max(1, Math.pow(2, rIdx) * 2);  // dissolve より控えめ（自然吸収）
+  awardExpToParty(p.char, exp) || _orphanExp(exp);
+  if (p.el) {
+    p.el.classList.add('dissolve');
+    spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, p.rarity);
+  }
+  setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 600);
 }
 
 function spawnPomoji(opts={}) {
@@ -1214,7 +1254,14 @@ function spawnPomoji(opts={}) {
   }, char);
   field.appendChild(node);
 
-  const obj = { id, char, rarity, tier: tierIdx, x, y, vx: (Math.random()-0.5)*1.0, vy: 0, el: node, settled: false, isFirstSee, mergeLevel: 1 };
+  const obj = {
+    id, char, rarity, tier: tierIdx, x, y,
+    vx: (Math.random()-0.5)*1.0, vy: 0,
+    el: node, settled: false, isFirstSee, mergeLevel: 1,
+    persistent: !!opts.persistent,
+    spawnedAt: Date.now(),
+  };
+  if (obj.persistent) node.classList.add('persistent');
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
@@ -1312,6 +1359,11 @@ function physicsStep() {
       }
       p.el.style.left = p.x + 'px';
       p.el.style.top  = p.y + 'px';
+      continue;
+    }
+    // 寿命チェック：一般字（非persistent）は 5分で自動吸収
+    if (!p.persistent && p.spawnedAt && (Date.now() - p.spawnedAt) > POMOJI_LIFETIME_MS) {
+      expireAsExp(p);
       continue;
     }
     // 落下ぽもじ：重力＋着底＋積み重なり
@@ -1462,6 +1514,12 @@ function attachDragHandlers(node, obj) {
 }
 
 function dissolvePomoji(p) {
+  // パーティ字（persistent）は消えない ── 軽くハイライトだけ
+  if (p.persistent) {
+    p.el.classList.add('persistent-bump');
+    setTimeout(() => p.el.classList.remove('persistent-bump'), 400);
+    return;
+  }
   const rarity = p.rarity;
   const rIdx = RARITY_TIERS.indexOf(rarity);
   const exp = Math.max(1, Math.pow(2, rIdx) * 3);
@@ -1499,7 +1557,13 @@ function _orphanExp(exp) {
 }
 
 function mergePomoji(src, target) {
-  // src dragged onto target with same char
+  // persistent 字どうしは合体しない（両方残す）
+  if (src.persistent && target.persistent) return;
+  // src が persistent なら吸収させない（target が一般なら逆を試みる）
+  if (src.persistent) {
+    // 立場を入れ替え：一般の target を src 役で persistent に吸わせる
+    return mergePomoji(target, src);
+  }
   const rIdx = RARITY_TIERS.indexOf(src.rarity);
 
   // 2048/スイカ式：同レベル同士なら target.mergeLevel += 1（進化）

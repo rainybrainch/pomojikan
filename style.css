@@ -801,6 +801,27 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
   100%{ box-shadow:none; transform:scale(1); }
 }
 
+/* ════════════════════ パーティ字 永続スポーン（v2 / 2026-05-16）════════════════════ */
+/* 主人公・仲間は消えない・金縁＋淡い脈動 */
+.pomoji.persistent{
+  border-width:2.5px !important;
+  border-color:#f0d48a !important;
+  box-shadow:0 0 0 1px rgba(240,212,138,.4), 0 0 14px rgba(240,212,138,.35);
+  animation:persistentBreath 3.2s ease-in-out infinite;
+}
+@keyframes persistentBreath{
+  0%,100%{ box-shadow:0 0 0 1px rgba(240,212,138,.4), 0 0 14px rgba(240,212,138,.35); }
+  50%   { box-shadow:0 0 0 2px rgba(240,212,138,.7), 0 0 22px rgba(240,212,138,.55); }
+}
+/* 消えない字をタップしたときの軽い跳ね */
+.pomoji.persistent-bump{
+  animation:persistentBump .4s cubic-bezier(.22,1.6,.36,1);
+}
+@keyframes persistentBump{
+  0%,100%{ transform:scale(1); }
+  50%   { transform:scale(1.15); }
+}
+
 /* ════════════════════ 合体レベル進化エフェクト（v2 / 2026-05-16）════════════════════ */
 /* Lv1=普通、Lv2=ちょっと変化、Lv3=さらに、Lv4-7=神々しく ── 2048 式 */
 .pomoji.merge-lv-2{
