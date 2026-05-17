@@ -7223,6 +7223,79 @@ const _YOJI_S4_ART = [
 ];
 for (const r of _YOJI_S4_ART) YOJI_RECIPES.push(r);
 
+// v10i ── 二字熟語 +50（古典・歴史・古語）
+const _YOJI_S3_OLD = [
+  { word:'古文', chars:['古','文'], rarity:'★12', tags:['古典','学'], desc:'クラシカル', season:'S3' },
+  { word:'漢文', chars:['漢','文'], rarity:'★12', tags:['古典','学'], desc:'クラシカルチャイニーズ', season:'S3' },
+  { word:'和歌', chars:['和','歌'], rarity:'★12', tags:['古典','美','学'], desc:'わか', season:'S3' },
+  { word:'俳句', chars:['俳','句'], rarity:'★10', tags:['古典','美'], desc:'ハイク', season:'S3' },
+  { word:'短歌', chars:['短','歌'], rarity:'★12', tags:['古典','美'], desc:'タンカ', season:'S3' },
+  { word:'連歌', chars:['連','歌'], rarity:'★14', tags:['古典','美'], desc:'れんが', season:'S3' },
+  { word:'川柳', chars:['川','柳'], rarity:'★13', tags:['古典','美'], desc:'せんりゅう', season:'S3' },
+  { word:'詠歌', chars:['詠','歌'], rarity:'★15', tags:['古典','美'], desc:'えいか', season:'S3' },
+
+  // 古人
+  { word:'古人', chars:['古','人'], rarity:'★10', tags:['古典'], desc:'古人', season:'S3' },
+  { word:'先人', chars:['先','人'], rarity:'★10', tags:['古典'], desc:'先人', season:'S3' },
+  { word:'故人', chars:['故','人'], rarity:'★10', tags:['古典'], desc:'故人', season:'S3' },
+  { word:'賢人', chars:['賢','人'], rarity:'★12', tags:['古典','学'], desc:'賢人', season:'S3' },
+  { word:'聖人', chars:['聖','人'], rarity:'★12', tags:['古典','神字'], desc:'セイント', season:'S3' },
+
+  // 古典時代
+  { word:'王朝', chars:['王','朝'], rarity:'★13', tags:['古典','時'], desc:'ダイナスティ', season:'S3' },
+  { word:'武家', chars:['武','家'], rarity:'★12', tags:['古典','武'], desc:'武家', season:'S3' },
+  { word:'公家', chars:['公','家'], rarity:'★13', tags:['古典'], desc:'公家', season:'S3' },
+  { word:'幕府', chars:['幕','府'], rarity:'★13', tags:['古典','武'], desc:'バクフ', season:'S3' },
+  { word:'藩主', chars:['藩','主'], rarity:'★15', tags:['古典'], desc:'藩主', season:'S3' },
+
+  // 武士
+  { word:'武士', chars:['武','士'], rarity:'★10', tags:['古典','武'], desc:'侍', season:'S3' },
+  { word:'侍道', chars:['侍','道'], rarity:'★15', tags:['古典','武'], desc:'武士道', season:'S3' },
+  { word:'忍者', chars:['忍','者'], rarity:'★13', tags:['古典','武'], desc:'ニンジャ', season:'S3' },
+  { word:'忍術', chars:['忍','術'], rarity:'★13', tags:['古典','武'], desc:'ニンジュツ', season:'S3' },
+  { word:'隠密', chars:['隠','密'], rarity:'★14', tags:['古典','武'], desc:'スパイ', season:'S3' },
+
+  // 古代神
+  { word:'神々', chars:['神','々'], rarity:'★13', tags:['神字','古典'], desc:'ゴッズ', season:'S3' },
+  { word:'神話', chars:['神','話'], rarity:'★8',  tags:['神字','古典'], desc:'ミソロジー', season:'S3' },
+  { word:'神聖', chars:['神','聖'], rarity:'★12', tags:['神字'], desc:'ホーリー', season:'S3' },
+
+  // 古文書
+  { word:'古文書', chars:['古','文','書'], rarity:'★13', tags:['古典','学'], desc:'古文書', season:'S3' },
+  { word:'記紀', chars:['記','紀'], rarity:'★15', tags:['古典','学'], desc:'古事記日本書紀', season:'S3' },
+  { word:'万葉', chars:['万','葉'], rarity:'★14', tags:['古典','美'], desc:'万葉集', season:'S3' },
+  { word:'枕草', chars:['枕','草'], rarity:'★15', tags:['古典','美'], desc:'枕草子', season:'S3' },
+  { word:'源氏', chars:['源','氏'], rarity:'★13', tags:['古典','美'], desc:'源氏物語', season:'S3' },
+
+  // 古代都市
+  { word:'平安', chars:['平','安'], rarity:'★8',  tags:['古典','時'], desc:'平安時代', season:'S3' },
+  { word:'平城', chars:['平','城'], rarity:'★13', tags:['古典','時'], desc:'平城京', season:'S3' },
+  { word:'藤原', chars:['藤','原'], rarity:'★14', tags:['古典','時'], desc:'藤原京', season:'S3' },
+  { word:'長安', chars:['長','安'], rarity:'★14', tags:['古典','時'], desc:'長安', season:'S3' },
+
+  // 古典文化
+  { word:'古典', chars:['古','典'], rarity:'★10', tags:['古典','学'], desc:'クラシック', season:'S3' },
+  { word:'歌道', chars:['歌','道'], rarity:'★13', tags:['古典','美','道'], desc:'歌の道', season:'S3' },
+  { word:'武道', chars:['武','道'], rarity:'★10', tags:['古典','武','道'], desc:'武の道', season:'S3' },
+  { word:'剣道', chars:['剣','道'], rarity:'★12', tags:['古典','武','道'], desc:'けんどう', season:'S3' },
+  { word:'弓道', chars:['弓','道'], rarity:'★10', tags:['古典','武','道'], desc:'きゅうどう', season:'S3' },
+
+  // 古典の精神
+  { word:'雅意', chars:['雅','意'], rarity:'★14', tags:['古典','美'], desc:'みやびごころ', season:'S3' },
+  { word:'雅趣', chars:['雅','趣'], rarity:'★14', tags:['古典','美'], desc:'雅趣', season:'S3' },
+  { word:'雅楽', chars:['雅','楽'], rarity:'★14', tags:['古典','美'], desc:'宮廷音楽', season:'S3' },
+  { word:'雅人', chars:['雅','人'], rarity:'★15', tags:['古典','美'], desc:'みやびと', season:'S3' },
+  { word:'侘人', chars:['侘','人'], rarity:'★16', tags:['古典','美'], desc:'わびびと', season:'S3' },
+  { word:'寂人', chars:['寂','人'], rarity:'★15', tags:['古典','禅'], desc:'さびびと', season:'S3' },
+
+  // 古典道
+  { word:'茶道', chars:['茶','道'], rarity:'★11', tags:['古典','道','禅'], desc:'茶の道', season:'S3' },
+  { word:'華道', chars:['華','道'], rarity:'★13', tags:['古典','道','美'], desc:'花の道', season:'S3' },
+  { word:'香道', chars:['香','道'], rarity:'★15', tags:['古典','道'], desc:'香の道', season:'S3' },
+  { word:'書道', chars:['書','道'], rarity:'★11', tags:['古典','道','美'], desc:'書の道', season:'S3' },
+];
+for (const r of _YOJI_S3_OLD) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
