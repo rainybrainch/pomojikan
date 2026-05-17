@@ -7449,6 +7449,78 @@ const _YOJI_S3_GEO = [
 ];
 for (const r of _YOJI_S3_GEO) YOJI_RECIPES.push(r);
 
+// v10l ── 四字熟語 +50（仕事道徳・職業倫理）
+const _YOJI_S4_ETHIC = [
+  { word:'職業倫理', chars:['職','業','倫','理'], rarity:'★13', tags:['四字熟語','七徳','ビジネス'], desc:'プロフェッショナル', season:'S4' },
+  { word:'仕事熱意', chars:['仕','事','熱','意'], rarity:'★12', tags:['四字熟語','武'], desc:'熱意', season:'S4' },
+  { word:'責任感性', chars:['責','任','感','性'], rarity:'★12', tags:['四字熟語','七徳'], desc:'責任感', season:'S4' },
+  { word:'誠実勤勉', chars:['誠','実','勤','勉'], rarity:'★13', tags:['四字熟語','七徳','武'], desc:'誠実勤勉', season:'S4' },
+  { word:'勤労努力', chars:['勤','労','努','力'], rarity:'★12', tags:['四字熟語','武'], desc:'勤労', season:'S4' },
+  { word:'地道努力', chars:['地','道','努','力'], rarity:'★12', tags:['四字熟語','武'], desc:'地道', season:'S4' },
+  { word:'時間厳守', chars:['時','間','厳','守'], rarity:'★12', tags:['四字熟語','七徳','時'], desc:'時間厳守', season:'S4' },
+  { word:'納期遵守', chars:['納','期','遵','守'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'納期', season:'S4' },
+  { word:'信用第一', chars:['信','用','第','一'], rarity:'★12', tags:['四字熟語','七徳','ビジネス'], desc:'信用', season:'S4' },
+  { word:'信頼関係', chars:['信','頼','関','係'], rarity:'★12', tags:['四字熟語','七徳'], desc:'トラスト', season:'S4' },
+
+  // チームワーク
+  { word:'協力協調', chars:['協','力','協','調'], rarity:'★12', tags:['四字熟語','七徳'], desc:'協力', season:'S4' },
+  { word:'分業協業', chars:['分','業','協','業'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'分業', season:'S4' },
+  { word:'相互協力', chars:['相','互','協','力'], rarity:'★12', tags:['四字熟語','七徳'], desc:'相互援助', season:'S4' },
+  { word:'チーム精', chars:['チ','ー','ム','精'], rarity:'★12', tags:['四字熟語','令和'], desc:'チームスピリット', season:'S4' },
+
+  // 顧客
+  { word:'顧客第一', chars:['顧','客','第','一'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'カスタマーファースト', season:'S4' },
+  { word:'顧客感謝', chars:['顧','客','感','謝'], rarity:'★12', tags:['四字熟語','ビジネス','感情'], desc:'顧客感謝', season:'S4' },
+  { word:'笑顔接客', chars:['笑','顔','接','客'], rarity:'★12', tags:['四字熟語','感情'], desc:'スマイル接客', season:'S4' },
+  { word:'親切丁寧', chars:['親','切','丁','寧'], rarity:'★12', tags:['四字熟語','七徳'], desc:'親切', season:'S4' },
+
+  // 専門性
+  { word:'専門知識', chars:['専','門','知','識'], rarity:'★12', tags:['四字熟語','学'], desc:'専門', season:'S4' },
+  { word:'専門技能', chars:['専','門','技','能'], rarity:'★13', tags:['四字熟語','学'], desc:'スキル', season:'S4' },
+  { word:'熟練技能', chars:['熟','練','技','能'], rarity:'★13', tags:['四字熟語'], desc:'熟練', season:'S4' },
+  { word:'達人技能', chars:['達','人','技','能'], rarity:'★13', tags:['四字熟語','武'], desc:'達人', season:'S4' },
+
+  // 失敗
+  { word:'失敗教訓', chars:['失','敗','教','訓'], rarity:'★13', tags:['四字熟語'], desc:'失敗から学ぶ', season:'S4' },
+  { word:'反省改善', chars:['反','省','改','善'], rarity:'★12', tags:['四字熟語','武'], desc:'反省改善', season:'S4' },
+  { word:'試行錯誤', chars:['試','行','錯','誤'], rarity:'★12', tags:['四字熟語','学'], desc:'トライ', season:'S4' },
+  { word:'挑戦継続', chars:['挑','戦','継','続'], rarity:'★12', tags:['四字熟語','武'], desc:'チャレンジ', season:'S4' },
+
+  // 倫理
+  { word:'公正取引', chars:['公','正','取','引'], rarity:'★13', tags:['四字熟語','ビジネス','七徳'], desc:'フェアトレード', season:'S4' },
+  { word:'倫理規範', chars:['倫','理','規','範'], rarity:'★13', tags:['四字熟語','七徳'], desc:'倫理規範', season:'S4' },
+  { word:'コンプラ', chars:['コ','ン','プ','ラ'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'コンプライアンス', season:'S4' },
+  { word:'法令遵守', chars:['法','令','遵','守'], rarity:'★13', tags:['四字熟語','ビジネス','七徳'], desc:'コンプライアンス', season:'S4' },
+
+  // 経営者
+  { word:'経営者道', chars:['経','営','者','道'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'CEO', season:'S4' },
+  { word:'指導者道', chars:['指','導','者','道'], rarity:'★13', tags:['四字熟語','ビジネス','七徳'], desc:'リーダーシップ', season:'S4' },
+  { word:'統率指導', chars:['統','率','指','導'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'リード', season:'S4' },
+  { word:'部下育成', chars:['部','下','育','成'], rarity:'★12', tags:['四字熟語','ビジネス','学'], desc:'メンタリング', season:'S4' },
+
+  // 起業精神
+  { word:'起業精神', chars:['起','業','精','神'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'アントレプレナー', season:'S4' },
+  { word:'独立精神', chars:['独','立','精','神'], rarity:'★13', tags:['四字熟語'], desc:'独立心', season:'S4' },
+  { word:'挑戦精神', chars:['挑','戦','精','神'], rarity:'★12', tags:['四字熟語','武'], desc:'チャレンジ精神', season:'S4' },
+  { word:'創業精神', chars:['創','業','精','神'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'創業精神', season:'S4' },
+
+  // 仕事意義
+  { word:'仕事意義', chars:['仕','事','意','義'], rarity:'★12', tags:['四字熟語','哲学'], desc:'仕事の意義', season:'S4' },
+  { word:'仕事誇り', chars:['仕','事','誇','り'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'プライド', season:'S4' },
+  { word:'仕事愛着', chars:['仕','事','愛','着'], rarity:'★12', tags:['四字熟語','感情'], desc:'仕事愛', season:'S4' },
+
+  // 結果
+  { word:'成果重視', chars:['成','果','重','視'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'結果重視', season:'S4' },
+  { word:'結果出力', chars:['結','果','出','力'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'アウトプット', season:'S4' },
+  { word:'成果報告', chars:['成','果','報','告'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'リザルト報告', season:'S4' },
+
+  // 経営理念
+  { word:'経営理念', chars:['経','営','理','念'], rarity:'★13', tags:['四字熟語','ビジネス','哲学'], desc:'バリュー', season:'S4' },
+  { word:'企業理念', chars:['企','業','理','念'], rarity:'★13', tags:['四字熟語','ビジネス','哲学'], desc:'ミッション', season:'S4' },
+  { word:'社会的責', chars:['社','会','的','責'], rarity:'★13', tags:['四字熟語','ビジネス','七徳'], desc:'CSR', season:'S4' },
+];
+for (const r of _YOJI_S4_ETHIC) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
