@@ -3494,6 +3494,7 @@ function showCharDetail(c, rarity) {
 }
 function renderCodex() {
   const grid = $('#codex-grid');
+  const scrollY = grid?.scrollTop || 0;  // フィルタ変更時のスクロール位置維持
   grid.innerHTML = '';
   const codex = window.KANJI_CODEX || [];
   const onlyShow = (tierIdx) =>
@@ -3738,6 +3739,10 @@ function renderCodex() {
   const discovered = Object.keys(STATE.collection).length;
   const totalKanji = codex.length;
   $('#codex-summary').textContent = `発見 ${discovered} / ${totalKanji} 字`;
+  // スクロール位置復元（フィルタ切替で「最初に戻る」を防ぐ）
+  if (grid && scrollY > 0) {
+    requestAnimationFrame(() => { grid.scrollTop = scrollY; });
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
