@@ -6936,6 +6936,75 @@ const _YOJI_S4_FREEDOM = [
 ];
 for (const r of _YOJI_S4_FREEDOM) YOJI_RECIPES.push(r);
 
+// v10e ── 二字熟語 +50（仕事プロセス・業務）
+const _YOJI_S3_WORKFLOW = [
+  // 計画
+  { word:'計画', chars:['計','画'], rarity:'★8',  tags:['ビジネス'], desc:'プラン', season:'S3' },
+  { word:'立案', chars:['立','案'], rarity:'★12', tags:['ビジネス'], desc:'プランニング', season:'S3' },
+  { word:'企画', chars:['企','画'], rarity:'★10', tags:['ビジネス'], desc:'プラン', season:'S3' },
+  { word:'構想', chars:['構','想'], rarity:'★10', tags:['ビジネス','思想'], desc:'コンセプト', season:'S3' },
+  { word:'設定', chars:['設','定'], rarity:'★8',  tags:[], desc:'セッティング', season:'S3' },
+  { word:'予定', chars:['予','定'], rarity:'★8',  tags:[], desc:'スケジュール', season:'S3' },
+  { word:'予測', chars:['予','測'], rarity:'★10', tags:[], desc:'プレディクション', season:'S3' },
+  { word:'予想', chars:['予','想'], rarity:'★8',  tags:[], desc:'アンティシペート', season:'S3' },
+  { word:'予期', chars:['予','期'], rarity:'★12', tags:[], desc:'エクスペクテーション', season:'S3' },
+
+  // 実行
+  { word:'実施', chars:['実','施'], rarity:'★8',  tags:['ビジネス'], desc:'インプリメント', season:'S3' },
+  { word:'施行', chars:['施','行'], rarity:'★12', tags:['ビジネス'], desc:'エンフォース', season:'S3' },
+  { word:'執行', chars:['執','行'], rarity:'★12', tags:['ビジネス'], desc:'エグゼキューション', season:'S3' },
+  { word:'遂行', chars:['遂','行'], rarity:'★13', tags:['ビジネス'], desc:'コンプリート', season:'S3' },
+  { word:'達成', chars:['達','成'], rarity:'★8',  tags:[], desc:'アチーブメント', season:'S3' },
+
+  // 確認・検査
+  { word:'確認', chars:['確','認'], rarity:'★8',  tags:[], desc:'コンファーム', season:'S3' },
+  { word:'検査', chars:['検','査'], rarity:'★8',  tags:[], desc:'インスペクション', season:'S3' },
+  { word:'検証', chars:['検','証'], rarity:'★12', tags:[], desc:'バリデーション', season:'S3' },
+  { word:'監査', chars:['監','査'], rarity:'★12', tags:['ビジネス'], desc:'オーディット', season:'S3' },
+  { word:'査定', chars:['査','定'], rarity:'★13', tags:['ビジネス'], desc:'アセスメント', season:'S3' },
+
+  // 報告
+  { word:'報告', chars:['報','告'], rarity:'★8',  tags:['ビジネス'], desc:'レポート', season:'S3' },
+  { word:'連絡', chars:['連','絡'], rarity:'★8',  tags:[], desc:'コンタクト', season:'S3' },
+  { word:'相談', chars:['相','談'], rarity:'★8',  tags:[], desc:'コンサルト', season:'S3' },
+  { word:'共有', chars:['共','有'], rarity:'★8',  tags:[], desc:'シェア', season:'S3' },
+  { word:'伝達', chars:['伝','達'], rarity:'★10', tags:[], desc:'コミュニケート', season:'S3' },
+
+  // 改善
+  { word:'改善', chars:['改','善'], rarity:'★8',  tags:['ビジネス'], desc:'カイゼン', season:'S3' },
+  { word:'改革', chars:['改','革'], rarity:'★10', tags:['ビジネス'], desc:'リフォーム', season:'S3' },
+  { word:'改良', chars:['改','良'], rarity:'★10', tags:[], desc:'インプルーブ', season:'S3' },
+  { word:'修正', chars:['修','正'], rarity:'★8',  tags:[], desc:'フィックス', season:'S3' },
+  { word:'訂正', chars:['訂','正'], rarity:'★12', tags:[], desc:'コレクション', season:'S3' },
+
+  // 完了
+  { word:'完了', chars:['完','了'], rarity:'★8',  tags:[], desc:'コンプリート', season:'S3' },
+  { word:'終了', chars:['終','了'], rarity:'★8',  tags:[], desc:'エンド', season:'S3' },
+  { word:'完成', chars:['完','成'], rarity:'★8',  tags:[], desc:'コンプリート', season:'S3' },
+  { word:'完璧', chars:['完','璧'], rarity:'★12', tags:[], desc:'パーフェクト', season:'S3' },
+  { word:'未完', chars:['未','完'], rarity:'★12', tags:[], desc:'インコンプリート', season:'S3' },
+
+  // 進捗
+  { word:'進捗', chars:['進','捗'], rarity:'★13', tags:[], desc:'プログレス', season:'S3' },
+  { word:'進行', chars:['進','行'], rarity:'★8',  tags:[], desc:'プロシード', season:'S3' },
+  { word:'遅延', chars:['遅','延'], rarity:'★12', tags:[], desc:'ディレイ', season:'S3' },
+  { word:'延期', chars:['延','期'], rarity:'★12', tags:[], desc:'ポストポーン', season:'S3' },
+  { word:'前倒', chars:['前','倒'], rarity:'★12', tags:[], desc:'アクセラレート', season:'S3' },
+
+  // 役割
+  { word:'役割', chars:['役','割'], rarity:'★8',  tags:[], desc:'ロール', season:'S3' },
+  { word:'責任', chars:['責','任'], rarity:'★8',  tags:[], desc:'レスポンシビリティ', season:'S3' },
+  { word:'義務', chars:['義','務'], rarity:'★8',  tags:[], desc:'デューティ', season:'S3' },
+  { word:'権限', chars:['権','限'], rarity:'★10', tags:[], desc:'オーソリティ', season:'S3' },
+  { word:'委任', chars:['委','任'], rarity:'★12', tags:[], desc:'デリゲート', season:'S3' },
+
+  // 評価
+  { word:'評価', chars:['評','価'], rarity:'★8',  tags:[], desc:'エバリュエート', season:'S3' },
+  { word:'採点', chars:['採','点'], rarity:'★10', tags:[], desc:'スコアリング', season:'S3' },
+  { word:'判定', chars:['判','定'], rarity:'★8',  tags:[], desc:'ジャッジメント', season:'S3' },
+];
+for (const r of _YOJI_S3_WORKFLOW) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
