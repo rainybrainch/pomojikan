@@ -7521,6 +7521,77 @@ const _YOJI_S4_ETHIC = [
 ];
 for (const r of _YOJI_S4_ETHIC) YOJI_RECIPES.push(r);
 
+// v10m ── 二字熟語 +50（言葉・コミュ・話術）
+const _YOJI_S3_COMM = [
+  { word:'言葉', chars:['言','葉'], rarity:'★7',  tags:[], desc:'ワード', season:'S3' },
+  { word:'言辞', chars:['言','辞'], rarity:'★14', tags:['古典'], desc:'スピーチ', season:'S3' },
+  { word:'言論', chars:['言','論'], rarity:'★10', tags:[], desc:'スピーチ', season:'S3' },
+  { word:'言質', chars:['言','質'], rarity:'★15', tags:['古典'], desc:'げんち', season:'S3' },
+  { word:'発言', chars:['発','言'], rarity:'★8',  tags:[], desc:'ステートメント', season:'S3' },
+  { word:'発話', chars:['発','話'], rarity:'★12', tags:[], desc:'スピーキング', season:'S3' },
+  { word:'宣言', chars:['宣','言'], rarity:'★10', tags:[], desc:'プロクラメーション', season:'S3' },
+  { word:'宣告', chars:['宣','告'], rarity:'★12', tags:[], desc:'宣告', season:'S3' },
+  { word:'声明', chars:['声','明'], rarity:'★12', tags:[], desc:'ステートメント', season:'S3' },
+
+  // 会話
+  { word:'雑談', chars:['雑','談'], rarity:'★8',  tags:[], desc:'チャット', season:'S3' },
+  { word:'閑談', chars:['閑','談'], rarity:'★15', tags:['古典'], desc:'閑談', season:'S3' },
+  { word:'対談', chars:['対','談'], rarity:'★10', tags:[], desc:'インタビュー', season:'S3' },
+  { word:'座談', chars:['座','談'], rarity:'★13', tags:[], desc:'座談会', season:'S3' },
+  { word:'歓談', chars:['歓','談'], rarity:'★12', tags:['感情'], desc:'チャット', season:'S3' },
+  { word:'歓声', chars:['歓','声'], rarity:'★12', tags:['感情'], desc:'チア', season:'S3' },
+
+  // 質問・回答
+  { word:'質問', chars:['質','問'], rarity:'★8',  tags:[], desc:'クエスチョン', season:'S3' },
+  { word:'問答', chars:['問','答'], rarity:'★10', tags:[], desc:'Q&A', season:'S3' },
+  { word:'疑問', chars:['疑','問'], rarity:'★8',  tags:[], desc:'ダウト', season:'S3' },
+  { word:'反問', chars:['反','問'], rarity:'★13', tags:[], desc:'カウンタークエスチョン', season:'S3' },
+  { word:'反駁', chars:['反','駁'], rarity:'★16', tags:['古典'], desc:'反論', season:'S3' },
+  { word:'反論', chars:['反','論'], rarity:'★10', tags:[], desc:'カウンター', season:'S3' },
+
+  // 説明
+  { word:'説教', chars:['説','教'], rarity:'★8',  tags:['古典'], desc:'説教', season:'S3' },
+  { word:'伝言', chars:['伝','言'], rarity:'★10', tags:[], desc:'メッセージ', season:'S3' },
+  { word:'予言', chars:['予','言'], rarity:'★10', tags:[], desc:'プロフェシー', season:'S3' },
+  { word:'断言', chars:['断','言'], rarity:'★10', tags:[], desc:'アサーション', season:'S3' },
+  { word:'公言', chars:['公','言'], rarity:'★12', tags:[], desc:'公表', season:'S3' },
+
+  // 語り
+  { word:'物語', chars:['物','語'], rarity:'★8',  tags:['美','学'], desc:'ストーリー', season:'S3' },
+  { word:'語り', chars:['語','り'], rarity:'★8',  tags:[], desc:'ナレーション', season:'S3' },
+  { word:'語感', chars:['語','感'], rarity:'★13', tags:['学'], desc:'ニュアンス', season:'S3' },
+  { word:'語感', chars:['語','彙'], rarity:'★15', tags:['学'], desc:'ボキャブラリー', season:'S3' },
+
+  // 文体
+  { word:'文体', chars:['文','体'], rarity:'★12', tags:['美','学'], desc:'スタイル', season:'S3' },
+  { word:'文章', chars:['文','章'], rarity:'★8',  tags:['学'], desc:'センテンス', season:'S3' },
+  { word:'文面', chars:['文','面'], rarity:'★10', tags:[], desc:'文面', season:'S3' },
+  { word:'本文', chars:['本','文'], rarity:'★8',  tags:[], desc:'ボディ', season:'S3' },
+  { word:'序文', chars:['序','文'], rarity:'★13', tags:[], desc:'プリフェイス', season:'S3' },
+  { word:'結語', chars:['結','語'], rarity:'★13', tags:[], desc:'コンクリュージョン', season:'S3' },
+
+  // 敬語
+  { word:'敬語', chars:['敬','語'], rarity:'★10', tags:[], desc:'敬語', season:'S3' },
+  { word:'尊敬', chars:['尊','敬'], rarity:'★10', tags:['感情','七徳'], desc:'リスペクト', season:'S3' },
+  { word:'謙譲', chars:['謙','譲'], rarity:'★13', tags:['七徳','古典'], desc:'謙譲', season:'S3' },
+  { word:'丁寧', chars:['丁','寧'], rarity:'★8',  tags:['七徳'], desc:'ポライト', season:'S3' },
+  { word:'礼儀', chars:['礼','儀'], rarity:'★8',  tags:['七徳'], desc:'マナー', season:'S3' },
+
+  // 表現技法
+  { word:'比喩', chars:['比','喩'], rarity:'★13', tags:['美','学'], desc:'メタファー', season:'S3' },
+  { word:'隠喩', chars:['隠','喩'], rarity:'★15', tags:['美','学','古典'], desc:'メタファ', season:'S3' },
+  { word:'直喩', chars:['直','喩'], rarity:'★15', tags:['美','学','古典'], desc:'シミリ', season:'S3' },
+  { word:'擬人', chars:['擬','人'], rarity:'★13', tags:['美','学'], desc:'パーソニフィケーション', season:'S3' },
+  { word:'象徴', chars:['象','徴'], rarity:'★12', tags:['美','哲学'], desc:'シンボル', season:'S3' },
+
+  // 雄弁
+  { word:'雄弁', chars:['雄','弁'], rarity:'★13', tags:['武'], desc:'エロクェント', season:'S3' },
+  { word:'熱弁', chars:['熱','弁'], rarity:'★13', tags:['武','感情'], desc:'パッショネート', season:'S3' },
+  { word:'弁論', chars:['弁','論'], rarity:'★12', tags:[], desc:'ディベート', season:'S3' },
+  { word:'演説', chars:['演','説'], rarity:'★10', tags:[], desc:'スピーチ', season:'S3' },
+];
+for (const r of _YOJI_S3_COMM) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
