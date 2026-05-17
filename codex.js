@@ -2903,6 +2903,77 @@ const _YOJI_S3_HUMAN = [
 ];
 for (const r of _YOJI_S3_HUMAN) YOJI_RECIPES.push(r);
 
+// v7y ── 四字熟語 +50（季節・自然・天体・植物）
+const _YOJI_S4_SEASONAL = [
+  // 春
+  { word:'春暖陽気', chars:['春','暖','陽','気'], rarity:'★13', tags:['四字熟語','自然','時'], desc:'春の暖かさ', season:'S4' },
+  { word:'春風駘蕩', chars:['春','風','駘','蕩'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'春風が穏やか', season:'S4' },
+  { word:'春和景明', chars:['春','和','景','明'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'春の穏やかな景色', season:'S4' },
+  { word:'桜花満開', chars:['桜','花','満','開'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'桜が満開', season:'S4' },
+  { word:'桃花春風', chars:['桃','花','春','風'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'桃の花と春風', season:'S4' },
+
+  // 夏
+  { word:'青空一望', chars:['青','空','一','望'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'青空が広がる', season:'S4' },
+  { word:'夏雲積雲', chars:['夏','雲','積','雲'], rarity:'★13', tags:['四字熟語','自然'], desc:'入道雲', season:'S4' },
+  { word:'蝉時雨', chars:['蝉','時','雨'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'蝉の鳴き声', season:'S4' },
+  { word:'夕涼風', chars:['夕','涼','風'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'夕方の涼風', season:'S4' },
+  { word:'夏炉冬扇', chars:['夏','炉','冬','扇'], rarity:'★14', tags:['四字熟語','古典'], desc:'役立たぬもの', season:'S4' },
+
+  // 秋
+  { word:'紅葉舞散', chars:['紅','葉','舞','散'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'紅葉が舞う', season:'S4' },
+  { word:'秋風落葉', chars:['秋','風','落','葉'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'秋風と落葉', season:'S4' },
+  { word:'秋月明朗', chars:['秋','月','明','朗'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'秋の明月', season:'S4' },
+  { word:'秋天高遠', chars:['秋','天','高','遠'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'秋の空が高い', season:'S4' },
+  { word:'実りの秋', chars:['実','り','の','秋'], rarity:'★11', tags:['四字熟語','自然','時'], desc:'収穫の季節', season:'S4' },
+
+  // 冬
+  { word:'雪景一望', chars:['雪','景','一','望'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'雪景色', season:'S4' },
+  { word:'冬雪積雪', chars:['冬','雪','積','雪'], rarity:'★12', tags:['四字熟語','自然'], desc:'積雪', season:'S4' },
+  { word:'寒風厳寒', chars:['寒','風','厳','寒'], rarity:'★13', tags:['四字熟語','自然'], desc:'厳しい冬風', season:'S4' },
+  { word:'雪化粧', chars:['雪','化','粧'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'雪が美しく覆う', season:'S4' },
+  { word:'凍結凍土', chars:['凍','結','凍','土'], rarity:'★13', tags:['四字熟語','自然'], desc:'凍った大地', season:'S4' },
+
+  // 自然現象
+  { word:'雷鳴轟轟', chars:['雷','鳴','轟','轟'], rarity:'★14', tags:['四字熟語','自然'], desc:'雷が轟く', season:'S4' },
+  { word:'波瀾起伏', chars:['波','瀾','起','伏'], rarity:'★14', tags:['四字熟語','自然'], desc:'波と起伏', season:'S4' },
+  { word:'潮風海風', chars:['潮','風','海','風'], rarity:'★13', tags:['四字熟語','自然'], desc:'海の風', season:'S4' },
+  { word:'霧深い', chars:['霧','深','い'], rarity:'★12', tags:['四字熟語','自然','古典'], desc:'濃霧', season:'S4' },
+  { word:'霜降秋月', chars:['霜','降','秋','月'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'霜降りた秋月', season:'S4' },
+
+  // 天体現象
+  { word:'日月星辰', chars:['日','月','星','辰'], rarity:'★15', tags:['四字熟語','天体','古典'], desc:'天体の総称', season:'S4' },
+  { word:'星雲銀河', chars:['星','雲','銀','河'], rarity:'★13', tags:['四字熟語','天体','科学'], desc:'宇宙', season:'S4' },
+  { word:'宇宙星辰', chars:['宇','宙','星','辰'], rarity:'★14', tags:['四字熟語','天体','古典'], desc:'宇宙と星々', season:'S4' },
+  { word:'月光絶景', chars:['月','光','絶','景'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'月光の絶景', season:'S4' },
+  { word:'太陽暦', chars:['太','陽','暦'], rarity:'★12', tags:['四字熟語','時','天体'], desc:'グレゴリオ暦', season:'S4' },
+  { word:'太陰暦', chars:['太','陰','暦'], rarity:'★13', tags:['四字熟語','時','天体'], desc:'旧暦', season:'S4' },
+
+  // 植物・木
+  { word:'松竹梅鶴', chars:['松','竹','梅','鶴'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'おめでたい植物と鶴', season:'S4' },
+  { word:'樹木青々', chars:['樹','木','青','々'], rarity:'★12', tags:['四字熟語','自然'], desc:'木々が青々', season:'S4' },
+  { word:'草木花鳥', chars:['草','木','花','鳥'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'草木と花鳥', season:'S4' },
+  { word:'桜梅桃李', chars:['桜','梅','桃','李'], rarity:'★15', tags:['四字熟語','自然','古典','美'], desc:'四春の花', season:'S4' },
+  { word:'紅葉黄葉', chars:['紅','葉','黄','葉'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'紅葉と黄葉', season:'S4' },
+
+  // 動物
+  { word:'龍虎相搏', chars:['龍','虎','相','搏'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'龍と虎の戦い', season:'S4' },
+  { word:'鶴亀千歳', chars:['鶴','亀','千','歳'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'長寿の象徴', season:'S4' },
+  { word:'鳳凰来儀', chars:['鳳','凰','来','儀'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'鳳凰が来る吉兆', season:'S4' },
+  { word:'麒麟児', chars:['麒','麟','児'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'天才児', season:'S4' },
+
+  // 大地・空
+  { word:'天高雲淡', chars:['天','高','雲','淡'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'空高く雲薄い', season:'S4' },
+  { word:'青空白雲', chars:['青','空','白','雲'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'青空と白雲', season:'S4' },
+  { word:'青山緑水', chars:['青','山','緑','水'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'青い山と緑の水', season:'S4' },
+  { word:'山高水深', chars:['山','高','水','深'], rarity:'★13', tags:['四字熟語','自然'], desc:'山高く水深し', season:'S4' },
+
+  // 季節の伝統
+  { word:'七夕祭り', chars:['七','夕','祭','り'], rarity:'★13', tags:['四字熟語','古典','時'], desc:'たなばた', season:'S4' },
+  { word:'端午節句', chars:['端','午','節','句'], rarity:'★14', tags:['四字熟語','古典','時'], desc:'こどもの日', season:'S4' },
+  { word:'桃の節句', chars:['桃','の','節','句'], rarity:'★13', tags:['四字熟語','古典','時'], desc:'ひな祭り', season:'S4' },
+];
+for (const r of _YOJI_S4_SEASONAL) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
