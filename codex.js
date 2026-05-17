@@ -4960,6 +4960,76 @@ const _YOJI_S3_CAL = [
 ];
 for (const r of _YOJI_S3_CAL) YOJI_RECIPES.push(r);
 
+// v9c ── 四字熟語 +50（祝・縁起・運気）
+const _YOJI_S4_LUCKY = [
+  // 縁起良し
+  { word:'吉祥福運', chars:['吉','祥','福','運'], rarity:'★13', tags:['四字熟語','七徳'], desc:'縁起良し', season:'S4' },
+  { word:'招福開運', chars:['招','福','開','運'], rarity:'★13', tags:['四字熟語'], desc:'幸運を招く', season:'S4' },
+  { word:'福徳円満', chars:['福','徳','円','満'], rarity:'★13', tags:['四字熟語','七徳'], desc:'福徳', season:'S4' },
+  { word:'七福神', chars:['七','福','神'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'七福神', season:'S4' },
+  { word:'金運上昇', chars:['金','運','上','昇'], rarity:'★12', tags:['四字熟語'], desc:'金運アップ', season:'S4' },
+  { word:'恋愛成就', chars:['恋','愛','成','就'], rarity:'★12', tags:['四字熟語','感情'], desc:'恋愛成就', season:'S4' },
+  { word:'良縁成就', chars:['良','縁','成','就'], rarity:'★13', tags:['四字熟語','感情'], desc:'良縁', season:'S4' },
+  { word:'縁結び', chars:['縁','結','び'], rarity:'★12', tags:['四字熟語','感情','古典'], desc:'えんむすび', season:'S4' },
+
+  // 祝い
+  { word:'御祝儀', chars:['御','祝','儀'], rarity:'★13', tags:['四字熟語','古典'], desc:'おしゅうぎ', season:'S4' },
+  { word:'万歳三唱', chars:['万','歳','三','唱'], rarity:'★13', tags:['四字熟語','古典'], desc:'バンザイ', season:'S4' },
+  { word:'祝賀会場', chars:['祝','賀','会','場'], rarity:'★12', tags:['四字熟語'], desc:'お祝い会場', season:'S4' },
+  { word:'御目出度', chars:['御','目','出','度'], rarity:'★15', tags:['四字熟語','古典'], desc:'おめでとう', season:'S4' },
+  { word:'寿賀寿', chars:['寿','賀','寿'], rarity:'★14', tags:['四字熟語','古典'], desc:'寿', season:'S4' },
+
+  // 寿
+  { word:'長寿祝福', chars:['長','寿','祝','福'], rarity:'★13', tags:['四字熟語'], desc:'長寿', season:'S4' },
+  { word:'米寿祝賀', chars:['米','寿','祝','賀'], rarity:'★14', tags:['四字熟語','古典'], desc:'88歳', season:'S4' },
+  { word:'喜寿祝賀', chars:['喜','寿','祝','賀'], rarity:'★14', tags:['四字熟語','古典'], desc:'77歳', season:'S4' },
+  { word:'卒寿百寿', chars:['卒','寿','百','寿'], rarity:'★15', tags:['四字熟語','古典'], desc:'90/100歳', season:'S4' },
+  { word:'還暦祝賀', chars:['還','暦','祝','賀'], rarity:'★13', tags:['四字熟語','古典'], desc:'60歳', season:'S4' },
+
+  // 季節祝
+  { word:'新年寿賀', chars:['新','年','寿','賀'], rarity:'★13', tags:['四字熟語','時'], desc:'新年祝賀', season:'S4' },
+  { word:'初春寿賀', chars:['初','春','寿','賀'], rarity:'★14', tags:['四字熟語','時'], desc:'初春の祝', season:'S4' },
+  { word:'盂蘭盆会', chars:['盂','蘭','盆','会'], rarity:'★16', tags:['四字熟語','仏教','古典'], desc:'お盆', season:'S4' },
+  { word:'年末年始', chars:['年','末','年','始'], rarity:'★11', tags:['四字熟語','時'], desc:'年末年始', season:'S4' },
+
+  // 願掛け
+  { word:'絵馬奉納', chars:['絵','馬','奉','納'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'絵馬', season:'S4' },
+  { word:'絵馬願掛', chars:['絵','馬','願','掛'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'絵馬願掛け', season:'S4' },
+  { word:'御守護符', chars:['御','守','護','符'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'お守り', season:'S4' },
+  { word:'御百度参', chars:['御','百','度','参'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'お百度', season:'S4' },
+
+  // 神事
+  { word:'御神事祭', chars:['御','神','事','祭'], rarity:'★13', tags:['四字熟語','神字'], desc:'神事', season:'S4' },
+  { word:'例大祭', chars:['例','大','祭'], rarity:'★13', tags:['四字熟語','神字','古典'], desc:'例大祭', season:'S4' },
+  { word:'神輿担ぎ', chars:['神','輿','担','ぎ'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'みこし', season:'S4' },
+
+  // 仏事
+  { word:'法要供養', chars:['法','要','供','養'], rarity:'★13', tags:['四字熟語','仏教'], desc:'法事', season:'S4' },
+  { word:'初盆法要', chars:['初','盆','法','要'], rarity:'★14', tags:['四字熟語','仏教','古典'], desc:'初盆', season:'S4' },
+  { word:'回向供養', chars:['回','向','供','養'], rarity:'★15', tags:['四字熟語','仏教'], desc:'回向', season:'S4' },
+
+  // 開運
+  { word:'幸運招来', chars:['幸','運','招','来'], rarity:'★12', tags:['四字熟語'], desc:'幸運招く', season:'S4' },
+  { word:'運気上昇', chars:['運','気','上','昇'], rarity:'★12', tags:['四字熟語'], desc:'運気アップ', season:'S4' },
+  { word:'運気開花', chars:['運','気','開','花'], rarity:'★13', tags:['四字熟語'], desc:'運気開花', season:'S4' },
+  { word:'運気上昇', chars:['運','気','向','上'], rarity:'★12', tags:['四字熟語'], desc:'運気向上', season:'S4' },
+
+  // 厄
+  { word:'厄祓い', chars:['厄','祓','い'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'やくばらい', season:'S4' },
+  { word:'厄年厄災', chars:['厄','年','厄','災'], rarity:'★13', tags:['四字熟語','古典'], desc:'厄年', season:'S4' },
+  { word:'厄除け', chars:['厄','除','け'], rarity:'★12', tags:['四字熟語','古典'], desc:'やくよけ', season:'S4' },
+
+  // 幸せ
+  { word:'家内無事', chars:['家','内','無','事'], rarity:'★12', tags:['四字熟語'], desc:'家内安全', season:'S4' },
+  { word:'無病息災', chars:['無','病','息','災'], rarity:'★13', tags:['四字熟語'], desc:'健康無事', season:'S4' },
+  { word:'交通安全', chars:['交','通','安','全'], rarity:'★11', tags:['四字熟語'], desc:'交通安全', season:'S4' },
+  { word:'安産祈願', chars:['安','産','祈','願'], rarity:'★13', tags:['四字熟語'], desc:'安産', season:'S4' },
+  { word:'家業繁昌', chars:['家','業','繁','昌'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'家業繁盛', season:'S4' },
+  { word:'商売繁昌', chars:['商','売','繁','昌'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'商売繁盛', season:'S4' },
+  { word:'家内安泰', chars:['家','内','安','泰'], rarity:'★12', tags:['四字熟語'], desc:'家内安泰', season:'S4' },
+];
+for (const r of _YOJI_S4_LUCKY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
