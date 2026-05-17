@@ -6647,6 +6647,77 @@ const _YOJI_S4_SWORD = [
 ];
 for (const r of _YOJI_S4_SWORD) YOJI_RECIPES.push(r);
 
+// v10a ── 二字熟語 +50（神・宗教・神聖）
+const _YOJI_S3_SACRED = [
+  { word:'神様', chars:['神','様'], rarity:'★8',  tags:['神字'], desc:'ゴッド', season:'S3' },
+  { word:'神霊', chars:['神','霊'], rarity:'★13', tags:['神字','古典'], desc:'スピリット', season:'S3' },
+  { word:'御神', chars:['御','神'], rarity:'★13', tags:['神字','古典'], desc:'神様', season:'S3' },
+  { word:'神祇', chars:['神','祇'], rarity:'★15', tags:['神字','古典'], desc:'神祇', season:'S3' },
+  { word:'神道', chars:['神','道'], rarity:'★12', tags:['神字','道'], desc:'シントー', season:'S3' },
+  { word:'仏教', chars:['仏','教'], rarity:'★10', tags:['仏教'], desc:'ブッディズム', season:'S3' },
+  { word:'禅宗', chars:['禅','宗'], rarity:'★13', tags:['禅','仏教'], desc:'禅宗', season:'S3' },
+  { word:'真言', chars:['真','言'], rarity:'★13', tags:['仏教'], desc:'マントラ', season:'S3' },
+  { word:'密教', chars:['密','教'], rarity:'★14', tags:['仏教'], desc:'エソテリック', season:'S3' },
+  { word:'浄土', chars:['浄','土'], rarity:'★13', tags:['仏教'], desc:'浄土', season:'S3' },
+
+  // 仏教用語
+  { word:'仏像', chars:['仏','像'], rarity:'★12', tags:['仏教','美'], desc:'仏像', season:'S3' },
+  { word:'仏壇', chars:['仏','壇'], rarity:'★13', tags:['仏教'], desc:'仏壇', season:'S3' },
+  { word:'仏前', chars:['仏','前'], rarity:'★13', tags:['仏教'], desc:'仏前', season:'S3' },
+  { word:'仏陀', chars:['仏','陀'], rarity:'★14', tags:['仏教','神字'], desc:'ブッダ', season:'S3' },
+  { word:'菩薩', chars:['菩','薩'], rarity:'★15', tags:['仏教','神字'], desc:'ボディサットヴァ', season:'S3' },
+  { word:'観音', chars:['観','音'], rarity:'★12', tags:['仏教','神字'], desc:'観音', season:'S3' },
+  { word:'地蔵', chars:['地','蔵'], rarity:'★13', tags:['仏教','神字'], desc:'地蔵', season:'S3' },
+  { word:'弥勒', chars:['弥','勒'], rarity:'★16', tags:['仏教','神字','古典'], desc:'弥勒', season:'S3' },
+
+  // 神社
+  { word:'御朱印', chars:['御','朱','印'], rarity:'★13', tags:['古典'], desc:'御朱印', season:'S3' },
+  { word:'御札', chars:['御','札'], rarity:'★12', tags:['神字','古典'], desc:'お札', season:'S3' },
+  { word:'御守', chars:['御','守'], rarity:'★12', tags:['神字','古典'], desc:'お守り', season:'S3' },
+  { word:'御神体', chars:['御','神','体'], rarity:'★14', tags:['神字','古典'], desc:'御神体', season:'S3' },
+  { word:'拝殿', chars:['拝','殿'], rarity:'★13', tags:['神字','古典'], desc:'拝殿', season:'S3' },
+  { word:'本殿', chars:['本','殿'], rarity:'★13', tags:['神字','古典'], desc:'本殿', season:'S3' },
+
+  // 祈り
+  { word:'祈り', chars:['祈','り'], rarity:'★10', tags:['神字','感情'], desc:'プレイヤー', season:'S3' },
+  { word:'祈祷', chars:['祈','祷'], rarity:'★15', tags:['古典'], desc:'いのり', season:'S3' },
+  { word:'祈願', chars:['祈','願'], rarity:'★12', tags:['古典'], desc:'祈り', season:'S3' },
+  { word:'念誦', chars:['念','誦'], rarity:'★15', tags:['仏教'], desc:'念誦', season:'S3' },
+  { word:'読経', chars:['読','経'], rarity:'★14', tags:['仏教'], desc:'読経', season:'S3' },
+
+  // 経典
+  { word:'経典', chars:['経','典'], rarity:'★13', tags:['仏教'], desc:'スートラ', season:'S3' },
+  { word:'聖典', chars:['聖','典'], rarity:'★13', tags:['神字'], desc:'バイブル', season:'S3' },
+  { word:'聖書', chars:['聖','書'], rarity:'★12', tags:['神字'], desc:'バイブル', season:'S3' },
+  { word:'写経', chars:['写','経'], rarity:'★14', tags:['仏教','古典'], desc:'写経', season:'S3' },
+
+  // 修行
+  { word:'修行', chars:['修','行'], rarity:'★10', tags:['仏教','禅','武'], desc:'修行', season:'S3' },
+  { word:'修験', chars:['修','験'], rarity:'★14', tags:['古典','神字'], desc:'修験道', season:'S3' },
+  { word:'断食', chars:['断','食'], rarity:'★12', tags:['仏教'], desc:'ファスティング', season:'S3' },
+  { word:'瞑想', chars:['瞑','想'], rarity:'★13', tags:['禅','仏教'], desc:'メディテーション', season:'S3' },
+  { word:'座禅', chars:['座','禅'], rarity:'★13', tags:['禅','仏教'], desc:'坐禅', season:'S3' },
+
+  // 西洋宗教
+  { word:'天使', chars:['天','使'], rarity:'★12', tags:['神字'], desc:'エンジェル', season:'S3' },
+  { word:'天国', chars:['天','国'], rarity:'★8',  tags:['神字'], desc:'ヘブン', season:'S3' },
+  { word:'地獄', chars:['地','獄'], rarity:'★12', tags:['仏教'], desc:'ヘル', season:'S3' },
+  { word:'悪魔', chars:['悪','魔'], rarity:'★12', tags:['神字'], desc:'デモン', season:'S3' },
+  { word:'救世主', chars:['救','世','主'], rarity:'★13', tags:['神字'], desc:'メシア', season:'S3' },
+
+  // 霊性
+  { word:'霊魂', chars:['霊','魂'], rarity:'★13', tags:['神字'], desc:'スピリチュアル', season:'S3' },
+  { word:'霊感', chars:['霊','感'], rarity:'★13', tags:['神字'], desc:'インスピレーション', season:'S3' },
+  { word:'霊性', chars:['霊','性'], rarity:'★13', tags:['神字','哲学'], desc:'スピリチュアリティ', season:'S3' },
+
+  // 聖人
+  { word:'聖人', chars:['聖','人'], rarity:'★12', tags:['神字','古典'], desc:'セイント', season:'S3' },
+  { word:'賢者', chars:['賢','者'], rarity:'★12', tags:['古典','学'], desc:'セージ', season:'S3' },
+  { word:'仙人', chars:['仙','人'], rarity:'★13', tags:['神字','古典'], desc:'仙人', season:'S3' },
+  { word:'隠者', chars:['隠','者'], rarity:'★13', tags:['古典','禅'], desc:'ハーミット', season:'S3' },
+];
+for (const r of _YOJI_S3_SACRED) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
