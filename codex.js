@@ -5718,6 +5718,73 @@ const _YOJI_S3_SCI = [
 ];
 for (const r of _YOJI_S3_SCI) YOJI_RECIPES.push(r);
 
+// v9n ── 四字熟語 +50（家族・絆・愛情）
+const _YOJI_S4_FAMILY = [
+  { word:'家族団欒', chars:['家','族','団','欒'], rarity:'★14', tags:['四字熟語','七徳','感情'], desc:'家族の和', season:'S4' },
+  { word:'家庭円満', chars:['家','庭','円','満'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'家庭幸せ', season:'S4' },
+  { word:'夫婦和合', chars:['夫','婦','和','合'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'夫婦和合', season:'S4' },
+  { word:'親子愛情', chars:['親','子','愛','情'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'親子愛', season:'S4' },
+  { word:'兄弟愛情', chars:['兄','弟','愛','情'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'兄弟愛', season:'S4' },
+  { word:'姉妹愛情', chars:['姉','妹','愛','情'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'姉妹愛', season:'S4' },
+  { word:'孫子可愛', chars:['孫','子','可','愛'], rarity:'★12', tags:['四字熟語','感情'], desc:'孫子', season:'S4' },
+  { word:'長男長女', chars:['長','男','長','女'], rarity:'★12', tags:['四字熟語'], desc:'長子', season:'S4' },
+  { word:'次男次女', chars:['次','男','次','女'], rarity:'★12', tags:['四字熟語'], desc:'次子', season:'S4' },
+  { word:'末子末女', chars:['末','子','末','女'], rarity:'★13', tags:['四字熟語'], desc:'末子', season:'S4' },
+
+  // 結婚
+  { word:'夫婦相愛', chars:['夫','婦','相','愛'], rarity:'★13', tags:['四字熟語','感情'], desc:'夫婦愛', season:'S4' },
+  { word:'夫婦同心', chars:['夫','婦','同','心'], rarity:'★13', tags:['四字熟語','感情'], desc:'夫婦一心', season:'S4' },
+  { word:'琴瑟和鳴', chars:['琴','瑟','和','鳴'], rarity:'★16', tags:['四字熟語','古典','感情'], desc:'夫婦仲よし', season:'S4' },
+  { word:'夫唱婦随', chars:['夫','唱','婦','随'], rarity:'★14', tags:['四字熟語','古典'], desc:'夫唱婦随', season:'S4' },
+  { word:'比翼連理', chars:['比','翼','連','理'], rarity:'★15', tags:['四字熟語','古典','感情'], desc:'夫婦愛', season:'S4' },
+
+  // 縁
+  { word:'良縁絶縁', chars:['良','縁','絶','縁'], rarity:'★14', tags:['四字熟語','感情'], desc:'縁', season:'S4' },
+  { word:'縁結びの', chars:['縁','結','び','の'], rarity:'★12', tags:['四字熟語','感情'], desc:'縁結び', season:'S4' },
+  { word:'結婚記念', chars:['結','婚','記','念'], rarity:'★12', tags:['四字熟語'], desc:'結婚記念', season:'S4' },
+  { word:'金婚式典', chars:['金','婚','式','典'], rarity:'★13', tags:['四字熟語'], desc:'金婚式', season:'S4' },
+  { word:'銀婚式典', chars:['銀','婚','式','典'], rarity:'★13', tags:['四字熟語'], desc:'銀婚式', season:'S4' },
+
+  // 子供
+  { word:'子供成長', chars:['子','供','成','長'], rarity:'★11', tags:['四字熟語'], desc:'子の成長', season:'S4' },
+  { word:'育児子育', chars:['育','児','子','育'], rarity:'★12', tags:['四字熟語','七徳'], desc:'子育て', season:'S4' },
+  { word:'初宮詣で', chars:['初','宮','詣','で'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'お宮参り', season:'S4' },
+  { word:'七五三', chars:['七','五','三'], rarity:'★13', tags:['四字熟語','古典'], desc:'七五三', season:'S4' },
+  { word:'入学祝い', chars:['入','学','祝','い'], rarity:'★11', tags:['四字熟語'], desc:'入学祝', season:'S4' },
+
+  // 親孝行
+  { word:'親孝行', chars:['親','孝','行'], rarity:'★11', tags:['四字熟語','七徳'], desc:'親孝行', season:'S4' },
+  { word:'孝行親孝', chars:['孝','行','親','孝'], rarity:'★13', tags:['四字熟語','七徳','儒教'], desc:'孝行', season:'S4' },
+  { word:'恩返し報', chars:['恩','返','し','報'], rarity:'★13', tags:['四字熟語','七徳','感情'], desc:'恩返し', season:'S4' },
+  { word:'親不孝者', chars:['親','不','孝','者'], rarity:'★13', tags:['四字熟語'], desc:'親不孝', season:'S4' },
+
+  // 家系
+  { word:'家系図譜', chars:['家','系','図','譜'], rarity:'★13', tags:['四字熟語','古典'], desc:'家系図', season:'S4' },
+  { word:'血統血族', chars:['血','統','血','族'], rarity:'★14', tags:['四字熟語','古典'], desc:'血統', season:'S4' },
+  { word:'先祖先代', chars:['先','祖','先','代'], rarity:'★13', tags:['四字熟語','古典'], desc:'先祖', season:'S4' },
+  { word:'子孫繁栄', chars:['子','孫','繁','栄'], rarity:'★13', tags:['四字熟語','七徳'], desc:'子孫繁栄', season:'S4' },
+
+  // 友情
+  { word:'親友友情', chars:['親','友','友','情'], rarity:'★12', tags:['四字熟語','感情'], desc:'友情', season:'S4' },
+  { word:'盟友盟友', chars:['盟','友','盟','友'], rarity:'★13', tags:['四字熟語','武'], desc:'盟友', season:'S4' },
+  { word:'同志志士', chars:['同','志','志','士'], rarity:'★13', tags:['四字熟語','武'], desc:'同志', season:'S4' },
+  { word:'生涯友達', chars:['生','涯','友','達'], rarity:'★12', tags:['四字熟語','感情'], desc:'生涯の友', season:'S4' },
+
+  // 恋愛
+  { word:'初恋初心', chars:['初','恋','初','心'], rarity:'★12', tags:['四字熟語','感情'], desc:'初恋', season:'S4' },
+  { word:'相思両思', chars:['相','思','両','思'], rarity:'★13', tags:['四字熟語','感情'], desc:'両思い', season:'S4' },
+  { word:'失恋経験', chars:['失','恋','経','験'], rarity:'★12', tags:['四字熟語','感情'], desc:'失恋', season:'S4' },
+  { word:'愛情表現', chars:['愛','情','表','現'], rarity:'★12', tags:['四字熟語','感情'], desc:'愛情表現', season:'S4' },
+  { word:'愛欲煩悩', chars:['愛','欲','煩','悩'], rarity:'★14', tags:['四字熟語','仏教','感情'], desc:'愛欲', season:'S4' },
+
+  // 別れ
+  { word:'別離哀傷', chars:['別','離','哀','傷'], rarity:'★14', tags:['四字熟語','感情','古典'], desc:'別離', season:'S4' },
+  { word:'別離別れ', chars:['別','離','別','れ'], rarity:'★12', tags:['四字熟語','感情'], desc:'別れ', season:'S4' },
+  { word:'惜別感慨', chars:['惜','別','感','慨'], rarity:'★14', tags:['四字熟語','感情','古典'], desc:'惜別', season:'S4' },
+  { word:'再会再縁', chars:['再','会','再','縁'], rarity:'★13', tags:['四字熟語','感情'], desc:'再会', season:'S4' },
+];
+for (const r of _YOJI_S4_FAMILY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
