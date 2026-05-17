@@ -3910,6 +3910,75 @@ const _YOJI_S4_RELATION = [
 ];
 for (const r of _YOJI_S4_RELATION) YOJI_RECIPES.push(r);
 
+// v8n ── 二字熟語 +50（精神性・志・心境）
+const _YOJI_S3_SPIRIT = [
+  // 志
+  { word:'志望', chars:['志','望'], rarity:'★12', tags:['武'], desc:'アスピレーション', season:'S3' },
+  { word:'意志', chars:['意','志'], rarity:'★10', tags:['武'], desc:'ウィル', season:'S3' },
+  { word:'信念', chars:['信','念'], rarity:'★10', tags:['七徳','武'], desc:'ビリーフ', season:'S3' },
+  { word:'信条', chars:['信','条'], rarity:'★13', tags:['七徳'], desc:'クリード', season:'S3' },
+  { word:'信仰', chars:['信','仰'], rarity:'★12', tags:['神字'], desc:'フェイス', season:'S3' },
+  { word:'宗教', chars:['宗','教'], rarity:'★10', tags:['神字'], desc:'リリジョン', season:'S3' },
+  { word:'信奉', chars:['信','奉'], rarity:'★13', tags:['七徳','神字'], desc:'デボーション', season:'S3' },
+
+  // 精神
+  { word:'精神', chars:['精','神'], rarity:'★8',  tags:['哲学'], desc:'スピリット', season:'S3' },
+  { word:'魂魄', chars:['魂','魄'], rarity:'★16', tags:['古典','神字'], desc:'こんぱく', season:'S3' },
+  { word:'霊性', chars:['霊','性'], rarity:'★13', tags:['神字','哲学'], desc:'スピリチュアリティ', season:'S3' },
+  { word:'魂気', chars:['魂','気'], rarity:'★13', tags:['神字'], desc:'魂の気', season:'S3' },
+  { word:'精気', chars:['精','気'], rarity:'★12', tags:['古典'], desc:'生気', season:'S3' },
+
+  // 心境
+  { word:'静寂', chars:['静','寂'], rarity:'★12', tags:['禅','美'], desc:'サイレンス', season:'S3' },
+  { word:'閑寂', chars:['閑','寂'], rarity:'★14', tags:['禅','美','古典'], desc:'クワイエット', season:'S3' },
+  { word:'清涼', chars:['清','涼'], rarity:'★12', tags:['美'], desc:'リフレッシュ', season:'S3' },
+  { word:'清浄', chars:['清','浄'], rarity:'★12', tags:['仏教','美'], desc:'ピュア', season:'S3' },
+  { word:'清純', chars:['清','純'], rarity:'★12', tags:['美'], desc:'イノセント', season:'S3' },
+
+  // 心情
+  { word:'情緒', chars:['情','緒'], rarity:'★12', tags:['感情'], desc:'エモーション', season:'S3' },
+  { word:'情熱', chars:['情','熱'], rarity:'★10', tags:['感情','武'], desc:'パッション', season:'S3' },
+  { word:'熱情', chars:['熱','情'], rarity:'★12', tags:['感情','武'], desc:'パッション', season:'S3' },
+  { word:'熱意', chars:['熱','意'], rarity:'★10', tags:['武'], desc:'エンスージアズム', season:'S3' },
+  { word:'意欲', chars:['意','欲'], rarity:'★8',  tags:[], desc:'モチベーション', season:'S3' },
+  { word:'欲望', chars:['欲','望'], rarity:'★10', tags:[], desc:'デザイア', season:'S3' },
+
+  // 徳
+  { word:'徳行', chars:['徳','行'], rarity:'★10', tags:['七徳'], desc:'ヴァーチャス', season:'S3' },
+  { word:'徳性', chars:['徳','性'], rarity:'★13', tags:['七徳'], desc:'モラリティ', season:'S3' },
+  { word:'美徳', chars:['美','徳'], rarity:'★10', tags:['七徳','美'], desc:'ヴァーチュー', season:'S3' },
+  { word:'仁徳', chars:['仁','徳'], rarity:'★12', tags:['七徳','儒教'], desc:'ベネボレンス', season:'S3' },
+  { word:'人徳', chars:['人','徳'], rarity:'★10', tags:['七徳'], desc:'人柄の徳', season:'S3' },
+  { word:'功徳', chars:['功','徳'], rarity:'★13', tags:['仏教','七徳'], desc:'メリット', season:'S3' },
+
+  // 罪
+  { word:'罪悪', chars:['罪','悪'], rarity:'★8',  tags:['七大罪'], desc:'シン', season:'S3' },
+  { word:'悪行', chars:['悪','行'], rarity:'★8',  tags:['七大罪'], desc:'ミスディード', season:'S3' },
+  { word:'業火', chars:['業','火'], rarity:'★15', tags:['仏教','古典'], desc:'業のいけにえ', season:'S3' },
+  { word:'業病', chars:['業','病'], rarity:'★13', tags:['仏教'], desc:'業の病', season:'S3' },
+
+  // 大徳・小徳
+  { word:'大徳', chars:['大','徳'], rarity:'★13', tags:['仏教','七徳'], desc:'大徳寺', season:'S3' },
+  { word:'徳目', chars:['徳','目'], rarity:'★13', tags:['七徳','儒教'], desc:'ヴァーチュー一覧', season:'S3' },
+  { word:'七徳', chars:['七','徳'], rarity:'★14', tags:['七徳'], desc:'七つの徳', season:'S3' },
+
+  // 念
+  { word:'念力', chars:['念','力'], rarity:'★12', tags:[], desc:'テレキネシス', season:'S3' },
+  { word:'念仏', chars:['念','仏'], rarity:'★12', tags:['仏教'], desc:'ねんぶつ', season:'S3' },
+  { word:'念誦', chars:['念','誦'], rarity:'★15', tags:['仏教'], desc:'マントラ', season:'S3' },
+  { word:'雑念', chars:['雑','念'], rarity:'★12', tags:[], desc:'ディストラクション', season:'S3' },
+  { word:'妄念', chars:['妄','念'], rarity:'★13', tags:['仏教'], desc:'デリュージョン', season:'S3' },
+  { word:'執念', chars:['執','念'], rarity:'★12', tags:[], desc:'オブセッション', season:'S3' },
+
+  // 知
+  { word:'知能', chars:['知','能'], rarity:'★8',  tags:['学'], desc:'インテリジェンス', season:'S3' },
+  { word:'認知', chars:['認','知'], rarity:'★8',  tags:[], desc:'コグニッション', season:'S3' },
+  { word:'認識', chars:['認','識'], rarity:'★8',  tags:['哲学'], desc:'パーセプション', season:'S3' },
+  { word:'意識', chars:['意','識'], rarity:'★8',  tags:['哲学'], desc:'コンシャスネス', season:'S3' },
+  { word:'無意識', chars:['無','意','識'], rarity:'★12', tags:['哲学'], desc:'アンコンシャス', season:'S3' },
+];
+for (const r of _YOJI_S3_SPIRIT) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
