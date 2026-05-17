@@ -3557,7 +3557,29 @@ function renderCodex() {
 
   // S3/S4/S5/S6/S7（熟語シーズン）が選ばれているときは熟語をリスト表示
   if (['S3','S4','S5','S6','S7'].includes(codexFilter.season)) {
-    const recipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    let recipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    // 検索クエリでフィルタ
+    if (codexFilter.query) {
+      const q = codexFilter.query.toLowerCase();
+      recipes = recipes.filter(r => {
+        if ((r.word || '').toLowerCase().includes(q)) return true;
+        if ((r.desc || '').toLowerCase().includes(q)) return true;
+        if ((r.tags || []).some(t => t.toLowerCase().includes(q))) return true;
+        if ((r.chars || []).some(c => c.includes(q))) return true;
+        return false;
+      });
+    }
+    // 「発見済のみ」フィルタ
+    if (codexFilter.onlySeen) {
+      recipes = recipes.filter(r => isYojiDiscovered(r));
+    }
+    // ソート：レア度（高→低）→ 字数（多→少）
+    recipes.sort((a, b) => {
+      const ra = RARITY_TIERS.indexOf(a.rarity);
+      const rb = RARITY_TIERS.indexOf(b.rarity);
+      if (ra !== rb) return rb - ra;
+      return (b.chars?.length || 0) - (a.chars?.length || 0);
+    });
     const SEASON_LABEL = {
       S3:'熟語', S4:'四字熟語',
       S5:'昭和文化', S6:'令和現代', S7:'未来（萌芽）'
