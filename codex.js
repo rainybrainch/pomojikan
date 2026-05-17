@@ -4608,6 +4608,73 @@ const _YOJI_S4_GEOG = [
 ];
 for (const r of _YOJI_S4_GEOG) YOJI_RECIPES.push(r);
 
+// v8x ── 二字熟語 +50（教養・読書・知性）
+const _YOJI_S3_LIT = [
+  // 読書・文芸
+  { word:'読書', chars:['読','書'], rarity:'★8',  tags:['学'], desc:'リーディング', season:'S3' },
+  { word:'蔵書', chars:['蔵','書'], rarity:'★12', tags:['学'], desc:'コレクション', season:'S3' },
+  { word:'書店', chars:['書','店'], rarity:'★8',  tags:[], desc:'ブックストア', season:'S3' },
+  { word:'本棚', chars:['本','棚'], rarity:'★12', tags:[], desc:'ブックシェルフ', season:'S3' },
+  { word:'文庫', chars:['文','庫'], rarity:'★8',  tags:['学'], desc:'ペーパーバック', season:'S3' },
+  { word:'雑誌', chars:['雑','誌'], rarity:'★12', tags:[], desc:'マガジン', season:'S3' },
+  { word:'新聞', chars:['新','聞'], rarity:'★7',  tags:[], desc:'ニュースペーパー', season:'S3' },
+  { word:'辞書', chars:['辞','書'], rarity:'★8',  tags:['学'], desc:'ディクショナリ', season:'S3' },
+  { word:'辞典', chars:['辞','典'], rarity:'★8',  tags:['学'], desc:'ディクショナリ', season:'S3' },
+  { word:'図書', chars:['図','書'], rarity:'★8',  tags:['学'], desc:'ブック', season:'S3' },
+
+  // 知識
+  { word:'博識', chars:['博','識'], rarity:'★13', tags:['学'], desc:'博学多識', season:'S3' },
+  { word:'博学', chars:['博','学'], rarity:'★12', tags:['学'], desc:'ポリマス', season:'S3' },
+  { word:'教養', chars:['教','養'], rarity:'★10', tags:['学'], desc:'カルチャー', season:'S3' },
+  { word:'造詣', chars:['造','詣'], rarity:'★15', tags:['学','古典'], desc:'深い知識', season:'S3' },
+  { word:'蘊蓄', chars:['蘊','蓄'], rarity:'★16', tags:['学','古典'], desc:'うんちく', season:'S3' },
+
+  // 学問
+  { word:'探究', chars:['探','究'], rarity:'★8',  tags:['学'], desc:'インクワイアリ', season:'S3' },
+  { word:'追究', chars:['追','究'], rarity:'★10', tags:['学'], desc:'パースート', season:'S3' },
+  { word:'探求', chars:['探','求'], rarity:'★8',  tags:['学'], desc:'クエスト', season:'S3' },
+  { word:'探索', chars:['探','索'], rarity:'★10', tags:[], desc:'サーチ', season:'S3' },
+  { word:'検索', chars:['検','索'], rarity:'★8',  tags:[], desc:'サーチ', season:'S3' },
+
+  // 学術
+  { word:'学術', chars:['学','術'], rarity:'★10', tags:['学'], desc:'アカデミック', season:'S3' },
+  { word:'研究', chars:['研','究'], rarity:'★8',  tags:['学'], desc:'リサーチ', season:'S3' },
+  { word:'論考', chars:['論','考'], rarity:'★13', tags:['学'], desc:'論考', season:'S3' },
+  { word:'考察', chars:['考','察'], rarity:'★8',  tags:['学'], desc:'コンシダレーション', season:'S3' },
+  { word:'解説', chars:['解','説'], rarity:'★8',  tags:['学'], desc:'エクスプラネーション', season:'S3' },
+
+  // 思想
+  { word:'思想', chars:['思','想'], rarity:'★8',  tags:['哲学'], desc:'ソート', season:'S3' },
+  { word:'思惟', chars:['思','惟'], rarity:'★14', tags:['哲学','古典'], desc:'シンキング', season:'S3' },
+  { word:'熟考', chars:['熟','考'], rarity:'★12', tags:['学'], desc:'熟考', season:'S3' },
+  { word:'省察', chars:['省','察'], rarity:'★14', tags:['哲学'], desc:'リフレクション', season:'S3' },
+  { word:'内省', chars:['内','省'], rarity:'★12', tags:['哲学'], desc:'インスペクション', season:'S3' },
+  { word:'瞑想', chars:['瞑','想'], rarity:'★13', tags:['禅','仏教'], desc:'メディテーション', season:'S3' },
+
+  // 名著
+  { word:'名著', chars:['名','著'], rarity:'★12', tags:['学'], desc:'クラシック', season:'S3' },
+  { word:'古典', chars:['古','典'], rarity:'★10', tags:['学','古典'], desc:'クラシック', season:'S3' },
+  { word:'原典', chars:['原','典'], rarity:'★13', tags:['学'], desc:'オリジナル', season:'S3' },
+  { word:'写本', chars:['写','本'], rarity:'★13', tags:['学','古典'], desc:'マニュスクリプト', season:'S3' },
+  { word:'巻物', chars:['巻','物'], rarity:'★13', tags:['古典'], desc:'スクロール', season:'S3' },
+
+  // 著作
+  { word:'著作', chars:['著','作'], rarity:'★10', tags:['学'], desc:'ワーク', season:'S3' },
+  { word:'執筆', chars:['執','筆'], rarity:'★12', tags:['学'], desc:'ライティング', season:'S3' },
+  { word:'創作', chars:['創','作'], rarity:'★12', tags:['美'], desc:'クリエーション', season:'S3' },
+  { word:'翻訳', chars:['翻','訳'], rarity:'★10', tags:[], desc:'トランスレーション', season:'S3' },
+  { word:'通訳', chars:['通','訳'], rarity:'★10', tags:[], desc:'インタープレッター', season:'S3' },
+
+  // 言語
+  { word:'言語', chars:['言','語'], rarity:'★8',  tags:[], desc:'ランゲージ', season:'S3' },
+  { word:'方言', chars:['方','言'], rarity:'★10', tags:[], desc:'ダイアレクト', season:'S3' },
+  { word:'標準', chars:['標','準'], rarity:'★8',  tags:[], desc:'スタンダード', season:'S3' },
+  { word:'敬語', chars:['敬','語'], rarity:'★10', tags:[], desc:'敬語', season:'S3' },
+  { word:'文法', chars:['文','法'], rarity:'★8',  tags:['学'], desc:'グラマー', season:'S3' },
+  { word:'語彙', chars:['語','彙'], rarity:'★15', tags:['学','古典'], desc:'ボキャブラリ', season:'S3' },
+];
+for (const r of _YOJI_S3_LIT) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
