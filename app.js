@@ -4045,6 +4045,30 @@ function bindEvents() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// グローバルエラーハンドラ ── 開発支援＋ユーザー通知（控えめ）
+// ═══════════════════════════════════════════════════════════════
+const _errBuffer = [];
+function _logRuntimeError(label, err) {
+  const entry = {
+    label,
+    msg: (err && (err.message || err.reason?.message || String(err))) || 'unknown',
+    stack: (err && (err.stack || err.reason?.stack)) || '',
+    at: new Date().toISOString(),
+  };
+  _errBuffer.push(entry);
+  if (_errBuffer.length > 20) _errBuffer.shift();
+  try { localStorage.setItem('pomojikan_errors', JSON.stringify(_errBuffer)); } catch(_) {}
+  // 連発抑制：5 秒に 1 回まで toast
+  const now = Date.now();
+  if (!_logRuntimeError._lastToast || now - _logRuntimeError._lastToast > 5000) {
+    _logRuntimeError._lastToast = now;
+    try { toast('⚠ 内部エラー（記録済）', '★1'); } catch(_) {}
+  }
+}
+window.addEventListener('error', (e) => _logRuntimeError('error', e.error || e));
+window.addEventListener('unhandledrejection', (e) => _logRuntimeError('rejection', e));
+
+// ═══════════════════════════════════════════════════════════════
 // 初期化
 // ═══════════════════════════════════════════════════════════════
 function init() {
