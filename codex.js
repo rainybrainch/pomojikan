@@ -5030,6 +5030,69 @@ const _YOJI_S4_LUCKY = [
 ];
 for (const r of _YOJI_S4_LUCKY) YOJI_RECIPES.push(r);
 
+// v9d ── 四字熟語 +50（経営・組織・マーケ）
+const _YOJI_S4_BIZ = [
+  { word:'経営戦略', chars:['経','営','戦','略'], rarity:'★12', tags:['四字熟語','ビジネス','武'], desc:'マネジメント戦略', season:'S4' },
+  { word:'組織改革', chars:['組','織','改','革'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'リストラ', season:'S4' },
+  { word:'業績改善', chars:['業','績','改','善'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'カイゼン', season:'S4' },
+  { word:'生産向上', chars:['生','産','向','上'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'プロダクティビティ', season:'S4' },
+  { word:'人材育成', chars:['人','材','育','成'], rarity:'★12', tags:['四字熟語','ビジネス','学'], desc:'タレント育成', season:'S4' },
+  { word:'人事考課', chars:['人','事','考','課'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'評価', season:'S4' },
+  { word:'採用面接', chars:['採','用','面','接'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'リクルート', season:'S4' },
+  { word:'人事異動', chars:['人','事','異','動'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'人事ローテ', season:'S4' },
+  { word:'業務改善', chars:['業','務','改','善'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'カイゼン', season:'S4' },
+  { word:'品質保証', chars:['品','質','保','証'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'QA', season:'S4' },
+
+  { word:'顧客満足', chars:['顧','客','満','足'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'CS', season:'S4' },
+  { word:'顧客対応', chars:['顧','客','対','応'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'カスタマー', season:'S4' },
+  { word:'販売促進', chars:['販','売','促','進'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'販売促進', season:'S4' },
+  { word:'広告宣伝', chars:['広','告','宣','伝'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'プロモーション', season:'S4' },
+  { word:'販路拡大', chars:['販','路','拡','大'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'チャネル', season:'S4' },
+  { word:'市場開拓', chars:['市','場','開','拓'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'マーケット', season:'S4' },
+  { word:'市場調査', chars:['市','場','調','査'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'マーケットリサーチ', season:'S4' },
+  { word:'競合分析', chars:['競','合','分','析'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'競争分析', season:'S4' },
+
+  { word:'業務効率', chars:['業','務','効','率'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'業務効率化', season:'S4' },
+  { word:'業務削減', chars:['業','務','削','減'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'コストカット', season:'S4' },
+  { word:'コスト削減', chars:['コ','ス','ト','削'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'コスト削減', season:'S4' },
+  { word:'利益最大', chars:['利','益','最','大'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'プロフィット最大化', season:'S4' },
+  { word:'損益分岐', chars:['損','益','分','岐'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'BEP', season:'S4' },
+
+  { word:'計画立案', chars:['計','画','立','案'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'プランニング', season:'S4' },
+  { word:'目標設定', chars:['目','標','設','定'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'ゴールセッティング', season:'S4' },
+  { word:'予算管理', chars:['予','算','管','理'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'バジェット', season:'S4' },
+  { word:'進捗管理', chars:['進','捗','管','理'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'進捗', season:'S4' },
+  { word:'納期厳守', chars:['納','期','厳','守'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'デッドライン', season:'S4' },
+  { word:'時間管理', chars:['時','間','管','理'], rarity:'★12', tags:['四字熟語','ビジネス','時'], desc:'タイムマネジメント', season:'S4' },
+
+  // 起業
+  { word:'起業独立', chars:['起','業','独','立'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'スタートアップ', season:'S4' },
+  { word:'事業拡張', chars:['事','業','拡','張'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'エクスパンション', season:'S4' },
+  { word:'事業継承', chars:['事','業','継','承'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'事業承継', season:'S4' },
+  { word:'新規事業', chars:['新','規','事','業'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'ニュービズ', season:'S4' },
+  { word:'多角経営', chars:['多','角','経','営'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'ダイバーシファイ', season:'S4' },
+
+  // 投資
+  { word:'資本投資', chars:['資','本','投','資'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'キャピタル', season:'S4' },
+  { word:'長期投資', chars:['長','期','投','資'], rarity:'★12', tags:['四字熟語','ビジネス','時'], desc:'ロングターム', season:'S4' },
+  { word:'分散投資', chars:['分','散','投','資'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'ダイバーシフィケーション', season:'S4' },
+  { word:'資産運用', chars:['資','産','運','用'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'アセットマネジメント', season:'S4' },
+
+  // 革新
+  { word:'技術革新', chars:['技','術','革','新'], rarity:'★12', tags:['四字熟語','ビジネス','科学'], desc:'イノベーション', season:'S4' },
+  { word:'創意工夫', chars:['創','意','工','夫'], rarity:'★11', tags:['四字熟語','ビジネス','思想'], desc:'クリエイティビティ', season:'S4' },
+  { word:'発明発見', chars:['発','明','発','見'], rarity:'★12', tags:['四字熟語','科学'], desc:'インベンション', season:'S4' },
+  { word:'特許申請', chars:['特','許','申','請'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'パテント', season:'S4' },
+
+  // 国際
+  { word:'海外展開', chars:['海','外','展','開'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'グローバル展開', season:'S4' },
+  { word:'国際業務', chars:['国','際','業','務'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'インターナショナル', season:'S4' },
+  { word:'貿易取引', chars:['貿','易','取','引'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'トレード', season:'S4' },
+  { word:'輸出入', chars:['輸','出','入'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'インポート／エクスポート', season:'S4' },
+  { word:'関税撤廃', chars:['関','税','撤','廃'], rarity:'★14', tags:['四字熟語','ビジネス'], desc:'関税撤廃', season:'S4' },
+];
+for (const r of _YOJI_S4_BIZ) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
