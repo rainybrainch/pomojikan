@@ -3378,6 +3378,66 @@ const _YOJI_S4_SHINTO = [
 ];
 for (const r of _YOJI_S4_SHINTO) YOJI_RECIPES.push(r);
 
+// v8f ── 二字熟語 +50（建築・色・音）
+const _YOJI_S3_ARCH = [
+  // 建築
+  { word:'建築', chars:['建','築'], rarity:'★8',  tags:[], desc:'アーキテクチャ', season:'S3' },
+  { word:'構造', chars:['構','造'], rarity:'★10', tags:[], desc:'ストラクチャ', season:'S3' },
+  { word:'設計図', chars:['設','計','図'], rarity:'★12', tags:[], desc:'ブループリント', season:'S3' },
+  { word:'柱梁', chars:['柱','梁'], rarity:'★14', tags:[], desc:'はしらはり', season:'S3' },
+  { word:'石垣', chars:['石','垣'], rarity:'★13', tags:['古典'], desc:'石の壁', season:'S3' },
+  { word:'瓦屋根', chars:['瓦','屋','根'], rarity:'★13', tags:['古典'], desc:'かわらや', season:'S3' },
+  { word:'屋根', chars:['屋','根'], rarity:'★7',  tags:[], desc:'ルーフ', season:'S3' },
+  { word:'壁面', chars:['壁','面'], rarity:'★8',  tags:[], desc:'ウォール', season:'S3' },
+  { word:'天井', chars:['天','井'], rarity:'★8',  tags:[], desc:'シーリング', season:'S3' },
+  { word:'床面', chars:['床','面'], rarity:'★8',  tags:[], desc:'フロア', season:'S3' },
+
+  // 色（拡充）
+  { word:'紅色', chars:['紅','色'], rarity:'★12', tags:['色','美'], desc:'べに', season:'S3' },
+  { word:'朱色', chars:['朱','色'], rarity:'★13', tags:['色','美'], desc:'しゅ', season:'S3' },
+  { word:'桃色', chars:['桃','色'], rarity:'★10', tags:['色','美'], desc:'ピンク', season:'S3' },
+  { word:'藍色', chars:['藍','色'], rarity:'★14', tags:['色','美','古典'], desc:'インディゴ', season:'S3' },
+  { word:'紫色', chars:['紫','色'], rarity:'★10', tags:['色','美'], desc:'パープル', season:'S3' },
+  { word:'紺色', chars:['紺','色'], rarity:'★13', tags:['色','美'], desc:'ネイビー', season:'S3' },
+  { word:'瑠璃色', chars:['瑠','璃','色'], rarity:'★15', tags:['色','美','古典'], desc:'ラピスラズリ色', season:'S3' },
+  { word:'翡翠色', chars:['翡','翠','色'], rarity:'★15', tags:['色','美','古典'], desc:'ジェイド', season:'S3' },
+  { word:'山吹色', chars:['山','吹','色'], rarity:'★14', tags:['色','美','古典'], desc:'山吹色', season:'S3' },
+  { word:'橙色', chars:['橙','色'], rarity:'★13', tags:['色','美'], desc:'オレンジ', season:'S3' },
+  { word:'黄金色', chars:['黄','金','色'], rarity:'★12', tags:['色','美'], desc:'ゴールデン', season:'S3' },
+  { word:'銀色', chars:['銀','色'], rarity:'★8',  tags:['色'], desc:'シルバー', season:'S3' },
+  { word:'銅色', chars:['銅','色'], rarity:'★13', tags:['色'], desc:'カッパー', season:'S3' },
+
+  // 音
+  { word:'歌声', chars:['歌','声'], rarity:'★7',  tags:['美'], desc:'ヴォーカル', season:'S3' },
+  { word:'声楽', chars:['声','楽'], rarity:'★12', tags:['美'], desc:'ヴォーカル音楽', season:'S3' },
+  { word:'伴奏', chars:['伴','奏'], rarity:'★12', tags:['美'], desc:'アコンパニメント', season:'S3' },
+  { word:'演奏', chars:['演','奏'], rarity:'★10', tags:['美'], desc:'パフォーマンス', season:'S3' },
+  { word:'独奏', chars:['独','奏'], rarity:'★13', tags:['美'], desc:'ソロ', season:'S3' },
+  { word:'合唱', chars:['合','唱'], rarity:'★10', tags:['美'], desc:'コーラス', season:'S3' },
+  { word:'楽団', chars:['楽','団'], rarity:'★10', tags:['美'], desc:'バンド', season:'S3' },
+  { word:'楽器', chars:['楽','器'], rarity:'★7',  tags:['美'], desc:'インストゥルメント', season:'S3' },
+
+  // 楽器
+  { word:'琴弦', chars:['琴','弦'], rarity:'★13', tags:['美','古典'], desc:'琴', season:'S3' },
+  { word:'三味線', chars:['三','味','線'], rarity:'★13', tags:['美','古典'], desc:'しゃみせん', season:'S3' },
+  { word:'尺八', chars:['尺','八'], rarity:'★15', tags:['美','古典'], desc:'しゃくはち', season:'S3' },
+  { word:'太鼓', chars:['太','鼓'], rarity:'★10', tags:['美'], desc:'たいこ', season:'S3' },
+  { word:'笛吹', chars:['笛','吹'], rarity:'★12', tags:['美'], desc:'ふえ', season:'S3' },
+
+  // 音楽要素
+  { word:'拍子', chars:['拍','子'], rarity:'★10', tags:['美'], desc:'ビート', season:'S3' },
+  { word:'音階', chars:['音','階'], rarity:'★10', tags:['美'], desc:'スケール', season:'S3' },
+  { word:'調子', chars:['調','子'], rarity:'★8',  tags:['美'], desc:'トーン', season:'S3' },
+  { word:'音波', chars:['音','波'], rarity:'★10', tags:['科学'], desc:'サウンドウェーブ', season:'S3' },
+  { word:'響音', chars:['響','音'], rarity:'★13', tags:['美'], desc:'レゾナンス', season:'S3' },
+
+  // 色＋自然
+  { word:'七色', chars:['七','色'], rarity:'★8',  tags:['色','美','自然'], desc:'なないろ', season:'S3' },
+  { word:'虹彩', chars:['虹','彩'], rarity:'★14', tags:['色','美'], desc:'レインボー', season:'S3' },
+  { word:'極光', chars:['極','光'], rarity:'★13', tags:['色','自然'], desc:'オーロラ', season:'S3' },
+];
+for (const r of _YOJI_S3_ARCH) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
