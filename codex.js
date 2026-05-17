@@ -6062,6 +6062,73 @@ const _YOJI_S4_ANNUAL = [
 ];
 for (const r of _YOJI_S4_ANNUAL) YOJI_RECIPES.push(r);
 
+// v9s ── 二字熟語 +50（職業・組織・役職）
+const _YOJI_S3_JOB = [
+  { word:'職業', chars:['職','業'], rarity:'★8',  tags:['ビジネス'], desc:'プロフェッション', season:'S3' },
+  { word:'仕事', chars:['仕','事'], rarity:'★8',  tags:['ビジネス'], desc:'ジョブ', season:'S3' },
+  { word:'業務', chars:['業','務'], rarity:'★8',  tags:['ビジネス'], desc:'ワーク', season:'S3' },
+  { word:'勤務', chars:['勤','務'], rarity:'★8',  tags:['ビジネス'], desc:'ワーク', season:'S3' },
+  { word:'労働', chars:['労','働'], rarity:'★8',  tags:['ビジネス'], desc:'レイバー', season:'S3' },
+  { word:'就職', chars:['就','職'], rarity:'★8',  tags:['ビジネス'], desc:'エンプロイメント', season:'S3' },
+  { word:'転職', chars:['転','職'], rarity:'★8',  tags:['ビジネス'], desc:'チェンジジョブ', season:'S3' },
+  { word:'退職', chars:['退','職'], rarity:'★8',  tags:['ビジネス'], desc:'リタイア', season:'S3' },
+  { word:'昇進', chars:['昇','進'], rarity:'★10', tags:['ビジネス'], desc:'プロモーション', season:'S3' },
+  { word:'昇格', chars:['昇','格'], rarity:'★12', tags:['ビジネス'], desc:'ランクアップ', season:'S3' },
+
+  // 役職
+  { word:'社長', chars:['社','長'], rarity:'★8',  tags:['ビジネス'], desc:'プレジデント', season:'S3' },
+  { word:'会長', chars:['会','長'], rarity:'★8',  tags:['ビジネス'], desc:'チェアマン', season:'S3' },
+  { word:'部長', chars:['部','長'], rarity:'★8',  tags:['ビジネス'], desc:'マネージャー', season:'S3' },
+  { word:'課長', chars:['課','長'], rarity:'★8',  tags:['ビジネス'], desc:'セクションヘッド', season:'S3' },
+  { word:'係長', chars:['係','長'], rarity:'★8',  tags:['ビジネス'], desc:'チームリーダー', season:'S3' },
+  { word:'主任', chars:['主','任'], rarity:'★8',  tags:['ビジネス'], desc:'シニア', season:'S3' },
+  { word:'主席', chars:['主','席'], rarity:'★12', tags:['ビジネス'], desc:'チェア', season:'S3' },
+  { word:'役員', chars:['役','員'], rarity:'★8',  tags:['ビジネス'], desc:'エグゼクティブ', season:'S3' },
+
+  // 職人系
+  { word:'職人', chars:['職','人'], rarity:'★8',  tags:['美'], desc:'クラフトマン', season:'S3' },
+  { word:'匠人', chars:['匠','人'], rarity:'★13', tags:['美','古典'], desc:'匠', season:'S3' },
+  { word:'達人', chars:['達','人'], rarity:'★10', tags:['武'], desc:'マスター', season:'S3' },
+  { word:'名工', chars:['名','工'], rarity:'★13', tags:['美'], desc:'マスタークラフトマン', season:'S3' },
+  { word:'巨匠', chars:['巨','匠'], rarity:'★13', tags:['美'], desc:'マエストロ', season:'S3' },
+
+  // 創作
+  { word:'作家', chars:['作','家'], rarity:'★8',  tags:['美','人'], desc:'ライター', season:'S3' },
+  { word:'画家', chars:['画','家'], rarity:'★8',  tags:['美','人'], desc:'ペインター', season:'S3' },
+  { word:'音楽家', chars:['音','楽','家'], rarity:'★12', tags:['美','人'], desc:'ミュージシャン', season:'S3' },
+  { word:'歌手', chars:['歌','手'], rarity:'★8',  tags:['美','人'], desc:'シンガー', season:'S3' },
+  { word:'俳優', chars:['俳','優'], rarity:'★12', tags:['美','人'], desc:'アクター', season:'S3' },
+
+  // 教師系
+  { word:'教授', chars:['教','授'], rarity:'★8',  tags:['学','人'], desc:'プロフェッサー', season:'S3' },
+  { word:'講師', chars:['講','師'], rarity:'★12', tags:['学','人'], desc:'インストラクター', season:'S3' },
+  { word:'指導', chars:['指','導'], rarity:'★8',  tags:[], desc:'インストラクション', season:'S3' },
+  { word:'指南', chars:['指','南'], rarity:'★13', tags:['古典'], desc:'指導', season:'S3' },
+  { word:'師範', chars:['師','範'], rarity:'★13', tags:['武','学'], desc:'マスター', season:'S3' },
+
+  // 医療系
+  { word:'医者', chars:['医','者'], rarity:'★8',  tags:['人'], desc:'ドクター', season:'S3' },
+  { word:'歯科', chars:['歯','科'], rarity:'★13', tags:[], desc:'デンタル', season:'S3' },
+  { word:'外科', chars:['外','科'], rarity:'★12', tags:[], desc:'サージェリー', season:'S3' },
+  { word:'内科', chars:['内','科'], rarity:'★8',  tags:[], desc:'インターナル', season:'S3' },
+  { word:'薬剤師', chars:['薬','剤','師'], rarity:'★13', tags:['人'], desc:'ファーマシスト', season:'S3' },
+
+  // サービス系
+  { word:'販売員', chars:['販','売','員'], rarity:'★10', tags:['ビジネス','人'], desc:'セールス', season:'S3' },
+  { word:'受付', chars:['受','付'], rarity:'★8',  tags:[], desc:'レセプション', season:'S3' },
+  { word:'秘書', chars:['秘','書'], rarity:'★12', tags:['ビジネス'], desc:'セクレタリ', season:'S3' },
+  { word:'警備', chars:['警','備'], rarity:'★12', tags:[], desc:'セキュリティ', season:'S3' },
+  { word:'運転手', chars:['運','転','手'], rarity:'★10', tags:['人'], desc:'ドライバー', season:'S3' },
+
+  // 公務
+  { word:'公務', chars:['公','務'], rarity:'★10', tags:['ビジネス'], desc:'パブリックサービス', season:'S3' },
+  { word:'官庁', chars:['官','庁'], rarity:'★13', tags:[], desc:'ガバメント', season:'S3' },
+  { word:'役所', chars:['役','所'], rarity:'★8',  tags:[], desc:'シティホール', season:'S3' },
+  { word:'局長', chars:['局','長'], rarity:'★12', tags:[], desc:'ディレクター', season:'S3' },
+  { word:'長官', chars:['長','官'], rarity:'★13', tags:[], desc:'チーフ', season:'S3' },
+];
+for (const r of _YOJI_S3_JOB) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
