@@ -1884,7 +1884,25 @@ function physicsStep() {
     }
     // 落下ぽもじ：重力＋円形ソフトボディ衝突（控えめ弾性／ゆっくり転がる）
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
-    p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
+
+    // ── 安定化：真下に静的な字があれば重力を抑える（震え対策）──
+    let restingOnStatic = false;
+    for (const other of livePomoji.values()) {
+      if (other.id === p.id || other.rising) continue;
+      const isStatic = other.dragging || other.persistent || other.settled;
+      if (!isStatic) continue;
+      const dx = p.x - other.x;
+      const dy = p.y - other.y;
+      if (Math.abs(dx) < SIZE * 0.85 && dy < 0 && dy > -SIZE * 1.05) {
+        restingOnStatic = true;
+        break;
+      }
+    }
+    if (!restingOnStatic) {
+      p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
+    } else {
+      p.vy *= 0.85;  // 静的な台に乗ってる時は重力を切って減衰のみ
+    }
     if (p.vy > MAX_FALL_VY) p.vy = MAX_FALL_VY;
     // 空気摩擦（vx 緩減衰：転がりを残す）
     p.vx *= 0.99;
@@ -1955,6 +1973,22 @@ function physicsStep() {
         p.settledX = p.x;
         p.settledY = p.y;
       }
+    }
+
+    // ── 積み重ね settle：床に届かなくても他字の上で静止したら settle ──
+    // restingOnStatic で重力カット → vy/vx ほぼ 0 が続いたら settled に昇格
+    const speed = Math.abs(p.vx) + Math.abs(p.vy);
+    if (restingOnStatic && speed < 0.18) {
+      p._stillFrames = (p._stillFrames || 0) + 1;
+      if (p._stillFrames > 8 && !p.settled) {
+        p.vx = 0; p.vy = 0;
+        p.settled = true;
+        p.settledX = p.x;
+        p.settledY = p.y;
+        p.el.classList.add('settled');
+      }
+    } else {
+      p._stillFrames = 0;
     }
     // 他字の上に積まれて着地している場合も settledX/Y を記録
     if (p.settled && p.settledX == null) {
