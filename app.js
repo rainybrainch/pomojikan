@@ -372,6 +372,7 @@ const DEFAULT_STATE = {
   stock: {},                      // 文章モード v0.2 ─ 字の所有数 { char: N }
   perkLevels: {},                 // v4 ─ 育つ特性：perkId → ストック累計 { 'tag_emo': 23 }
   discoveredYoji: {},             // v6 ─ 解放済の熟語 { '一期一会': 1746543210 }
+  streak: { current: 0, longest: 0, lastDate: null },  // v7 ─ 連続日数 streak
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1594,6 +1595,7 @@ function completePhase() {
   if (STATE.mode === 'work') {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
+    updateStreak();
     stopWorkSpawning();
     spawnCycleDrops();
     updateProgressPill();
@@ -2467,6 +2469,41 @@ function mergePomoji(src, target) {
 // ═══════════════════════════════════════════════════════════════
 // パーティ表示
 // ═══════════════════════════════════════════════════════════════
+// 連続日数 streak ── サイクル完了時に呼ぶ
+function updateStreak() {
+  if (!STATE.streak) STATE.streak = { current: 0, longest: 0, lastDate: null };
+  const today = new Date().toISOString().slice(0, 10);  // YYYY-MM-DD
+  const last = STATE.streak.lastDate;
+  if (last === today) {
+    return;  // 既に今日カウント済
+  }
+  if (last) {
+    const lastTime = new Date(last + 'T12:00:00').getTime();
+    const todayTime = new Date(today + 'T12:00:00').getTime();
+    const diffDays = Math.round((todayTime - lastTime) / 86400000);
+    if (diffDays === 1) {
+      // 連続 → +1
+      STATE.streak.current += 1;
+    } else if (diffDays > 1) {
+      // 飛び日 → reset to 1
+      STATE.streak.current = 1;
+    }
+  } else {
+    STATE.streak.current = 1;
+  }
+  if (STATE.streak.current > STATE.streak.longest) {
+    STATE.streak.longest = STATE.streak.current;
+  }
+  STATE.streak.lastDate = today;
+  saveState();
+  // 連続のマイルストーンで toast
+  const cur = STATE.streak.current;
+  if (cur === 3 || cur === 7 || cur === 14 || cur === 30 || cur % 30 === 0) {
+    toast(`🔥 連続 ${cur} 日 達成`, '★12');
+    playSFX('milestone');
+  }
+}
+
 // 仲間 → 主人公昇格（ダブルタップで切り替え）
 function promoteToHero(idx) {
   if (!STATE.party || !STATE.party.members) return;
@@ -3490,6 +3527,7 @@ function openStats() {
   list.innerHTML = '';
   const cells = [
     { label:'累計サイクル', value: STATE.stats.totalCycles || 0 },
+    { label:'🔥 連続日数', value: `${STATE.streak?.current || 0} 日（最長 ${STATE.streak?.longest || 0}）` },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
     { label:'発見字', value: `${discovered} / ${totalKanji}` },
