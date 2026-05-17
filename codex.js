@@ -1947,6 +1947,101 @@ const _YOJI_S3_DAILY = [
 ];
 for (const r of _YOJI_S3_DAILY) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7k（2026-05-17）── 四字熟語 +80（クリエイティブ・リーダー・心理）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S4_EXPAND6 = [
+  // クリエイティブ・発想
+  { word:'独自構想', chars:['独','自','構','想'], rarity:'★13', tags:['四字熟語','思想'], desc:'自分独自の発想', season:'S4' },
+  { word:'創作活動', chars:['創','作','活','動'], rarity:'★12', tags:['四字熟語','思想','美'], desc:'クリエイティブ活動', season:'S4' },
+  { word:'表現自由', chars:['表','現','自','由'], rarity:'★12', tags:['四字熟語','美','思想'], desc:'表現の自由', season:'S4' },
+  { word:'構想壮大', chars:['構','想','壮','大'], rarity:'★13', tags:['四字熟語','思想'], desc:'大きな構想', season:'S4' },
+  { word:'発想転換', chars:['発','想','転','換'], rarity:'★13', tags:['四字熟語','思想'], desc:'視点を変える', season:'S4' },
+  { word:'空想旅行', chars:['空','想','旅','行'], rarity:'★12', tags:['四字熟語','思想'], desc:'夢想する', season:'S4' },
+  { word:'夢想家気', chars:['夢','想','家','気'], rarity:'★13', tags:['四字熟語','思想','感情'], desc:'夢想癖', season:'S4' },
+  { word:'神来一筆', chars:['神','来','一','筆'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'神がかった一筆', season:'S4' },
+
+  // リーダーシップ
+  { word:'統率力', chars:['統','率','力'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'リーダーシップ', season:'S4' },
+  { word:'指導力', chars:['指','導','力'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'指導の力', season:'S4' },
+  { word:'統括管理', chars:['統','括','管','理'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'全体管理', season:'S4' },
+  { word:'指揮統制', chars:['指','揮','統','制'], rarity:'★13', tags:['四字熟語','ビジネス','武'], desc:'コマンド・コントロール', season:'S4' },
+  { word:'率先垂範', chars:['率','先','垂','範'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'自ら先んじて模範を示す', season:'S4' },
+  { word:'人徳指導', chars:['人','徳','指','導'], rarity:'★13', tags:['四字熟語','七徳','ビジネス'], desc:'人徳で導く', season:'S4' },
+  { word:'威厳指導', chars:['威','厳','指','導'], rarity:'★13', tags:['四字熟語','武'], desc:'威厳で導く', season:'S4' },
+
+  // 心理・人間心理
+  { word:'内面世界', chars:['内','面','世','界'], rarity:'★12', tags:['四字熟語','感情','哲学'], desc:'心の内側', season:'S4' },
+  { word:'潜在意識', chars:['潜','在','意','識'], rarity:'★13', tags:['四字熟語','感情','哲学'], desc:'サブコンシャス', season:'S4' },
+  { word:'自我同一', chars:['自','我','同','一'], rarity:'★14', tags:['四字熟語','哲学'], desc:'アイデンティティ', season:'S4' },
+  { word:'感情移入', chars:['感','情','移','入'], rarity:'★12', tags:['四字熟語','感情'], desc:'エンパシー', season:'S4' },
+  { word:'共感共鳴', chars:['共','感','共','鳴'], rarity:'★13', tags:['四字熟語','感情'], desc:'共感し合う', season:'S4' },
+  { word:'心理戦略', chars:['心','理','戦','略'], rarity:'★13', tags:['四字熟語','武','感情'], desc:'メンタル戦', season:'S4' },
+  { word:'心理状態', chars:['心','理','状','態'], rarity:'★12', tags:['四字熟語','感情'], desc:'メンタル', season:'S4' },
+  { word:'精神集中', chars:['精','神','集','中'], rarity:'★12', tags:['四字熟語','禅'], desc:'メンタルフォーカス', season:'S4' },
+  { word:'心身一如', chars:['心','身','一','如'], rarity:'★14', tags:['四字熟語','禅','武'], desc:'心と身体は一つ', season:'S4' },
+
+  // 学習・教育
+  { word:'切瑳琢磨', chars:['切','瑳','琢','磨'], rarity:'★14', tags:['四字熟語','学','武'], desc:'互いに磨き合う', season:'S4' },
+  { word:'教学相長', chars:['教','学','相','長'], rarity:'★15', tags:['四字熟語','学','古典'], desc:'教えと学びは互いに伸びる', season:'S4' },
+  { word:'師事承継', chars:['師','事','承','継'], rarity:'★13', tags:['四字熟語','学'], desc:'師に学び継ぐ', season:'S4' },
+  { word:'伝承承継', chars:['伝','承','承','継'], rarity:'★13', tags:['四字熟語'], desc:'継承する', season:'S4' },
+  { word:'弟子入門', chars:['弟','子','入','門'], rarity:'★12', tags:['四字熟語','学'], desc:'弟子になる', season:'S4' },
+  { word:'修学旅行', chars:['修','学','旅','行'], rarity:'★11', tags:['四字熟語','学'], desc:'学校旅行', season:'S4' },
+  { word:'特別講演', chars:['特','別','講','演'], rarity:'★12', tags:['四字熟語','学'], desc:'スペシャル講演', season:'S4' },
+  { word:'公開講座', chars:['公','開','講','座'], rarity:'★12', tags:['四字熟語','学'], desc:'オープン講座', season:'S4' },
+
+  // 競争・勝負
+  { word:'競争相手', chars:['競','争','相','手'], rarity:'★11', tags:['四字熟語','武'], desc:'ライバル', season:'S4' },
+  { word:'勝者総取', chars:['勝','者','総','取'], rarity:'★13', tags:['四字熟語','武','ビジネス'], desc:'ウィナーズ・テイクス・オール', season:'S4' },
+  { word:'敗者復活', chars:['敗','者','復','活'], rarity:'★12', tags:['四字熟語','武'], desc:'敗復戦', season:'S4' },
+  { word:'勝敗無常', chars:['勝','敗','無','常'], rarity:'★14', tags:['四字熟語','武','仏教'], desc:'勝ち負けは儚い', season:'S4' },
+  { word:'勝負強気', chars:['勝','負','強','気'], rarity:'★12', tags:['四字熟語','武'], desc:'勝負に強い', season:'S4' },
+  { word:'必勝祈願', chars:['必','勝','祈','願'], rarity:'★12', tags:['四字熟語','武'], desc:'勝つことを祈る', season:'S4' },
+
+  // 時代・社会
+  { word:'時代精神', chars:['時','代','精','神'], rarity:'★13', tags:['四字熟語','時'], desc:'ツァイトガイスト', season:'S4' },
+  { word:'社会貢献', chars:['社','会','貢','献'], rarity:'★12', tags:['四字熟語','七徳'], desc:'社会に尽くす', season:'S4' },
+  { word:'公共意識', chars:['公','共','意','識'], rarity:'★12', tags:['四字熟語','七徳'], desc:'公共心', season:'S4' },
+  { word:'平等社会', chars:['平','等','社','会'], rarity:'★12', tags:['四字熟語','七徳'], desc:'すべて平等', season:'S4' },
+  { word:'国際社会', chars:['国','際','社','会'], rarity:'★12', tags:['四字熟語'], desc:'インターナショナル', season:'S4' },
+  { word:'近代化', chars:['近','代','化'], rarity:'★11', tags:['四字熟語'], desc:'モダニゼーション', season:'S4' },
+  { word:'現代化', chars:['現','代','化'], rarity:'★11', tags:['四字熟語'], desc:'今風に', season:'S4' },
+
+  // 人格・性格
+  { word:'温厚性格', chars:['温','厚','性','格'], rarity:'★12', tags:['四字熟語','七徳'], desc:'温和な性格', season:'S4' },
+  { word:'勇敢性格', chars:['勇','敢','性','格'], rarity:'★12', tags:['四字熟語','武'], desc:'勇敢な性格', season:'S4' },
+  { word:'頑固一徹', chars:['頑','固','一','徹'], rarity:'★13', tags:['四字熟語','感情'], desc:'頑なに一つを貫く', season:'S4' },
+  { word:'融通無碍', chars:['融','通','無','碍'], rarity:'★14', tags:['四字熟語','禅'], desc:'自由自在', season:'S4' },
+  { word:'柔和温厚', chars:['柔','和','温','厚'], rarity:'★13', tags:['四字熟語','七徳','禅'], desc:'やわらか優しい', season:'S4' },
+  { word:'剛健率直', chars:['剛','健','率','直'], rarity:'★13', tags:['四字熟語','武'], desc:'強くまっすぐ', season:'S4' },
+
+  // 趣味・文化
+  { word:'文化交流', chars:['文','化','交','流'], rarity:'★12', tags:['四字熟語'], desc:'カルチャー交流', season:'S4' },
+  { word:'伝統文化', chars:['伝','統','文','化'], rarity:'★12', tags:['四字熟語'], desc:'トラディション', season:'S4' },
+  { word:'伝統工芸', chars:['伝','統','工','芸'], rarity:'★13', tags:['四字熟語','美'], desc:'クラフト', season:'S4' },
+  { word:'美術鑑賞', chars:['美','術','鑑','賞'], rarity:'★12', tags:['四字熟語','美'], desc:'アート鑑賞', season:'S4' },
+  { word:'文学賞', chars:['文','学','賞'], rarity:'★11', tags:['四字熟語','学'], desc:'リテラリーアワード', season:'S4' },
+  { word:'映画鑑賞', chars:['映','画','鑑','賞'], rarity:'★11', tags:['四字熟語','美'], desc:'シネマ', season:'S4' },
+
+  // 抽象・概念（追加）
+  { word:'時間軸', chars:['時','間','軸'], rarity:'★12', tags:['四字熟語','時'], desc:'タイムライン', season:'S4' },
+  { word:'空間軸', chars:['空','間','軸'], rarity:'★12', tags:['四字熟語'], desc:'スペースライン', season:'S4' },
+  { word:'価値軸', chars:['価','値','軸'], rarity:'★12', tags:['四字熟語','哲学'], desc:'バリューライン', season:'S4' },
+  { word:'絶対零度', chars:['絶','対','零','度'], rarity:'★14', tags:['四字熟語','科学'], desc:'極限の冷たさ', season:'S4' },
+  { word:'絶対値', chars:['絶','対','値'], rarity:'★12', tags:['四字熟語','数','科学'], desc:'アブソリュート', season:'S4' },
+  { word:'相対性', chars:['相','対','性'], rarity:'★13', tags:['四字熟語','哲学','科学'], desc:'リレーティビティ', season:'S4' },
+
+  // 古典追加
+  { word:'忠言逆耳', chars:['忠','言','逆','耳'], rarity:'★15', tags:['四字熟語','古典','七徳'], desc:'忠告は耳に痛い', season:'S4' },
+  { word:'良薬苦口', chars:['良','薬','苦','口'], rarity:'★15', tags:['四字熟語','古典'], desc:'良薬は口に苦し', season:'S4' },
+  { word:'急則生変', chars:['急','則','生','変'], rarity:'★15', tags:['四字熟語','古典'], desc:'急ぐと変が生じる', season:'S4' },
+  { word:'欲速不達', chars:['欲','速','不','達'], rarity:'★15', tags:['四字熟語','古典'], desc:'急いては事を仕損じる', season:'S4' },
+  { word:'過猶不及', chars:['過','猶','不','及'], rarity:'★16', tags:['四字熟語','古典','儒教'], desc:'過ぎたるは及ばざるが如し', season:'S4' },
+  { word:'温和篤実', chars:['温','和','篤','実'], rarity:'★13', tags:['四字熟語','七徳'], desc:'温和で誠実', season:'S4' },
+];
+for (const r of _YOJI_S4_EXPAND6) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
