@@ -1085,6 +1085,15 @@ function checkComboPickup() {
       // 全く初の解放（過去にも一度も発動経験なし）なら盛大なセレモニー
       if (wasNew && !r.special) {
         spawnYojiUnlockCelebration(r);
+        // 読雨へ：熟語解放
+        _publishYomuEvent('yoji_unlocked', {
+          word: r.word,
+          rarity: r.rarity,
+          season: r.season,
+          tags: r.tags || [],
+          desc: r.desc || '',
+          user_id: STATE.userId || null,
+        });
       }
       if (r.special) {
         playSFX('unlock'); setTimeout(() => playSFX('milestone'), 250);
@@ -1179,6 +1188,14 @@ function updateUnlockTier() {
     if ($('#codex-modal')?.classList.contains('show')) {
       setTimeout(() => { applyCodexLegendMask(); applyCodexTabMask(); renderCodex(); }, 2500);
     }
+    // 読雨へ：ティア解放イベント
+    _publishYomuEvent('tier_unlocked', {
+      tier: RARITY_TIERS[newTier],
+      tier_idx: newTier,
+      achievement: TIER_ACHIEVEMENT[newTier],
+      hero_lv: partyHeroLevel(),
+      user_id: STATE.userId || null,
+    });
   }
 }
 
@@ -1603,6 +1620,16 @@ function completePhase() {
     burstPartyPersistents();
     playSFX('cycle');
     writeSharedRbJikoku();   // 5本柱接続：時刻メトリクスを共有
+    // 読雨に「サイクル完了」イベントを放流
+    _publishYomuEvent('cycle_complete', {
+      cycle_no: STATE.cycles,
+      total_cycles: STATE.stats.totalCycles,
+      streak: STATE.streak?.current || 0,
+      hero_char: isPartyChosen() ? STATE.party.members[STATE.party.hero||0].char : null,
+      hero_lv:   isPartyChosen() ? STATE.party.members[STATE.party.hero||0].level : 0,
+      work_sec:  STATE.timer.workSec,
+      user_id:   STATE.userId || null,
+    });
     // rest モード開始を少し遅らせる：cycle drops が画面に着地〜泡化する余裕を持たせる
     setTimeout(() => startRest(), 600);
   } else if (STATE.mode === 'rest') {
@@ -3144,29 +3171,36 @@ function saveCurrentWriting() {
 // 読雨 (YOMU) との接続 ── 同オリジン Channel API
 // RBAI 公式構想：保存文章を読雨「刻む」モーダルに自動投入
 let _yomuChannel = null;
-function publishToYomu(writing) {
+function _ensureYomuChannel() {
+  if (!_yomuChannel && 'BroadcastChannel' in window) {
+    _yomuChannel = new BroadcastChannel('rainybrain');
+  }
+  return _yomuChannel;
+}
+function _publishYomuEvent(event, payload) {
   try {
-    if (!_yomuChannel && 'BroadcastChannel' in window) {
-      _yomuChannel = new BroadcastChannel('rainybrain');
-    }
-    if (!_yomuChannel) return;
-    _yomuChannel.postMessage({
+    const ch = _ensureYomuChannel();
+    if (!ch) return;
+    ch.postMessage({
       type: 'pomo',
-      event: 'writing_saved',
+      event,
       source: 'pomojikan',
       app: 'pomojikan',
-      version: 'v30.6',
-      payload: {
-        text: writing.text,
-        genre: writing.genre,
-        date: writing.date,
-        chars: writing.chars,
-        hero_char: isPartyChosen() ? STATE.party.members[STATE.party.hero||0].char : null,
-        user_id: STATE.userId || null,
-      },
+      version: 'v30.7',
+      payload,
       timestamp: new Date().toISOString(),
     });
-  } catch (e) { /* 読雨未起動・他オリジン等は静かに無視 */ }
+  } catch (e) { /* 静かに無視 */ }
+}
+function publishToYomu(writing) {
+  _publishYomuEvent('writing_saved', {
+    text: writing.text,
+    genre: writing.genre,
+    date: writing.date,
+    chars: writing.chars,
+    hero_char: isPartyChosen() ? STATE.party.members[STATE.party.hero||0].char : null,
+    user_id: STATE.userId || null,
+  });
 }
 
 function applyPreset(idx) {
