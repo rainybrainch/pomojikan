@@ -2379,6 +2379,26 @@ body[data-mode="rest"] #tank{
   font-size:.7rem; color:var(--ink-mute);
   font-family:'JetBrains Mono', monospace;
 }
+/* 進捗バー（ティア解放率・熟語発見率）── 解放欲の視覚化 */
+.codex-progress-bar{
+  height:5px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(135,206,235,.18);
+  border-radius:3px;
+  overflow:hidden;
+  margin:4px 0 10px;
+}
+.codex-progress-bar .cpb-fill{
+  height:100%;
+  background:linear-gradient(90deg,
+    rgba(135,206,235,.7) 0%,
+    rgba(240,212,138,.85) 60%,
+    #fff5b0 100%);
+  box-shadow:0 0 8px rgba(240,212,138,.5);
+  transition:width .6s cubic-bezier(.22,1,.36,1);
+  border-radius:3px;
+}
+
 /* 未解放ティア：legend / tab / セクション見出しを薄く */
 .cl-row.tier-locked,
 .codex-tab.tier-locked{

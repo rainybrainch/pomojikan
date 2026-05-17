@@ -3205,13 +3205,18 @@ function renderCodex() {
       list.appendChild(item);
     });
     section.appendChild(list);
-    // セクション見出しに発見率を追記
+    // セクション見出しに発見率を追記＋進捗バー
     const head = section.querySelector('.codex-section-title');
-    if (head) head.textContent = head.textContent.replace(/（[^）]*）$/, `（${foundCnt} / ${recipes.length} 発見）`);
+    const pct = recipes.length > 0 ? Math.round(foundCnt / recipes.length * 100) : 0;
+    if (head) head.textContent = head.textContent.replace(/（[^）]*）$/, `（${foundCnt} / ${recipes.length} 発見 ・ ${pct}%）`);
+    const bar = el('div', { class:'codex-progress-bar' },
+      el('div', { class:'cpb-fill', style:{ width: pct + '%' } })
+    );
+    section.insertBefore(bar, list);
     grid.appendChild(section);
     const discovered = Object.keys(STATE.collection).length;
     const totalKanji = codex.length;
-    $('#codex-summary').textContent = `発見 ${discovered} / ${totalKanji} 字 ／ 熟語 ${recipes.length} 個`;
+    $('#codex-summary').textContent = `発見 ${discovered} / ${totalKanji} 字 ／ 熟語 ${foundCnt} / ${recipes.length}`;
     return;
   }
 
@@ -3241,11 +3246,23 @@ function renderCodex() {
     const isUnrevealed = tierIdx > STATE.unlockedTier;
     const tierLabel = isUnrevealed ? '？？？' : tier;
     const achievement = isUnrevealed ? '─ 未解放の領域 ─' : TIER_ACHIEVEMENT[tierIdx];
-    const stateText = tierIdx <= STATE.unlockedTier ? '解放済' : '🔒 Lv.' + UNLOCK_LV[tier];
+    // 発見率
+    const seenCnt = tierKanji.filter(k => (STATE.collection[k.char||k.c]||0) > 0).length;
+    const tPct = tierKanji.length > 0 ? Math.round(seenCnt / tierKanji.length * 100) : 0;
+    const stateText = tierIdx <= STATE.unlockedTier
+      ? `${seenCnt} / ${tierKanji.length} 発見 ・ ${tPct}%`
+      : '🔒 Lv.' + UNLOCK_LV[tier];
     const section = el('div', { class:'codex-section' + (isUnrevealed ? ' tier-locked' : '') },
       el('h3', { class:'codex-section-title' },
         `${tierLabel} ${achievement} （${stateText}）`)
     );
+    // 解放済セクションだけ進捗バーを足す
+    if (!isUnrevealed && tierKanji.length > 0) {
+      const bar = el('div', { class:'codex-progress-bar' },
+        el('div', { class:'cpb-fill', style:{ width: tPct + '%' } })
+      );
+      section.appendChild(bar);
+    }
     const tierGrid = el('div', { class:'codex-tier-grid' });
     visible.forEach(k => {
       const c = k.char || k.c;
