@@ -1975,14 +1975,18 @@ for (const r of _YOJI_NEW_V2) YOJI_RECIPES.push(r);
 (function dedupeYoji(){
   const seenWords = new Set();
   const kept = [];
+  let dupCnt = 0;
   for (let i = YOJI_RECIPES.length - 1; i >= 0; i--) {
     const r = YOJI_RECIPES[i];
-    if (seenWords.has(r.word)) continue;
+    if (seenWords.has(r.word)) { dupCnt++; continue; }
     seenWords.add(r.word);
     kept.unshift(r);
   }
   YOJI_RECIPES.length = 0;
   for (const r of kept) YOJI_RECIPES.push(r);
+  if (dupCnt > 0 && typeof console !== 'undefined') {
+    console.log(`%c☔ dedupeYoji: ${dupCnt} 個の重複熟語を除去`, 'color:#999;');
+  }
 })();
 
 // CHAR_TO_WORDS を再構築（重複削除後の YOJI_RECIPES から）
