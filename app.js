@@ -3936,6 +3936,15 @@ function bindEvents() {
       case 's': case 'S':
         openStats();
         break;
+      case 'z': case 'Z':
+        // 💤 スリープを Z で起動／解除
+        if ($('#sleep-overlay')?.classList.contains('show')) closeSleep();
+        else openSleep();
+        break;
+      case 'k': case 'K':
+        // K でキー一覧トースト
+        toast('Space: 開始/停止 / M: メニュー / B: 図鑑 / S: 記録 / W: 文章 / Z: スリープ', '★13');
+        break;
     }
   });
 
