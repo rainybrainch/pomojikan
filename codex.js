@@ -6279,6 +6279,77 @@ const _YOJI_S3_MIND = [
 ];
 for (const r of _YOJI_S3_MIND) YOJI_RECIPES.push(r);
 
+// v9v ── 四字熟語 +50（特殊・希少・希有な熟語）
+const _YOJI_S4_RARE = [
+  { word:'空前絶後', chars:['空','前','絶','後'], rarity:'★13', tags:['四字熟語'], desc:'空前絶後', season:'S4' },
+  { word:'絶世稀有', chars:['絶','世','稀','有'], rarity:'★14', tags:['四字熟語','古典'], desc:'稀有', season:'S4' },
+  { word:'唯一無二', chars:['唯','一','無','二'], rarity:'★13', tags:['四字熟語'], desc:'唯一', season:'S4' },
+  { word:'前代未聞', chars:['前','代','未','聞'], rarity:'★12', tags:['四字熟語'], desc:'前代未聞', season:'S4' },
+  { word:'人跡未踏', chars:['人','跡','未','踏'], rarity:'★14', tags:['四字熟語'], desc:'人跡未踏', season:'S4' },
+  { word:'前人未到', chars:['前','人','未','到'], rarity:'★13', tags:['四字熟語'], desc:'前人未到', season:'S4' },
+  { word:'未曾有事', chars:['未','曾','有','事'], rarity:'★14', tags:['四字熟語','古典'], desc:'未曾有', season:'S4' },
+  { word:'稀代未有', chars:['稀','代','未','有'], rarity:'★15', tags:['四字熟語','古典'], desc:'稀代', season:'S4' },
+
+  // 究極
+  { word:'究極奥義', chars:['究','極','奥','義'], rarity:'★13', tags:['四字熟語','武'], desc:'奥義', season:'S4' },
+  { word:'最高峰', chars:['最','高','峰'], rarity:'★12', tags:['四字熟語'], desc:'最高峰', season:'S4' },
+  { word:'頂点極致', chars:['頂','点','極','致'], rarity:'★14', tags:['四字熟語'], desc:'頂点', season:'S4' },
+  { word:'絶頂境地', chars:['絶','頂','境','地'], rarity:'★13', tags:['四字熟語'], desc:'絶頂', season:'S4' },
+  { word:'極限突破', chars:['極','限','突','破'], rarity:'★13', tags:['四字熟語'], desc:'限界突破', season:'S4' },
+
+  // 神秘
+  { word:'神秘現象', chars:['神','秘','現','象'], rarity:'★13', tags:['四字熟語','神字'], desc:'ミステリー', season:'S4' },
+  { word:'神秘体験', chars:['神','秘','体','験'], rarity:'★13', tags:['四字熟語','神字'], desc:'神秘体験', season:'S4' },
+  { word:'神秘主義', chars:['神','秘','主','義'], rarity:'★13', tags:['四字熟語','神字','哲学'], desc:'神秘主義', season:'S4' },
+  { word:'神秘秘儀', chars:['神','秘','秘','儀'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'秘儀', season:'S4' },
+
+  // 超越
+  { word:'超越境地', chars:['超','越','境','地'], rarity:'★14', tags:['四字熟語','禅','哲学'], desc:'超越', season:'S4' },
+  { word:'超人凡人', chars:['超','人','凡','人'], rarity:'★14', tags:['四字熟語','哲学'], desc:'超人', season:'S4' },
+  { word:'超能力者', chars:['超','能','力','者'], rarity:'★13', tags:['四字熟語','神字'], desc:'スーパーパワー', season:'S4' },
+  { word:'神通力', chars:['神','通','力'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'神通力', season:'S4' },
+
+  // 奇跡
+  { word:'奇跡現象', chars:['奇','跡','現','象'], rarity:'★13', tags:['四字熟語','神字'], desc:'ミラクル', season:'S4' },
+  { word:'奇蹟奇跡', chars:['奇','蹟','奇','跡'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'奇跡', season:'S4' },
+  { word:'神業奇跡', chars:['神','業','奇','跡'], rarity:'★14', tags:['四字熟語','神字'], desc:'神業', season:'S4' },
+  { word:'奇縁奇遇', chars:['奇','縁','奇','遇'], rarity:'★15', tags:['四字熟語','古典','感情'], desc:'奇縁', season:'S4' },
+
+  // 異次元
+  { word:'異次元', chars:['異','次','元'], rarity:'★13', tags:['四字熟語','科学'], desc:'異次元', season:'S4' },
+  { word:'別次元', chars:['別','次','元'], rarity:'★13', tags:['四字熟語'], desc:'別次元', season:'S4' },
+  { word:'四次元', chars:['四','次','元'], rarity:'★13', tags:['四字熟語','科学'], desc:'4D', season:'S4' },
+  { word:'多次元', chars:['多','次','元'], rarity:'★14', tags:['四字熟語','科学'], desc:'マルチ次元', season:'S4' },
+
+  // 異世界
+  { word:'異世界転', chars:['異','世','界','転'], rarity:'★13', tags:['四字熟語','未来'], desc:'異世界転生', season:'S4' },
+  { word:'別世界別', chars:['別','世','界','別'], rarity:'★12', tags:['四字熟語'], desc:'別世界', season:'S4' },
+  { word:'平行世界', chars:['平','行','世','界'], rarity:'★14', tags:['四字熟語','科学'], desc:'パラレル', season:'S4' },
+  { word:'宇宙果て', chars:['宇','宙','果','て'], rarity:'★13', tags:['四字熟語','天体'], desc:'宇宙の果て', season:'S4' },
+  { word:'宇宙終末', chars:['宇','宙','終','末'], rarity:'★14', tags:['四字熟語','天体','哲学'], desc:'宇宙の終末', season:'S4' },
+
+  // 時空
+  { word:'時空歪曲', chars:['時','空','歪','曲'], rarity:'★15', tags:['四字熟語','科学'], desc:'時空歪み', season:'S4' },
+  { word:'時間旅行', chars:['時','間','旅','行'], rarity:'★13', tags:['四字熟語','未来','時'], desc:'タイムトラベル', season:'S4' },
+  { word:'時空連続', chars:['時','空','連','続'], rarity:'★14', tags:['四字熟語','科学'], desc:'時空連続体', season:'S4' },
+
+  // 終末
+  { word:'世界終末', chars:['世','界','終','末'], rarity:'★13', tags:['四字熟語','哲学'], desc:'エンドオブワールド', season:'S4' },
+  { word:'地球破滅', chars:['地','球','破','滅'], rarity:'★13', tags:['四字熟語','哲学'], desc:'地球破滅', season:'S4' },
+  { word:'最終戦争', chars:['最','終','戦','争'], rarity:'★13', tags:['四字熟語','武'], desc:'ファイナルウォー', season:'S4' },
+
+  // 始原
+  { word:'世界始原', chars:['世','界','始','原'], rarity:'★15', tags:['四字熟語','古典','哲学'], desc:'始原', season:'S4' },
+  { word:'万物始原', chars:['万','物','始','原'], rarity:'★15', tags:['四字熟語','哲学'], desc:'万物の始まり', season:'S4' },
+  { word:'宇宙誕生', chars:['宇','宙','誕','生'], rarity:'★14', tags:['四字熟語','天体','科学'], desc:'宇宙誕生', season:'S4' },
+
+  // 玄妙
+  { word:'玄妙不可', chars:['玄','妙','不','可'], rarity:'★16', tags:['四字熟語','古典','禅'], desc:'玄妙', season:'S4' },
+  { word:'幽玄秘奥', chars:['幽','玄','秘','奥'], rarity:'★16', tags:['四字熟語','古典','禅'], desc:'幽玄秘奥', season:'S4' },
+  { word:'秘奥神髄', chars:['秘','奥','神','髄'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'神髄', season:'S4' },
+];
+for (const r of _YOJI_S4_RARE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
