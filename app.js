@@ -1429,6 +1429,21 @@ function openOnboarding() {
   showOnboardingStep();
   $('#onboarding-modal').classList.add('show');
 }
+
+// 起動時にコレクション全体ボリュームを 1 回 console に
+(function reportCollectionVolume(){
+  try {
+    setTimeout(() => {
+      const charCount = (window.KANJI_CODEX || []).length;
+      const yojiCount = (window.YOJI_RECIPES || []).length;
+      const perkCount = Object.keys(PERKS || {}).length;
+      console.log(
+        `%c☔ ぽもじかん コレクション総量 ── 字 ${charCount} ・ 熟語 ${yojiCount} ・ 特性 ${perkCount}`,
+        'color:#f0d48a; font-weight:900;'
+      );
+    }, 500);
+  } catch (e) {}
+})();
 function showOnboardingStep() {
   $$('.ob-step').forEach(s => s.hidden = (parseInt(s.dataset.step) !== _obStep));
   $$('.ob-dot').forEach(d => d.classList.toggle('active', parseInt(d.dataset.dot) === _obStep));
