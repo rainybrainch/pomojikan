@@ -1092,16 +1092,47 @@ function updateUnlockTier() {
   const newTier = currentDropTier();
   const oldTier = STATE.unlockedTier;
   STATE.unlockedTier = newTier;
-  // Band-up: 実績解除トースト
+  // Band-up: 全画面解放セレモニー（??? → ★N の盛大な発表）
   if (newTier > oldTier) {
-    const tierName = RARITY_TIERS[newTier];
-    const achName = TIER_ACHIEVEMENT[newTier];
     setTimeout(() => {
-      toast(`✦ 実績解除：「${achName}」  ${tierName} が降ります`, tierName);
-      flashCompletionBurst(`✦ ${achName} ✦`);
+      spawnTierUnlockCelebration(newTier);
       playSFX('unlock');
+      setTimeout(() => playSFX('milestone'), 400);
+      setTimeout(() => playSFX('discover'), 800);
     }, 400);
+    // 図鑑が開いていれば masks を更新（リアルタイム反映）
+    if ($('#codex-modal')?.classList.contains('show')) {
+      setTimeout(() => { applyCodexLegendMask(); applyCodexTabMask(); renderCodex(); }, 2500);
+    }
   }
+}
+
+// 新ティア解放：全画面セレモニー（最大3.2秒）
+function spawnTierUnlockCelebration(tierIdx) {
+  const tierName = RARITY_TIERS[tierIdx];
+  const achName  = TIER_ACHIEVEMENT[tierIdx];
+  // 既存があれば消す
+  $$('.tier-unlock-celebration').forEach(n => n.remove());
+  const overlay = el('div', { class:`tier-unlock-celebration tier-${tierIdx + 1}` },
+    el('div', { class:'tuc-mask' }, '？？？'),
+    el('div', { class:'tuc-arrow' }, '↓'),
+    el('div', { class:'tuc-star' }, tierName),
+    el('div', { class:'tuc-name' }, achName),
+    el('div', { class:'tuc-desc' }, '新しい字が降り始める'),
+  );
+  document.body.appendChild(overlay);
+  // 粒子シャワー（24粒）
+  for (let i = 0; i < 24; i++) {
+    const p = el('div', { class:'tuc-particle', style:{
+      left: (Math.random() * 100) + '%',
+      animationDelay: (Math.random() * 0.6) + 's',
+      animationDuration: (1.6 + Math.random() * 1.4) + 's',
+    } });
+    overlay.appendChild(p);
+  }
+  // タップで早送り
+  overlay.addEventListener('click', () => overlay.remove(), { once:true });
+  setTimeout(() => overlay.remove(), 3400);
 }
 
 function partyContainsChar(c) {
