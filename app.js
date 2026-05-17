@@ -3339,6 +3339,21 @@ function openCodex() {
   applyCodexLegendMask();
   applyCodexTabMask();
   applyCodexSeasonBadges();
+  // タイトルに総数バッジ
+  const titleEl = $('#codex-modal .modal-title');
+  if (titleEl && !titleEl.querySelector('.modal-title-badge')) {
+    const total = (window.KANJI_CODEX || []).length + (window.YOJI_RECIPES || []).length;
+    titleEl.appendChild(el('span', {
+      class:'modal-title-badge',
+      style:{
+        marginLeft:'8px',
+        fontSize:'.65rem',
+        fontFamily:"'JetBrains Mono', monospace",
+        color:'var(--ink-mute)',
+        fontWeight:400,
+      },
+    }, `(${total.toLocaleString()})`));
+  }
   renderCodex();
 }
 
