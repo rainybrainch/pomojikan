@@ -1314,6 +1314,114 @@ const _YOJI_S4_EXPAND3 = [
 ];
 for (const r of _YOJI_S4_EXPAND3) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7d（2026-05-17）── 四字熟語 +100 個（古典・故事成語・中国古典）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S4_EXPAND4 = [
+  // 故事成語
+  { word:'矛盾撞着', chars:['矛','盾','撞','着'], rarity:'★15', tags:['四字熟語','古典'], desc:'論理が破綻している', season:'S4' },
+  { word:'朝三暮四', chars:['朝','三','暮','四'], rarity:'★13', tags:['四字熟語','古典'], desc:'言い方で人を惑わす', season:'S4' },
+  { word:'守株待兎', chars:['守','株','待','兎'], rarity:'★15', tags:['四字熟語','古典'], desc:'古い方法に固執', season:'S4' },
+  { word:'刻舟求剣', chars:['刻','舟','求','剣'], rarity:'★15', tags:['四字熟語','古典'], desc:'時代遅れの方法', season:'S4' },
+  { word:'蛇足無用', chars:['蛇','足','無','用'], rarity:'★13', tags:['四字熟語','古典'], desc:'余計なもの', season:'S4' },
+  { word:'蛇足之為', chars:['蛇','足','之','為'], rarity:'★14', tags:['四字熟語','古典'], desc:'余計な事をして失敗', season:'S4' },
+  { word:'画蛇添足', chars:['画','蛇','添','足'], rarity:'★15', tags:['四字熟語','古典'], desc:'蛇に足を描き加える愚', season:'S4' },
+  { word:'杞憂無用', chars:['杞','憂','無','用'], rarity:'★14', tags:['四字熟語','古典'], desc:'取り越し苦労', season:'S4' },
+  { word:'井底之蛙', chars:['井','底','之','蛙'], rarity:'★15', tags:['四字熟語','古典'], desc:'視野が狭い', season:'S4' },
+  { word:'夜郎自大', chars:['夜','郎','自','大'], rarity:'★15', tags:['四字熟語','古典'], desc:'井の中の蛙的に威張る', season:'S4' },
+  { word:'唇亡歯寒', chars:['唇','亡','歯','寒'], rarity:'★15', tags:['四字熟語','古典'], desc:'運命を共にする関係', season:'S4' },
+  { word:'兎角亀毛', chars:['兎','角','亀','毛'], rarity:'★15', tags:['四字熟語','古典'], desc:'ありえないこと', season:'S4' },
+  { word:'狐疑逡巡', chars:['狐','疑','逡','巡'], rarity:'★15', tags:['四字熟語','古典'], desc:'疑い迷う', season:'S4' },
+
+  // 中国古典
+  { word:'臨深履薄', chars:['臨','深','履','薄'], rarity:'★15', tags:['四字熟語','古典'], desc:'危険な状況に直面', season:'S4' },
+  { word:'戦戦兢兢', chars:['戦','戦','兢','兢'], rarity:'★14', tags:['四字熟語','古典'], desc:'びくびくしている', season:'S4' },
+  { word:'危機一髪', chars:['危','機','一','髪'], rarity:'★12', tags:['四字熟語'], desc:'危ない瞬間', season:'S4' },
+  { word:'累卵之危', chars:['累','卵','之','危'], rarity:'★15', tags:['四字熟語','古典'], desc:'非常に危険な状況', season:'S4' },
+  { word:'風前之灯', chars:['風','前','之','灯'], rarity:'★14', tags:['四字熟語','古典'], desc:'危うい状態', season:'S4' },
+  { word:'国士無双', chars:['国','士','無','双'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'国に二人といない人物', season:'S4' },
+  { word:'三国時代', chars:['三','国','時','代'], rarity:'★12', tags:['四字熟語','古典'], desc:'魏蜀呉の時代', season:'S4' },
+  { word:'天下統一', chars:['天','下','統','一'], rarity:'★13', tags:['四字熟語','武'], desc:'全土を統べる', season:'S4' },
+  { word:'群雄割拠', chars:['群','雄','割','拠'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'多勢力が並び立つ', season:'S4' },
+  { word:'英雄豪傑', chars:['英','雄','豪','傑'], rarity:'★13', tags:['四字熟語','武'], desc:'優れた人物', season:'S4' },
+
+  // 教訓・処世訓
+  { word:'禍福無門', chars:['禍','福','無','門'], rarity:'★15', tags:['四字熟語','古典'], desc:'禍福は自分の行いから', season:'S4' },
+  { word:'禍福倚伏', chars:['禍','福','倚','伏'], rarity:'★16', tags:['四字熟語','古典'], desc:'禍と福は隣り合わせ', season:'S4' },
+  { word:'塞翁失馬', chars:['塞','翁','失','馬'], rarity:'★15', tags:['四字熟語','古典'], desc:'人間万事塞翁が馬', season:'S4' },
+  { word:'人間万事', chars:['人','間','万','事'], rarity:'★13', tags:['四字熟語'], desc:'すべてのこと', season:'S4' },
+  { word:'禍福相依', chars:['禍','福','相','依'], rarity:'★15', tags:['四字熟語','古典'], desc:'幸不幸は互いに依存', season:'S4' },
+  { word:'七転八起', chars:['七','転','八','起'], rarity:'★11', tags:['四字熟語'], desc:'何度倒れても立ち上がる', season:'S4' },
+  { word:'禍転福', chars:['禍','転','福'], rarity:'★12', tags:['四字熟語'], desc:'災いを福に転じる', season:'S4' },
+
+  // 友情・人間関係
+  { word:'管鮑之交', chars:['管','鮑','之','交'], rarity:'★16', tags:['四字熟語','古典','感情'], desc:'深い友情の象徴', season:'S4' },
+  { word:'肝胆相照', chars:['肝','胆','相','照'], rarity:'★14', tags:['四字熟語','感情'], desc:'心の底まで通じ合う', season:'S4' },
+  { word:'断金之交', chars:['断','金','之','交'], rarity:'★15', tags:['四字熟語','古典'], desc:'金を断つほど強い友情', season:'S4' },
+  { word:'金蘭之友', chars:['金','蘭','之','友'], rarity:'★15', tags:['四字熟語','古典'], desc:'非常に親密な友', season:'S4' },
+  { word:'水魚之交', chars:['水','魚','之','交'], rarity:'★14', tags:['四字熟語','古典'], desc:'切り離せない関係', season:'S4' },
+  { word:'同病相憐', chars:['同','病','相','憐'], rarity:'★14', tags:['四字熟語','古典','感情'], desc:'同じ立場の人は同情し合う', season:'S4' },
+
+  // 美・芸術（追加）
+  { word:'容貌端正', chars:['容','貌','端','正'], rarity:'★13', tags:['四字熟語','美'], desc:'顔立ちが整っている', season:'S4' },
+  { word:'絶世佳人', chars:['絶','世','佳','人'], rarity:'★14', tags:['四字熟語','美'], desc:'類い稀な美女', season:'S4' },
+  { word:'傾国傾城', chars:['傾','国','傾','城'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'国も城も傾ける美女', season:'S4' },
+  { word:'月下美人', chars:['月','下','美','人'], rarity:'★13', tags:['四字熟語','美','自然'], desc:'月下に咲く花', season:'S4' },
+  { word:'絢爛豪華', chars:['絢','爛','豪','華'], rarity:'★15', tags:['四字熟語','美'], desc:'非常に華やか', season:'S4' },
+  { word:'紅一点', chars:['紅','一','点'], rarity:'★12', tags:['四字熟語','古典'], desc:'多数の中の唯一', season:'S4' },
+
+  // 時間・無常
+  { word:'光陰似箭', chars:['光','陰','似','箭'], rarity:'★15', tags:['四字熟語','時','古典'], desc:'時は矢のように速い', season:'S4' },
+  { word:'白駒過隙', chars:['白','駒','過','隙'], rarity:'★16', tags:['四字熟語','時','古典'], desc:'時の流れは速い', season:'S4' },
+  { word:'今昔之感', chars:['今','昔','之','感'], rarity:'★13', tags:['四字熟語','時','感情'], desc:'今と昔の隔たり', season:'S4' },
+  { word:'隔世之感', chars:['隔','世','之','感'], rarity:'★14', tags:['四字熟語','時','感情'], desc:'時代が変わった感覚', season:'S4' },
+  { word:'刹那無常', chars:['刹','那','無','常'], rarity:'★15', tags:['四字熟語','仏教','時'], desc:'一瞬一瞬の儚さ', season:'S4' },
+
+  // 心情・嘆息
+  { word:'感慨深い', chars:['感','慨','深','い'], rarity:'★12', tags:['四字熟語','感情'], desc:'胸を打つ', season:'S4' },
+  { word:'感涙無量', chars:['感','涙','無','量'], rarity:'★13', tags:['四字熟語','感情'], desc:'感激の涙', season:'S4' },
+  { word:'悲憤慷慨', chars:['悲','憤','慷','慨'], rarity:'★14', tags:['四字熟語','感情'], desc:'悲しみと怒り', season:'S4' },
+  { word:'哀感切切', chars:['哀','感','切','切'], rarity:'★14', tags:['四字熟語','感情'], desc:'胸に迫る悲しみ', season:'S4' },
+  { word:'憂愁苦悶', chars:['憂','愁','苦','悶'], rarity:'★14', tags:['四字熟語','感情'], desc:'憂いと苦しみ', season:'S4' },
+  { word:'独り占め', chars:['独','り','占','め'], rarity:'★11', tags:['四字熟語'], desc:'一人で独占', season:'S4' },
+
+  // 行動・動作
+  { word:'威風堂堂', chars:['威','風','堂','堂'], rarity:'★13', tags:['四字熟語','武'], desc:'威厳ある様', season:'S4' },
+  { word:'颯爽颯爽', chars:['颯','爽','颯','爽'], rarity:'★14', tags:['四字熟語','美'], desc:'さっぱり爽やか', season:'S4' },
+  { word:'悠然自得', chars:['悠','然','自','得'], rarity:'★14', tags:['四字熟語','禅','美'], desc:'のんびり満足', season:'S4' },
+  { word:'歓喜雀躍', chars:['歓','喜','雀','躍'], rarity:'★14', tags:['四字熟語','感情'], desc:'喜んで跳ね回る', season:'S4' },
+  { word:'狂喜乱舞', chars:['狂','喜','乱','舞'], rarity:'★13', tags:['四字熟語','感情'], desc:'激しく喜び踊る', season:'S4' },
+
+  // 評価・断定
+  { word:'天下一品', chars:['天','下','一','品'], rarity:'★13', tags:['四字熟語'], desc:'比類なき逸品', season:'S4' },
+  { word:'天下無比', chars:['天','下','無','比'], rarity:'★13', tags:['四字熟語'], desc:'比べるものなし', season:'S4' },
+  { word:'前人未到', chars:['前','人','未','到'], rarity:'★13', tags:['四字熟語'], desc:'誰も到達していない', season:'S4' },
+  { word:'空前絶後', chars:['空','前','絶','後'], rarity:'★13', tags:['四字熟語'], desc:'過去にも未来にも無い', season:'S4' },
+  { word:'前代未聞', chars:['前','代','未','聞'], rarity:'★12', tags:['四字熟語'], desc:'今まで聞いたことがない', season:'S4' },
+
+  // 修行・悟り（追加）
+  { word:'頓悟頓修', chars:['頓','悟','頓','修'], rarity:'★15', tags:['四字熟語','禅'], desc:'一気に悟り行ずる', season:'S4' },
+  { word:'漸悟漸修', chars:['漸','悟','漸','修'], rarity:'★15', tags:['四字熟語','禅'], desc:'徐々に悟る', season:'S4' },
+  { word:'見性成仏', chars:['見','性','成','仏'], rarity:'★15', tags:['四字熟語','禅','仏教'], desc:'本性を見て仏になる', season:'S4' },
+  { word:'即身成仏', chars:['即','身','成','仏'], rarity:'★15', tags:['四字熟語','仏教','密教'], desc:'この身のまま仏となる', season:'S4' },
+  { word:'明心見性', chars:['明','心','見','性'], rarity:'★15', tags:['四字熟語','禅'], desc:'心を明らかにして性を見る', season:'S4' },
+
+  // 自然現象
+  { word:'雨過天晴', chars:['雨','過','天','晴'], rarity:'★13', tags:['四字熟語','自然'], desc:'雨上がりの青空', season:'S4' },
+  { word:'天高馬肥', chars:['天','高','馬','肥'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'秋の風物', season:'S4' },
+  { word:'秋風落葉', chars:['秋','風','落','葉'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'秋風と落ち葉', season:'S4' },
+  { word:'落葉帰根', chars:['落','葉','帰','根'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'物事の元へ戻る', season:'S4' },
+  { word:'万緑一紅', chars:['万','緑','一','紅'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'多数の中の唯一の存在', season:'S4' },
+  { word:'霜林如錦', chars:['霜','林','如','錦'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'錦のような紅葉', season:'S4' },
+
+  // 終末・始原
+  { word:'天地開闢', chars:['天','地','開','闢'], rarity:'★16', tags:['四字熟語','古典','神字'], desc:'世界の始まり', season:'S4' },
+  { word:'渾沌未分', chars:['渾','沌','未','分'], rarity:'★16', tags:['四字熟語','古典','哲学'], desc:'始原のまだ別れぬ状態', season:'S4' },
+  { word:'天変地異', chars:['天','変','地','異'], rarity:'★12', tags:['四字熟語','自然'], desc:'自然の異変', season:'S4' },
+  { word:'終末論', chars:['終','末','論'], rarity:'★13', tags:['四字熟語','哲学'], desc:'世界の終わりの議論', season:'S4' },
+];
+for (const r of _YOJI_S4_EXPAND4) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
