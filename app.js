@@ -3383,7 +3383,37 @@ function applyPreset(idx) {
 // ═══════════════════════════════════════════════════════════════
 // 図鑑
 // ═══════════════════════════════════════════════════════════════
-let codexFilter = { tier: 'all', season: 'all', onlySeen: false, query: '' };
+let codexFilter = { tier: 'all', season: 'all', script: 'all', onlySeen: false, query: '' };
+
+// 文字種判定 ── Unicode 範囲ベース（41,890 字を瞬時に絞り込み）
+const SCRIPT_RANGES = {
+  hiragana:    [[0x3040, 0x309F]],
+  katakana:    [[0x30A0, 0x30FF], [0x31F0, 0x31FF]],
+  kanji:       [[0x4E00, 0x9FFF], [0x3400, 0x4DBF], [0xF900, 0xFAFF]],
+  hangul:      [[0xAC00, 0xD7AF], [0x1100, 0x11FF], [0x3130, 0x318F]],
+  greek:       [[0x0370, 0x03FF], [0x1F00, 0x1FFF]],
+  cyrillic:    [[0x0400, 0x04FF], [0x0500, 0x052F]],
+  arabic:      [[0x0600, 0x06FF], [0x0750, 0x077F]],
+  hebrew:      [[0x0590, 0x05FF]],
+  devanagari:  [[0x0900, 0x097F]],
+  thai:        [[0x0E00, 0x0E7F]],
+  tibetan:     [[0x0F00, 0x0FFF]],
+  georgian:    [[0x10A0, 0x10FF], [0x2D00, 0x2D2F]],
+  ethiopic:    [[0x1200, 0x137F], [0x2D80, 0x2DDF]],
+  canadian:    [[0x1400, 0x167F]],
+  runic:       [[0x16A0, 0x16FF]],
+  ancient:     [[0x10000, 0x100FF], [0x10900, 0x1091F], [0x12000, 0x123FF], [0x13000, 0x1342F]],
+};
+function matchesScript(ch, scriptKey) {
+  if (!scriptKey || scriptKey === 'all') return true;
+  const ranges = SCRIPT_RANGES[scriptKey];
+  if (!ranges) return true;
+  const cp = ch.codePointAt(0);
+  for (const [lo, hi] of ranges) {
+    if (cp >= lo && cp <= hi) return true;
+  }
+  return false;
+}
 function openCodex() {
   $('#codex-modal').classList.add('show');
   applyCodexLegendMask();
@@ -3798,9 +3828,10 @@ function renderCodex() {
     return false;
   };
 
+  const scriptMatch = (k) => matchesScript(k.char || k.c, codexFilter.script);
   RARITY_TIERS.forEach((tier, tierIdx) => {
     if (!onlyShow(tierIdx)) return;
-    const tierKanji = codex.filter(k => k.rarity === tier && seasonMatch(k) && matchQuery(k));
+    const tierKanji = codex.filter(k => k.rarity === tier && seasonMatch(k) && scriptMatch(k) && matchQuery(k));
     const visible = tierKanji.filter(k => {
       if (!codexFilter.onlySeen) return true;
       const c = k.char || k.c;
@@ -4267,6 +4298,18 @@ function bindEvents() {
     codexFilter.season = s.dataset.season;
     codexFilter.tag = null;  // シーズン切替時にタグフィルタもリセット
     $$('.codex-season').forEach(x => x.classList.toggle('active', x === s));
+    // 熟語／特性シーズンでは文字種フィルター非表示（字単位ではない）
+    const scriptBar = $('#codex-scripts');
+    if (scriptBar) {
+      const hide = ['S3','S4','S5','S6','S7','PERKS'].includes(codexFilter.season);
+      scriptBar.style.display = hide ? 'none' : '';
+    }
+    renderCodex();
+  }));
+  // 文字種フィルター（41,890 字を瞬時に絞る）
+  $$('.codex-script').forEach(s => s.addEventListener('click', () => {
+    codexFilter.script = s.dataset.script;
+    $$('.codex-script').forEach(x => x.classList.toggle('active', x === s));
     renderCodex();
   }));
   $('#codex-only-seen').addEventListener('change', (e) => {

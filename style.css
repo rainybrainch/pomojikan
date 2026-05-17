@@ -2617,6 +2617,37 @@ body[data-mode="rest"] #tank{
   box-shadow:0 0 8px rgba(240,212,138,.25);
 }
 
+/* 🌏 文字種フィルター（41,890 字を瞬時に絞る） */
+.codex-scripts{
+  display:flex; gap:4px; margin:6px 0; flex-wrap:wrap;
+  padding:6px;
+  background:rgba(135,206,235,.03);
+  border:1px dashed rgba(135,206,235,.15);
+  border-radius:6px;
+}
+.codex-script{
+  padding:4px 9px;
+  background:rgba(135,206,235,.05);
+  border:1px solid rgba(135,206,235,.18);
+  color:var(--ink-mute);
+  border-radius:4px;
+  font-family:inherit;
+  font-size:.72rem; font-weight:600;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.codex-script:hover{
+  background:rgba(135,206,235,.14);
+  color:var(--ink);
+}
+.codex-script.active{
+  background:rgba(135,206,235,.28);
+  border-color:rgba(135,206,235,.7);
+  color:#bfe4ff;
+  box-shadow:0 0 6px rgba(135,206,235,.3);
+}
+
 .codex-tabs{
   display:flex; gap:4px; margin:8px 0; flex-wrap:wrap;
 }
