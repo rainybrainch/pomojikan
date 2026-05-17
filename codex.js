@@ -6129,6 +6129,82 @@ const _YOJI_S3_JOB = [
 ];
 for (const r of _YOJI_S3_JOB) YOJI_RECIPES.push(r);
 
+// v9t ── 四字熟語 +50（伝統工芸・職人芸）
+const _YOJI_S4_CRAFT = [
+  { word:'伝統工芸', chars:['伝','統','工','芸'], rarity:'★13', tags:['四字熟語','古典','美'], desc:'クラフト', season:'S4' },
+  { word:'手仕事', chars:['手','仕','事'], rarity:'★11', tags:['四字熟語','美'], desc:'ハンドメイド', season:'S4' },
+  { word:'匠の技', chars:['匠','の','技'], rarity:'★12', tags:['四字熟語','美','古典'], desc:'匠技', season:'S4' },
+  { word:'職人技', chars:['職','人','技'], rarity:'★12', tags:['四字熟語','美'], desc:'クラフトマンシップ', season:'S4' },
+  { word:'絶妙細工', chars:['絶','妙','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'絶妙', season:'S4' },
+  { word:'精緻巧妙', chars:['精','緻','巧','妙'], rarity:'★15', tags:['四字熟語','美'], desc:'精巧', season:'S4' },
+  { word:'技巧絶倫', chars:['技','巧','絶','倫'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'技巧無双', season:'S4' },
+  { word:'巧妙細工', chars:['巧','妙','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'巧妙', season:'S4' },
+
+  // 陶芸
+  { word:'陶芸窯元', chars:['陶','芸','窯','元'], rarity:'★14', tags:['四字熟語','美'], desc:'陶芸', season:'S4' },
+  { word:'磁器陶器', chars:['磁','器','陶','器'], rarity:'★13', tags:['四字熟語','美','古典'], desc:'陶磁器', season:'S4' },
+  { word:'青磁白磁', chars:['青','磁','白','磁'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'青磁白磁', season:'S4' },
+  { word:'楽焼茶碗', chars:['楽','焼','茶','碗'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'楽焼', season:'S4' },
+
+  // 漆器
+  { word:'漆器塗装', chars:['漆','器','塗','装'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'漆器', season:'S4' },
+  { word:'金蒔絵', chars:['金','蒔','絵'], rarity:'★16', tags:['四字熟語','美','古典'], desc:'蒔絵', season:'S4' },
+
+  // 染織
+  { word:'染色織物', chars:['染','色','織','物'], rarity:'★13', tags:['四字熟語','美'], desc:'染織', season:'S4' },
+  { word:'絹織物', chars:['絹','織','物'], rarity:'★13', tags:['四字熟語','美'], desc:'シルク', season:'S4' },
+  { word:'西陣織', chars:['西','陣','織'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'西陣織', season:'S4' },
+  { word:'江戸小紋', chars:['江','戸','小','紋'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'江戸小紋', season:'S4' },
+  { word:'友禅染', chars:['友','禅','染'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'友禅染', season:'S4' },
+
+  // 紙
+  { word:'和紙手漉', chars:['和','紙','手','漉'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'和紙', season:'S4' },
+  { word:'折紙細工', chars:['折','紙','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'折紙', season:'S4' },
+  { word:'紙器紙箱', chars:['紙','器','紙','箱'], rarity:'★12', tags:['四字熟語','美'], desc:'紙器', season:'S4' },
+
+  // 木工
+  { word:'木彫細工', chars:['木','彫','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'木彫り', season:'S4' },
+  { word:'寄木細工', chars:['寄','木','細','工'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'寄木', season:'S4' },
+  { word:'神社建築', chars:['神','社','建','築'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'社寺建築', season:'S4' },
+  { word:'宮大工', chars:['宮','大','工'], rarity:'★14', tags:['四字熟語','古典'], desc:'宮大工', season:'S4' },
+
+  // 金工
+  { word:'刀剣鍛冶', chars:['刀','剣','鍛','冶'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'刀鍛冶', season:'S4' },
+  { word:'銀細工', chars:['銀','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'銀細工', season:'S4' },
+  { word:'金細工', chars:['金','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'金細工', season:'S4' },
+  { word:'象牙彫', chars:['象','牙','彫'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'象牙', season:'S4' },
+
+  // 書画
+  { word:'書道筆墨', chars:['書','道','筆','墨'], rarity:'★13', tags:['四字熟語','美'], desc:'書道', season:'S4' },
+  { word:'絵巻物語', chars:['絵','巻','物','語'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'絵巻', season:'S4' },
+  { word:'掛軸書画', chars:['掛','軸','書','画'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'掛け軸', season:'S4' },
+  { word:'屏風絵画', chars:['屏','風','絵','画'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'屏風絵', season:'S4' },
+
+  // 庭園
+  { word:'日本庭園', chars:['日','本','庭','園'], rarity:'★12', tags:['四字熟語','美','自然'], desc:'日本庭園', season:'S4' },
+  { word:'枯山水庭', chars:['枯','山','水','庭'], rarity:'★15', tags:['四字熟語','禅','美'], desc:'枯山水', season:'S4' },
+  { word:'石庭枯山', chars:['石','庭','枯','山'], rarity:'★15', tags:['四字熟語','禅','美'], desc:'石庭', season:'S4' },
+  { word:'池泉回遊', chars:['池','泉','回','遊'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'池泉式', season:'S4' },
+
+  // 香道
+  { word:'香道香木', chars:['香','道','香','木'], rarity:'★15', tags:['四字熟語','道','古典'], desc:'香道', season:'S4' },
+  { word:'香炉香煙', chars:['香','炉','香','煙'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'香炉', season:'S4' },
+
+  // 武具
+  { word:'鎧兜製作', chars:['鎧','兜','製','作'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'甲冑製作', season:'S4' },
+  { word:'弓矢製作', chars:['弓','矢','製','作'], rarity:'★13', tags:['四字熟語','武'], desc:'弓矢', season:'S4' },
+
+  // 楽器
+  { word:'三味線', chars:['三','味','線'], rarity:'★13', tags:['四字熟語','美','古典'], desc:'しゃみせん', season:'S4' },
+  { word:'尺八製作', chars:['尺','八','製','作'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'尺八', season:'S4' },
+  { word:'琴瑟楽器', chars:['琴','瑟','楽','器'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'琴瑟', season:'S4' },
+
+  // 食器
+  { word:'箸食器', chars:['箸','食','器'], rarity:'★12', tags:['四字熟語'], desc:'食器', season:'S4' },
+  { word:'徳利盃', chars:['徳','利','盃'], rarity:'★15', tags:['四字熟語','古典'], desc:'徳利', season:'S4' },
+];
+for (const r of _YOJI_S4_CRAFT) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
