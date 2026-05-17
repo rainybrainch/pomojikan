@@ -1836,7 +1836,14 @@ for (const r of YOJI_RECIPES) {
   for (const k of KANJI_CODEX){ byR[k.rarity] = (byR[k.rarity]||0) + 1; }
   const byRYoji = {};
   for (const r of YOJI_RECIPES){ byRYoji[r.rarity] = (byRYoji[r.rarity]||0) + 1; }
-  console.log('%c☔ codex.js v15 ── 文字種ベース10段階レアリティ', 'color:#f0d48a;font-weight:900;');
-  console.log(`  字: ${KANJI_CODEX.length} 字  ${JSON.stringify(byR)}`);
-  console.log(`  熟語: ${YOJI_RECIPES.length} 個  ${JSON.stringify(byRYoji)}`);
+  const bySeason = {};
+  for (const r of YOJI_RECIPES){ bySeason[r.season || 'S?'] = (bySeason[r.season || 'S?']||0) + 1; }
+  console.log('%c☔ codex.js v18 ── 文字種ベース16段階レアリティ', 'color:#f0d48a;font-weight:900;');
+  console.log(`  字: ${KANJI_CODEX.length} 字`, byR);
+  console.log(`  熟語: ${YOJI_RECIPES.length} 個`, byRYoji);
+  console.log(`  シーズン別: `, bySeason);
+  // window に集計結果を公開（オンボード字数で参照）
+  if (typeof window !== 'undefined') {
+    window.POMO_STATS = { charCount: KANJI_CODEX.length, yojiCount: YOJI_RECIPES.length, byRarity: byR, byRarityYoji: byRYoji, bySeason };
+  }
 })();
