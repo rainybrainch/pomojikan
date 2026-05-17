@@ -1217,14 +1217,28 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
   box-shadow:0 8px 24px rgba(0,0,0,.4), 0 0 22px var(--r-glow);
   opacity:.92;
 }
-/* タッチ hit-area を少し広げる（透明な padding 風）── tapped で確実に掴める */
+/* タッチ hit-area：実体ある透明クリック領域 ── 多数字パイルでも確実にタップ可 */
+/* ※ Lv バンド系で ::before を使う場合は overlay 子要素で代用 */
+.pomoji{
+  /* container query 風：要素自体に touch padding を持たせる */
+}
+/* hit-area エクステンダー（透明 div）── pomoji の子として挿入されない場合の備え */
 .pomoji::before{
   content:'';
   position:absolute;
-  inset:-8px;
-  border-radius:18px;
-  pointer-events:none;
+  inset:-10px;  /* 10px 拡張 ・指先で掴みやすく */
+  border-radius:50%;
+  background:transparent;
+  pointer-events:auto;  /* タップ受信 */
+  z-index:-1;            /* 視覚的には消える ・ ただし pomoji 自身の上にイベント来る */
 }
+/* lvband-master/cosmic/divine で ::before を上書きしている場合の代替 ::after は装飾用 */
+.pomoji.party-member.lvband-master::before,
+.pomoji.party-member.lvband-cosmic::before,
+.pomoji.party-member.lvband-divine::before{
+  pointer-events:none;  /* 装飾用 ::before は通過させる */
+}
+/* lvband 系の hit-area は ::after の周辺で確保するため、追加レイヤを必要なら付ける */
 .pomoji.merge-glow{
   box-shadow:0 0 0 3px var(--gold), 0 0 22px rgba(240,212,138,.6);
   animation:mergeBeat .6s ease-in-out infinite;
