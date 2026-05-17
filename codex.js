@@ -5785,6 +5785,73 @@ const _YOJI_S4_FAMILY = [
 ];
 for (const r of _YOJI_S4_FAMILY) YOJI_RECIPES.push(r);
 
+// v9o ── 二字熟語 +50（情報・通信・メディア）
+const _YOJI_S3_MEDIA = [
+  { word:'通信', chars:['通','信'], rarity:'★8',  tags:[], desc:'コミュニケーション', season:'S3' },
+  { word:'交信', chars:['交','信'], rarity:'★12', tags:[], desc:'クロスコミュ', season:'S3' },
+  { word:'発信', chars:['発','信'], rarity:'★8',  tags:[], desc:'ブロードキャスト', season:'S3' },
+  { word:'受信', chars:['受','信'], rarity:'★8',  tags:[], desc:'レシーブ', season:'S3' },
+  { word:'返信', chars:['返','信'], rarity:'★8',  tags:[], desc:'リプライ', season:'S3' },
+  { word:'配信', chars:['配','信'], rarity:'★12', tags:[], desc:'ディストリビューション', season:'S3' },
+  { word:'送信', chars:['送','信'], rarity:'★8',  tags:[], desc:'センド', season:'S3' },
+  { word:'転送', chars:['転','送'], rarity:'★10', tags:[], desc:'フォワード', season:'S3' },
+  { word:'返答', chars:['返','答'], rarity:'★8',  tags:[], desc:'レスポンス', season:'S3' },
+  { word:'回答', chars:['回','答'], rarity:'★8',  tags:[], desc:'アンサー', season:'S3' },
+
+  // 情報
+  { word:'情報', chars:['情','報'], rarity:'★8',  tags:[], desc:'インフォメーション', season:'S3' },
+  { word:'資料', chars:['資','料'], rarity:'★8',  tags:[], desc:'マテリアル', season:'S3' },
+  { word:'記録', chars:['記','録'], rarity:'★8',  tags:[], desc:'レコード', season:'S3' },
+  { word:'記憶', chars:['記','憶'], rarity:'★12', tags:[], desc:'メモリ', season:'S3' },
+  { word:'記述', chars:['記','述'], rarity:'★10', tags:[], desc:'デスクリプション', season:'S3' },
+  { word:'記入', chars:['記','入'], rarity:'★8',  tags:[], desc:'インプット', season:'S3' },
+  { word:'抽出', chars:['抽','出'], rarity:'★12', tags:[], desc:'エクストラクト', season:'S3' },
+
+  // メディア
+  { word:'広告', chars:['広','告'], rarity:'★8',  tags:['ビジネス'], desc:'アド', season:'S3' },
+  { word:'宣伝', chars:['宣','伝'], rarity:'★10', tags:['ビジネス'], desc:'プロモーション', season:'S3' },
+  { word:'番組', chars:['番','組'], rarity:'★8',  tags:[], desc:'プログラム', season:'S3' },
+  { word:'記者', chars:['記','者'], rarity:'★10', tags:['人'], desc:'ジャーナリスト', season:'S3' },
+  { word:'評論', chars:['評','論'], rarity:'★10', tags:[], desc:'コメンタリ', season:'S3' },
+  { word:'論評', chars:['論','評'], rarity:'★12', tags:[], desc:'レビュー', season:'S3' },
+
+  // ネット
+  { word:'網絡', chars:['網','絡'], rarity:'★15', tags:['古典','科学'], desc:'ネットワーク', season:'S3' },
+  { word:'網状', chars:['網','状'], rarity:'★13', tags:[], desc:'メッシュ', season:'S3' },
+  { word:'接続', chars:['接','続'], rarity:'★10', tags:[], desc:'コネクション', season:'S3' },
+  { word:'端末', chars:['端','末'], rarity:'★13', tags:[], desc:'ターミナル', season:'S3' },
+
+  // データ
+  { word:'数値', chars:['数','値'], rarity:'★10', tags:['数'], desc:'ヴァリュー', season:'S3' },
+  { word:'数式', chars:['数','式'], rarity:'★10', tags:['数'], desc:'フォーミュラ', season:'S3' },
+  { word:'計算', chars:['計','算'], rarity:'★7',  tags:['数'], desc:'カルキュレーション', season:'S3' },
+  { word:'集計', chars:['集','計'], rarity:'★8',  tags:['数'], desc:'アグリゲート', season:'S3' },
+  { word:'集積', chars:['集','積'], rarity:'★12', tags:[], desc:'アキュムレート', season:'S3' },
+
+  // システム
+  { word:'制御', chars:['制','御'], rarity:'★8',  tags:[], desc:'コントロール', season:'S3' },
+  { word:'操作', chars:['操','作'], rarity:'★8',  tags:[], desc:'オペレーション', season:'S3' },
+  { word:'指令', chars:['指','令'], rarity:'★8',  tags:['武'], desc:'オーダー', season:'S3' },
+  { word:'命令', chars:['命','令'], rarity:'★8',  tags:[], desc:'コマンド', season:'S3' },
+  { word:'実行', chars:['実','行'], rarity:'★8',  tags:[], desc:'エグゼキューション', season:'S3' },
+
+  // ファイル
+  { word:'文書', chars:['文','書'], rarity:'★8',  tags:[], desc:'ドキュメント', season:'S3' },
+  { word:'書類', chars:['書','類'], rarity:'★8',  tags:[], desc:'ペーパー', season:'S3' },
+  { word:'画像', chars:['画','像'], rarity:'★8',  tags:[], desc:'イメージ', season:'S3' },
+  { word:'映像', chars:['映','像'], rarity:'★8',  tags:[], desc:'ビデオ', season:'S3' },
+  { word:'音声', chars:['音','声'], rarity:'★8',  tags:[], desc:'オーディオ', season:'S3' },
+  { word:'動画', chars:['動','画'], rarity:'★8',  tags:[], desc:'ムービー', season:'S3' },
+
+  // セキュリティ
+  { word:'安全', chars:['安','全'], rarity:'★7',  tags:[], desc:'セーフティ', season:'S3' },
+  { word:'保護', chars:['保','護'], rarity:'★8',  tags:[], desc:'プロテクト', season:'S3' },
+  { word:'機密', chars:['機','密'], rarity:'★12', tags:['ビジネス'], desc:'コンフィデンシャル', season:'S3' },
+  { word:'秘密', chars:['秘','密'], rarity:'★8',  tags:[], desc:'シークレット', season:'S3' },
+  { word:'暗号', chars:['暗','号'], rarity:'★12', tags:[], desc:'コード', season:'S3' },
+];
+for (const r of _YOJI_S3_MEDIA) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
