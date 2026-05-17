@@ -2974,6 +2974,69 @@ const _YOJI_S4_SEASONAL = [
 ];
 for (const r of _YOJI_S4_SEASONAL) YOJI_RECIPES.push(r);
 
+// v7z ── 二字熟語 +50（教育・学問・芸術）
+const _YOJI_S3_EDUCATION = [
+  // 教育
+  { word:'教育', chars:['教','育'], rarity:'★8',  tags:['学'], desc:'エデュケーション', season:'S3' },
+  { word:'指導', chars:['指','導'], rarity:'★8',  tags:['学'], desc:'ガイダンス', season:'S3' },
+  { word:'講義', chars:['講','義'], rarity:'★12', tags:['学'], desc:'レクチャー', season:'S3' },
+  { word:'演習', chars:['演','習'], rarity:'★8',  tags:['学'], desc:'プラクティス', season:'S3' },
+  { word:'実習', chars:['実','習'], rarity:'★8',  tags:['学'], desc:'プラクティス', season:'S3' },
+  { word:'復習', chars:['復','習'], rarity:'★8',  tags:['学'], desc:'リビュー', season:'S3' },
+  { word:'予習', chars:['予','習'], rarity:'★8',  tags:['学'], desc:'プレレッスン', season:'S3' },
+  { word:'授業', chars:['授','業'], rarity:'★8',  tags:['学'], desc:'クラス', season:'S3' },
+  { word:'課題', chars:['課','題'], rarity:'★10', tags:['学'], desc:'タスク', season:'S3' },
+  { word:'宿題', chars:['宿','題'], rarity:'★8',  tags:['学'], desc:'ホームワーク', season:'S3' },
+
+  // 知識・思考
+  { word:'知識', chars:['知','識'], rarity:'★8',  tags:['学'], desc:'ナレッジ', season:'S3' },
+  { word:'知恵', chars:['知','恵'], rarity:'★8',  tags:['学','哲学'], desc:'ウィズダム', season:'S3' },
+  { word:'知性', chars:['知','性'], rarity:'★10', tags:['学'], desc:'インテリジェンス', season:'S3' },
+  { word:'感性', chars:['感','性'], rarity:'★8',  tags:['感情','美'], desc:'センシビリティ', season:'S3' },
+  { word:'理性', chars:['理','性'], rarity:'★10', tags:['哲学'], desc:'ラシオナリティ', season:'S3' },
+  { word:'論理', chars:['論','理'], rarity:'★10', tags:['哲学','学'], desc:'ロジック', season:'S3' },
+  { word:'矛盾', chars:['矛','盾'], rarity:'★12', tags:['哲学'], desc:'コントラディクション', season:'S3' },
+  { word:'前提', chars:['前','提'], rarity:'★10', tags:['哲学'], desc:'プレミス', season:'S3' },
+  { word:'結論', chars:['結','論'], rarity:'★10', tags:['哲学'], desc:'コンクルージョン', season:'S3' },
+
+  // 学問分野
+  { word:'哲学', chars:['哲','学'], rarity:'★12', tags:['学','哲学'], desc:'フィロソフィ', season:'S3' },
+  { word:'倫理', chars:['倫','理'], rarity:'★12', tags:['学','哲学'], desc:'エシックス', season:'S3' },
+  { word:'論理学', chars:['論','理','学'], rarity:'★13', tags:['学','哲学'], desc:'ロジック学', season:'S3' },
+  { word:'美学', chars:['美','学'], rarity:'★10', tags:['学','美','哲学'], desc:'エステティクス', season:'S3' },
+  { word:'宗教', chars:['宗','教'], rarity:'★10', tags:['学'], desc:'リリジョン', season:'S3' },
+  { word:'神学', chars:['神','学'], rarity:'★12', tags:['学','神字'], desc:'セオロジー', season:'S3' },
+  { word:'心理学', chars:['心','理','学'], rarity:'★13', tags:['学','感情'], desc:'サイコロジー', season:'S3' },
+  { word:'社会学', chars:['社','会','学'], rarity:'★13', tags:['学'], desc:'ソシオロジー', season:'S3' },
+  { word:'政治学', chars:['政','治','学'], rarity:'★13', tags:['学'], desc:'ポリティクス', season:'S3' },
+
+  // 芸術技法
+  { word:'技巧', chars:['技','巧'], rarity:'★12', tags:['美'], desc:'テクニック', season:'S3' },
+  { word:'絶妙', chars:['絶','妙'], rarity:'★13', tags:['美'], desc:'エクセレント', season:'S3' },
+  { word:'精緻', chars:['精','緻'], rarity:'★15', tags:['美'], desc:'プレシジョン', season:'S3' },
+  { word:'巧妙', chars:['巧','妙'], rarity:'★13', tags:['美'], desc:'クレバー', season:'S3' },
+  { word:'造形', chars:['造','形'], rarity:'★10', tags:['美'], desc:'フォーミング', season:'S3' },
+  { word:'彫刻', chars:['彫','刻'], rarity:'★13', tags:['美'], desc:'スカルプチャー', season:'S3' },
+  { word:'絵画', chars:['絵','画'], rarity:'★7',  tags:['美'], desc:'ペインティング', season:'S3' },
+  { word:'絵筆', chars:['絵','筆'], rarity:'★8',  tags:['美'], desc:'ブラシ', season:'S3' },
+
+  // 音
+  { word:'旋律', chars:['旋','律'], rarity:'★13', tags:['美'], desc:'メロディ', season:'S3' },
+  { word:'和音', chars:['和','音'], rarity:'★8',  tags:['美'], desc:'ハーモニー', season:'S3' },
+  { word:'律動', chars:['律','動'], rarity:'★10', tags:['美'], desc:'リズム', season:'S3' },
+  { word:'音色', chars:['音','色'], rarity:'★8',  tags:['美'], desc:'トーン', season:'S3' },
+  { word:'音律', chars:['音','律'], rarity:'★10', tags:['美'], desc:'チューニング', season:'S3' },
+  { word:'音律', chars:['音','律'], rarity:'★10', tags:['美'], desc:'スケール', season:'S3' },
+
+  // 表現
+  { word:'演技', chars:['演','技'], rarity:'★8',  tags:['美'], desc:'パフォーマンス', season:'S3' },
+  { word:'表現', chars:['表','現'], rarity:'★8',  tags:['美'], desc:'エクスプレッション', season:'S3' },
+  { word:'創意', chars:['創','意'], rarity:'★10', tags:['美','思想'], desc:'クリエイティビティ', season:'S3' },
+  { word:'発想', chars:['発','想'], rarity:'★8',  tags:['思想'], desc:'アイデア', season:'S3' },
+  { word:'構想', chars:['構','想'], rarity:'★10', tags:['思想'], desc:'コンセプト', season:'S3' },
+];
+for (const r of _YOJI_S3_EDUCATION) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
