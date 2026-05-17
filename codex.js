@@ -6789,6 +6789,78 @@ const _YOJI_S4_SOCIETY = [
 ];
 for (const r of _YOJI_S4_SOCIETY) YOJI_RECIPES.push(r);
 
+// v10c ── 二字熟語 +50（環境・自然・気象）
+const _YOJI_S3_NATURE2 = [
+  // 大気・気候
+  { word:'気温', chars:['気','温'], rarity:'★8',  tags:['自然'], desc:'テンプ', season:'S3' },
+  { word:'湿度', chars:['湿','度'], rarity:'★12', tags:['自然'], desc:'湿度', season:'S3' },
+  { word:'気圧', chars:['気','圧'], rarity:'★13', tags:['自然'], desc:'プレッシャー', season:'S3' },
+  { word:'高気圧', chars:['高','気','圧'], rarity:'★13', tags:['自然'], desc:'ハイプレッシャー', season:'S3' },
+  { word:'低気圧', chars:['低','気','圧'], rarity:'★13', tags:['自然'], desc:'ロープレッシャー', season:'S3' },
+
+  // 風向
+  { word:'西風', chars:['西','風'], rarity:'★8',  tags:['自然'], desc:'にしかぜ', season:'S3' },
+  { word:'東風', chars:['東','風'], rarity:'★8',  tags:['自然'], desc:'ひがしかぜ', season:'S3' },
+  { word:'南風', chars:['南','風'], rarity:'★8',  tags:['自然'], desc:'みなみかぜ', season:'S3' },
+  { word:'北風', chars:['北','風'], rarity:'★8',  tags:['自然'], desc:'きたかぜ', season:'S3' },
+  { word:'台風', chars:['台','風'], rarity:'★8',  tags:['自然'], desc:'タイフーン', season:'S3' },
+
+  // 自然災害
+  { word:'地震', chars:['地','震'], rarity:'★8',  tags:['自然'], desc:'アースクェイク', season:'S3' },
+  { word:'津波', chars:['津','波'], rarity:'★12', tags:['自然'], desc:'ツナミ', season:'S3' },
+  { word:'噴火', chars:['噴','火'], rarity:'★12', tags:['自然'], desc:'噴火', season:'S3' },
+  { word:'火山', chars:['火','山'], rarity:'★8',  tags:['自然'], desc:'ボルケーノ', season:'S3' },
+  { word:'災害', chars:['災','害'], rarity:'★10', tags:[], desc:'ディザスター', season:'S3' },
+  { word:'被害', chars:['被','害'], rarity:'★10', tags:[], desc:'ダメージ', season:'S3' },
+
+  // 川・湖
+  { word:'河口', chars:['河','口'], rarity:'★10', tags:['自然'], desc:'リバーマウス', season:'S3' },
+  { word:'川辺', chars:['川','辺'], rarity:'★8',  tags:['自然'], desc:'リバーサイド', season:'S3' },
+  { word:'流域', chars:['流','域'], rarity:'★13', tags:['自然','RAINY'], desc:'集水域', season:'S3' },
+  { word:'集水', chars:['集','水'], rarity:'★13', tags:['自然','RAINY'], desc:'集水', season:'S3' },
+  { word:'湧水', chars:['湧','水'], rarity:'★13', tags:['自然'], desc:'スプリングウォーター', season:'S3' },
+  { word:'泉源', chars:['泉','源'], rarity:'★13', tags:['自然'], desc:'スプリング', season:'S3' },
+
+  // 山地
+  { word:'山脈', chars:['山','脈'], rarity:'★10', tags:['自然'], desc:'マウンテンレンジ', season:'S3' },
+  { word:'高峰', chars:['高','峰'], rarity:'★13', tags:['自然'], desc:'ハイピーク', season:'S3' },
+  { word:'断崖', chars:['断','崖'], rarity:'★13', tags:['自然'], desc:'クリフ', season:'S3' },
+  { word:'絶壁', chars:['絶','壁'], rarity:'★13', tags:['自然'], desc:'プレシピス', season:'S3' },
+  { word:'山岳地', chars:['山','岳','地'], rarity:'★13', tags:['自然'], desc:'マウンテンランド', season:'S3' },
+
+  // 海
+  { word:'波濤', chars:['波','濤'], rarity:'★15', tags:['自然','古典'], desc:'波濤', season:'S3' },
+  { word:'潮風', chars:['潮','風'], rarity:'★12', tags:['自然','美'], desc:'シーブリーズ', season:'S3' },
+  { word:'磯波', chars:['磯','波'], rarity:'★14', tags:['自然','古典'], desc:'いそなみ', season:'S3' },
+
+  // 季節
+  { word:'初春', chars:['初','春'], rarity:'★8',  tags:['時','美'], desc:'アーリースプリング', season:'S3' },
+  { word:'晩春', chars:['晩','春'], rarity:'★12', tags:['時','美'], desc:'レイトスプリング', season:'S3' },
+  { word:'盛夏', chars:['盛','夏'], rarity:'★12', tags:['時'], desc:'盛夏', season:'S3' },
+  { word:'晩夏', chars:['晩','夏'], rarity:'★12', tags:['時'], desc:'晩夏', season:'S3' },
+  { word:'初秋', chars:['初','秋'], rarity:'★8',  tags:['時','美'], desc:'アーリーオータム', season:'S3' },
+  { word:'晩秋', chars:['晩','秋'], rarity:'★12', tags:['時','美'], desc:'レイトオータム', season:'S3' },
+  { word:'初冬', chars:['初','冬'], rarity:'★8',  tags:['時'], desc:'アーリーウィンター', season:'S3' },
+  { word:'厳冬', chars:['厳','冬'], rarity:'★13', tags:['時'], desc:'厳冬', season:'S3' },
+
+  // 天気
+  { word:'快晴', chars:['快','晴'], rarity:'★10', tags:['天候'], desc:'クリアスカイ', season:'S3' },
+  { word:'晴雨', chars:['晴','雨'], rarity:'★10', tags:['天候'], desc:'晴れと雨', season:'S3' },
+  { word:'霧島', chars:['霧','島'], rarity:'★14', tags:['自然','古典'], desc:'きりしま', season:'S3' },
+
+  // 山関連
+  { word:'峡谷', chars:['峡','谷'], rarity:'★13', tags:['自然'], desc:'キャニオン', season:'S3' },
+  { word:'渓谷', chars:['渓','谷'], rarity:'★13', tags:['自然','美'], desc:'バレー', season:'S3' },
+  { word:'渓流', chars:['渓','流'], rarity:'★13', tags:['自然','美'], desc:'渓流', season:'S3' },
+  { word:'瀑布', chars:['瀑','布'], rarity:'★15', tags:['自然','古典'], desc:'滝', season:'S3' },
+
+  // 生命
+  { word:'生命', chars:['生','命'], rarity:'★8',  tags:['哲学'], desc:'ライフ', season:'S3' },
+  { word:'生気', chars:['生','気'], rarity:'★10', tags:[], desc:'バイタリティ', season:'S3' },
+  { word:'生長', chars:['生','長'], rarity:'★8',  tags:[], desc:'グロース', season:'S3' },
+];
+for (const r of _YOJI_S3_NATURE2) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
