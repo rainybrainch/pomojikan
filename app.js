@@ -1444,6 +1444,21 @@ function openOnboarding() {
     }, 500);
   } catch (e) {}
 })();
+
+// 数値カウントアップアニメーション（オンボーディング字数で使用）
+function animateNumber(el, target, duration = 1500) {
+  if (!el) return;
+  const start = 0;
+  const startTime = performance.now();
+  function step(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / duration);
+    const eased = 1 - Math.pow(1 - t, 3);  // easeOutCubic
+    el.textContent = Math.round(start + (target - start) * eased).toLocaleString();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 function showOnboardingStep() {
   $$('.ob-step').forEach(s => s.hidden = (parseInt(s.dataset.step) !== _obStep));
   $$('.ob-dot').forEach(d => d.classList.toggle('active', parseInt(d.dataset.dot) === _obStep));
