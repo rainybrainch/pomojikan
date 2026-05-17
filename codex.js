@@ -3781,6 +3781,69 @@ const _YOJI_S4_QUEST = [
 ];
 for (const r of _YOJI_S4_QUEST) YOJI_RECIPES.push(r);
 
+// v8l ── 二字熟語 +50（仕事・対人）
+const _YOJI_S3_WORK = [
+  { word:'同僚', chars:['同','僚'], rarity:'★13', tags:['ビジネス','人'], desc:'コリーグ', season:'S3' },
+  { word:'部下', chars:['部','下'], rarity:'★8',  tags:['ビジネス','人'], desc:'サブオーディネート', season:'S3' },
+  { word:'部署', chars:['部','署'], rarity:'★12', tags:['ビジネス'], desc:'デパートメント', season:'S3' },
+  { word:'役員', chars:['役','員'], rarity:'★8',  tags:['ビジネス','人'], desc:'ボードメンバー', season:'S3' },
+  { word:'社員', chars:['社','員'], rarity:'★8',  tags:['ビジネス','人'], desc:'エンプロイ', season:'S3' },
+  { word:'上層', chars:['上','層'], rarity:'★10', tags:[], desc:'上位層', season:'S3' },
+  { word:'中堅', chars:['中','堅'], rarity:'★12', tags:['ビジネス'], desc:'ミドル', season:'S3' },
+  { word:'新人', chars:['新','人'], rarity:'★8',  tags:['ビジネス','人'], desc:'新参', season:'S3' },
+  { word:'初心者', chars:['初','心','者'], rarity:'★8',  tags:[], desc:'ビギナー', season:'S3' },
+  { word:'熟練者', chars:['熟','練','者'], rarity:'★13', tags:[], desc:'ベテラン', season:'S3' },
+
+  // 対人スキル
+  { word:'対話', chars:['対','話'], rarity:'★8',  tags:[], desc:'ダイアログ', season:'S3' },
+  { word:'討論', chars:['討','論'], rarity:'★10', tags:[], desc:'ディベート', season:'S3' },
+  { word:'議論', chars:['議','論'], rarity:'★10', tags:[], desc:'ディスカッション', season:'S3' },
+  { word:'交渉', chars:['交','渉'], rarity:'★10', tags:['ビジネス'], desc:'ネゴシエーション', season:'S3' },
+  { word:'説得', chars:['説','得'], rarity:'★8',  tags:[], desc:'パースエージョン', season:'S3' },
+  { word:'説明', chars:['説','明'], rarity:'★7',  tags:[], desc:'エクスプラネーション', season:'S3' },
+  { word:'紹介', chars:['紹','介'], rarity:'★10', tags:[], desc:'イントロダクション', season:'S3' },
+  { word:'挨拶', chars:['挨','拶'], rarity:'★12', tags:[], desc:'グリーティング', season:'S3' },
+  { word:'返事', chars:['返','事'], rarity:'★8',  tags:[], desc:'リプライ', season:'S3' },
+  { word:'返信', chars:['返','信'], rarity:'★8',  tags:[], desc:'レスポンス', season:'S3' },
+
+  // 評価
+  { word:'評価', chars:['評','価'], rarity:'★8',  tags:['ビジネス'], desc:'アセスメント', season:'S3' },
+  { word:'査定', chars:['査','定'], rarity:'★13', tags:['ビジネス'], desc:'アプレーザル', season:'S3' },
+  { word:'分析', chars:['分','析'], rarity:'★8',  tags:[], desc:'アナリシス', season:'S3' },
+  { word:'検討', chars:['検','討'], rarity:'★8',  tags:[], desc:'コンシダー', season:'S3' },
+  { word:'判定', chars:['判','定'], rarity:'★8',  tags:[], desc:'ジャッジ', season:'S3' },
+
+  // 信頼関係
+  { word:'信頼', chars:['信','頼'], rarity:'★8',  tags:['七徳'], desc:'トラスト', season:'S3' },
+  { word:'信用', chars:['信','用'], rarity:'★8',  tags:['七徳','ビジネス'], desc:'クレジット', season:'S3' },
+  { word:'裏切', chars:['裏','切'], rarity:'★12', tags:[], desc:'ベトレイ', season:'S3' },
+  { word:'忠誠', chars:['忠','誠'], rarity:'★12', tags:['七徳','武'], desc:'ロイヤルティ', season:'S3' },
+  { word:'敬愛', chars:['敬','愛'], rarity:'★12', tags:['七徳','感情'], desc:'リスペクト＆ラブ', season:'S3' },
+
+  // 援助
+  { word:'援助', chars:['援','助'], rarity:'★8',  tags:[], desc:'アシスタンス', season:'S3' },
+  { word:'支援', chars:['支','援'], rarity:'★8',  tags:[], desc:'サポート', season:'S3' },
+  { word:'協力', chars:['協','力'], rarity:'★8',  tags:[], desc:'コオペレーション', season:'S3' },
+  { word:'共同', chars:['共','同'], rarity:'★8',  tags:[], desc:'コラボ', season:'S3' },
+  { word:'連携', chars:['連','携'], rarity:'★12', tags:[], desc:'リンク', season:'S3' },
+
+  // 競争・対立
+  { word:'競争', chars:['競','争'], rarity:'★8',  tags:['武'], desc:'コンペティション', season:'S3' },
+  { word:'対立', chars:['対','立'], rarity:'★10', tags:[], desc:'コンフリクト', season:'S3' },
+  { word:'衝突', chars:['衝','突'], rarity:'★12', tags:[], desc:'クラッシュ', season:'S3' },
+  { word:'紛争', chars:['紛','争'], rarity:'★12', tags:[], desc:'ディスピュート', season:'S3' },
+  { word:'和解', chars:['和','解'], rarity:'★10', tags:['七徳'], desc:'リコンサイル', season:'S3' },
+
+  // 感情交流
+  { word:'共鳴', chars:['共','鳴'], rarity:'★12', tags:['感情'], desc:'レゾナンス', season:'S3' },
+  { word:'共感', chars:['共','感'], rarity:'★10', tags:['感情'], desc:'エンパシー', season:'S3' },
+  { word:'同情', chars:['同','情'], rarity:'★10', tags:['感情'], desc:'シンパシー', season:'S3' },
+  { word:'反感', chars:['反','感'], rarity:'★10', tags:['感情'], desc:'アンチパシー', season:'S3' },
+  { word:'尊敬', chars:['尊','敬'], rarity:'★10', tags:['感情','七徳'], desc:'リスペクト', season:'S3' },
+  { word:'憧憬', chars:['憧','憬'], rarity:'★13', tags:['感情'], desc:'リスペクト', season:'S3' },
+];
+for (const r of _YOJI_S3_WORK) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
