@@ -1475,6 +1475,22 @@ body.stream-mode .party-bar{
   border-radius:99px;
   font-size:.86rem;
   text-shadow:0 0 6px var(--r-glow, gold);
+  cursor:pointer;
+  transition:transform .12s, box-shadow .12s;
+}
+.cb-bar-item:hover{
+  transform:scale(1.06);
+  box-shadow:0 0 12px var(--r-glow, gold);
+}
+.cb-bar-item.cb-special{
+  background:linear-gradient(135deg, rgba(255,107,157,.2), rgba(198,107,255,.2), rgba(107,208,255,.2));
+  border:1.5px solid #fff;
+  box-shadow:0 0 14px rgba(255,200,80,.5);
+  animation:cbSpecialPulse 2s ease-in-out infinite;
+}
+@keyframes cbSpecialPulse{
+  0%,100%{ box-shadow:0 0 14px rgba(255,200,80,.5); }
+  50%   { box-shadow:0 0 24px rgba(255,150,255,.7); }
 }
 .cb-bar-more{
   color:var(--ink-mute);

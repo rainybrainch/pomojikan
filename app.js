@@ -2641,14 +2641,15 @@ function renderComboBar() {
     }
   }
   bar.innerHTML = '';
-  bar.appendChild(el('span', { class:'cb-bar-label' }, '⚡ コンボ'));
-  // 最大 4 件表示
+  bar.appendChild(el('span', { class:'cb-bar-label' }, '⚡ 発動中'));
+  // 最大 4 件表示 ・ クリックで詳細
   combos.slice(0, 4).forEach(r => {
     const rIdx = RARITY_TIERS.indexOf(r.rarity);
     bar.appendChild(el('span', {
-      class: `cb-bar-item rarity-${rIdx + 1}`,
+      class: `cb-bar-item rarity-${rIdx + 1}${r.special ? ' cb-special' : ''}`,
       title: r.desc || r.word,
-    }, r.word));
+      onclick: () => showYojiDetail(r),
+    }, r.special ? '🌟' + r.word : r.word));
   });
   if (combos.length > 4) {
     bar.appendChild(el('span', { class:'cb-bar-more' }, `他 ${combos.length - 4}`));
