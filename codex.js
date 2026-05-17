@@ -1422,6 +1422,114 @@ const _YOJI_S4_EXPAND4 = [
 ];
 for (const r of _YOJI_S4_EXPAND4) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7e（2026-05-17）── 四字熟語 +100 個（現代・ビジネス・スポーツ・科学）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S4_EXPAND5 = [
+  // 現代ビジネス
+  { word:'費用対効果', chars:['費','用','対','効'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'コストパフォーマンス', season:'S4' },
+  { word:'顧客満足', chars:['顧','客','満','足'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'CS', season:'S4' },
+  { word:'責任重大', chars:['責','任','重','大'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'重い責任', season:'S4' },
+  { word:'業績向上', chars:['業','績','向','上'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'パフォーマンス改善', season:'S4' },
+  { word:'生産効率', chars:['生','産','効','率'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'プロダクティビティ', season:'S4' },
+  { word:'技術革新', chars:['技','術','革','新'], rarity:'★12', tags:['四字熟語','ビジネス','科学'], desc:'イノベーション', season:'S4' },
+  { word:'組織改革', chars:['組','織','改','革'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'リストラクチャリング', season:'S4' },
+  { word:'戦略立案', chars:['戦','略','立','案'], rarity:'★13', tags:['四字熟語','ビジネス','武'], desc:'戦略を立てる', season:'S4' },
+  { word:'業務改善', chars:['業','務','改','善'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'カイゼン', season:'S4' },
+  { word:'品質管理', chars:['品','質','管','理'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'QC', season:'S4' },
+
+  // スポーツ・運動
+  { word:'全力疾走', chars:['全','力','疾','走'], rarity:'★12', tags:['四字熟語','武'], desc:'全力で走る', season:'S4' },
+  { word:'運動神経', chars:['運','動','神','経'], rarity:'★11', tags:['四字熟語'], desc:'体の動きの能力', season:'S4' },
+  { word:'準備運動', chars:['準','備','運','動'], rarity:'★10', tags:['四字熟語'], desc:'ウォームアップ', season:'S4' },
+  { word:'体力勝負', chars:['体','力','勝','負'], rarity:'★11', tags:['四字熟語','武'], desc:'体力で決まる', season:'S4' },
+  { word:'技能向上', chars:['技','能','向','上'], rarity:'★12', tags:['四字熟語','武'], desc:'スキルアップ', season:'S4' },
+  { word:'試合観戦', chars:['試','合','観','戦'], rarity:'★11', tags:['四字熟語'], desc:'試合を見る', season:'S4' },
+  { word:'勝利至上', chars:['勝','利','至','上'], rarity:'★12', tags:['四字熟語','武'], desc:'勝利が最優先', season:'S4' },
+  { word:'完全試合', chars:['完','全','試','合'], rarity:'★12', tags:['四字熟語','武'], desc:'パーフェクトゲーム', season:'S4' },
+
+  // 健康・医療
+  { word:'健康第一', chars:['健','康','第','一'], rarity:'★11', tags:['四字熟語'], desc:'健康が最優先', season:'S4' },
+  { word:'栄養満点', chars:['栄','養','満','点'], rarity:'★11', tags:['四字熟語'], desc:'栄養豊富', season:'S4' },
+  { word:'医食同源', chars:['医','食','同','源'], rarity:'★13', tags:['四字熟語','古典'], desc:'食と医療は同じ', season:'S4' },
+  { word:'治療効果', chars:['治','療','効','果'], rarity:'★12', tags:['四字熟語'], desc:'治療の結果', season:'S4' },
+  { word:'体調管理', chars:['体','調','管','理'], rarity:'★11', tags:['四字熟語'], desc:'コンディション維持', season:'S4' },
+  { word:'生活習慣', chars:['生','活','習','慣'], rarity:'★11', tags:['四字熟語'], desc:'ライフスタイル', season:'S4' },
+  { word:'睡眠不足', chars:['睡','眠','不','足'], rarity:'★11', tags:['四字熟語'], desc:'寝不足', season:'S4' },
+
+  // テクノロジー・科学
+  { word:'人工知能', chars:['人','工','知','能'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'AI', season:'S4' },
+  { word:'機械学習', chars:['機','械','学','習'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'ML', season:'S4' },
+  { word:'深層学習', chars:['深','層','学','習'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'ディープラーニング', season:'S4' },
+  { word:'量子計算', chars:['量','子','計','算'], rarity:'★15', tags:['四字熟語','科学','未来'], desc:'量子コンピュータ', season:'S4' },
+  { word:'仮想現実', chars:['仮','想','現','実'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'VR', season:'S4' },
+  { word:'拡張現実', chars:['拡','張','現','実'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'AR', season:'S4' },
+  { word:'自動運転', chars:['自','動','運','転'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'自動車', season:'S4' },
+  { word:'宇宙開発', chars:['宇','宙','開','発'], rarity:'★13', tags:['四字熟語','科学','天体'], desc:'スペース開発', season:'S4' },
+  { word:'再生医療', chars:['再','生','医','療'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'リジェネレーション', season:'S4' },
+  { word:'遺伝子工学', chars:['遺','伝','子','工'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'バイオテック', season:'S4' },
+
+  // 環境・気候
+  { word:'環境保護', chars:['環','境','保','護'], rarity:'★12', tags:['四字熟語','自然'], desc:'地球を守る', season:'S4' },
+  { word:'気候変動', chars:['気','候','変','動'], rarity:'★12', tags:['四字熟語','自然','未来'], desc:'地球温暖化', season:'S4' },
+  { word:'地球温暖', chars:['地','球','温','暖'], rarity:'★12', tags:['四字熟語','自然'], desc:'グローバルウォーミング', season:'S4' },
+  { word:'持続可能', chars:['持','続','可','能'], rarity:'★12', tags:['四字熟語','未来'], desc:'サステナビリティ', season:'S4' },
+  { word:'循環社会', chars:['循','環','社','会'], rarity:'★13', tags:['四字熟語','未来'], desc:'循環型', season:'S4' },
+  { word:'再生可能', chars:['再','生','可','能'], rarity:'★12', tags:['四字熟語','未来'], desc:'リニューアブル', season:'S4' },
+  { word:'省資源化', chars:['省','資','源','化'], rarity:'★12', tags:['四字熟語'], desc:'資源を節約', season:'S4' },
+
+  // 食・グルメ
+  { word:'美食家気', chars:['美','食','家','気'], rarity:'★12', tags:['四字熟語'], desc:'グルメ', season:'S4' },
+  { word:'食欲旺盛', chars:['食','欲','旺','盛'], rarity:'★11', tags:['四字熟語'], desc:'よく食べる', season:'S4' },
+  { word:'絶品料理', chars:['絶','品','料','理'], rarity:'★12', tags:['四字熟語'], desc:'最高の料理', season:'S4' },
+  { word:'手作り料', chars:['手','作','り','料'], rarity:'★11', tags:['四字熟語'], desc:'ハンドメイドクッキング', season:'S4' },
+  { word:'地産地消', chars:['地','産','地','消'], rarity:'★12', tags:['四字熟語'], desc:'地元生産・地元消費', season:'S4' },
+
+  // 旅行・観光
+  { word:'観光旅行', chars:['観','光','旅','行'], rarity:'★11', tags:['四字熟語'], desc:'ツーリズム', season:'S4' },
+  { word:'絶景名所', chars:['絶','景','名','所'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'素晴らしい景色', season:'S4' },
+  { word:'秘境探検', chars:['秘','境','探','検'], rarity:'★13', tags:['四字熟語'], desc:'未知の地を探る', season:'S4' },
+  { word:'温泉地巡', chars:['温','泉','地','巡'], rarity:'★12', tags:['四字熟語'], desc:'湯巡り', season:'S4' },
+  { word:'世界遺産', chars:['世','界','遺','産'], rarity:'★13', tags:['四字熟語'], desc:'ユネスコ', season:'S4' },
+
+  // 音楽・芸術
+  { word:'音楽鑑賞', chars:['音','楽','鑑','賞'], rarity:'★11', tags:['四字熟語','美'], desc:'音楽を聴く', season:'S4' },
+  { word:'交響楽団', chars:['交','響','楽','団'], rarity:'★12', tags:['四字熟語','美'], desc:'オーケストラ', season:'S4' },
+  { word:'即興演奏', chars:['即','興','演','奏'], rarity:'★13', tags:['四字熟語','美'], desc:'インプロビゼーション', season:'S4' },
+  { word:'絵画鑑賞', chars:['絵','画','鑑','賞'], rarity:'★11', tags:['四字熟語','美'], desc:'絵を見る', season:'S4' },
+  { word:'美術館巡', chars:['美','術','館','巡'], rarity:'★12', tags:['四字熟語','美'], desc:'ミュージアム巡り', season:'S4' },
+
+  // 言葉・コミュニケーション
+  { word:'会話術', chars:['会','話','術'], rarity:'★10', tags:['四字熟語'], desc:'対話の技術', season:'S4' },
+  { word:'雄弁無双', chars:['雄','弁','無','双'], rarity:'★14', tags:['四字熟語','武'], desc:'説得力抜群', season:'S4' },
+  { word:'多言多失', chars:['多','言','多','失'], rarity:'★13', tags:['四字熟語','古典'], desc:'話しすぎは失敗の元', season:'S4' },
+  { word:'沈黙是金', chars:['沈','黙','是','金'], rarity:'★14', tags:['四字熟語','古典'], desc:'沈黙は金なり', season:'S4' },
+  { word:'言行一致', chars:['言','行','一','致'], rarity:'★12', tags:['四字熟語','七徳'], desc:'言葉と行いが合う', season:'S4' },
+
+  // 心の状態
+  { word:'前向思考', chars:['前','向','思','考'], rarity:'★11', tags:['四字熟語'], desc:'ポジティブ', season:'S4' },
+  { word:'積極前進', chars:['積','極','前','進'], rarity:'★11', tags:['四字熟語'], desc:'前へ進む', season:'S4' },
+  { word:'意気消沈', chars:['意','気','消','沈'], rarity:'★12', tags:['四字熟語','感情'], desc:'落ち込み', season:'S4' },
+  { word:'意気軒昂', chars:['意','気','軒','昂'], rarity:'★13', tags:['四字熟語','感情'], desc:'気力満々', season:'S4' },
+  { word:'憂鬱症状', chars:['憂','鬱','症','状'], rarity:'★13', tags:['四字熟語','感情'], desc:'うつ状態', season:'S4' },
+  { word:'幸福追求', chars:['幸','福','追','求'], rarity:'★12', tags:['四字熟語'], desc:'幸せを求める', season:'S4' },
+
+  // 哲学（追加）
+  { word:'存在意義', chars:['存','在','意','義'], rarity:'★13', tags:['四字熟語','哲学'], desc:'生きる意味', season:'S4' },
+  { word:'本質追究', chars:['本','質','追','究'], rarity:'★13', tags:['四字熟語','哲学'], desc:'本質を追う', season:'S4' },
+  { word:'真理探究', chars:['真','理','探','究'], rarity:'★13', tags:['四字熟語','哲学','学'], desc:'真実を探す', season:'S4' },
+  { word:'価値観念', chars:['価','値','観','念'], rarity:'★12', tags:['四字熟語','哲学'], desc:'価値観', season:'S4' },
+  { word:'人生哲学', chars:['人','生','哲','学'], rarity:'★13', tags:['四字熟語','哲学'], desc:'生き方の思想', season:'S4' },
+
+  // 物語・展開
+  { word:'波瀾万丈', chars:['波','瀾','万','丈'], rarity:'★14', tags:['四字熟語'], desc:'激しい変化', season:'S4' },
+  { word:'紆余曲折', chars:['紆','余','曲','折'], rarity:'★14', tags:['四字熟語'], desc:'入り組んだ経過', season:'S4' },
+  { word:'七変八化', chars:['七','変','八','化'], rarity:'★13', tags:['四字熟語'], desc:'さまざまに変わる', season:'S4' },
+  { word:'紳士淑女', chars:['紳','士','淑','女'], rarity:'★13', tags:['四字熟語','美'], desc:'男性と女性', season:'S4' },
+  { word:'有機無機', chars:['有','機','無','機'], rarity:'★13', tags:['四字熟語','科学'], desc:'生物と非生物', season:'S4' },
+];
+for (const r of _YOJI_S4_EXPAND5) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
