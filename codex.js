@@ -6570,6 +6570,83 @@ const _YOJI_S3_ACADEMY = [
 ];
 for (const r of _YOJI_S3_ACADEMY) YOJI_RECIPES.push(r);
 
+// v9z ── 四字熟語 +50（武・剣・刀・武道精神）
+const _YOJI_S4_SWORD = [
+  { word:'武芸十八', chars:['武','芸','十','八'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'武芸十八般', season:'S4' },
+  { word:'十八般芸', chars:['十','八','般','芸'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'十八般', season:'S4' },
+  { word:'武術秘伝', chars:['武','術','秘','伝'], rarity:'★14', tags:['四字熟語','武'], desc:'武術', season:'S4' },
+  { word:'武道精神', chars:['武','道','精','神'], rarity:'★13', tags:['四字熟語','武'], desc:'武道', season:'S4' },
+  { word:'武門武家', chars:['武','門','武','家'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'武門', season:'S4' },
+
+  // 刀剣
+  { word:'宝刀名刀', chars:['宝','刀','名','刀'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'宝刀', season:'S4' },
+  { word:'名刀宝剣', chars:['名','刀','宝','剣'], rarity:'★14', tags:['四字熟語','武'], desc:'名剣', season:'S4' },
+  { word:'剣豪伝説', chars:['剣','豪','伝','説'], rarity:'★14', tags:['四字熟語','武'], desc:'剣豪', season:'S4' },
+  { word:'伝説剣士', chars:['伝','説','剣','士'], rarity:'★14', tags:['四字熟語','武'], desc:'レジェンド剣士', season:'S4' },
+  { word:'剣聖剣鬼', chars:['剣','聖','剣','鬼'], rarity:'★14', tags:['四字熟語','武'], desc:'剣聖', season:'S4' },
+
+  // 剣術流派
+  { word:'一刀流剣', chars:['一','刀','流','剣'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'一刀流', season:'S4' },
+  { word:'二刀流剣', chars:['二','刀','流','剣'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'二刀流', season:'S4' },
+  { word:'示現流剣', chars:['示','現','流','剣'], rarity:'★16', tags:['四字熟語','武','古典'], desc:'示現流', season:'S4' },
+  { word:'神道流剣', chars:['神','道','流','剣'], rarity:'★16', tags:['四字熟語','武','古典'], desc:'神道流', season:'S4' },
+
+  // 抜刀術
+  { word:'抜刀居合', chars:['抜','刀','居','合'], rarity:'★14', tags:['四字熟語','武'], desc:'抜刀', season:'S4' },
+  { word:'居合斬り', chars:['居','合','斬','り'], rarity:'★14', tags:['四字熟語','武'], desc:'居合', season:'S4' },
+  { word:'居合一閃', chars:['居','合','一','閃'], rarity:'★15', tags:['四字熟語','武'], desc:'居合', season:'S4' },
+
+  // 弓道
+  { word:'弓道一射', chars:['弓','道','一','射'], rarity:'★14', tags:['四字熟語','武','禅'], desc:'弓道', season:'S4' },
+  { word:'弓馬流鏑', chars:['弓','馬','流','鏑'], rarity:'★16', tags:['四字熟語','武','古典'], desc:'流鏑馬', season:'S4' },
+  { word:'流鏑馬', chars:['流','鏑','馬'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'流鏑馬', season:'S4' },
+
+  // 武道精神
+  { word:'残心残気', chars:['残','心','残','気'], rarity:'★14', tags:['四字熟語','武','禅'], desc:'残心', season:'S4' },
+  { word:'守破離道', chars:['守','破','離','道'], rarity:'★14', tags:['四字熟語','武','禅'], desc:'守破離', season:'S4' },
+  { word:'真剣勝負', chars:['真','剣','勝','負'], rarity:'★12', tags:['四字熟語','武'], desc:'真剣勝負', season:'S4' },
+  { word:'木刀稽古', chars:['木','刀','稽','古'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'木刀', season:'S4' },
+  { word:'打太刀者', chars:['打','太','刀','者'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'打太刀', season:'S4' },
+
+  // 武具
+  { word:'兜甲冑武', chars:['兜','甲','冑','武'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'甲冑', season:'S4' },
+  { word:'胴丸具足', chars:['胴','丸','具','足'], rarity:'★16', tags:['四字熟語','武','古典'], desc:'具足', season:'S4' },
+  { word:'陣羽織具', chars:['陣','羽','織','具'], rarity:'★16', tags:['四字熟語','武','古典'], desc:'陣羽織', season:'S4' },
+
+  // 戦国
+  { word:'戦国武将', chars:['戦','国','武','将'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'戦国大名', season:'S4' },
+  { word:'武田信玄', chars:['武','田','信','玄'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'武田', season:'S4' },
+  { word:'上杉謙信', chars:['上','杉','謙','信'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'上杉', season:'S4' },
+  { word:'織田信長', chars:['織','田','信','長'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'織田', season:'S4' },
+  { word:'豊臣秀吉', chars:['豊','臣','秀','吉'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'豊臣', season:'S4' },
+  { word:'徳川家康', chars:['徳','川','家','康'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'徳川', season:'S4' },
+
+  // 武家
+  { word:'武家政治', chars:['武','家','政','治'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'武家政権', season:'S4' },
+  { word:'武家屋敷', chars:['武','家','屋','敷'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'武家屋敷', season:'S4' },
+  { word:'御家人衆', chars:['御','家','人','衆'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'御家人', season:'S4' },
+
+  // 大名
+  { word:'大名行列', chars:['大','名','行','列'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'参勤交代', season:'S4' },
+  { word:'参勤交代', chars:['参','勤','交','代'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'参勤交代', season:'S4' },
+
+  // 城・要害
+  { word:'城郭要塞', chars:['城','郭','要','塞'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'要塞城', season:'S4' },
+  { word:'本丸城郭', chars:['本','丸','城','郭'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'本丸', season:'S4' },
+  { word:'天守閣', chars:['天','守','閣'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'天守', season:'S4' },
+
+  // 武人精神
+  { word:'勇敢無双', chars:['勇','敢','無','双'], rarity:'★14', tags:['四字熟語','武'], desc:'無双の勇', season:'S4' },
+  { word:'豪傑勇者', chars:['豪','傑','勇','者'], rarity:'★13', tags:['四字熟語','武'], desc:'豪傑', season:'S4' },
+  { word:'武人気質', chars:['武','人','気','質'], rarity:'★13', tags:['四字熟語','武'], desc:'武人', season:'S4' },
+  { word:'侠気義気', chars:['侠','気','義','気'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'侠気', season:'S4' },
+
+  // 武の極
+  { word:'天下無双', chars:['天','下','無','双'], rarity:'★13', tags:['四字熟語','武'], desc:'天下無双', season:'S4' },
+  { word:'剣豪無双', chars:['剣','豪','無','双'], rarity:'★14', tags:['四字熟語','武'], desc:'剣豪', season:'S4' },
+];
+for (const r of _YOJI_S4_SWORD) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
