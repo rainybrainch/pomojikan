@@ -2445,6 +2445,71 @@ const _YOJI_S3_ANCIENT = [
 ];
 for (const r of _YOJI_S3_ANCIENT) YOJI_RECIPES.push(r);
 
+// v7r ── 四字熟語 +50（数字テーマ・色テーマ）
+const _YOJI_S4_NUM_COLOR = [
+  // 数字テーマ
+  { word:'一意一念', chars:['一','意','一','念'], rarity:'★13', tags:['四字熟語','禅'], desc:'一つに集中', season:'S4' },
+  { word:'一望千里', chars:['一','望','千','里'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'広大な眺め', season:'S4' },
+  { word:'二者択一', chars:['二','者','択','一'], rarity:'★12', tags:['四字熟語'], desc:'二つから選ぶ', season:'S4' },
+  { word:'三日月', chars:['三','日','月'], rarity:'★11', tags:['四字熟語','自然','美'], desc:'みかづき', season:'S4' },
+  { word:'三千院', chars:['三','千','院'], rarity:'★14', tags:['四字熟語','古典'], desc:'三千院（京都）', season:'S4' },
+  { word:'四方山話', chars:['四','方','山','話'], rarity:'★14', tags:['四字熟語','古典'], desc:'雑談', season:'S4' },
+  { word:'五穀豊穣', chars:['五','穀','豊','穣'], rarity:'★13', tags:['四字熟語','自然'], desc:'豊作', season:'S4' },
+  { word:'六色雑技', chars:['六','色','雑','技'], rarity:'★13', tags:['四字熟語','美'], desc:'多彩な技', season:'S4' },
+  { word:'七色虹', chars:['七','色','虹'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'なないろの虹', season:'S4' },
+  { word:'八方塞', chars:['八','方','塞'], rarity:'★12', tags:['四字熟語'], desc:'どこも詰まる', season:'S4' },
+  { word:'九分九厘', chars:['九','分','九','厘'], rarity:'★13', tags:['四字熟語','数'], desc:'ほぼ確実', season:'S4' },
+  { word:'十年一日', chars:['十','年','一','日'], rarity:'★12', tags:['四字熟語','時'], desc:'長期間同じ', season:'S4' },
+  { word:'百花斉放', chars:['百','花','斉','放'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'多くの花が咲く', season:'S4' },
+  { word:'千客万来', chars:['千','客','万','来'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'客が多い', season:'S4' },
+  { word:'万里長城', chars:['万','里','長','城'], rarity:'★14', tags:['四字熟語','古典'], desc:'万里の長城', season:'S4' },
+
+  // 色テーマ
+  { word:'紅顔美少', chars:['紅','顔','美','少'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'紅顔美少年', season:'S4' },
+  { word:'青二才', chars:['青','二','才'], rarity:'★12', tags:['四字熟語'], desc:'未熟者', season:'S4' },
+  { word:'紅白歌合', chars:['紅','白','歌','合'], rarity:'★12', tags:['四字熟語','美'], desc:'紅白歌合戦', season:'S4' },
+  { word:'金襴緞子', chars:['金','襴','緞','子'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'豪華な織物', season:'S4' },
+  { word:'金科玉条', chars:['金','科','玉','条'], rarity:'★14', tags:['四字熟語','古典','儒教'], desc:'絶対の決まり', season:'S4' },
+  { word:'金枝玉葉', chars:['金','枝','玉','葉'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'高貴な人', season:'S4' },
+  { word:'純金純銀', chars:['純','金','純','銀'], rarity:'★13', tags:['四字熟語'], desc:'金と銀', season:'S4' },
+  { word:'白砂青松', chars:['白','砂','青','松'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'美しい海岸', season:'S4' },
+  { word:'青天白日', chars:['青','天','白','日'], rarity:'★12', tags:['四字熟語'], desc:'晴れた青空', season:'S4' },
+  { word:'青藍出色', chars:['青','藍','出','色'], rarity:'★15', tags:['四字熟語','古典'], desc:'弟子が師を超える', season:'S4' },
+  { word:'藍田生玉', chars:['藍','田','生','玉'], rarity:'★16', tags:['四字熟語','古典'], desc:'名家から名子が出る', season:'S4' },
+  { word:'青出於藍', chars:['青','出','於','藍'], rarity:'★16', tags:['四字熟語','古典'], desc:'青は藍より出でて藍より青し', season:'S4' },
+
+  // 自然＋色
+  { word:'白雪皇皇', chars:['白','雪','皇','皇'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'白く輝く雪', season:'S4' },
+  { word:'銀世界', chars:['銀','世','界'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'雪景色', season:'S4' },
+  { word:'銀河系', chars:['銀','河','系'], rarity:'★12', tags:['四字熟語','天体'], desc:'ギャラクシー', season:'S4' },
+  { word:'天の川', chars:['天','の','川'], rarity:'★11', tags:['四字熟語','天体'], desc:'ミルキーウェイ', season:'S4' },
+
+  // 数字×宇宙
+  { word:'三千大千', chars:['三','千','大','千'], rarity:'★15', tags:['四字熟語','仏教'], desc:'三千大千世界', season:'S4' },
+  { word:'十方世界', chars:['十','方','世','界'], rarity:'★14', tags:['四字熟語','仏教'], desc:'十方の宇宙', season:'S4' },
+  { word:'八百万神', chars:['八','百','万','神'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'やおよろずのかみ', season:'S4' },
+
+  // 数字＋場所
+  { word:'一国一城', chars:['一','国','一','城'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'一つの国一つの城', season:'S4' },
+  { word:'七堂伽藍', chars:['七','堂','伽','藍'], rarity:'★16', tags:['四字熟語','仏教','古典'], desc:'寺の七つの建物', season:'S4' },
+  { word:'四門出遊', chars:['四','門','出','遊'], rarity:'★16', tags:['四字熟語','仏教','古典'], desc:'釈迦の出家', season:'S4' },
+
+  // 季節＋数
+  { word:'四季折々', chars:['四','季','折','々'], rarity:'★12', tags:['四字熟語','自然','時'], desc:'季節ごと', season:'S4' },
+  { word:'春夏秋冬', chars:['春','夏','秋','冬'], rarity:'★10', tags:['四字熟語','時'], desc:'四季', season:'S4' },
+
+  // 色＋感情
+  { word:'血気盛ん', chars:['血','気','盛','ん'], rarity:'★12', tags:['四字熟語','武','感情'], desc:'活発', season:'S4' },
+  { word:'紅潮顔色', chars:['紅','潮','顔','色'], rarity:'★14', tags:['四字熟語','感情'], desc:'顔が赤くなる', season:'S4' },
+  { word:'蒼白顔面', chars:['蒼','白','顔','面'], rarity:'★14', tags:['四字熟語','感情'], desc:'真っ青な顔', season:'S4' },
+
+  // 数＋哲学
+  { word:'一念三千', chars:['一','念','三','千'], rarity:'★16', tags:['四字熟語','仏教'], desc:'一念に三千世界', season:'S4' },
+  { word:'四苦八苦', chars:['四','苦','八','苦'], rarity:'★12', tags:['四字熟語','仏教'], desc:'多くの苦しみ', season:'S4' },
+  { word:'六根清浄', chars:['六','根','清','浄'], rarity:'★14', tags:['四字熟語','仏教'], desc:'六感を清める', season:'S4' },
+];
+for (const r of _YOJI_S4_NUM_COLOR) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
