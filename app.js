@@ -1271,6 +1271,7 @@ function updatePartyXpUI() {
 }
 
 function onLevelUp(member, idx) {
+  invalidateAggCache();  // Lv 変化で集約結果を再計算させる
   // 書体進化を判定（前 Lv との比較）
   const prevStage = evolutionStage(member.level - 1);
   const newStage  = evolutionStage(member.level);
@@ -1967,10 +1968,20 @@ function spawnCycleDrops() {
 const DAMP = 0.75;
 const SIZE = SIZE_BASE;
 let physicsRaf = 0;
+// パーティ集約のメモ化（毎フレームでなく N フレームに 1 回更新）
+let _aggCache = null;
+let _aggCacheFrame = 0;
+let _physicsFrame = 0;
+function invalidateAggCache() { _aggCache = null; }
 function physicsStep() {
+  _physicsFrame++;
   const W = window.innerWidth, H = window.innerHeight;
-  // perk 適用
-  const agg = aggregatePartyPerks();
+  // perk 適用（10 フレーム毎にしか再計算しない ・ 視覚差は無視できる）
+  if (!_aggCache || (_physicsFrame - _aggCacheFrame) >= 10) {
+    _aggCache = aggregatePartyPerks();
+    _aggCacheFrame = _physicsFrame;
+  }
+  const agg = _aggCache;
   for (const p of livePomoji.values()) {
     if (p.dragging) continue;
     // settled な字は位置固定（穴：他字に押されて動く問題の解消）
@@ -2038,12 +2049,14 @@ function physicsStep() {
     if (p.x > W - SIZE)  { p.x = W - SIZE;  p.vx *= -0.4; }
 
     // 餅同士の衝突（円形ソフトボディ ── 落下中の自分だけが動く）
+    // 早期 cull：dx/dy が SIZE 超なら確実に衝突しない（sqrt 計算をスキップ）
+    const minDist = SIZE * 0.94;
     for (const other of livePomoji.values()) {
       if (other.id === p.id || other.rising) continue;
       const dx = p.x - other.x;
       const dy = p.y - other.y;
+      if (Math.abs(dx) >= minDist || Math.abs(dy) >= minDist) continue;
       const dist = Math.sqrt(dx*dx + dy*dy);
-      const minDist = SIZE * 0.94;
       if (dist > 0 && dist < minDist) {
         // 同字なら自動合体（落下中の上→下のときだけ）
         if (other.char === p.char && p.vy > 0 && !p._merging
@@ -2301,10 +2314,15 @@ function addStock(char) {
         // タグ系 perk：対応タグの字をストックすると育つ
         if (perk.tag && charTags.has(perk.tag)) {
           STATE.perkLevels[pid] = (STATE.perkLevels[pid] || 0) + 1;
+          invalidateAggCache();  // 効力上がるので再計算
         }
         // 基本系 perk（haste/feather 等）：どんな字でも 0.5 ストック分育つ（端数累積）
         else if (!perk.tag) {
           STATE.perkLevels[pid] = (STATE.perkLevels[pid] || 0) + 0.5;
+          // 0.5 ずつなので Lv 整数境界を跨いだ時だけ invalidate
+          const oldLv = Math.floor((STATE.perkLevels[pid] - 0.5));
+          const newLv = Math.floor(STATE.perkLevels[pid]);
+          if (newLv > oldLv) invalidateAggCache();
         }
       }
     }
@@ -2585,6 +2603,7 @@ function openPartyMemberAction(idx) {
   } else {
     buttons.push(el('button', { class:'btn-danger mapop-btn', onclick: () => {
       if (confirm(`${m.char} をパーティから外しますか？\n（Lv. と経験値はリセットされます）`)) {
+        invalidateAggCache();
         STATE.party.members.splice(idx, 1);
         // hero index は順序維持
         if (idx < STATE.party.hero) STATE.party.hero -= 1;
@@ -2629,6 +2648,7 @@ function recruitToParty(c, rarity) {
     toast(`${c} は既にパーティにいます`);
     return false;
   }
+  invalidateAggCache();  // 仲間追加 → 集約再計算
   const perks = pickInherentPerks(c, rarity);
   STATE.party.members.push({
     char: c, rarity, level: 1, exp: 0, perks
