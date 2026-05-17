@@ -3239,6 +3239,74 @@ const _YOJI_S4_EDU = [
 ];
 for (const r of _YOJI_S4_EDU) YOJI_RECIPES.push(r);
 
+// v8d ── 四字熟語 +50（仏教用語拡充）
+const _YOJI_S4_BUDDHA = [
+  { word:'南無妙法', chars:['南','無','妙','法'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'南無妙法蓮華経', season:'S4' },
+  { word:'南無阿弥', chars:['南','無','阿','弥'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'南無阿弥陀仏', season:'S4' },
+  { word:'阿弥陀仏', chars:['阿','弥','陀','仏'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'阿弥陀如来', season:'S4' },
+  { word:'観音菩薩', chars:['観','音','菩','薩'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'観世音菩薩', season:'S4' },
+  { word:'弥勒菩薩', chars:['弥','勒','菩','薩'], rarity:'★16', tags:['四字熟語','仏教','神字'], desc:'未来仏', season:'S4' },
+  { word:'地蔵菩薩', chars:['地','蔵','菩','薩'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'地蔵菩薩', season:'S4' },
+  { word:'文殊菩薩', chars:['文','殊','菩','薩'], rarity:'★16', tags:['四字熟語','仏教','神字'], desc:'智慧の菩薩', season:'S4' },
+  { word:'普賢菩薩', chars:['普','賢','菩','薩'], rarity:'★16', tags:['四字熟語','仏教','神字'], desc:'実践の菩薩', season:'S4' },
+  { word:'四大菩薩', chars:['四','大','菩','薩'], rarity:'★15', tags:['四字熟語','仏教'], desc:'四つの大菩薩', season:'S4' },
+  { word:'四天王', chars:['四','天','王'], rarity:'★13', tags:['四字熟語','仏教','神字'], desc:'仏教守護神', season:'S4' },
+
+  { word:'金剛力士', chars:['金','剛','力','士'], rarity:'★14', tags:['四字熟語','仏教','神字'], desc:'仁王様', season:'S4' },
+  { word:'金剛経', chars:['金','剛','経'], rarity:'★15', tags:['四字熟語','仏教'], desc:'金剛般若経', season:'S4' },
+  { word:'般若心経', chars:['般','若','心','経'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'最も短い経', season:'S4' },
+  { word:'法華経典', chars:['法','華','経','典'], rarity:'★15', tags:['四字熟語','仏教'], desc:'法華経', season:'S4' },
+  { word:'華厳経', chars:['華','厳','経'], rarity:'★15', tags:['四字熟語','仏教'], desc:'華厳経', season:'S4' },
+
+  { word:'禅宗禅定', chars:['禅','宗','禅','定'], rarity:'★14', tags:['四字熟語','仏教','禅'], desc:'禅の宗派', season:'S4' },
+  { word:'臨済宗', chars:['臨','済','宗'], rarity:'★14', tags:['四字熟語','仏教','禅'], desc:'禅宗の派', season:'S4' },
+  { word:'曹洞宗', chars:['曹','洞','宗'], rarity:'★15', tags:['四字熟語','仏教','禅'], desc:'禅宗の派', season:'S4' },
+  { word:'真言宗', chars:['真','言','宗'], rarity:'★14', tags:['四字熟語','仏教'], desc:'空海開祖', season:'S4' },
+  { word:'天台宗', chars:['天','台','宗'], rarity:'★14', tags:['四字熟語','仏教'], desc:'最澄開祖', season:'S4' },
+
+  { word:'坐禅修行', chars:['坐','禅','修','行'], rarity:'★14', tags:['四字熟語','仏教','禅'], desc:'坐禅', season:'S4' },
+  { word:'公案禅', chars:['公','案','禅'], rarity:'★15', tags:['四字熟語','仏教','禅'], desc:'公案', season:'S4' },
+  { word:'即心是仏', chars:['即','心','是','仏'], rarity:'★15', tags:['四字熟語','仏教','禅'], desc:'心はそのまま仏', season:'S4' },
+  { word:'本来面目', chars:['本','来','面','目'], rarity:'★15', tags:['四字熟語','仏教','禅'], desc:'本来の自分', season:'S4' },
+  { word:'平常心', chars:['平','常','心'], rarity:'★12', tags:['四字熟語','禅'], desc:'いつもの心', season:'S4' },
+
+  // 仏教概念
+  { word:'四聖諦', chars:['四','聖','諦'], rarity:'★15', tags:['四字熟語','仏教'], desc:'苦・集・滅・道', season:'S4' },
+  { word:'八正道', chars:['八','正','道'], rarity:'★15', tags:['四字熟語','仏教'], desc:'仏教の修行', season:'S4' },
+  { word:'十二縁起', chars:['十','二','縁','起'], rarity:'★16', tags:['四字熟語','仏教'], desc:'十二支縁起', season:'S4' },
+  { word:'三宝帰依', chars:['三','宝','帰','依'], rarity:'★15', tags:['四字熟語','仏教'], desc:'仏法僧に帰依', season:'S4' },
+  { word:'三毒煩悩', chars:['三','毒','煩','悩'], rarity:'★15', tags:['四字熟語','仏教'], desc:'貪・瞋・痴', season:'S4' },
+
+  // 涅槃・悟り
+  { word:'大涅槃', chars:['大','涅','槃'], rarity:'★16', tags:['四字熟語','仏教','神字'], desc:'最高の悟り', season:'S4' },
+  { word:'仏陀降誕', chars:['仏','陀','降','誕'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'仏の生誕', season:'S4' },
+  { word:'仏陀涅槃', chars:['仏','陀','涅','槃'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'仏の入滅', season:'S4' },
+  { word:'解脱自在', chars:['解','脱','自','在'], rarity:'★14', tags:['四字熟語','仏教'], desc:'自由な悟り', season:'S4' },
+
+  // 浄土
+  { word:'極楽浄土', chars:['極','楽','浄','土'], rarity:'★14', tags:['四字熟語','仏教'], desc:'阿弥陀の国', season:'S4' },
+  { word:'西方浄土', chars:['西','方','浄','土'], rarity:'★14', tags:['四字熟語','仏教'], desc:'西方極楽', season:'S4' },
+  { word:'浄土往生', chars:['浄','土','往','生'], rarity:'★14', tags:['四字熟語','仏教'], desc:'浄土に行く', season:'S4' },
+
+  // 戒律
+  { word:'五戒守持', chars:['五','戒','守','持'], rarity:'★15', tags:['四字熟語','仏教'], desc:'五つの戒', season:'S4' },
+  { word:'十善戒', chars:['十','善','戒'], rarity:'★15', tags:['四字熟語','仏教'], desc:'十の善戒', season:'S4' },
+  { word:'戒律守護', chars:['戒','律','守','護'], rarity:'★14', tags:['四字熟語','仏教'], desc:'戒律を守る', season:'S4' },
+
+  // 修行
+  { word:'六波羅蜜', chars:['六','波','羅','蜜'], rarity:'★16', tags:['四字熟語','仏教'], desc:'菩薩の六修行', season:'S4' },
+  { word:'三学修行', chars:['三','学','修','行'], rarity:'★15', tags:['四字熟語','仏教'], desc:'戒・定・慧', season:'S4' },
+  { word:'真言念誦', chars:['真','言','念','誦'], rarity:'★15', tags:['四字熟語','仏教'], desc:'マントラ', season:'S4' },
+  { word:'印契結印', chars:['印','契','結','印'], rarity:'★16', tags:['四字熟語','仏教'], desc:'印契', season:'S4' },
+  { word:'護摩供養', chars:['護','摩','供','養'], rarity:'★16', tags:['四字熟語','仏教'], desc:'護摩焚き', season:'S4' },
+
+  // 神仏習合
+  { word:'神仏習合', chars:['神','仏','習','合'], rarity:'★15', tags:['四字熟語','仏教','神字'], desc:'神道と仏教の混淆', season:'S4' },
+  { word:'本地垂迹', chars:['本','地','垂','迹'], rarity:'★16', tags:['四字熟語','仏教','古典'], desc:'神の本地は仏', season:'S4' },
+  { word:'神宮寺', chars:['神','宮','寺'], rarity:'★14', tags:['四字熟語','古典','仏教'], desc:'神社の中の寺', season:'S4' },
+];
+for (const r of _YOJI_S4_BUDDHA) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
