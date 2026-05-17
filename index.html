@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260517m">
+<link rel="stylesheet" href="style.css?v=20260517n">
 </head>
 <body data-mode="idle">
 
@@ -439,15 +439,15 @@
     </section>
 
     <section class="help-section">
-      <h3 class="help-h">⑦ 育つ特性（ストック連動）── v5 リバランス</h3>
+      <h3 class="help-h">⑦ 育つ特性（ストック連動）── v6 インクリメンタル</h3>
       <p class="help-text">
-        特性は <strong>取得した瞬間に Lv 1</strong>（控えめな効果）。字をストックすると Lv が育って効果が伸びる。<br>
-        ・タグ系特性（感情・神字・武 等）：そのタグの字をストックで +1<br>
-        ・基本系特性（積み重ね・急降下 等）：どんな字でも +0.5（累積）<br><br>
-        <strong>倍率曲線（対数 ・ 無限スケール）</strong>：<br>
-        Lv 1 ＝ ×1.00 ／ Lv 10 ＝ ×1.34 ／ Lv 100 ＝ ×2.00 ／ Lv 1000 ＝ ×2.66<br>
-        例：積み重ね（EXP+10% × Lv）── Lv1=+10% / Lv100=+20% / Lv1000=+27%<br><br>
-        図鑑（📖）→「✦ 特性」タブ で 全特性と現在 Lv を確認できます。
+        特性は <strong>取得した瞬間に Lv 1</strong>。Lv1 の効果は <strong>たった 1〜3%</strong> と控えめ。<br>
+        でも字をストックすると <strong>Lv^3.23</strong> の多項式インフレで爆発的に伸びる：<br><br>
+        <strong>倍率曲線</strong>：<br>
+        Lv 1 ＝ ×1 ／ Lv 10 ≈ ×1700 ／ Lv 100 ≈ ×290万 ／ Lv 1000 ≈ ×50億<br>
+        例：積み重ね（EXP +1% × pw）── Lv10=+17倍 / Lv100=+2.9万倍 / Lv1000=+5000万倍<br><br>
+        加算系（落下数 / 進化割引）は暴走防止のため log10 整形＋上限あり。<br>
+        図鑑（📖）→「✦ 特性」タブ で 全特性と現在の倍率（万・億・兆 表記）を確認できます。
       </p>
     </section>
 
@@ -551,7 +551,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260517m" defer></script>
-<script src="app.js?v=20260517m" defer></script>
+<script src="codex.js?v=20260517n" defer></script>
+<script src="app.js?v=20260517n" defer></script>
 </body>
 </html>
