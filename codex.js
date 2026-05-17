@@ -2231,6 +2231,80 @@ const _YOJI_S3_TECH = [
 ];
 for (const r of _YOJI_S3_TECH) YOJI_RECIPES.push(r);
 
+// v7o ── 四字熟語 +50（恋愛・人生・命運）
+const _YOJI_S4_LIFE = [
+  // 恋愛
+  { word:'一目惚れ', chars:['一','目','惚','れ'], rarity:'★13', tags:['四字熟語','感情'], desc:'一目で恋に', season:'S4' },
+  { word:'相思相愛', chars:['相','思','相','愛'], rarity:'★13', tags:['四字熟語','感情'], desc:'お互い思い合う', season:'S4' },
+  { word:'天地人愛', chars:['天','地','人','愛'], rarity:'★14', tags:['四字熟語','感情'], desc:'全てを愛する', season:'S4' },
+  { word:'純愛真情', chars:['純','愛','真','情'], rarity:'★13', tags:['四字熟語','感情'], desc:'純粋な愛', season:'S4' },
+  { word:'運命相手', chars:['運','命','相','手'], rarity:'★12', tags:['四字熟語','感情'], desc:'デスティニー', season:'S4' },
+  { word:'比翼連理', chars:['比','翼','連','理'], rarity:'★15', tags:['四字熟語','感情','古典'], desc:'夫婦愛の象徴', season:'S4' },
+  { word:'琴瑟相和', chars:['琴','瑟','相','和'], rarity:'★16', tags:['四字熟語','感情','古典'], desc:'夫婦仲が良い', season:'S4' },
+  { word:'夫唱婦随', chars:['夫','唱','婦','随'], rarity:'★14', tags:['四字熟語','古典'], desc:'夫が唱え妻が従う', season:'S4' },
+  { word:'破鏡再合', chars:['破','鏡','再','合'], rarity:'★15', tags:['四字熟語','古典','感情'], desc:'別れた夫婦の再会', season:'S4' },
+
+  // 人生
+  { word:'人生不惑', chars:['人','生','不','惑'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'40歳・迷わぬ年齢', season:'S4' },
+  { word:'人生五十', chars:['人','生','五','十'], rarity:'★13', tags:['四字熟語','時'], desc:'人生半世紀', season:'S4' },
+  { word:'青春時代', chars:['青','春','時','代'], rarity:'★12', tags:['四字熟語','時'], desc:'若い頃', season:'S4' },
+  { word:'晩年隠居', chars:['晩','年','隠','居'], rarity:'★13', tags:['四字熟語','時'], desc:'引退生活', season:'S4' },
+  { word:'生涯学習', chars:['生','涯','学','習'], rarity:'★12', tags:['四字熟語','学'], desc:'ライフロング・ラーニング', season:'S4' },
+  { word:'生活信条', chars:['生','活','信','条'], rarity:'★12', tags:['四字熟語'], desc:'生きる信条', season:'S4' },
+  { word:'人生哲学', chars:['人','生','哲','学'], rarity:'★13', tags:['四字熟語','哲学'], desc:'ライフ・フィロソフィ', season:'S4' },
+
+  // 命運
+  { word:'運命共同', chars:['運','命','共','同'], rarity:'★13', tags:['四字熟語'], desc:'同じ運命', season:'S4' },
+  { word:'運命選択', chars:['運','命','選','択'], rarity:'★13', tags:['四字熟語','哲学'], desc:'運命を選ぶ', season:'S4' },
+  { word:'天命受領', chars:['天','命','受','領'], rarity:'★15', tags:['四字熟語','古典','哲学'], desc:'天命を授かる', season:'S4' },
+  { word:'運命愛', chars:['運','命','愛'], rarity:'★12', tags:['四字熟語','哲学'], desc:'アモルファティ', season:'S4' },
+  { word:'宿命対峙', chars:['宿','命','対','峙'], rarity:'★14', tags:['四字熟語','哲学'], desc:'運命と対面', season:'S4' },
+
+  // 別れ・出会い
+  { word:'邂逅偶然', chars:['邂','逅','偶','然'], rarity:'★15', tags:['四字熟語','感情'], desc:'偶然の出会い', season:'S4' },
+  { word:'再会再縁', chars:['再','会','再','縁'], rarity:'★13', tags:['四字熟語','感情'], desc:'再びの縁', season:'S4' },
+  { word:'別離哀愁', chars:['別','離','哀','愁'], rarity:'★14', tags:['四字熟語','感情','古典'], desc:'別れの悲しみ', season:'S4' },
+  { word:'惜別之情', chars:['惜','別','之','情'], rarity:'★15', tags:['四字熟語','感情','古典'], desc:'別れを惜しむ', season:'S4' },
+  { word:'巡り合い', chars:['巡','り','合','い'], rarity:'★11', tags:['四字熟語','感情'], desc:'出会い', season:'S4' },
+
+  // 成功・失敗（人生視点）
+  { word:'成功失敗', chars:['成','功','失','敗'], rarity:'★12', tags:['四字熟語'], desc:'成否', season:'S4' },
+  { word:'立身出世', chars:['立','身','出','世'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'出世', season:'S4' },
+  { word:'栄枯盛衰', chars:['栄','枯','盛','衰'], rarity:'★14', tags:['四字熟語','仏教','古典'], desc:'栄えと衰え', season:'S4' },
+  { word:'盛者必衰', chars:['盛','者','必','衰'], rarity:'★13', tags:['四字熟語','仏教','古典'], desc:'盛えても必ず衰える', season:'S4' },
+  { word:'起承転結', chars:['起','承','転','結'], rarity:'★12', tags:['四字熟語','学'], desc:'物語の四段階', season:'S4' },
+
+  // 趣・風流
+  { word:'風流韻事', chars:['風','流','韻','事'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'雅な遊び', season:'S4' },
+  { word:'酔生夢死', chars:['酔','生','夢','死'], rarity:'★15', tags:['四字熟語','古典','哲学'], desc:'夢のような生涯', season:'S4' },
+  { word:'閑雲野鶴', chars:['閑','雲','野','鶴'], rarity:'★16', tags:['四字熟語','古典','禅'], desc:'隠居の自由', season:'S4' },
+
+  // 自然と人
+  { word:'天人共感', chars:['天','人','共','感'], rarity:'★14', tags:['四字熟語','哲学'], desc:'自然と人が通う', season:'S4' },
+  { word:'山川草木', chars:['山','川','草','木'], rarity:'★13', tags:['四字熟語','自然'], desc:'すべての自然', season:'S4' },
+  { word:'天変地震', chars:['天','変','地','震'], rarity:'★12', tags:['四字熟語','自然'], desc:'災害', season:'S4' },
+  { word:'天地神明', chars:['天','地','神','明'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'天と地の神々', season:'S4' },
+
+  // 教え・教訓
+  { word:'反面教師', chars:['反','面','教','師'], rarity:'★13', tags:['四字熟語','学'], desc:'悪い例から学ぶ', season:'S4' },
+  { word:'他山之石', chars:['他','山','之','石'], rarity:'★15', tags:['四字熟語','古典'], desc:'他の失敗を糧に', season:'S4' },
+  { word:'温故知新', chars:['温','故','知','新'], rarity:'★12', tags:['四字熟語','学','儒教'], desc:'古きを温める', season:'S4' },
+  { word:'七転八起', chars:['七','転','八','起'], rarity:'★11', tags:['四字熟語'], desc:'再起', season:'S4' },
+
+  // 価値観
+  { word:'物心両面', chars:['物','心','両','面'], rarity:'★13', tags:['四字熟語','哲学'], desc:'物質と精神', season:'S4' },
+  { word:'物心両得', chars:['物','心','両','得'], rarity:'★13', tags:['四字熟語'], desc:'両方得る', season:'S4' },
+  { word:'清貧志高', chars:['清','貧','志','高'], rarity:'★14', tags:['四字熟語','禅','古典'], desc:'貧しくも志高く', season:'S4' },
+  { word:'富貴在天', chars:['富','貴','在','天'], rarity:'★15', tags:['四字熟語','古典'], desc:'富も貴も天の定め', season:'S4' },
+
+  // 自己実現
+  { word:'自己実現', chars:['自','己','実','現'], rarity:'★12', tags:['四字熟語','哲学'], desc:'なりたい自分に', season:'S4' },
+  { word:'自我覚醒', chars:['自','我','覚','醒'], rarity:'★13', tags:['四字熟語','哲学'], desc:'自我に目覚める', season:'S4' },
+  { word:'自己発見', chars:['自','己','発','見'], rarity:'★12', tags:['四字熟語','哲学'], desc:'自分を見つける', season:'S4' },
+  { word:'自由意思', chars:['自','由','意','思'], rarity:'★12', tags:['四字熟語','哲学'], desc:'フリーウィル', season:'S4' },
+];
+for (const r of _YOJI_S4_LIFE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
