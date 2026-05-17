@@ -3938,7 +3938,11 @@ function openStats() {
     for (const r of recent) {
       const recipe = (window.YOJI_RECIPES || []).find(y => y.word === r.word);
       const rIdx = recipe ? RARITY_TIERS.indexOf(recipe.rarity) : 0;
-      grid.appendChild(el('div', { class:`sry-item rarity-${rIdx + 1}` },
+      grid.appendChild(el('div', {
+        class:`sry-item rarity-${rIdx + 1}`,
+        onclick: recipe ? () => showYojiDetail(recipe) : null,
+        style: recipe ? { cursor: 'pointer' } : {},
+      },
         el('span', { class:'sry-word' }, r.word),
         el('span', { class:'sry-rarity' }, recipe?.rarity || '★?')
       ));
