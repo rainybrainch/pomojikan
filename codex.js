@@ -4331,6 +4331,73 @@ const _YOJI_S4_MYTH = [
 ];
 for (const r of _YOJI_S4_MYTH) YOJI_RECIPES.push(r);
 
+// v8t ── 二字熟語 +50（食材・果物・調理）
+const _YOJI_S3_FOOD2 = [
+  // 食材
+  { word:'米飯', chars:['米','飯'], rarity:'★8',  tags:[], desc:'ライス', season:'S3' },
+  { word:'雑穀', chars:['雑','穀'], rarity:'★12', tags:[], desc:'シリアル', season:'S3' },
+  { word:'麦芽', chars:['麦','芽'], rarity:'★13', tags:[], desc:'モルト', season:'S3' },
+  { word:'豆腐', chars:['豆','腐'], rarity:'★12', tags:[], desc:'とうふ', season:'S3' },
+  { word:'納豆', chars:['納','豆'], rarity:'★13', tags:[], desc:'なっとう', season:'S3' },
+  { word:'味噌', chars:['味','噌'], rarity:'★13', tags:[], desc:'みそ', season:'S3' },
+  { word:'醤油', chars:['醤','油'], rarity:'★14', tags:[], desc:'しょうゆ', season:'S3' },
+  { word:'砂糖', chars:['砂','糖'], rarity:'★12', tags:[], desc:'シュガー', season:'S3' },
+  { word:'食塩', chars:['食','塩'], rarity:'★8',  tags:[], desc:'ソルト', season:'S3' },
+  { word:'胡椒', chars:['胡','椒'], rarity:'★15', tags:[], desc:'ペッパー', season:'S3' },
+
+  // 肉
+  { word:'鶏肉', chars:['鶏','肉'], rarity:'★12', tags:[], desc:'チキン', season:'S3' },
+  { word:'豚肉', chars:['豚','肉'], rarity:'★8',  tags:[], desc:'ポーク', season:'S3' },
+  { word:'牛肉', chars:['牛','肉'], rarity:'★7',  tags:[], desc:'ビーフ', season:'S3' },
+  { word:'魚肉', chars:['魚','肉'], rarity:'★8',  tags:[], desc:'フィッシュ', season:'S3' },
+  { word:'鯛刺', chars:['鯛','刺'], rarity:'★14', tags:[], desc:'たいさし', season:'S3' },
+
+  // 野菜
+  { word:'野菜', chars:['野','菜'], rarity:'★7',  tags:['自然','植物'], desc:'ベジタブル', season:'S3' },
+  { word:'青菜', chars:['青','菜'], rarity:'★8',  tags:['自然'], desc:'グリーン野菜', season:'S3' },
+  { word:'果菜', chars:['果','菜'], rarity:'★13', tags:['自然'], desc:'フルーツ野菜', season:'S3' },
+  { word:'根菜', chars:['根','菜'], rarity:'★12', tags:['自然'], desc:'ルート野菜', season:'S3' },
+  { word:'葉菜', chars:['葉','菜'], rarity:'★12', tags:['自然'], desc:'リーフ野菜', season:'S3' },
+
+  // 果物
+  { word:'果物', chars:['果','物'], rarity:'★7',  tags:['自然','植物'], desc:'フルーツ', season:'S3' },
+  { word:'林檎', chars:['林','檎'], rarity:'★15', tags:['自然','植物'], desc:'りんご', season:'S3' },
+  { word:'蜜柑', chars:['蜜','柑'], rarity:'★15', tags:['自然','植物'], desc:'みかん', season:'S3' },
+  { word:'葡萄', chars:['葡','萄'], rarity:'★15', tags:['自然','植物'], desc:'ぶどう', season:'S3' },
+  { word:'西瓜', chars:['西','瓜'], rarity:'★14', tags:['自然','植物'], desc:'すいか', season:'S3' },
+  { word:'檸檬', chars:['檸','檬'], rarity:'★15', tags:['自然','植物','古典'], desc:'レモン', season:'S3' },
+  { word:'桃実', chars:['桃','実'], rarity:'★12', tags:['自然','植物'], desc:'もも', season:'S3' },
+  { word:'梨実', chars:['梨','実'], rarity:'★12', tags:['自然','植物'], desc:'なし', season:'S3' },
+  { word:'柚子', chars:['柚','子'], rarity:'★14', tags:['自然','植物'], desc:'ゆず', season:'S3' },
+
+  // 調理
+  { word:'調理', chars:['調','理'], rarity:'★8',  tags:[], desc:'クッキング', season:'S3' },
+  { word:'焼成', chars:['焼','成'], rarity:'★12', tags:[], desc:'ベイキング', season:'S3' },
+  { word:'煮込', chars:['煮','込'], rarity:'★12', tags:[], desc:'シマー', season:'S3' },
+  { word:'蒸し', chars:['蒸','し'], rarity:'★10', tags:[], desc:'スチーム', season:'S3' },
+  { word:'揚物', chars:['揚','物'], rarity:'★12', tags:[], desc:'フライ', season:'S3' },
+  { word:'炒め', chars:['炒','め'], rarity:'★12', tags:[], desc:'スティアフライ', season:'S3' },
+  { word:'生食', chars:['生','食'], rarity:'★10', tags:[], desc:'ロー', season:'S3' },
+
+  // 飲み物
+  { word:'飲料', chars:['飲','料'], rarity:'★7',  tags:[], desc:'ドリンク', season:'S3' },
+  { word:'飲酒', chars:['飲','酒'], rarity:'★8',  tags:[], desc:'ドリンク', season:'S3' },
+  { word:'焼酎', chars:['焼','酎'], rarity:'★15', tags:[], desc:'しょうちゅう', season:'S3' },
+  { word:'梅酒', chars:['梅','酒'], rarity:'★13', tags:[], desc:'うめしゅ', season:'S3' },
+  { word:'清酒', chars:['清','酒'], rarity:'★13', tags:[], desc:'せいしゅ', season:'S3' },
+  { word:'生茶', chars:['生','茶'], rarity:'★8',  tags:[], desc:'生茶', season:'S3' },
+  { word:'麦茶', chars:['麦','茶'], rarity:'★8',  tags:[], desc:'麦茶', season:'S3' },
+
+  // 食感・味
+  { word:'甘味', chars:['甘','味'], rarity:'★8',  tags:[], desc:'スイート', season:'S3' },
+  { word:'酸味', chars:['酸','味'], rarity:'★12', tags:[], desc:'サワー', season:'S3' },
+  { word:'苦味', chars:['苦','味'], rarity:'★8',  tags:[], desc:'ビター', season:'S3' },
+  { word:'辛味', chars:['辛','味'], rarity:'★8',  tags:[], desc:'スパイシー', season:'S3' },
+  { word:'塩味', chars:['塩','味'], rarity:'★8',  tags:[], desc:'ソルティ', season:'S3' },
+  { word:'旨味', chars:['旨','味'], rarity:'★12', tags:[], desc:'うまみ', season:'S3' },
+];
+for (const r of _YOJI_S3_FOOD2) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
