@@ -3644,6 +3644,73 @@ const _YOJI_S4_NOW = [
 ];
 for (const r of _YOJI_S4_NOW) YOJI_RECIPES.push(r);
 
+// v8j ── 二字熟語 +50（夢・希望・成長）
+const _YOJI_S3_DREAM = [
+  // 夢
+  { word:'夢中', chars:['夢','中'], rarity:'★8',  tags:['感情'], desc:'のめり込み', season:'S3' },
+  { word:'夢幻', chars:['夢','幻'], rarity:'★13', tags:['古典','哲学'], desc:'まぼろし', season:'S3' },
+  { word:'夢路', chars:['夢','路'], rarity:'★14', tags:['古典','美'], desc:'ゆめじ', season:'S3' },
+  { word:'幻想', chars:['幻','想'], rarity:'★13', tags:['哲学'], desc:'ファンタジー', season:'S3' },
+  { word:'幻影', chars:['幻','影'], rarity:'★13', tags:['哲学'], desc:'ファントム', season:'S3' },
+  { word:'幻覚', chars:['幻','覚'], rarity:'★13', tags:['哲学'], desc:'ハルシネーション', season:'S3' },
+
+  // 希望
+  { word:'希望', chars:['希','望'], rarity:'★8',  tags:['感情'], desc:'ホープ', season:'S3' },
+  { word:'夢想', chars:['夢','想'], rarity:'★12', tags:['哲学'], desc:'ドリーム', season:'S3' },
+  { word:'熱望', chars:['熱','望'], rarity:'★12', tags:['感情'], desc:'パッション', season:'S3' },
+  { word:'渇望', chars:['渇','望'], rarity:'★13', tags:['感情'], desc:'クレイビング', season:'S3' },
+  { word:'憧憬', chars:['憧','憬'], rarity:'★13', tags:['感情'], desc:'アスピレーション', season:'S3' },
+  { word:'憧れ', chars:['憧','れ'], rarity:'★12', tags:['感情'], desc:'アドミレーション', season:'S3' },
+
+  // 成長
+  { word:'成長', chars:['成','長'], rarity:'★8',  tags:[], desc:'グロース', season:'S3' },
+  { word:'発展', chars:['発','展'], rarity:'★8',  tags:[], desc:'デベロップメント', season:'S3' },
+  { word:'進化', chars:['進','化'], rarity:'★8',  tags:['科学'], desc:'エボリューション', season:'S3' },
+  { word:'進歩', chars:['進','歩'], rarity:'★8',  tags:[], desc:'プログレス', season:'S3' },
+  { word:'飛躍', chars:['飛','躍'], rarity:'★12', tags:[], desc:'リープ', season:'S3' },
+  { word:'飛翔', chars:['飛','翔'], rarity:'★14', tags:['美','古典'], desc:'フライト', season:'S3' },
+  { word:'昇華', chars:['昇','華'], rarity:'★13', tags:['哲学'], desc:'サブリメーション', season:'S3' },
+  { word:'到達', chars:['到','達'], rarity:'★8',  tags:[], desc:'リーチ', season:'S3' },
+
+  // 機会
+  { word:'機会', chars:['機','会'], rarity:'★8',  tags:[], desc:'チャンス', season:'S3' },
+  { word:'好機', chars:['好','機'], rarity:'★10', tags:[], desc:'グッドチャンス', season:'S3' },
+  { word:'転機', chars:['転','機'], rarity:'★10', tags:[], desc:'ターニングポイント', season:'S3' },
+  { word:'契機', chars:['契','機'], rarity:'★13', tags:[], desc:'モメンタム', season:'S3' },
+  { word:'運命', chars:['運','命'], rarity:'★8',  tags:['哲学'], desc:'デスティニー', season:'S3' },
+  { word:'宿命', chars:['宿','命'], rarity:'★12', tags:['哲学'], desc:'フェイト', season:'S3' },
+
+  // 出発・到着
+  { word:'出発', chars:['出','発'], rarity:'★7',  tags:[], desc:'デパーチャー', season:'S3' },
+  { word:'到着', chars:['到','着'], rarity:'★8',  tags:[], desc:'アライバル', season:'S3' },
+  { word:'帰還', chars:['帰','還'], rarity:'★12', tags:[], desc:'リターン', season:'S3' },
+  { word:'旅立', chars:['旅','立'], rarity:'★10', tags:[], desc:'発つ', season:'S3' },
+  { word:'旅路', chars:['旅','路'], rarity:'★12', tags:['古典'], desc:'たびじ', season:'S3' },
+  { word:'帰路', chars:['帰','路'], rarity:'★10', tags:[], desc:'帰り道', season:'S3' },
+
+  // 道
+  { word:'道路', chars:['道','路'], rarity:'★7',  tags:[], desc:'ロード', season:'S3' },
+  { word:'街道', chars:['街','道'], rarity:'★10', tags:['古典'], desc:'ストリート', season:'S3' },
+  { word:'参道', chars:['参','道'], rarity:'★12', tags:['古典'], desc:'参拝道', season:'S3' },
+  { word:'山道', chars:['山','道'], rarity:'★7',  tags:['自然'], desc:'マウンテンパス', season:'S3' },
+  { word:'海路', chars:['海','路'], rarity:'★10', tags:[], desc:'シールート', season:'S3' },
+  { word:'空路', chars:['空','路'], rarity:'★10', tags:[], desc:'エアルート', season:'S3' },
+
+  // 努力
+  { word:'努力', chars:['努','力'], rarity:'★7',  tags:['武'], desc:'エフォート', season:'S3' },
+  { word:'尽力', chars:['尽','力'], rarity:'★10', tags:['武'], desc:'コミット', season:'S3' },
+  { word:'忍耐', chars:['忍','耐'], rarity:'★12', tags:['七徳','武'], desc:'ペーシェンス', season:'S3' },
+  { word:'我慢', chars:['我','慢'], rarity:'★12', tags:[], desc:'ベアー', season:'S3' },
+  { word:'根気', chars:['根','気'], rarity:'★8',  tags:['武'], desc:'パーシスタンス', season:'S3' },
+  { word:'根性', chars:['根','性'], rarity:'★10', tags:['武'], desc:'ガッツ', season:'S3' },
+
+  // 完了
+  { word:'達成', chars:['達','成'], rarity:'★8',  tags:[], desc:'アチーブメント', season:'S3' },
+  { word:'実現', chars:['実','現'], rarity:'★8',  tags:[], desc:'リアライゼーション', season:'S3' },
+  { word:'結実', chars:['結','実'], rarity:'★12', tags:[], desc:'結実', season:'S3' },
+];
+for (const r of _YOJI_S3_DREAM) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
