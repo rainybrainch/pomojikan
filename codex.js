@@ -5288,6 +5288,75 @@ const _YOJI_S3_LIFE2 = [
 ];
 for (const r of _YOJI_S3_LIFE2) YOJI_RECIPES.push(r);
 
+// v9h ── 四字熟語 +50（戦略・知略・名軍師）
+const _YOJI_S4_STRATEGY = [
+  { word:'孫子兵法', chars:['孫','子','兵','法'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'孫子', season:'S4' },
+  { word:'兵法奥義', chars:['兵','法','奥','義'], rarity:'★14', tags:['四字熟語','武'], desc:'兵法', season:'S4' },
+  { word:'軍師参謀', chars:['軍','師','参','謀'], rarity:'★13', tags:['四字熟語','武'], desc:'軍師', season:'S4' },
+  { word:'神算鬼謀', chars:['神','算','鬼','謀'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'神業の計略', season:'S4' },
+  { word:'奇策縦横', chars:['奇','策','縦','横'], rarity:'★14', tags:['四字熟語','武'], desc:'奇策', season:'S4' },
+  { word:'用兵巧妙', chars:['用','兵','巧','妙'], rarity:'★14', tags:['四字熟語','武'], desc:'兵を用いる', season:'S4' },
+  { word:'兵糧攻め', chars:['兵','糧','攻','め'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'兵糧攻め', season:'S4' },
+  { word:'城攻略奪', chars:['城','攻','略','奪'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'城攻め', season:'S4' },
+  { word:'攻守均衡', chars:['攻','守','均','衡'], rarity:'★13', tags:['四字熟語','武'], desc:'攻守バランス', season:'S4' },
+  { word:'軍備拡張', chars:['軍','備','拡','張'], rarity:'★13', tags:['四字熟語','武'], desc:'軍備', season:'S4' },
+
+  { word:'兵士士気', chars:['兵','士','士','気'], rarity:'★13', tags:['四字熟語','武'], desc:'モラル', season:'S4' },
+  { word:'戦意昂揚', chars:['戦','意','昂','揚'], rarity:'★14', tags:['四字熟語','武'], desc:'戦意高揚', season:'S4' },
+  { word:'勇敢果敢', chars:['勇','敢','果','敢'], rarity:'★13', tags:['四字熟語','武'], desc:'勇敢', season:'S4' },
+  { word:'戦友戦死', chars:['戦','友','戦','死'], rarity:'★14', tags:['四字熟語','武'], desc:'戦友', season:'S4' },
+  { word:'勝敗無常', chars:['勝','敗','無','常'], rarity:'★14', tags:['四字熟語','武','仏教'], desc:'勝敗は儚い', season:'S4' },
+
+  // 政治・統治
+  { word:'王道楽土', chars:['王','道','楽','土'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'理想郷', season:'S4' },
+  { word:'覇道強権', chars:['覇','道','強','権'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'覇権', season:'S4' },
+  { word:'仁政善政', chars:['仁','政','善','政'], rarity:'★14', tags:['四字熟語','七徳','古典'], desc:'仁政', season:'S4' },
+  { word:'徳政公平', chars:['徳','政','公','平'], rarity:'★13', tags:['四字熟語','七徳'], desc:'徳のある政', season:'S4' },
+  { word:'国王陛下', chars:['国','王','陛','下'], rarity:'★13', tags:['四字熟語','古典'], desc:'キング', season:'S4' },
+
+  // 武器
+  { word:'刀剣武具', chars:['刀','剣','武','具'], rarity:'★13', tags:['四字熟語','武'], desc:'武器一式', season:'S4' },
+  { word:'弓矢飛剣', chars:['弓','矢','飛','剣'], rarity:'★14', tags:['四字熟語','武'], desc:'飛び道具', season:'S4' },
+  { word:'槍棒投擲', chars:['槍','棒','投','擲'], rarity:'★15', tags:['四字熟語','武'], desc:'槍棒', season:'S4' },
+  { word:'鎧兜装備', chars:['鎧','兜','装','備'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'防具', season:'S4' },
+
+  // 軍隊
+  { word:'軍隊行進', chars:['軍','隊','行','進'], rarity:'★13', tags:['四字熟語','武'], desc:'マーチング', season:'S4' },
+  { word:'歩兵騎兵', chars:['歩','兵','騎','兵'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'歩兵騎兵', season:'S4' },
+  { word:'砲兵工兵', chars:['砲','兵','工','兵'], rarity:'★14', tags:['四字熟語','武'], desc:'砲工', season:'S4' },
+  { word:'指揮命令', chars:['指','揮','命','令'], rarity:'★13', tags:['四字熟語','武'], desc:'コマンド', season:'S4' },
+
+  // 知略
+  { word:'機略縦横', chars:['機','略','縦','横'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'機転', season:'S4' },
+  { word:'頭脳明晰', chars:['頭','脳','明','晰'], rarity:'★13', tags:['四字熟語','学'], desc:'シャープ', season:'S4' },
+  { word:'明智英才', chars:['明','智','英','才'], rarity:'★13', tags:['四字熟語','学'], desc:'英才', season:'S4' },
+  { word:'才知絶倫', chars:['才','知','絶','倫'], rarity:'★14', tags:['四字熟語','学','古典'], desc:'才知', season:'S4' },
+
+  // 計画
+  { word:'計画緻密', chars:['計','画','緻','密'], rarity:'★14', tags:['四字熟語','ビジネス'], desc:'緻密な計画', season:'S4' },
+  { word:'戦略立案', chars:['戦','略','立','案'], rarity:'★13', tags:['四字熟語','ビジネス','武'], desc:'戦略を立てる', season:'S4' },
+  { word:'戦術検討', chars:['戦','術','検','討'], rarity:'★13', tags:['四字熟語','武'], desc:'戦術', season:'S4' },
+  { word:'作戦立案', chars:['作','戦','立','案'], rarity:'★13', tags:['四字熟語','武'], desc:'作戦立案', season:'S4' },
+
+  // 包囲
+  { word:'包囲攻撃', chars:['包','囲','攻','撃'], rarity:'★13', tags:['四字熟語','武'], desc:'包囲', season:'S4' },
+  { word:'背水之陣', chars:['背','水','之','陣'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'退路を断つ', season:'S4' },
+  { word:'四面楚歌', chars:['四','面','楚','歌'], rarity:'★14', tags:['四字熟語','古典'], desc:'孤立無援', season:'S4' },
+
+  // 平和
+  { word:'戦争終結', chars:['戦','争','終','結'], rarity:'★13', tags:['四字熟語'], desc:'停戦', season:'S4' },
+  { word:'停戦協定', chars:['停','戦','協','定'], rarity:'★13', tags:['四字熟語'], desc:'停戦', season:'S4' },
+  { word:'平和条約', chars:['平','和','条','約'], rarity:'★13', tags:['四字熟語','七徳'], desc:'ピース条約', season:'S4' },
+
+  // 知謀
+  { word:'三十六計', chars:['三','十','六','計'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'三十六計', season:'S4' },
+  { word:'走為上策', chars:['走','為','上','策'], rarity:'★16', tags:['四字熟語','古典'], desc:'逃げるが勝ち', season:'S4' },
+  { word:'呉越同舟', chars:['呉','越','同','舟'], rarity:'★14', tags:['四字熟語','古典'], desc:'呉越同舟', season:'S4' },
+  { word:'隔岸観火', chars:['隔','岸','観','火'], rarity:'★16', tags:['四字熟語','古典'], desc:'三十六計', season:'S4' },
+  { word:'声東撃西', chars:['声','東','撃','西'], rarity:'★16', tags:['四字熟語','古典','武'], desc:'三十六計', season:'S4' },
+];
+for (const r of _YOJI_S4_STRATEGY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
