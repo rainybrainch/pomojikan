@@ -3307,6 +3307,77 @@ const _YOJI_S4_BUDDHA = [
 ];
 for (const r of _YOJI_S4_BUDDHA) YOJI_RECIPES.push(r);
 
+// v8e ── 四字熟語 +50（神道・武士道・侍）
+const _YOJI_S4_SHINTO = [
+  { word:'天照大神', chars:['天','照','大','神'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'最高神', season:'S4' },
+  { word:'須佐之男', chars:['須','佐','之','男'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'スサノオ', season:'S4' },
+  { word:'月読命', chars:['月','読','命'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'ツクヨミ', season:'S4' },
+  { word:'伊邪那岐', chars:['伊','邪','那','岐'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'イザナギ', season:'S4' },
+  { word:'伊邪那美', chars:['伊','邪','那','美'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'イザナミ', season:'S4' },
+  { word:'八百万神', chars:['八','百','万','神'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'多くの神', season:'S4' },
+  { word:'神宮参拝', chars:['神','宮','参','拝'], rarity:'★13', tags:['四字熟語','神字'], desc:'神宮参り', season:'S4' },
+  { word:'神道思想', chars:['神','道','思','想'], rarity:'★14', tags:['四字熟語','神字','哲学'], desc:'神道', season:'S4' },
+  { word:'神社仏閣', chars:['神','社','仏','閣'], rarity:'★13', tags:['四字熟語','神字'], desc:'神社と寺', season:'S4' },
+  { word:'清祓神事', chars:['清','祓','神','事'], rarity:'★15', tags:['四字熟語','神字'], desc:'お祓い', season:'S4' },
+
+  // 武士道
+  { word:'武士道徳', chars:['武','士','道','徳'], rarity:'★14', tags:['四字熟語','武','七徳'], desc:'武士道', season:'S4' },
+  { word:'武士道精神', chars:['武','士','道','精'], rarity:'★15', tags:['四字熟語','武'], desc:'侍スピリット', season:'S4' },
+  { word:'七徳武道', chars:['七','徳','武','道'], rarity:'★14', tags:['四字熟語','武','七徳'], desc:'武士の七徳', season:'S4' },
+  { word:'忠義一心', chars:['忠','義','一','心'], rarity:'★13', tags:['四字熟語','武','七徳'], desc:'忠義に専心', season:'S4' },
+  { word:'廉恥潔白', chars:['廉','恥','潔','白'], rarity:'★15', tags:['四字熟語','武','七徳'], desc:'恥を知り清廉', season:'S4' },
+  { word:'勇気仁愛', chars:['勇','気','仁','愛'], rarity:'★13', tags:['四字熟語','武','七徳'], desc:'勇と愛', season:'S4' },
+  { word:'忠誠勇敢', chars:['忠','誠','勇','敢'], rarity:'★13', tags:['四字熟語','武','七徳'], desc:'忠と勇', season:'S4' },
+
+  // 侍
+  { word:'侍精神', chars:['侍','精','神'], rarity:'★13', tags:['四字熟語','武'], desc:'サムライスピリット', season:'S4' },
+  { word:'侍道精神', chars:['侍','道','精','神'], rarity:'★14', tags:['四字熟語','武'], desc:'武士道', season:'S4' },
+  { word:'武家屋敷', chars:['武','家','屋','敷'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'侍の住居', season:'S4' },
+  { word:'城下武家', chars:['城','下','武','家'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'城下町の侍', season:'S4' },
+
+  // 戦国・幕末
+  { word:'戦国時代', chars:['戦','国','時','代'], rarity:'★12', tags:['四字熟語','古典','武'], desc:'戦国期', season:'S4' },
+  { word:'戦国大名', chars:['戦','国','大','名'], rarity:'★13', tags:['四字熟語','古典','武'], desc:'戦国の領主', season:'S4' },
+  { word:'幕末動乱', chars:['幕','末','動','乱'], rarity:'★13', tags:['四字熟語','古典','武'], desc:'幕末', season:'S4' },
+  { word:'勤皇尊王', chars:['勤','皇','尊','王'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'幕末思想', season:'S4' },
+  { word:'攘夷論', chars:['攘','夷','論'], rarity:'★15', tags:['四字熟語','古典'], desc:'幕末攘夷', season:'S4' },
+
+  // 古代・神話
+  { word:'神話伝承', chars:['神','話','伝','承'], rarity:'★13', tags:['四字熟語','神字','古典'], desc:'ミソロジー伝承', season:'S4' },
+  { word:'神代物語', chars:['神','代','物','語'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'神話の時代', season:'S4' },
+  { word:'古事記語', chars:['古','事','記','語'], rarity:'★14', tags:['四字熟語','古典'], desc:'コジキ', season:'S4' },
+  { word:'日本書紀', chars:['日','本','書','紀'], rarity:'★14', tags:['四字熟語','古典'], desc:'ニホンショキ', season:'S4' },
+  { word:'万葉集歌', chars:['万','葉','集','歌'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'万葉集', season:'S4' },
+
+  // 茶道・華道
+  { word:'茶道精神', chars:['茶','道','精','神'], rarity:'★13', tags:['四字熟語','道','禅','美'], desc:'茶の心', season:'S4' },
+  { word:'茶禅一味', chars:['茶','禅','一','味'], rarity:'★15', tags:['四字熟語','道','禅'], desc:'茶と禅は同じ', season:'S4' },
+  { word:'和敬清寂', chars:['和','敬','清','寂'], rarity:'★15', tags:['四字熟語','道','禅'], desc:'茶道の四規', season:'S4' },
+  { word:'侘茶味', chars:['侘','茶','味'], rarity:'★15', tags:['四字熟語','道','禅','美'], desc:'侘茶', season:'S4' },
+  { word:'華道精神', chars:['華','道','精','神'], rarity:'★13', tags:['四字熟語','道','美'], desc:'華の心', season:'S4' },
+
+  // 書道
+  { word:'書道精神', chars:['書','道','精','神'], rarity:'★13', tags:['四字熟語','美'], desc:'書の心', season:'S4' },
+  { word:'筆墨硯紙', chars:['筆','墨','硯','紙'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'文房四宝', season:'S4' },
+  { word:'四宝文房', chars:['四','宝','文','房'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'文房四宝', season:'S4' },
+
+  // 武具・甲冑
+  { word:'甲冑武装', chars:['甲','冑','武','装'], rarity:'★15', tags:['四字熟語','武'], desc:'よろい兜', season:'S4' },
+  { word:'刀剣武具', chars:['刀','剣','武','具'], rarity:'★13', tags:['四字熟語','武'], desc:'武器', season:'S4' },
+  { word:'弓道一射', chars:['弓','道','一','射'], rarity:'★14', tags:['四字熟語','武','禅'], desc:'弓道', season:'S4' },
+  { word:'流派伝承', chars:['流','派','伝','承'], rarity:'★13', tags:['四字熟語','武'], desc:'流派継承', season:'S4' },
+
+  // 城・防御
+  { word:'城郭建築', chars:['城','郭','建','築'], rarity:'★13', tags:['四字熟語','古典','武'], desc:'お城', season:'S4' },
+  { word:'城門開閉', chars:['城','門','開','閉'], rarity:'★13', tags:['四字熟語','古典'], desc:'城門', season:'S4' },
+  { word:'天守閣', chars:['天','守','閣'], rarity:'★13', tags:['四字熟語','古典'], desc:'お城の中央', season:'S4' },
+
+  // 礼節
+  { word:'礼儀作法', chars:['礼','儀','作','法'], rarity:'★12', tags:['四字熟語','七徳','古典'], desc:'マナー', season:'S4' },
+  { word:'礼節恭敬', chars:['礼','節','恭','敬'], rarity:'★14', tags:['四字熟語','七徳','儒教'], desc:'礼と恭', season:'S4' },
+];
+for (const r of _YOJI_S4_SHINTO) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
