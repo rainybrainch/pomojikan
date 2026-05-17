@@ -3578,6 +3578,72 @@ const _YOJI_S3_FESTIVAL = [
 ];
 for (const r of _YOJI_S3_FESTIVAL) YOJI_RECIPES.push(r);
 
+// v8i ── 四字熟語 +50（時事・SNS・ポストコロナ）
+const _YOJI_S4_NOW = [
+  // SNS・デジタル
+  { word:'情報過多', chars:['情','報','過','多'], rarity:'★12', tags:['四字熟語','令和'], desc:'インフォメーション過多', season:'S4' },
+  { word:'情報共有', chars:['情','報','共','有'], rarity:'★11', tags:['四字熟語','令和'], desc:'シェア', season:'S4' },
+  { word:'画面共有', chars:['画','面','共','有'], rarity:'★12', tags:['四字熟語','令和'], desc:'スクリーンシェア', season:'S4' },
+  { word:'動画配信', chars:['動','画','配','信'], rarity:'★12', tags:['四字熟語','令和'], desc:'ストリーミング', season:'S4' },
+  { word:'生中継', chars:['生','中','継'], rarity:'★12', tags:['四字熟語','令和'], desc:'ライブ', season:'S4' },
+  { word:'即時配信', chars:['即','時','配','信'], rarity:'★13', tags:['四字熟語','令和'], desc:'リアルタイム', season:'S4' },
+  { word:'拡散効果', chars:['拡','散','効','果'], rarity:'★12', tags:['四字熟語','令和'], desc:'バイラル', season:'S4' },
+  { word:'共感呼応', chars:['共','感','呼','応'], rarity:'★13', tags:['四字熟語','令和','感情'], desc:'共感を呼ぶ', season:'S4' },
+
+  // 働き方
+  { word:'在宅勤務', chars:['在','宅','勤','務'], rarity:'★12', tags:['四字熟語','令和','ビジネス'], desc:'リモートワーク', season:'S4' },
+  { word:'遠隔会議', chars:['遠','隔','会','議'], rarity:'★13', tags:['四字熟語','令和','ビジネス'], desc:'ビデオ会議', season:'S4' },
+  { word:'柔軟勤務', chars:['柔','軟','勤','務'], rarity:'★13', tags:['四字熟語','令和','ビジネス'], desc:'フレックス', season:'S4' },
+  { word:'副業推進', chars:['副','業','推','進'], rarity:'★13', tags:['四字熟語','令和','ビジネス'], desc:'パラレル', season:'S4' },
+  { word:'年功序列', chars:['年','功','序','列'], rarity:'★13', tags:['四字熟語','ビジネス','古典'], desc:'年功制', season:'S4' },
+  { word:'実力主義', chars:['実','力','主','義'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'メリトクラシー', season:'S4' },
+
+  // 環境・SDGs
+  { word:'持続可能', chars:['持','続','可','能'], rarity:'★12', tags:['四字熟語','未来'], desc:'サステナブル', season:'S4' },
+  { word:'環境保護', chars:['環','境','保','護'], rarity:'★12', tags:['四字熟語','自然'], desc:'エコ', season:'S4' },
+  { word:'温室効果', chars:['温','室','効','果'], rarity:'★13', tags:['四字熟語','自然','未来'], desc:'グリーンハウス', season:'S4' },
+  { word:'再生資源', chars:['再','生','資','源'], rarity:'★13', tags:['四字熟語','未来'], desc:'リサイクル', season:'S4' },
+  { word:'循環経済', chars:['循','環','経','済'], rarity:'★13', tags:['四字熟語','未来','ビジネス'], desc:'サーキュラー', season:'S4' },
+  { word:'脱炭素化', chars:['脱','炭','素','化'], rarity:'★14', tags:['四字熟語','未来'], desc:'カーボンニュートラル', season:'S4' },
+
+  // メンタルヘルス
+  { word:'心理安全', chars:['心','理','安','全'], rarity:'★13', tags:['四字熟語','令和','感情'], desc:'サイコセーフティ', season:'S4' },
+  { word:'自己受容', chars:['自','己','受','容'], rarity:'★13', tags:['四字熟語','令和','感情'], desc:'セルフアクセプタンス', season:'S4' },
+  { word:'自己肯定', chars:['自','己','肯','定'], rarity:'★12', tags:['四字熟語','令和','感情'], desc:'セルフエスティーム', season:'S4' },
+  { word:'承認欲求', chars:['承','認','欲','求'], rarity:'★13', tags:['四字熟語','令和','感情'], desc:'承認', season:'S4' },
+  { word:'瞑想実践', chars:['瞑','想','実','践'], rarity:'★13', tags:['四字熟語','禅','令和'], desc:'マインドフル', season:'S4' },
+  { word:'呼吸瞑想', chars:['呼','吸','瞑','想'], rarity:'★14', tags:['四字熟語','禅'], desc:'ブレスメディテーション', season:'S4' },
+
+  // 多様性
+  { word:'多様共生', chars:['多','様','共','生'], rarity:'★13', tags:['四字熟語','令和','七徳'], desc:'ダイバーシティ', season:'S4' },
+  { word:'包摂社会', chars:['包','摂','社','会'], rarity:'★14', tags:['四字熟語','令和','七徳'], desc:'インクルーシブ', season:'S4' },
+  { word:'性別多様', chars:['性','別','多','様'], rarity:'★14', tags:['四字熟語','令和'], desc:'ジェンダー多様', season:'S4' },
+  { word:'文化共生', chars:['文','化','共','生'], rarity:'★13', tags:['四字熟語','七徳'], desc:'マルチカルチャー', season:'S4' },
+
+  // 教育改革
+  { word:'探究学習', chars:['探','究','学','習'], rarity:'★13', tags:['四字熟語','学','令和'], desc:'インクワイアリ学習', season:'S4' },
+  { word:'主体学習', chars:['主','体','学','習'], rarity:'★12', tags:['四字熟語','学','令和'], desc:'アクティブラーニング', season:'S4' },
+  { word:'生涯学習', chars:['生','涯','学','習'], rarity:'★12', tags:['四字熟語','学'], desc:'ライフロング', season:'S4' },
+  { word:'反転授業', chars:['反','転','授','業'], rarity:'★14', tags:['四字熟語','学','令和'], desc:'フリップトクラス', season:'S4' },
+  { word:'個別最適', chars:['個','別','最','適'], rarity:'★13', tags:['四字熟語','学','令和'], desc:'パーソナライズ', season:'S4' },
+
+  // 経済新概念
+  { word:'共有経済', chars:['共','有','経','済'], rarity:'★13', tags:['四字熟語','令和','ビジネス'], desc:'シェアエコ', season:'S4' },
+  { word:'体験経済', chars:['体','験','経','済'], rarity:'★13', tags:['四字熟語','令和','ビジネス'], desc:'体験型', season:'S4' },
+  { word:'仮想通貨', chars:['仮','想','通','貨'], rarity:'★14', tags:['四字熟語','未来','ビジネス'], desc:'クリプト', season:'S4' },
+  { word:'電子決済', chars:['電','子','決','済'], rarity:'★13', tags:['四字熟語','令和','ビジネス'], desc:'キャッシュレス', season:'S4' },
+  { word:'非接触型', chars:['非','接','触','型'], rarity:'★13', tags:['四字熟語','令和'], desc:'タッチレス', season:'S4' },
+
+  // 未来予測
+  { word:'未来予測', chars:['未','来','予','測'], rarity:'★12', tags:['四字熟語','未来'], desc:'フォーキャスト', season:'S4' },
+  { word:'技術革命', chars:['技','術','革','命'], rarity:'★13', tags:['四字熟語','未来','科学'], desc:'テックレボ', season:'S4' },
+  { word:'産業革命', chars:['産','業','革','命'], rarity:'★13', tags:['四字熟語','古典','ビジネス'], desc:'インダストリアル', season:'S4' },
+  { word:'デジタル化', chars:['デ','ジ','タ','ル'], rarity:'★12', tags:['四字熟語','令和'], desc:'DX', season:'S4' },
+  { word:'自動運転', chars:['自','動','運','転'], rarity:'★13', tags:['四字熟語','未来'], desc:'オートドライブ', season:'S4' },
+  { word:'空飛車', chars:['空','飛','車'], rarity:'★13', tags:['四字熟語','未来'], desc:'フライングカー', season:'S4' },
+];
+for (const r of _YOJI_S4_NOW) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
