@@ -1774,6 +1774,79 @@ const _YOJI_SEASONS_EXPAND = [
 ];
 for (const r of _YOJI_SEASONS_EXPAND) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7i（2026-05-17）── 五字以上の長熟語・諺・座右の銘
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_LONG = [
+  // 諺・故事
+  { word:'人生七十', chars:['人','生','七','十'], rarity:'★14', tags:['古典','時'], desc:'人生七十古来稀なり', season:'S4' },
+  { word:'人間到処', chars:['人','間','到','処'], rarity:'★15', tags:['古典'], desc:'到る処青山あり', season:'S4' },
+  { word:'温柔敦厚', chars:['温','柔','敦','厚'], rarity:'★15', tags:['四字熟語','七徳','古典'], desc:'柔らかで誠実', season:'S4' },
+  { word:'天網恢恢', chars:['天','網','恢','恢'], rarity:'★16', tags:['四字熟語','古典'], desc:'天網恢恢疎にして漏らさず', season:'S4' },
+  { word:'人事尽天', chars:['人','事','尽','天'], rarity:'★15', tags:['四字熟語','古典'], desc:'人事を尽くして天命を待つ', season:'S4' },
+  { word:'盛者必衰', chars:['盛','者','必','衰'], rarity:'★13', tags:['古典','仏教'], desc:'平家物語', season:'S4' },
+
+  // 五字以上の名句
+  { word:'有志竟成事', chars:['有','志','竟','成','事'], rarity:'★16', tags:['古典','武'], desc:'志あれば事は成る（5字）', season:'S4' },
+  { word:'温故知新識', chars:['温','故','知','新','識'], rarity:'★15', tags:['学','古典'], desc:'温故知新（5字版）', season:'S4' },
+  { word:'静中見動境', chars:['静','中','見','動','境'], rarity:'★16', tags:['禅'], desc:'静かさの中に動を見る', season:'S4' },
+
+  // 故事成語（4字以上）
+  { word:'酒池肉林', chars:['酒','池','肉','林'], rarity:'★14', tags:['四字熟語','古典'], desc:'贅沢三昧', season:'S4' },
+  { word:'長袖善舞', chars:['長','袖','善','舞'], rarity:'★15', tags:['四字熟語','古典'], desc:'資金あれば事は成る', season:'S4' },
+  { word:'多銭善賈', chars:['多','銭','善','賈'], rarity:'★16', tags:['四字熟語','古典'], desc:'金があれば商売うまくいく', season:'S4' },
+  { word:'臨淵羨魚', chars:['臨','淵','羨','魚'], rarity:'★16', tags:['四字熟語','古典'], desc:'欲しがるより行動', season:'S4' },
+  { word:'登泰山小', chars:['登','泰','山','小'], rarity:'★16', tags:['古典'], desc:'高所から見れば天下も小さい', season:'S4' },
+
+  // 仏教用語（4字以上）
+  { word:'四苦八苦', chars:['四','苦','八','苦'], rarity:'★12', tags:['仏教','四字熟語'], desc:'生老病死＋愛別離苦…', season:'S4' },
+  { word:'十方世界', chars:['十','方','世','界'], rarity:'★13', tags:['仏教','四字熟語'], desc:'全方位の世界', season:'S4' },
+  { word:'三世諸仏', chars:['三','世','諸','仏'], rarity:'★14', tags:['仏教','四字熟語'], desc:'過去現在未来の仏', season:'S4' },
+  { word:'妙法蓮華', chars:['妙','法','蓮','華'], rarity:'★15', tags:['仏教'], desc:'法華経', season:'S4' },
+  { word:'観自在菩', chars:['観','自','在','菩'], rarity:'★15', tags:['仏教','古典'], desc:'観自在菩薩 = 観音', season:'S4' },
+
+  // 武士道・忠義
+  { word:'武士道精神', chars:['武','士','道','精','神'], rarity:'★15', tags:['武','古典'], desc:'武士の心得（5字）', season:'S4' },
+  { word:'忠君愛国', chars:['忠','君','愛','国'], rarity:'★13', tags:['四字熟語','武','七徳'], desc:'君主と国を愛す', season:'S4' },
+  { word:'士魂商才', chars:['士','魂','商','才'], rarity:'★14', tags:['四字熟語','武','ビジネス'], desc:'武士の魂と商人の才', season:'S4' },
+
+  // 哲学・思想（長め）
+  { word:'我思故我在', chars:['我','思','故','我','在'], rarity:'★16', tags:['哲学'], desc:'我思う故に我あり（デカルト）', season:'S4' },
+  { word:'万象帰一', chars:['万','象','帰','一'], rarity:'★15', tags:['四字熟語','哲学'], desc:'万物は一に帰す', season:'S4' },
+  { word:'有無相通', chars:['有','無','相','通'], rarity:'★14', tags:['四字熟語','哲学','禅'], desc:'有と無は通じる', season:'S4' },
+
+  // 自然現象（長め）
+  { word:'山高水長', chars:['山','高','水','長'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'徳の高さ', season:'S4' },
+  { word:'江山如画', chars:['江','山','如','画'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'絵のような景色', season:'S4' },
+  { word:'山紫水明', chars:['山','紫','水','明'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'山も水も美しい', season:'S4' },
+
+  // 季節の長句
+  { word:'春夏秋冬輪', chars:['春','夏','秋','冬','輪'], rarity:'★13', tags:['自然','時'], desc:'四季は巡る（5字）', season:'S4' },
+  { word:'花鳥風月詩', chars:['花','鳥','風','月','詩'], rarity:'★15', tags:['自然','美','古典'], desc:'美の対象を詩に', season:'S4' },
+
+  // RAINY オリジナル（雨界系）
+  { word:'雨蝶幻夢', chars:['雨','蝶','幻','夢'], rarity:'★16', tags:['RAINY','哲学'], desc:'雨に舞う蝶の夢', season:'S4' },
+  { word:'雨蝶映夢', chars:['雨','蝶','映','夢'], rarity:'★16', tags:['RAINY','哲学'], desc:'映る雨蝶の夢', season:'S4' },
+  { word:'泥雨生命', chars:['泥','雨','生','命'], rarity:'★16', tags:['RAINY','哲学','神字'], desc:'泥雨から命', season:'S4' },
+  { word:'集水域時', chars:['集','水','域','時'], rarity:'★15', tags:['RAINY','時'], desc:'集水域に時を', season:'S4' },
+  { word:'空白彫刻', chars:['空','白','彫','刻'], rarity:'★15', tags:['RAINY','美'], desc:'空白を彫る', season:'S4' },
+  { word:'重力引力', chars:['重','力','引','力'], rarity:'★14', tags:['RAINY','哲学','科学'], desc:'重力と引力', season:'S4' },
+
+  // 願い・祈り
+  { word:'平和祈願', chars:['平','和','祈','願'], rarity:'★12', tags:['四字熟語'], desc:'平和を願う', season:'S4' },
+  { word:'家内安全', chars:['家','内','安','全'], rarity:'★12', tags:['四字熟語'], desc:'家族の安全祈願', season:'S4' },
+  { word:'商売繁盛', chars:['商','売','繁','盛'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'商売がうまくいく', season:'S4' },
+  { word:'子孫繁栄', chars:['子','孫','繁','栄'], rarity:'★13', tags:['四字熟語','七徳'], desc:'子孫が栄える', season:'S4' },
+  { word:'長寿祝福', chars:['長','寿','祝','福'], rarity:'★12', tags:['四字熟語'], desc:'長生きの祝い', season:'S4' },
+  { word:'招福開運', chars:['招','福','開','運'], rarity:'★13', tags:['四字熟語'], desc:'福を招き運を開く', season:'S4' },
+
+  // 智慧の言葉
+  { word:'静中閑中', chars:['静','中','閑','中'], rarity:'★15', tags:['禅','古典'], desc:'静かな閑な中で', season:'S4' },
+  { word:'微妙絶妙', chars:['微','妙','絶','妙'], rarity:'★13', tags:['美'], desc:'巧妙', season:'S4' },
+  { word:'絶妙絶世', chars:['絶','妙','絶','世'], rarity:'★13', tags:['美'], desc:'類なき美', season:'S4' },
+];
+for (const r of _YOJI_LONG) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
