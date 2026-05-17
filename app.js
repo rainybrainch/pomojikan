@@ -40,21 +40,27 @@ const TIER_DROP_COUNT = [
 // レアごとの落下速度倍率（高レアほどゆっくり、ドラマを作る）
 const TIER_FALL_MUL = [1.0, 0.97, 0.94, 0.90, 0.86, 0.82, 0.78, 0.74, 0.70, 0.66, 0.62, 0.58, 0.54, 0.50, 0.46, 0.42];
 
-// 無限 Lv 設計（v4 / 2026-05-16）── ★は16段階で頭打ちでも Lv は無限に育つ
+// 無限 Lv 設計（v5 / 2026-05-18）── 何十年も遊べる育成型ポモドーロ
+// ★は16段階で頭打ちでも Lv は無限に育つ ── 進化段階を 15 段階に拡張（〜Lv 1,000,000）
 const EVO_STAGE_LV = [
-  10,    // 1: 楷書
-  30,    // 2: 行書
-  70,    // 3: 草書
-  150,   // 4: 篆書
-  300,   // 5: 甲骨
-  600,   // 6: 神代文字
-  1000,  // 7: 超越
-  2000,  // 8: 星屑
-  5000,  // 9: 神話
-  10000, // 10: 創造主
+  10,        // 1: 楷書
+  30,        // 2: 行書
+  70,        // 3: 草書
+  150,       // 4: 篆書
+  300,       // 5: 甲骨
+  600,       // 6: 神代文字
+  1000,      // 7: 超越
+  2000,      // 8: 星屑
+  5000,      // 9: 神話
+  10000,     // 10: 創造主
+  30000,     // 11: 永劫
+  100000,    // 12: 無始
+  300000,    // 13: 虚無
+  1000000,   // 14: 永遠
+  10000000,  // 15: ∞（自己存在）
 ];
-const EVO_GLYPH = ['', '✦', '✧', '☀', '☆', '✯', '✪', '❂', '✺', '✹', '𓂀'];
-const EVO_STYLE = ['kai', 'gyo', 'sou', 'tens', 'kou', 'shin', 'choetsu', 'hoshi', 'shinwa', 'sozo', 'sozo'];
+const EVO_GLYPH = ['', '✦', '✧', '☀', '☆', '✯', '✪', '❂', '✺', '✹', '𓂀', '𓁹', '𒀭', '☥', '⚛', '∞'];
+const EVO_STYLE = ['kai', 'gyo', 'sou', 'tens', 'kou', 'shin', 'choetsu', 'hoshi', 'shinwa', 'sozo', 'eigou', 'mushi', 'kyomu', 'eien', 'mugen'];
 
 // Lv に応じた動的グロー半径（対数的に増える ・ Lv 100 で約 30px、Lv 10000 で約 80px）
 function lvGlowRadius(lv) {
@@ -399,6 +405,12 @@ const MILESTONES = [
   { id:'yoji_100',  label:'語彙', desc:'100 熟語 解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 100 },
   { id:'yoji_1000', label:'語学', desc:'1,000 熟語 解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 1000 },
   { id:'yoji_4000', label:'達語', desc:'4,000 熟語 全解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 4000 },
+  // Lv 系（無限育成の到達点）── 何十年遊べる育成型ポモドーロの記憶
+  { id:'lv_100',     label:'楷書師', desc:'主人公 Lv.100 到達', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 100 },
+  { id:'lv_1000',    label:'創造主', desc:'主人公 Lv.1,000 到達（進化10段階）', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 1000 },
+  { id:'lv_10000',   label:'永劫者', desc:'主人公 Lv.10,000 到達', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 10000 },
+  { id:'lv_100000',  label:'無始',   desc:'主人公 Lv.100,000 到達', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 100000 },
+  { id:'lv_1000000', label:'永遠',   desc:'主人公 Lv.1,000,000 到達（人智の極）', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 1000000 },
 ];
 
 // 達成チェック（completePhase, addStock 等から定期的に呼ぶ）

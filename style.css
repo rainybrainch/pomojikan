@@ -1398,6 +1398,26 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
     0 8px 28px rgba(255,200,50,.5),
     0 0 60px gold;
 }
+/* evo-11+ ── 無限段階（v5 / 2026-05-18）何十年の到達者へ */
+.pomoji.evo-11,
+.pomoji.evo-12,
+.pomoji.evo-13{
+  box-shadow:
+    inset 0 -5px 14px rgba(220,150,50,.55),
+    inset 0 5px 8px rgba(255,255,255,.95),
+    0 10px 36px rgba(255,210,80,.65),
+    0 0 80px gold,
+    0 0 24px white;
+}
+.pomoji.evo-14,
+.pomoji.evo-15{
+  box-shadow:
+    inset 0 -6px 18px rgba(255,180,80,.7),
+    inset 0 6px 10px rgba(255,255,255,1),
+    0 12px 48px rgba(255,220,100,.8),
+    0 0 100px gold,
+    0 0 40px white;
+}
 /* パーティカードは段階で派手化（カードはアニメ OK ─ ご褒美演出）*/
 .party-card.evo-5,
 .party-card.evo-6,
@@ -1407,6 +1427,17 @@ body:not([data-mode="idle"]) .tank-hint{ display:none; }
 .party-card.evo-10{
   box-shadow:0 0 30px gold, 0 0 14px white inset;
   animation:rainbowHue 4s linear infinite;
+}
+.party-card.evo-11,
+.party-card.evo-12,
+.party-card.evo-13{
+  box-shadow:0 0 36px gold, 0 0 18px white inset, 0 0 60px rgba(255,200,50,.5);
+  animation:rainbowHue 3s linear infinite;
+}
+.party-card.evo-14,
+.party-card.evo-15{
+  box-shadow:0 0 50px gold, 0 0 24px white inset, 0 0 90px rgba(255,220,80,.7);
+  animation:rainbowHue 2s linear infinite;
 }
 
 /* ════════════════════ PC 配信モード（?stream=1）── OBS オーバーレイ用 ════════════════════ */
