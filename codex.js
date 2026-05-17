@@ -7005,6 +7005,81 @@ const _YOJI_S3_WORKFLOW = [
 ];
 for (const r of _YOJI_S3_WORKFLOW) YOJI_RECIPES.push(r);
 
+// v10f ── 四字熟語 +50（医療・健康深掘り）
+const _YOJI_S4_MEDIC = [
+  { word:'医療現場', chars:['医','療','現','場'], rarity:'★12', tags:['四字熟語'], desc:'医療現場', season:'S4' },
+  { word:'急性疾患', chars:['急','性','疾','患'], rarity:'★13', tags:['四字熟語'], desc:'急性病', season:'S4' },
+  { word:'慢性疾患', chars:['慢','性','疾','患'], rarity:'★13', tags:['四字熟語'], desc:'慢性病', season:'S4' },
+  { word:'感染予防', chars:['感','染','予','防'], rarity:'★12', tags:['四字熟語'], desc:'感染予防', season:'S4' },
+  { word:'伝染病院', chars:['伝','染','病','院'], rarity:'★13', tags:['四字熟語'], desc:'伝染病院', season:'S4' },
+  { word:'疫病流行', chars:['疫','病','流','行'], rarity:'★13', tags:['四字熟語'], desc:'パンデミック', season:'S4' },
+  { word:'予防接種', chars:['予','防','接','種'], rarity:'★13', tags:['四字熟語'], desc:'ワクチン', season:'S4' },
+  { word:'治療方法', chars:['治','療','方','法'], rarity:'★12', tags:['四字熟語'], desc:'治療法', season:'S4' },
+  { word:'治療効果', chars:['治','療','効','果'], rarity:'★12', tags:['四字熟語'], desc:'治療効果', season:'S4' },
+  { word:'外科手術', chars:['外','科','手','術'], rarity:'★12', tags:['四字熟語'], desc:'手術', season:'S4' },
+
+  // 専門分野
+  { word:'内科診察', chars:['内','科','診','察'], rarity:'★12', tags:['四字熟語'], desc:'内科', season:'S4' },
+  { word:'小児医療', chars:['小','児','医','療'], rarity:'★12', tags:['四字熟語'], desc:'ペディアトリックス', season:'S4' },
+  { word:'産科医療', chars:['産','科','医','療'], rarity:'★13', tags:['四字熟語'], desc:'産科', season:'S4' },
+  { word:'眼科診療', chars:['眼','科','診','療'], rarity:'★13', tags:['四字熟語'], desc:'眼科', season:'S4' },
+  { word:'耳鼻咽喉', chars:['耳','鼻','咽','喉'], rarity:'★15', tags:['四字熟語'], desc:'耳鼻科', season:'S4' },
+
+  // 看護
+  { word:'看護介護', chars:['看','護','介','護'], rarity:'★13', tags:['四字熟語','七徳'], desc:'看護介護', season:'S4' },
+  { word:'訪問看護', chars:['訪','問','看','護'], rarity:'★13', tags:['四字熟語','七徳'], desc:'訪問看護', season:'S4' },
+  { word:'高齢介護', chars:['高','齢','介','護'], rarity:'★12', tags:['四字熟語','七徳'], desc:'介護', season:'S4' },
+  { word:'在宅介護', chars:['在','宅','介','護'], rarity:'★12', tags:['四字熟語','七徳'], desc:'在宅介護', season:'S4' },
+
+  // リハビリ
+  { word:'機能訓練', chars:['機','能','訓','練'], rarity:'★12', tags:['四字熟語'], desc:'リハビリ', season:'S4' },
+  { word:'運動療法', chars:['運','動','療','法'], rarity:'★12', tags:['四字熟語'], desc:'運動療法', season:'S4' },
+  { word:'作業療法', chars:['作','業','療','法'], rarity:'★13', tags:['四字熟語'], desc:'OT', season:'S4' },
+  { word:'理学療法', chars:['理','学','療','法'], rarity:'★13', tags:['四字熟語'], desc:'PT', season:'S4' },
+
+  // メンタル
+  { word:'精神医療', chars:['精','神','医','療'], rarity:'★13', tags:['四字熟語'], desc:'メンタルヘルス', season:'S4' },
+  { word:'心理療法', chars:['心','理','療','法'], rarity:'★13', tags:['四字熟語'], desc:'サイコセラピー', season:'S4' },
+  { word:'認知療法', chars:['認','知','療','法'], rarity:'★13', tags:['四字熟語'], desc:'CBT', season:'S4' },
+
+  // 救急
+  { word:'救急医療', chars:['救','急','医','療'], rarity:'★13', tags:['四字熟語'], desc:'救急医療', season:'S4' },
+  { word:'救命救急', chars:['救','命','救','急'], rarity:'★13', tags:['四字熟語'], desc:'救命救急', season:'S4' },
+  { word:'救助活動', chars:['救','助','活','動'], rarity:'★12', tags:['四字熟語','七徳'], desc:'レスキュー', season:'S4' },
+  { word:'災害医療', chars:['災','害','医','療'], rarity:'★13', tags:['四字熟語'], desc:'災害医療', season:'S4' },
+
+  // 高度
+  { word:'最新医療', chars:['最','新','医','療'], rarity:'★13', tags:['四字熟語','未来'], desc:'最新医療', season:'S4' },
+  { word:'先端医療', chars:['先','端','医','療'], rarity:'★13', tags:['四字熟語','未来'], desc:'先端医療', season:'S4' },
+  { word:'再生医療', chars:['再','生','医','療'], rarity:'★13', tags:['四字熟語','未来'], desc:'再生医療', season:'S4' },
+  { word:'移植医療', chars:['移','植','医','療'], rarity:'★13', tags:['四字熟語'], desc:'移植', season:'S4' },
+  { word:'遺伝医療', chars:['遺','伝','医','療'], rarity:'★14', tags:['四字熟語','未来'], desc:'遺伝医療', season:'S4' },
+
+  // 薬剤
+  { word:'薬物療法', chars:['薬','物','療','法'], rarity:'★13', tags:['四字熟語'], desc:'ドラッグセラピー', season:'S4' },
+  { word:'処方箋', chars:['処','方','箋'], rarity:'★15', tags:['四字熟語','古典'], desc:'処方箋', season:'S4' },
+  { word:'薬剤師', chars:['薬','剤','師'], rarity:'★13', tags:['四字熟語'], desc:'薬剤師', season:'S4' },
+  { word:'新薬開発', chars:['新','薬','開','発'], rarity:'★13', tags:['四字熟語','科学'], desc:'新薬開発', season:'S4' },
+
+  // 検査
+  { word:'血液検査', chars:['血','液','検','査'], rarity:'★12', tags:['四字熟語'], desc:'血液検査', season:'S4' },
+  { word:'画像診断', chars:['画','像','診','断'], rarity:'★13', tags:['四字熟語'], desc:'画像診断', season:'S4' },
+  { word:'X線検査', chars:['X','線','検','査'], rarity:'★13', tags:['四字熟語','科学'], desc:'レントゲン', season:'S4' },
+  { word:'磁気共鳴', chars:['磁','気','共','鳴'], rarity:'★14', tags:['四字熟語','科学'], desc:'MRI', season:'S4' },
+
+  // 予防医学
+  { word:'予防医学', chars:['予','防','医','学'], rarity:'★12', tags:['四字熟語'], desc:'予防医学', season:'S4' },
+  { word:'健康診断', chars:['健','康','診','断'], rarity:'★12', tags:['四字熟語'], desc:'健診', season:'S4' },
+  { word:'人間ドッ', chars:['人','間','ド','ッ'], rarity:'★12', tags:['四字熟語'], desc:'人間ドック', season:'S4' },
+  { word:'がん検診', chars:['が','ん','検','診'], rarity:'★12', tags:['四字熟語'], desc:'がん検診', season:'S4' },
+
+  // 末期医療
+  { word:'緩和医療', chars:['緩','和','医','療'], rarity:'★13', tags:['四字熟語'], desc:'パリアティブケア', season:'S4' },
+  { word:'終末医療', chars:['終','末','医','療'], rarity:'★13', tags:['四字熟語'], desc:'終末医療', season:'S4' },
+  { word:'尊厳死', chars:['尊','厳','死'], rarity:'★14', tags:['四字熟語','哲学'], desc:'尊厳死', season:'S4' },
+];
+for (const r of _YOJI_S4_MEDIC) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
