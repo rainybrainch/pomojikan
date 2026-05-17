@@ -3797,8 +3797,8 @@ function updateProgressPill() {
       const nextLv = nextTierName ? UNLOCK_LV[nextTierName] : null;
       const remain = nextLv != null ? nextLv - hero.level : null;
       ldrEl.textContent = nextTierName && remain > 0
-        ? `${hero.char} Lv.${hero.level}（${nextTierName} まで -${remain}）`
-        : `${hero.char} Lv.${hero.level}（全解放）`;
+        ? `${hero.char} Lv.${hero.level} 🔓 ${nextTierName}まで-${remain}`
+        : `${hero.char} Lv.${hero.level} ✦ 全解放済`;
     } else {
       ldrEl.textContent = '主人公 未選択';
     }
