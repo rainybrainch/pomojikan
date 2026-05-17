@@ -4675,6 +4675,82 @@ const _YOJI_S3_LIT = [
 ];
 for (const r of _YOJI_S3_LIT) YOJI_RECIPES.push(r);
 
+// v8y ── 四字熟語 +50（成功・達成・偉業）
+const _YOJI_S4_ACHIEVE = [
+  // 大成功
+  { word:'大成功裏', chars:['大','成','功','裏'], rarity:'★13', tags:['四字熟語','武'], desc:'大成功', season:'S4' },
+  { word:'目的達成', chars:['目','的','達','成'], rarity:'★12', tags:['四字熟語','武'], desc:'ゴール達成', season:'S4' },
+  { word:'目標到達', chars:['目','標','到','達'], rarity:'★12', tags:['四字熟語','武'], desc:'ターゲット', season:'S4' },
+  { word:'夢実現化', chars:['夢','実','現','化'], rarity:'★13', tags:['四字熟語'], desc:'ドリーム実現', season:'S4' },
+  { word:'結果出力', chars:['結','果','出','力'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'リザルト', season:'S4' },
+
+  // 偉業
+  { word:'偉業達成', chars:['偉','業','達','成'], rarity:'★13', tags:['四字熟語','武'], desc:'偉業', season:'S4' },
+  { word:'歴史的偉', chars:['歴','史','的','偉'], rarity:'★13', tags:['四字熟語'], desc:'歴史的偉業', season:'S4' },
+  { word:'前人未踏', chars:['前','人','未','踏'], rarity:'★14', tags:['四字熟語','武'], desc:'誰も到達していない', season:'S4' },
+  { word:'記録更新', chars:['記','録','更','新'], rarity:'★12', tags:['四字熟語','武'], desc:'レコード更新', season:'S4' },
+  { word:'記録樹立', chars:['記','録','樹','立'], rarity:'★13', tags:['四字熟語'], desc:'記録設定', season:'S4' },
+
+  // 才能発揮
+  { word:'才能発揮', chars:['才','能','発','揮'], rarity:'★12', tags:['四字熟語'], desc:'タレント発揮', season:'S4' },
+  { word:'潜在能力', chars:['潜','在','能','力'], rarity:'★12', tags:['四字熟語'], desc:'ポテンシャル', season:'S4' },
+  { word:'天賦才能', chars:['天','賦','才','能'], rarity:'★14', tags:['四字熟語'], desc:'天才', season:'S4' },
+  { word:'多才多芸', chars:['多','才','多','芸'], rarity:'★13', tags:['四字熟語'], desc:'多才', season:'S4' },
+
+  // 名誉
+  { word:'名誉栄光', chars:['名','誉','栄','光'], rarity:'★13', tags:['四字熟語','武'], desc:'名誉', season:'S4' },
+  { word:'勲章授与', chars:['勲','章','授','与'], rarity:'★13', tags:['四字熟語','武'], desc:'メダル授与', season:'S4' },
+  { word:'称号獲得', chars:['称','号','獲','得'], rarity:'★13', tags:['四字熟語','武'], desc:'タイトル獲得', season:'S4' },
+  { word:'地位向上', chars:['地','位','向','上'], rarity:'★12', tags:['四字熟語'], desc:'スターテス', season:'S4' },
+
+  // 賞賛
+  { word:'賞賛喝采', chars:['賞','賛','喝','采'], rarity:'★14', tags:['四字熟語'], desc:'喝采', season:'S4' },
+  { word:'万雷拍手', chars:['万','雷','拍','手'], rarity:'★15', tags:['四字熟語'], desc:'大拍手', season:'S4' },
+  { word:'感涙感動', chars:['感','涙','感','動'], rarity:'★12', tags:['四字熟語','感情'], desc:'感動の涙', season:'S4' },
+  { word:'称賛万歳', chars:['称','賛','万','歳'], rarity:'★13', tags:['四字熟語'], desc:'称賛', season:'S4' },
+
+  // チャンピオン
+  { word:'王者王座', chars:['王','者','王','座'], rarity:'★13', tags:['四字熟語','武'], desc:'チャンピオン', season:'S4' },
+  { word:'王座奪取', chars:['王','座','奪','取'], rarity:'★13', tags:['四字熟語','武'], desc:'王座を獲る', season:'S4' },
+  { word:'頂上決戦', chars:['頂','上','決','戦'], rarity:'★13', tags:['四字熟語','武'], desc:'頂上対決', season:'S4' },
+  { word:'最強最高', chars:['最','強','最','高'], rarity:'★12', tags:['四字熟語','武'], desc:'最強', season:'S4' },
+
+  // 突破
+  { word:'限界突破', chars:['限','界','突','破'], rarity:'★13', tags:['四字熟語','武'], desc:'限界超え', season:'S4' },
+  { word:'壁を破る', chars:['壁','を','破','る'], rarity:'★12', tags:['四字熟語','武'], desc:'壁突破', season:'S4' },
+  { word:'記録突破', chars:['記','録','突','破'], rarity:'★12', tags:['四字熟語','武'], desc:'記録更新', season:'S4' },
+  { word:'実力発揮', chars:['実','力','発','揮'], rarity:'★12', tags:['四字熟語','武'], desc:'力を発揮', season:'S4' },
+
+  // 集大成
+  { word:'集大成果', chars:['集','大','成','果'], rarity:'★13', tags:['四字熟語'], desc:'集大成', season:'S4' },
+  { word:'有終完美', chars:['有','終','完','美'], rarity:'★14', tags:['四字熟語','古典'], desc:'有終の美', season:'S4' },
+  { word:'仕上完了', chars:['仕','上','完','了'], rarity:'★12', tags:['四字熟語'], desc:'仕上げ', season:'S4' },
+  { word:'完璧完成', chars:['完','璧','完','成'], rarity:'★13', tags:['四字熟語'], desc:'パーフェクト', season:'S4' },
+
+  // 飛躍
+  { word:'飛躍向上', chars:['飛','躍','向','上'], rarity:'★13', tags:['四字熟語','武'], desc:'飛躍', season:'S4' },
+  { word:'急成長期', chars:['急','成','長','期'], rarity:'★12', tags:['四字熟語'], desc:'グロース', season:'S4' },
+  { word:'進化変化', chars:['進','化','変','化'], rarity:'★12', tags:['四字熟語'], desc:'エボリューション', season:'S4' },
+  { word:'画期発明', chars:['画','期','発','明'], rarity:'★13', tags:['四字熟語','科学'], desc:'ブレイクスルー', season:'S4' },
+
+  // 後継・継承
+  { word:'後継継承', chars:['後','継','継','承'], rarity:'★13', tags:['四字熟語'], desc:'継承', season:'S4' },
+  { word:'伝統継承', chars:['伝','統','継','承'], rarity:'★13', tags:['四字熟語','古典'], desc:'トラディション', season:'S4' },
+  { word:'家業継承', chars:['家','業','継','承'], rarity:'★13', tags:['四字熟語','古典'], desc:'家業', season:'S4' },
+
+  // 永続・伝説
+  { word:'永遠伝説', chars:['永','遠','伝','説'], rarity:'★14', tags:['四字熟語'], desc:'レジェンド', season:'S4' },
+  { word:'歴史的記', chars:['歴','史','的','記'], rarity:'★12', tags:['四字熟語'], desc:'ヒストリックレコード', season:'S4' },
+  { word:'語り継ぎ', chars:['語','り','継','ぎ'], rarity:'★12', tags:['四字熟語'], desc:'語り伝え', season:'S4' },
+  { word:'銘記永久', chars:['銘','記','永','久'], rarity:'★13', tags:['四字熟語'], desc:'永遠に記録', season:'S4' },
+
+  // 学術成果
+  { word:'学術成果', chars:['学','術','成','果'], rarity:'★12', tags:['四字熟語','学'], desc:'リサーチ成果', season:'S4' },
+  { word:'発見発明', chars:['発','見','発','明'], rarity:'★12', tags:['四字熟語','科学'], desc:'ディスカバリー', season:'S4' },
+  { word:'独自開発', chars:['独','自','開','発'], rarity:'★12', tags:['四字熟語'], desc:'オリジナル開発', season:'S4' },
+];
+for (const r of _YOJI_S4_ACHIEVE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
