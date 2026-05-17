@@ -2557,6 +2557,26 @@ body[data-mode="rest"] #tank{
   border-radius:3px;
 }
 
+/* 🚀 v10n 「もっと見る」 ── 800字キャップ展開ボタン */
+.codex-more-btn{
+  display:block; width:100%;
+  margin-top:8px; padding:8px 12px;
+  background:rgba(135,206,235,.08);
+  border:1px dashed rgba(135,206,235,.35);
+  color:var(--ink);
+  border-radius:6px;
+  font-family:inherit;
+  font-size:.78rem; font-weight:600;
+  cursor:pointer;
+  transition:all .15s;
+}
+.codex-more-btn:hover{
+  background:rgba(135,206,235,.18);
+  border-style:solid;
+  border-color:rgba(135,206,235,.6);
+  color:#bfe4ff;
+}
+
 /* 未解放ティア：legend / tab / セクション見出しを薄く */
 .cl-row.tier-locked,
 .codex-tab.tier-locked{

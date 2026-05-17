@@ -3829,9 +3829,27 @@ function renderCodex() {
   };
 
   const scriptMatch = (k) => matchesScript(k.char || k.c, codexFilter.script);
+
+  // 🚀 v10n 最適化：tier 別キャッシュ（41,890 字を 1 回でグループ化）
+  if (!window._tierCache || window._tierCache.codexLen !== codex.length) {
+    const byTier = {};
+    for (const k of codex) {
+      (byTier[k.rarity] ||= []).push(k);
+    }
+    window._tierCache = { codexLen: codex.length, byTier };
+  }
+
+  // 🚀 v10n 最適化：1 ティアあたり表示上限（"もっと見る" で解放）
+  const CELL_CAP = 800;  // ★13-16 でも 800 字なら 60fps 維持
+  if (!window._tierExpanded) window._tierExpanded = {};
+
+  // DocumentFragment で reflow を 1 回に圧縮
+  const frag = document.createDocumentFragment();
+
   RARITY_TIERS.forEach((tier, tierIdx) => {
     if (!onlyShow(tierIdx)) return;
-    const tierKanji = codex.filter(k => k.rarity === tier && seasonMatch(k) && scriptMatch(k) && matchQuery(k));
+    const tierAll = window._tierCache.byTier[tier] || [];
+    const tierKanji = tierAll.filter(k => seasonMatch(k) && scriptMatch(k) && matchQuery(k));
     const visible = tierKanji.filter(k => {
       if (!codexFilter.onlySeen) return true;
       const c = k.char || k.c;
@@ -3842,8 +3860,9 @@ function renderCodex() {
     const isUnrevealed = tierIdx > STATE.unlockedTier;
     const tierLabel = isUnrevealed ? '？？？' : tier;
     const achievement = isUnrevealed ? '─ 未解放の領域 ─' : TIER_ACHIEVEMENT[tierIdx];
-    // 発見率
-    const seenCnt = tierKanji.filter(k => (STATE.collection[k.char||k.c]||0) > 0).length;
+    // 発見率（visible ではなく全体で）
+    let seenCnt = 0;
+    for (const k of tierKanji) if ((STATE.collection[k.char||k.c]||0) > 0) seenCnt++;
     const tPct = tierKanji.length > 0 ? Math.round(seenCnt / tierKanji.length * 100) : 0;
     const stateText = tierIdx <= STATE.unlockedTier
       ? `${seenCnt} / ${tierKanji.length} 発見 ・ ${tPct}%`
@@ -3859,8 +3878,14 @@ function renderCodex() {
       );
       section.appendChild(bar);
     }
+    // 🚀 表示上限を適用（明示展開済なら全件、未展開ならキャップ）
+    const expanded = !!window._tierExpanded[tier];
+    const renderList = (visible.length > CELL_CAP && !expanded) ? visible.slice(0, CELL_CAP) : visible;
+    const truncated = visible.length - renderList.length;
     const tierGrid = el('div', { class:'codex-tier-grid' });
-    visible.forEach(k => {
+    // tier 内ループも DocumentFragment 化（最大 800 cells/tier × 16 tier = 12,800 cells max）
+    const tierFrag = document.createDocumentFragment();
+    for (const k of renderList) {
       const c = k.char || k.c;
       const seen = STATE.collection[c] || 0;
       const partyIdx = partyContainsChar(c);
@@ -3874,11 +3899,21 @@ function renderCodex() {
       if (seen) {
         cell.addEventListener('click', () => showCharDetail(c, k.rarity));
       }
-      tierGrid.appendChild(cell);
-    });
+      tierFrag.appendChild(cell);
+    }
+    tierGrid.appendChild(tierFrag);
     section.appendChild(tierGrid);
-    grid.appendChild(section);
+    // 切り捨て分の「もっと見る」ボタン
+    if (truncated > 0) {
+      const moreBtn = el('button', {
+        class:'codex-more-btn',
+        onclick: () => { window._tierExpanded[tier] = true; renderCodex(); },
+      }, `▼ 残り ${truncated.toLocaleString()} 字を表示`);
+      section.appendChild(moreBtn);
+    }
+    frag.appendChild(section);
   });
+  grid.appendChild(frag);
 
   const discovered = Object.keys(STATE.collection).length;
   const totalKanji = codex.length;
