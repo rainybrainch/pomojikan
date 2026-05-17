@@ -5220,6 +5220,74 @@ const _YOJI_S4_SELF = [
 ];
 for (const r of _YOJI_S4_SELF) YOJI_RECIPES.push(r);
 
+// v9g ── 二字熟語 +50（動物・植物・生き物）
+const _YOJI_S3_LIFE2 = [
+  // 動物
+  { word:'動物', chars:['動','物'], rarity:'★6',  tags:['自然'], desc:'アニマル', season:'S3' },
+  { word:'家畜', chars:['家','畜'], rarity:'★12', tags:['自然'], desc:'リブストック', season:'S3' },
+  { word:'野獣', chars:['野','獣'], rarity:'★12', tags:['自然'], desc:'ビースト', season:'S3' },
+  { word:'猛獣', chars:['猛','獣'], rarity:'★13', tags:['自然','武'], desc:'プレデター', season:'S3' },
+  { word:'肉食', chars:['肉','食'], rarity:'★10', tags:['自然'], desc:'カーニボア', season:'S3' },
+  { word:'草食', chars:['草','食'], rarity:'★10', tags:['自然'], desc:'ハービボア', season:'S3' },
+  { word:'雑食', chars:['雑','食'], rarity:'★13', tags:['自然'], desc:'オムニボア', season:'S3' },
+
+  // 鳥
+  { word:'鳥類', chars:['鳥','類'], rarity:'★10', tags:['自然'], desc:'バーズ', season:'S3' },
+  { word:'鳥獣', chars:['鳥','獣'], rarity:'★10', tags:['自然'], desc:'バーズ＆ビースト', season:'S3' },
+  { word:'雛鳥', chars:['雛','鳥'], rarity:'★13', tags:['自然','美'], desc:'ベビーバード', season:'S3' },
+  { word:'親鳥', chars:['親','鳥'], rarity:'★10', tags:['自然'], desc:'マザーバード', season:'S3' },
+  { word:'巣作', chars:['巣','作'], rarity:'★10', tags:['自然'], desc:'ネスト', season:'S3' },
+
+  // 魚
+  { word:'魚類', chars:['魚','類'], rarity:'★10', tags:['自然'], desc:'フィッシュ', season:'S3' },
+  { word:'魚介', chars:['魚','介'], rarity:'★13', tags:[], desc:'シーフード', season:'S3' },
+  { word:'海産', chars:['海','産'], rarity:'★10', tags:[], desc:'海産物', season:'S3' },
+  { word:'淡水', chars:['淡','水'], rarity:'★12', tags:['自然'], desc:'淡水', season:'S3' },
+  { word:'海水', chars:['海','水'], rarity:'★8',  tags:['自然'], desc:'シーウォーター', season:'S3' },
+
+  // 虫
+  { word:'昆虫', chars:['昆','虫'], rarity:'★12', tags:['自然'], desc:'インセクト', season:'S3' },
+  { word:'幼虫', chars:['幼','虫'], rarity:'★12', tags:['自然'], desc:'ラーバ', season:'S3' },
+  { word:'成虫', chars:['成','虫'], rarity:'★12', tags:['自然'], desc:'アダルト', season:'S3' },
+  { word:'蛹羽化', chars:['蛹','羽','化'], rarity:'★15', tags:['自然'], desc:'メタモルフォーゼ', season:'S3' },
+
+  // 植物
+  { word:'植物', chars:['植','物'], rarity:'★7',  tags:['自然'], desc:'プラント', season:'S3' },
+  { word:'樹林', chars:['樹','林'], rarity:'★12', tags:['自然'], desc:'フォレスト', season:'S3' },
+  { word:'草原', chars:['草','原'], rarity:'★7',  tags:['自然'], desc:'グラスランド', season:'S3' },
+  { word:'森野', chars:['森','野'], rarity:'★8',  tags:['自然'], desc:'森野', season:'S3' },
+  { word:'広場', chars:['広','場'], rarity:'★7',  tags:[], desc:'スクエア', season:'S3' },
+
+  // 花
+  { word:'花束', chars:['花','束'], rarity:'★8',  tags:['美','植物'], desc:'ブーケ', season:'S3' },
+  { word:'花輪', chars:['花','輪'], rarity:'★12', tags:['美','植物'], desc:'リース', season:'S3' },
+  { word:'花壇', chars:['花','壇'], rarity:'★12', tags:['美','植物'], desc:'フラワーベッド', season:'S3' },
+  { word:'花畑', chars:['花','畑'], rarity:'★12', tags:['美','植物'], desc:'フラワーフィールド', season:'S3' },
+  { word:'蜜蜂', chars:['蜜','蜂'], rarity:'★13', tags:['自然'], desc:'ハニービー', season:'S3' },
+  { word:'蝶々', chars:['蝶','々'], rarity:'★13', tags:['自然','美'], desc:'バタフライ', season:'S3' },
+
+  // 木の種類
+  { word:'松林', chars:['松','林'], rarity:'★10', tags:['自然','美'], desc:'パインフォレスト', season:'S3' },
+  { word:'竹林', chars:['竹','林'], rarity:'★10', tags:['自然','美'], desc:'バンブーフォレスト', season:'S3' },
+  { word:'梅林', chars:['梅','林'], rarity:'★10', tags:['自然','美'], desc:'梅林', season:'S3' },
+  { word:'桜並', chars:['桜','並'], rarity:'★10', tags:['自然','美'], desc:'さくらなみ', season:'S3' },
+
+  // 環境
+  { word:'生態', chars:['生','態'], rarity:'★12', tags:['自然','科学'], desc:'エコロジー', season:'S3' },
+  { word:'環境', chars:['環','境'], rarity:'★8',  tags:[], desc:'エンバイロンメント', season:'S3' },
+  { word:'保護', chars:['保','護'], rarity:'★8',  tags:[], desc:'プロテクション', season:'S3' },
+  { word:'絶滅', chars:['絶','滅'], rarity:'★12', tags:[], desc:'エクスティンクション', season:'S3' },
+  { word:'種類', chars:['種','類'], rarity:'★8',  tags:[], desc:'カテゴリ', season:'S3' },
+
+  // 神獣
+  { word:'神獣', chars:['神','獣'], rarity:'★13', tags:['神字','古典'], desc:'ディヴァインビースト', season:'S3' },
+  { word:'霊獣', chars:['霊','獣'], rarity:'★13', tags:['神字','古典'], desc:'スピリットビースト', season:'S3' },
+  { word:'幻獣', chars:['幻','獣'], rarity:'★13', tags:['神字','古典'], desc:'ファンタジー', season:'S3' },
+  { word:'魔獣', chars:['魔','獣'], rarity:'★13', tags:['神字'], desc:'デモンビースト', season:'S3' },
+  { word:'妖獣', chars:['妖','獣'], rarity:'★13', tags:['神字','古典'], desc:'ヨウジュウ', season:'S3' },
+];
+for (const r of _YOJI_S3_LIFE2) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
