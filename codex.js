@@ -3711,6 +3711,76 @@ const _YOJI_S3_DREAM = [
 ];
 for (const r of _YOJI_S3_DREAM) YOJI_RECIPES.push(r);
 
+// v8k ── 四字熟語 +50（剣・魔法・冒険系深掘り）
+const _YOJI_S4_QUEST = [
+  // 剣・武器
+  { word:'宝剣聖剣', chars:['宝','剣','聖','剣'], rarity:'★14', tags:['四字熟語','武'], desc:'伝説の剣', season:'S4' },
+  { word:'魔剣魔具', chars:['魔','剣','魔','具'], rarity:'★14', tags:['四字熟語','武','神字'], desc:'魔法の武器', season:'S4' },
+  { word:'剣士血脈', chars:['剣','士','血','脈'], rarity:'★13', tags:['四字熟語','武'], desc:'剣の血筋', season:'S4' },
+  { word:'剣豪覇者', chars:['剣','豪','覇','者'], rarity:'★14', tags:['四字熟語','武'], desc:'剣の覇者', season:'S4' },
+  { word:'神剣覚醒', chars:['神','剣','覚','醒'], rarity:'★15', tags:['四字熟語','武','神字'], desc:'神剣の目覚め', season:'S4' },
+  { word:'剣気奥義', chars:['剣','気','奥','義'], rarity:'★14', tags:['四字熟語','武','禅'], desc:'剣の極意', season:'S4' },
+  { word:'刀剣鍛冶', chars:['刀','剣','鍛','冶'], rarity:'★14', tags:['四字熟語','武','美'], desc:'刀鍛冶', season:'S4' },
+
+  // 魔法
+  { word:'古代魔法', chars:['古','代','魔','法'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'エンシャント魔法', season:'S4' },
+  { word:'禁忌魔法', chars:['禁','忌','魔','法'], rarity:'★15', tags:['四字熟語','神字'], desc:'禁断魔法', season:'S4' },
+  { word:'封印解除', chars:['封','印','解','除'], rarity:'★13', tags:['四字熟語','神字'], desc:'シール解除', season:'S4' },
+  { word:'結界破壊', chars:['結','界','破','壊'], rarity:'★14', tags:['四字熟語','神字'], desc:'バリアブレイク', season:'S4' },
+  { word:'召喚魔法', chars:['召','喚','魔','法'], rarity:'★14', tags:['四字熟語','神字'], desc:'サモニング', season:'S4' },
+  { word:'契約魔法', chars:['契','約','魔','法'], rarity:'★14', tags:['四字熟語','神字'], desc:'パクト魔法', season:'S4' },
+  { word:'魔導書解', chars:['魔','導','書','解'], rarity:'★15', tags:['四字熟語','神字'], desc:'魔導書解読', season:'S4' },
+
+  // 冒険者
+  { word:'冒険者団', chars:['冒','険','者','団'], rarity:'★12', tags:['四字熟語'], desc:'アドベンチャーパーティ', season:'S4' },
+  { word:'勇者復活', chars:['勇','者','復','活'], rarity:'★13', tags:['四字熟語','武'], desc:'ヒーロー復活', season:'S4' },
+  { word:'伝説勇者', chars:['伝','説','勇','者'], rarity:'★14', tags:['四字熟語','武'], desc:'レジェンドヒーロー', season:'S4' },
+  { word:'救世主', chars:['救','世','主'], rarity:'★13', tags:['四字熟語','武'], desc:'メシア', season:'S4' },
+  { word:'選ばれし', chars:['選','ば','れ','し'], rarity:'★12', tags:['四字熟語'], desc:'チョーズンワン', season:'S4' },
+
+  // ダンジョン
+  { word:'地下迷宮', chars:['地','下','迷','宮'], rarity:'★13', tags:['四字熟語'], desc:'ダンジョン', season:'S4' },
+  { word:'迷宮深部', chars:['迷','宮','深','部'], rarity:'★14', tags:['四字熟語'], desc:'深層迷宮', season:'S4' },
+  { word:'最深層', chars:['最','深','層'], rarity:'★13', tags:['四字熟語'], desc:'ボトムフロア', season:'S4' },
+  { word:'魔物巣窟', chars:['魔','物','巣','窟'], rarity:'★14', tags:['四字熟語','神字'], desc:'モンスターネスト', season:'S4' },
+
+  // 戦闘
+  { word:'死闘激闘', chars:['死','闘','激','闘'], rarity:'★14', tags:['四字熟語','武'], desc:'死闘', season:'S4' },
+  { word:'死力尽', chars:['死','力','尽'], rarity:'★13', tags:['四字熟語','武'], desc:'命を懸ける', season:'S4' },
+  { word:'渾身一撃', chars:['渾','身','一','撃'], rarity:'★13', tags:['四字熟語','武'], desc:'フルパワー', season:'S4' },
+  { word:'必殺技', chars:['必','殺','技'], rarity:'★12', tags:['四字熟語','武'], desc:'スペシャルムーブ', season:'S4' },
+  { word:'秘剣秘技', chars:['秘','剣','秘','技'], rarity:'★14', tags:['四字熟語','武'], desc:'秘剣', season:'S4' },
+
+  // ボス
+  { word:'最終決戦', chars:['最','終','決','戦'], rarity:'★13', tags:['四字熟語','武'], desc:'ファイナルバトル', season:'S4' },
+  { word:'魔王降臨', chars:['魔','王','降','臨'], rarity:'★15', tags:['四字熟語','神字'], desc:'魔王登場', season:'S4' },
+  { word:'魔王討伐', chars:['魔','王','討','伐'], rarity:'★14', tags:['四字熟語','武','神字'], desc:'魔王打倒', season:'S4' },
+  { word:'魔界滅亡', chars:['魔','界','滅','亡'], rarity:'★15', tags:['四字熟語','神字'], desc:'魔界終焉', season:'S4' },
+
+  // 武具・装備
+  { word:'防具防衛', chars:['防','具','防','衛'], rarity:'★12', tags:['四字熟語','武'], desc:'アーマー', season:'S4' },
+  { word:'兜甲盾', chars:['兜','甲','盾'], rarity:'★13', tags:['四字熟語','武'], desc:'装備一式', season:'S4' },
+  { word:'神器宝具', chars:['神','器','宝','具'], rarity:'★15', tags:['四字熟語','神字'], desc:'神聖な道具', season:'S4' },
+  { word:'伝説装備', chars:['伝','説','装','備'], rarity:'★14', tags:['四字熟語','武'], desc:'レジェンダリ', season:'S4' },
+
+  // クエスト
+  { word:'試練突破', chars:['試','練','突','破'], rarity:'★12', tags:['四字熟語','武'], desc:'チャレンジクリア', season:'S4' },
+  { word:'試練克服', chars:['試','練','克','服'], rarity:'★13', tags:['四字熟語','武'], desc:'試練を超える', season:'S4' },
+  { word:'宿命挑戦', chars:['宿','命','挑','戦'], rarity:'★13', tags:['四字熟語','武','哲学'], desc:'運命に挑戦', season:'S4' },
+  { word:'運命対峙', chars:['運','命','対','峙'], rarity:'★13', tags:['四字熟語','哲学'], desc:'デスティニーフェイス', season:'S4' },
+
+  // 報酬・栄光
+  { word:'栄光勝利', chars:['栄','光','勝','利'], rarity:'★12', tags:['四字熟語','武'], desc:'ヴィクトリー', season:'S4' },
+  { word:'凱旋帰還', chars:['凱','旋','帰','還'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'凱旋', season:'S4' },
+  { word:'凱旋将軍', chars:['凱','旋','将','軍'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'勝利の将軍', season:'S4' },
+  { word:'金銀財宝', chars:['金','銀','財','宝'], rarity:'★12', tags:['四字熟語'], desc:'宝物', season:'S4' },
+
+  // パーティ・仲間
+  { word:'仲間絆深', chars:['仲','間','絆','深'], rarity:'★13', tags:['四字熟語','感情','七徳'], desc:'絆', season:'S4' },
+  { word:'四人一組', chars:['四','人','一','組'], rarity:'★12', tags:['四字熟語'], desc:'4人パーティ', season:'S4' },
+];
+for (const r of _YOJI_S4_QUEST) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
