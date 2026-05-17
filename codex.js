@@ -3844,6 +3844,72 @@ const _YOJI_S3_WORK = [
 ];
 for (const r of _YOJI_S3_WORK) YOJI_RECIPES.push(r);
 
+// v8m ── 四字熟語 +50（人間関係・徳行）
+const _YOJI_S4_RELATION = [
+  { word:'夫婦円満', chars:['夫','婦','円','満'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'夫婦の絆', season:'S4' },
+  { word:'家庭円満', chars:['家','庭','円','満'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'家族の和', season:'S4' },
+  { word:'親子和合', chars:['親','子','和','合'], rarity:'★12', tags:['四字熟語','七徳','感情'], desc:'親子の和', season:'S4' },
+  { word:'兄弟和合', chars:['兄','弟','和','合'], rarity:'★12', tags:['四字熟語','七徳'], desc:'兄弟の和', season:'S4' },
+  { word:'親密交友', chars:['親','密','交','友'], rarity:'★12', tags:['四字熟語','感情'], desc:'親密な友', season:'S4' },
+  { word:'故旧再会', chars:['故','旧','再','会'], rarity:'★14', tags:['四字熟語','感情','古典'], desc:'旧友との再会', season:'S4' },
+  { word:'旧友再会', chars:['旧','友','再','会'], rarity:'★12', tags:['四字熟語','感情'], desc:'昔の友', season:'S4' },
+  { word:'友情厚誼', chars:['友','情','厚','誼'], rarity:'★15', tags:['四字熟語','感情','古典'], desc:'深い友情', season:'S4' },
+
+  // 礼・徳
+  { word:'温良恭儉', chars:['温','良','恭','儉'], rarity:'★16', tags:['四字熟語','儒教','七徳'], desc:'孔子の徳', season:'S4' },
+  { word:'仁義孝悌', chars:['仁','義','孝','悌'], rarity:'★15', tags:['四字熟語','儒教','七徳'], desc:'儒教徳目', season:'S4' },
+  { word:'仁愛忠孝', chars:['仁','愛','忠','孝'], rarity:'★14', tags:['四字熟語','儒教','七徳'], desc:'四徳', season:'S4' },
+  { word:'信義誠実', chars:['信','義','誠','実'], rarity:'★13', tags:['四字熟語','七徳'], desc:'真実', season:'S4' },
+  { word:'忠恕一貫', chars:['忠','恕','一','貫'], rarity:'★16', tags:['四字熟語','儒教','古典'], desc:'孔子の一貫', season:'S4' },
+  { word:'仁愛博愛', chars:['仁','愛','博','愛'], rarity:'★13', tags:['四字熟語','七徳'], desc:'広い愛', season:'S4' },
+  { word:'仁恕広大', chars:['仁','恕','広','大'], rarity:'★15', tags:['四字熟語','儒教'], desc:'仁の心', season:'S4' },
+
+  // 教師・学び
+  { word:'師弟関係', chars:['師','弟','関','係'], rarity:'★13', tags:['四字熟語','学','七徳'], desc:'師弟', season:'S4' },
+  { word:'指導育成', chars:['指','導','育','成'], rarity:'★12', tags:['四字熟語','学'], desc:'メンタリング', season:'S4' },
+  { word:'教育養成', chars:['教','育','養','成'], rarity:'★12', tags:['四字熟語','学'], desc:'教育', season:'S4' },
+  { word:'教師恩義', chars:['教','師','恩','義'], rarity:'★14', tags:['四字熟語','学','七徳'], desc:'師の恩', season:'S4' },
+  { word:'門弟入門', chars:['門','弟','入','門'], rarity:'★13', tags:['四字熟語','学'], desc:'弟子入り', season:'S4' },
+
+  // 接客・奉仕
+  { word:'接客奉仕', chars:['接','客','奉','仕'], rarity:'★13', tags:['四字熟語','七徳','ビジネス'], desc:'おもてなし', season:'S4' },
+  { word:'笑顔挨拶', chars:['笑','顔','挨','拶'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'スマイル', season:'S4' },
+  { word:'親切丁寧', chars:['親','切','丁','寧'], rarity:'★12', tags:['四字熟語','七徳'], desc:'カインド', season:'S4' },
+  { word:'誠心応対', chars:['誠','心','応','対'], rarity:'★13', tags:['四字熟語','七徳'], desc:'真心', season:'S4' },
+  { word:'真心応対', chars:['真','心','応','対'], rarity:'★13', tags:['四字熟語','七徳'], desc:'真心', season:'S4' },
+
+  // 思いやり
+  { word:'寛容寛大', chars:['寛','容','寛','大'], rarity:'★13', tags:['四字熟語','七徳'], desc:'寛容', season:'S4' },
+  { word:'寛大寛容', chars:['寛','大','寛','容'], rarity:'★13', tags:['四字熟語','七徳'], desc:'寛大', season:'S4' },
+  { word:'温情厚遇', chars:['温','情','厚','遇'], rarity:'★14', tags:['四字熟語','七徳'], desc:'温かく', season:'S4' },
+  { word:'温厚篤実', chars:['温','厚','篤','実'], rarity:'★13', tags:['四字熟語','七徳'], desc:'温和', season:'S4' },
+
+  // 忍耐・許し
+  { word:'忍辱寛恕', chars:['忍','辱','寛','恕'], rarity:'★16', tags:['四字熟語','仏教','古典'], desc:'忍耐と許し', season:'S4' },
+  { word:'許容寛大', chars:['許','容','寛','大'], rarity:'★13', tags:['四字熟語','七徳'], desc:'許す', season:'S4' },
+  { word:'感謝報恩', chars:['感','謝','報','恩'], rarity:'★13', tags:['四字熟語','七徳','感情'], desc:'恩返し', season:'S4' },
+  { word:'恩義恩情', chars:['恩','義','恩','情'], rarity:'★13', tags:['四字熟語','七徳'], desc:'恩義', season:'S4' },
+
+  // チームワーク
+  { word:'団結一致', chars:['団','結','一','致'], rarity:'★12', tags:['四字熟語','武'], desc:'ユニティ', season:'S4' },
+  { word:'結束強化', chars:['結','束','強','化'], rarity:'★12', tags:['四字熟語'], desc:'バインド', season:'S4' },
+  { word:'協調協力', chars:['協','調','協','力'], rarity:'★12', tags:['四字熟語'], desc:'クーパレーション', season:'S4' },
+  { word:'共生協調', chars:['共','生','協','調'], rarity:'★12', tags:['四字熟語','七徳'], desc:'共生', season:'S4' },
+  { word:'相互理解', chars:['相','互','理','解'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ミューチュアル', season:'S4' },
+
+  // 紛争解決
+  { word:'紛争解決', chars:['紛','争','解','決'], rarity:'★12', tags:['四字熟語'], desc:'コンフリクト解決', season:'S4' },
+  { word:'和解交渉', chars:['和','解','交','渉'], rarity:'★13', tags:['四字熟語'], desc:'リコンサイル', season:'S4' },
+  { word:'仲裁仲介', chars:['仲','裁','仲','介'], rarity:'★13', tags:['四字熟語'], desc:'メディエーション', season:'S4' },
+  { word:'平和的合', chars:['平','和','的','合'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ピースフル', season:'S4' },
+
+  // 励まし
+  { word:'激励奨励', chars:['激','励','奨','励'], rarity:'★13', tags:['四字熟語'], desc:'エンカレッジ', season:'S4' },
+  { word:'応援激励', chars:['応','援','激','励'], rarity:'★12', tags:['四字熟語'], desc:'応援', season:'S4' },
+  { word:'同感励まし', chars:['同','感','励','ま'], rarity:'★12', tags:['四字熟語','感情'], desc:'共感励', season:'S4' },
+];
+for (const r of _YOJI_S4_RELATION) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
