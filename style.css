@@ -2383,6 +2383,12 @@ body[data-mode="rest"] #tank{
   border-radius:5px;
   padding:6px 10px;
   display:flex; justify-content:space-between; align-items:center; gap:8px;
+  cursor:pointer;
+  transition:background .15s, transform .1s;
+}
+.codex-yoji-item:hover{
+  background:rgba(255,255,255,.07);
+  transform:translateX(2px);
 }
 .cy-text{
   font-family:'Noto Serif JP', serif;
@@ -3143,6 +3149,87 @@ body[data-mode="rest"] #tank{
 .tier-unlock-celebration.tier-16 .tuc-particle{
   background:linear-gradient(180deg, transparent,
     hsl(calc(var(--i, 0) * 30deg), 80%, 70%), white);
+}
+
+/* ════════════════════ 熟語詳細ポップアップ（図鑑からタップ） ════════════════════ */
+.yoji-detail-pop{
+  position:fixed;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  width:min(360px, 90vw);
+  padding:24px 22px;
+  background:linear-gradient(180deg, rgba(20,30,55,.98) 0%, rgba(7,17,28,.98) 100%);
+  border:2px solid var(--r-color, var(--gold));
+  border-radius:14px;
+  box-shadow:0 8px 40px rgba(0,0,0,.6), 0 0 40px var(--r-glow, rgba(240,212,138,.4));
+  z-index:200;
+  font-family:'Noto Serif JP', serif;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  animation:tucFadeIn .3s ease-out;
+}
+.yoji-detail-pop .ydp-close{
+  position:absolute; top:8px; right:10px;
+  background:transparent; border:none; color:var(--ink-mute);
+  font-size:1.4rem; cursor:pointer; padding:0 8px;
+}
+.yoji-detail-pop .ydp-rarity{
+  font-size:.85rem; font-weight:900;
+  color:var(--r-color, var(--gold));
+  letter-spacing:.15em;
+}
+.yoji-detail-pop .ydp-word{
+  font-size:2.6rem; font-weight:900;
+  color:#fff5b0;
+  text-shadow:0 0 20px var(--r-glow, gold);
+  margin:4px 0;
+  letter-spacing:.08em;
+}
+.yoji-detail-pop .ydp-desc{
+  font-size:.95rem; color:#cfe6ff;
+  font-style:italic;
+  text-align:center;
+}
+.yoji-detail-pop .ydp-chars-label{
+  font-size:.7rem; color:var(--ink-mute);
+  letter-spacing:.2em;
+  margin-top:8px;
+}
+.yoji-detail-pop .ydp-chars{
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+}
+.yoji-detail-pop .yd-char{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:48px; height:48px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 28%, rgba(255,255,250,.7) 0%, rgba(255,250,230,.35) 22%, transparent 55%),
+             radial-gradient(circle at 50% 55%, #f3e7c8 0%, #e6d3a8 60%, #c9b285 100%);
+  border:2px solid rgba(255,255,255,.3);
+  color:#5b4a30;
+  font-size:1.4rem; font-weight:900;
+}
+.yoji-detail-pop .yd-char.unseen{
+  opacity:.35;
+  background:rgba(255,255,255,.05);
+  color:var(--ink-mute);
+  border-style:dashed;
+}
+.yoji-detail-pop .yd-char.in-party{
+  border-color:var(--gold);
+  box-shadow:0 0 12px rgba(240,212,138,.6);
+}
+.yoji-detail-pop .ydp-tags{
+  font-size:.72rem; color:var(--ink-mute);
+  font-family:'JetBrains Mono', monospace;
+  text-align:center;
+  margin-top:4px;
+}
+.yoji-detail-pop .ydp-hint{
+  font-size:.78rem; color:#cfe6ff;
+  text-align:center; margin-top:6px;
+  padding:8px 12px;
+  background:rgba(135,206,235,.06);
+  border:1px dashed rgba(135,206,235,.25);
+  border-radius:6px;
 }
 
 /* ════════════════════ 統計：最近解放した熟語 ════════════════════ */

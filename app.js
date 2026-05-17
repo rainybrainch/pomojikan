@@ -3214,6 +3214,48 @@ function applyCodexTabMask() {
 }
 function closeCodex() { $('#codex-modal').classList.remove('show'); }
 
+// 熟語の詳細ポップアップ ── 構成字・タグ・発動条件
+function showYojiDetail(r) {
+  if (!r) return;
+  $$('.yoji-detail-pop').forEach(e => e.remove());
+  const found = isYojiDiscovered(r);
+  const rIdx = RARITY_TIERS.indexOf(r.rarity);
+  const charRow = (r.chars || []).map(c => {
+    const seen = (STATE.collection[c] || 0) > 0;
+    const inParty = partyContainsChar(c) >= 0;
+    return el('span', {
+      class: 'yd-char' + (seen ? ' seen' : ' unseen') + (inParty ? ' in-party' : ''),
+      title: seen ? `発見済 ${STATE.collection[c]} 回` : '未発見',
+    }, seen ? c : '？');
+  });
+  // 構成字を全員パーティにいるか
+  const allInParty = (r.chars || []).every(c => partyContainsChar(c) >= 0);
+  const tags = (r.tags || []).join(' ・ ');
+  const pop = el('div', { class:`yoji-detail-pop rarity-${rIdx + 1}` },
+    el('button', { class:'ydp-close', onclick:(e) => { e.stopPropagation(); pop.remove(); } }, '×'),
+    el('div', { class:'ydp-rarity' }, r.rarity),
+    el('div', { class:'ydp-word' }, found ? r.word : '？'.repeat(Math.max(2, r.word.length))),
+    found && r.desc ? el('div', { class:'ydp-desc' }, r.desc) : null,
+    el('div', { class:'ydp-chars-label' }, '構成字'),
+    el('div', { class:'ydp-chars' }, ...charRow),
+    tags ? el('div', { class:'ydp-tags' }, tags) : null,
+    el('div', { class:'ydp-hint' },
+      allInParty
+        ? '✓ 全員パーティに揃ってます ・ コンボ発動中！'
+        : found
+          ? '✓ 解放済 ・ パーティに揃えるとコンボ発動'
+          : '構成字を集めると解放できます'
+    ),
+  );
+  document.body.appendChild(pop);
+  pop.addEventListener('click', (e) => { if (e.target === pop) pop.remove(); });
+  setTimeout(() => {
+    document.addEventListener('click', function once(ev) {
+      if (!pop.contains(ev.target)) { pop.remove(); document.removeEventListener('click', once); }
+    });
+  }, 100);
+}
+
 // 字のクイック詳細
 function showCharDetail(c, rarity) {
   const tags = getCharTags(c);
@@ -3367,8 +3409,15 @@ function renderCodex() {
       // 未発見：字を全部「？」にする ・ desc も隠す
       const mask = '？'.repeat(Math.max(2, (r.word || '').length));
       const wordText  = found ? r.word : mask;
-      const metaText  = found ? `${r.rarity} ${r.desc || ''}` : `${r.rarity} ─ 構成字を集めると解放`;
-      const item = el('div', { class:`codex-yoji-item rarity-${rIdx+1}` + (found ? ' found' : ' locked') },
+      // 進捗：構成字のうち発見済の割合
+      const seenChars = (r.chars || []).filter(c => (STATE.collection[c]||0) > 0).length;
+      const totalChars = (r.chars || []).length;
+      const progText = !found && totalChars > 0 ? ` (${seenChars}/${totalChars})` : '';
+      const metaText  = found ? `${r.rarity} ${r.desc || ''}` : `${r.rarity} ─ 構成字を集めると解放${progText}`;
+      const item = el('div', {
+        class:`codex-yoji-item rarity-${rIdx+1}` + (found ? ' found' : ' locked'),
+        onclick: () => showYojiDetail(r),
+      },
         el('span', { class:'cy-text' }, wordText),
         el('span', { class:'cy-meta' }, metaText)
       );
