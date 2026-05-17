@@ -5929,6 +5929,75 @@ const _YOJI_S4_HEALTH = [
 ];
 for (const r of _YOJI_S4_HEALTH) YOJI_RECIPES.push(r);
 
+// v9q ── 二字熟語 +50（旅行・観光・冒険）
+const _YOJI_S3_TRAVEL = [
+  // 旅
+  { word:'旅人', chars:['旅','人'], rarity:'★7',  tags:['人'], desc:'トラベラー', season:'S3' },
+  { word:'旅館', chars:['旅','館'], rarity:'★8',  tags:[], desc:'りょかん', season:'S3' },
+  { word:'宿屋', chars:['宿','屋'], rarity:'★8',  tags:[], desc:'インン', season:'S3' },
+  { word:'宿場', chars:['宿','場'], rarity:'★12', tags:['古典'], desc:'宿場町', season:'S3' },
+  { word:'駅舎', chars:['駅','舎'], rarity:'★12', tags:[], desc:'ステーション', season:'S3' },
+  { word:'空港', chars:['空','港'], rarity:'★8',  tags:[], desc:'エアポート', season:'S3' },
+  { word:'港湾', chars:['港','湾'], rarity:'★13', tags:[], desc:'ハーバー', season:'S3' },
+  { word:'船着', chars:['船','着'], rarity:'★10', tags:[], desc:'ドック', season:'S3' },
+  { word:'埠頭', chars:['埠','頭'], rarity:'★15', tags:['古典'], desc:'ふとう', season:'S3' },
+
+  // 観光地
+  { word:'名所', chars:['名','所'], rarity:'★8',  tags:[], desc:'サイト', season:'S3' },
+  { word:'絶景', chars:['絶','景'], rarity:'★13', tags:['美'], desc:'絶景', season:'S3' },
+  { word:'秘境', chars:['秘','境'], rarity:'★13', tags:[], desc:'隠れ里', season:'S3' },
+  { word:'温泉', chars:['温','泉'], rarity:'★8',  tags:[], desc:'ホットスプリング', season:'S3' },
+  { word:'湯治', chars:['湯','治'], rarity:'★13', tags:['古典'], desc:'湯治', season:'S3' },
+
+  // 交通
+  { word:'交通', chars:['交','通'], rarity:'★8',  tags:[], desc:'トラフィック', season:'S3' },
+  { word:'運転', chars:['運','転'], rarity:'★8',  tags:[], desc:'ドライブ', season:'S3' },
+  { word:'運行', chars:['運','行'], rarity:'★10', tags:[], desc:'オペレーション', season:'S3' },
+  { word:'路線', chars:['路','線'], rarity:'★10', tags:[], desc:'ライン', season:'S3' },
+  { word:'時刻表', chars:['時','刻','表'], rarity:'★12', tags:['時'], desc:'タイムテーブル', season:'S3' },
+
+  // 乗り物
+  { word:'列車', chars:['列','車'], rarity:'★8',  tags:[], desc:'トレイン', season:'S3' },
+  { word:'特急', chars:['特','急'], rarity:'★10', tags:[], desc:'エクスプレス', season:'S3' },
+  { word:'急行', chars:['急','行'], rarity:'★8',  tags:[], desc:'エクスプレス', season:'S3' },
+  { word:'各駅', chars:['各','駅'], rarity:'★10', tags:[], desc:'ローカル', season:'S3' },
+  { word:'快速', chars:['快','速'], rarity:'★10', tags:[], desc:'ラピッド', season:'S3' },
+
+  // 食事
+  { word:'外食', chars:['外','食'], rarity:'★10', tags:[], desc:'外食', season:'S3' },
+  { word:'宴会', chars:['宴','会'], rarity:'★12', tags:[], desc:'バンケット', season:'S3' },
+  { word:'宴席', chars:['宴','席'], rarity:'★13', tags:[], desc:'パーティ', season:'S3' },
+  { word:'飲食', chars:['飲','食'], rarity:'★8',  tags:[], desc:'ダイニング', season:'S3' },
+
+  // 体験
+  { word:'体験', chars:['体','験'], rarity:'★8',  tags:[], desc:'エクスペリエンス', season:'S3' },
+  { word:'発見', chars:['発','見'], rarity:'★8',  tags:[], desc:'ディスカバリ', season:'S3' },
+  { word:'探検', chars:['探','検'], rarity:'★8',  tags:[], desc:'エクスペディション', season:'S3' },
+  { word:'冒険', chars:['冒','険'], rarity:'★8',  tags:[], desc:'アドベンチャー', season:'S3' },
+  { word:'探訪', chars:['探','訪'], rarity:'★13', tags:[], desc:'探訪', season:'S3' },
+
+  // 買い物
+  { word:'買物', chars:['買','物'], rarity:'★7',  tags:[], desc:'ショッピング', season:'S3' },
+  { word:'土産', chars:['土','産'], rarity:'★12', tags:['古典'], desc:'お土産', season:'S3' },
+  { word:'記念', chars:['記','念'], rarity:'★10', tags:[], desc:'メモリアル', season:'S3' },
+  { word:'紀念品', chars:['紀','念','品'], rarity:'★12', tags:[], desc:'記念品', season:'S3' },
+
+  // 国外
+  { word:'外国', chars:['外','国'], rarity:'★7',  tags:[], desc:'フォーリン', season:'S3' },
+  { word:'国内', chars:['国','内'], rarity:'★7',  tags:[], desc:'ドメスティック', season:'S3' },
+  { word:'国境', chars:['国','境'], rarity:'★10', tags:[], desc:'ボーダー', season:'S3' },
+  { word:'通関', chars:['通','関'], rarity:'★12', tags:[], desc:'カスタムズ', season:'S3' },
+  { word:'入国', chars:['入','国'], rarity:'★10', tags:[], desc:'イミグレーション', season:'S3' },
+
+  // 案内
+  { word:'案内', chars:['案','内'], rarity:'★8',  tags:[], desc:'ガイダンス', season:'S3' },
+  { word:'地図', chars:['地','図'], rarity:'★7',  tags:[], desc:'マップ', season:'S3' },
+  { word:'案内図', chars:['案','内','図'], rarity:'★12', tags:[], desc:'マップガイド', season:'S3' },
+  { word:'観光案', chars:['観','光','案'], rarity:'★12', tags:[], desc:'観光案内', season:'S3' },
+  { word:'通訳', chars:['通','訳'], rarity:'★10', tags:[], desc:'インタープリター', season:'S3' },
+];
+for (const r of _YOJI_S3_TRAVEL) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
