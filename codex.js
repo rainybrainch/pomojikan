@@ -5093,6 +5093,65 @@ const _YOJI_S4_BIZ = [
 ];
 for (const r of _YOJI_S4_BIZ) YOJI_RECIPES.push(r);
 
+// v9e ── 二字熟語 +50（教育・学習・成長）
+const _YOJI_S3_LEARN = [
+  { word:'学校', chars:['学','校'], rarity:'★6',  tags:['学'], desc:'スクール', season:'S3' },
+  { word:'大学', chars:['大','学'], rarity:'★7',  tags:['学'], desc:'ユニバーシティ', season:'S3' },
+  { word:'高校', chars:['高','校'], rarity:'★7',  tags:['学'], desc:'ハイスクール', season:'S3' },
+  { word:'中学', chars:['中','学'], rarity:'★6',  tags:['学'], desc:'ミドルスクール', season:'S3' },
+  { word:'小学', chars:['小','学'], rarity:'★6',  tags:['学'], desc:'エレメンタリ', season:'S3' },
+  { word:'学級', chars:['学','級'], rarity:'★8',  tags:['学'], desc:'クラス', season:'S3' },
+  { word:'学年', chars:['学','年'], rarity:'★8',  tags:['学','時'], desc:'グレード', season:'S3' },
+  { word:'学期', chars:['学','期'], rarity:'★8',  tags:['学','時'], desc:'セメスター', season:'S3' },
+  { word:'学費', chars:['学','費'], rarity:'★12', tags:['学'], desc:'授業料', season:'S3' },
+  { word:'学生', chars:['学','生'], rarity:'★7',  tags:['学','人'], desc:'スチューデント', season:'S3' },
+
+  { word:'卒業', chars:['卒','業'], rarity:'★8',  tags:['学'], desc:'グラデュエーション', season:'S3' },
+  { word:'入学', chars:['入','学'], rarity:'★8',  tags:['学'], desc:'入学', season:'S3' },
+  { word:'進学', chars:['進','学'], rarity:'★8',  tags:['学'], desc:'進学', season:'S3' },
+  { word:'転校', chars:['転','校'], rarity:'★8',  tags:['学'], desc:'転校', season:'S3' },
+  { word:'修了', chars:['修','了'], rarity:'★12', tags:['学'], desc:'コース修了', season:'S3' },
+
+  { word:'試験', chars:['試','験'], rarity:'★8',  tags:['学'], desc:'テスト', season:'S3' },
+  { word:'受験', chars:['受','験'], rarity:'★8',  tags:['学'], desc:'入試', season:'S3' },
+  { word:'入試', chars:['入','試'], rarity:'★8',  tags:['学'], desc:'エントランス', season:'S3' },
+  { word:'合格', chars:['合','格'], rarity:'★8',  tags:['学'], desc:'パス', season:'S3' },
+  { word:'不合格', chars:['不','合','格'], rarity:'★8',  tags:['学'], desc:'フェイル', season:'S3' },
+
+  { word:'授業', chars:['授','業'], rarity:'★8',  tags:['学'], desc:'クラス', season:'S3' },
+  { word:'講座', chars:['講','座'], rarity:'★12', tags:['学'], desc:'コース', season:'S3' },
+  { word:'公開', chars:['公','開'], rarity:'★8',  tags:[], desc:'パブリック', season:'S3' },
+  { word:'公開講', chars:['公','開','講'], rarity:'★12', tags:['学'], desc:'オープン講座', season:'S3' },
+  { word:'修了式', chars:['修','了','式'], rarity:'★12', tags:['学'], desc:'修了式', season:'S3' },
+
+  // 学習
+  { word:'学習', chars:['学','習'], rarity:'★8',  tags:['学'], desc:'ラーニング', season:'S3' },
+  { word:'習得', chars:['習','得'], rarity:'★8',  tags:['学'], desc:'マスタリ', season:'S3' },
+  { word:'習熟', chars:['習','熟'], rarity:'★13', tags:['学'], desc:'プロフィシエンシ', season:'S3' },
+  { word:'熟達', chars:['熟','達'], rarity:'★13', tags:['学'], desc:'マスタリ', season:'S3' },
+  { word:'修練', chars:['修','練'], rarity:'★13', tags:['学','武'], desc:'トレーニング', season:'S3' },
+  { word:'修練', chars:['修','練'], rarity:'★13', tags:['学'], desc:'プラクティス', season:'S3' },
+  { word:'練習', chars:['練','習'], rarity:'★8',  tags:['学'], desc:'プラクティス', season:'S3' },
+  { word:'訓練', chars:['訓','練'], rarity:'★10', tags:['学','武'], desc:'トレーニング', season:'S3' },
+
+  // 成長
+  { word:'成長', chars:['成','長'], rarity:'★8',  tags:[], desc:'グロース', season:'S3' },
+  { word:'発達', chars:['発','達'], rarity:'★8',  tags:[], desc:'デベロップ', season:'S3' },
+  { word:'発展', chars:['発','展'], rarity:'★8',  tags:[], desc:'ディベロップメント', season:'S3' },
+  { word:'進化', chars:['進','化'], rarity:'★8',  tags:['科学'], desc:'エボリューション', season:'S3' },
+  { word:'進歩', chars:['進','歩'], rarity:'★8',  tags:[], desc:'プログレス', season:'S3' },
+  { word:'向上', chars:['向','上'], rarity:'★8',  tags:[], desc:'インプルーブメント', season:'S3' },
+  { word:'昇進', chars:['昇','進'], rarity:'★10', tags:['ビジネス'], desc:'プロモーション', season:'S3' },
+
+  // 技能
+  { word:'技能', chars:['技','能'], rarity:'★8',  tags:['武'], desc:'スキル', season:'S3' },
+  { word:'技術', chars:['技','術'], rarity:'★8',  tags:['科学'], desc:'テクニック', season:'S3' },
+  { word:'能力', chars:['能','力'], rarity:'★8',  tags:[], desc:'アビリティ', season:'S3' },
+  { word:'才能', chars:['才','能'], rarity:'★10', tags:[], desc:'タレント', season:'S3' },
+  { word:'資質', chars:['資','質'], rarity:'★12', tags:[], desc:'クオリティ', season:'S3' },
+];
+for (const r of _YOJI_S3_LEARN) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
