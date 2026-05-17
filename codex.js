@@ -4751,6 +4751,72 @@ const _YOJI_S4_ACHIEVE = [
 ];
 for (const r of _YOJI_S4_ACHIEVE) YOJI_RECIPES.push(r);
 
+// v8z ── 二字熟語 +50（数字・順序・量）
+const _YOJI_S3_NUM = [
+  // 数字
+  { word:'一番', chars:['一','番'], rarity:'★6',  tags:['数'], desc:'No.1', season:'S3' },
+  { word:'二番', chars:['二','番'], rarity:'★6',  tags:['数'], desc:'No.2', season:'S3' },
+  { word:'第一', chars:['第','一'], rarity:'★8',  tags:['数','順序'], desc:'ファースト', season:'S3' },
+  { word:'第二', chars:['第','二'], rarity:'★8',  tags:['数','順序'], desc:'セカンド', season:'S3' },
+  { word:'第三', chars:['第','三'], rarity:'★8',  tags:['数','順序'], desc:'サード', season:'S3' },
+  { word:'最初', chars:['最','初'], rarity:'★7',  tags:['順序'], desc:'ファースト', season:'S3' },
+  { word:'最後', chars:['最','後'], rarity:'★7',  tags:['順序'], desc:'ラスト', season:'S3' },
+  { word:'前者', chars:['前','者'], rarity:'★12', tags:['順序'], desc:'フォーマー', season:'S3' },
+  { word:'後者', chars:['後','者'], rarity:'★12', tags:['順序'], desc:'ラター', season:'S3' },
+
+  // 大量・少量
+  { word:'多数', chars:['多','数'], rarity:'★8',  tags:['数'], desc:'メジャー', season:'S3' },
+  { word:'少数', chars:['少','数'], rarity:'★8',  tags:['数'], desc:'マイナー', season:'S3' },
+  { word:'過半', chars:['過','半'], rarity:'★12', tags:['数'], desc:'マジョリティ', season:'S3' },
+  { word:'半数', chars:['半','数'], rarity:'★8',  tags:['数'], desc:'ハーフ', season:'S3' },
+  { word:'全数', chars:['全','数'], rarity:'★8',  tags:['数'], desc:'オール', season:'S3' },
+  { word:'多量', chars:['多','量'], rarity:'★10', tags:['数'], desc:'ロット', season:'S3' },
+  { word:'少量', chars:['少','量'], rarity:'★10', tags:['数'], desc:'リトル', season:'S3' },
+  { word:'最大', chars:['最','大'], rarity:'★7',  tags:['数'], desc:'マックス', season:'S3' },
+  { word:'最小', chars:['最','小'], rarity:'★7',  tags:['数'], desc:'ミニマム', season:'S3' },
+  { word:'最高', chars:['最','高'], rarity:'★7',  tags:[], desc:'マックス', season:'S3' },
+  { word:'最低', chars:['最','低'], rarity:'★7',  tags:[], desc:'ミニマム', season:'S3' },
+
+  // 全体・部分
+  { word:'全体', chars:['全','体'], rarity:'★8',  tags:[], desc:'ホール', season:'S3' },
+  { word:'部分', chars:['部','分'], rarity:'★8',  tags:[], desc:'パート', season:'S3' },
+  { word:'各部', chars:['各','部'], rarity:'★10', tags:[], desc:'各部', season:'S3' },
+  { word:'断片', chars:['断','片'], rarity:'★12', tags:[], desc:'フラグメント', season:'S3' },
+  { word:'欠片', chars:['欠','片'], rarity:'★13', tags:[], desc:'ピース', season:'S3' },
+
+  // 級・等級
+  { word:'一級', chars:['一','級'], rarity:'★8',  tags:['順序'], desc:'グレード1', season:'S3' },
+  { word:'上級', chars:['上','級'], rarity:'★8',  tags:['順序'], desc:'アドバンス', season:'S3' },
+  { word:'中級', chars:['中','級'], rarity:'★8',  tags:['順序'], desc:'インターミディエート', season:'S3' },
+  { word:'初級', chars:['初','級'], rarity:'★8',  tags:['順序'], desc:'ビギナー', season:'S3' },
+  { word:'特級', chars:['特','級'], rarity:'★10', tags:['順序'], desc:'スペシャル', season:'S3' },
+  { word:'最上', chars:['最','上'], rarity:'★10', tags:['順序'], desc:'トップ', season:'S3' },
+  { word:'極上', chars:['極','上'], rarity:'★12', tags:['順序'], desc:'プレミアム', season:'S3' },
+
+  // 度・百分率
+  { word:'度合', chars:['度','合'], rarity:'★10', tags:[], desc:'デグリー', season:'S3' },
+  { word:'程度', chars:['程','度'], rarity:'★8',  tags:[], desc:'レベル', season:'S3' },
+  { word:'割合', chars:['割','合'], rarity:'★10', tags:['数'], desc:'パーセンテージ', season:'S3' },
+  { word:'比率', chars:['比','率'], rarity:'★10', tags:['数'], desc:'レシオ', season:'S3' },
+  { word:'百分率', chars:['百','分','率'], rarity:'★13', tags:['数'], desc:'パーセント', season:'S3' },
+
+  // 計算
+  { word:'加算', chars:['加','算'], rarity:'★10', tags:['数'], desc:'アディション', season:'S3' },
+  { word:'減算', chars:['減','算'], rarity:'★10', tags:['数'], desc:'サブトラクション', season:'S3' },
+  { word:'乗算', chars:['乗','算'], rarity:'★12', tags:['数'], desc:'マルチプリケーション', season:'S3' },
+  { word:'除算', chars:['除','算'], rarity:'★12', tags:['数'], desc:'ディビジョン', season:'S3' },
+  { word:'合計', chars:['合','計'], rarity:'★8',  tags:['数'], desc:'トータル', season:'S3' },
+  { word:'累計', chars:['累','計'], rarity:'★12', tags:['数'], desc:'キュムレーティブ', season:'S3' },
+
+  // 時系列
+  { word:'過程', chars:['過','程'], rarity:'★10', tags:['順序'], desc:'プロセス', season:'S3' },
+  { word:'順序', chars:['順','序'], rarity:'★8',  tags:['順序'], desc:'オーダー', season:'S3' },
+  { word:'順番', chars:['順','番'], rarity:'★8',  tags:['順序'], desc:'シーケンス', season:'S3' },
+  { word:'段階', chars:['段','階'], rarity:'★10', tags:['順序'], desc:'ステージ', season:'S3' },
+  { word:'順位', chars:['順','位'], rarity:'★10', tags:['順序'], desc:'ランク', season:'S3' },
+];
+for (const r of _YOJI_S3_NUM) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
