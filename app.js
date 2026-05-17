@@ -480,6 +480,56 @@ function generateTransferCode() {
   } catch (e) { return ''; }
 }
 
+// JSON バックアップ ── 全 STATE をダウンロード
+function exportStateJSON() {
+  try {
+    const data = {
+      app: 'pomojikan',
+      exportedAt: new Date().toISOString(),
+      state: STATE,
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pomojikan-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast('💾 バックアップを保存', '★14');
+  } catch (e) {
+    toast('バックアップ失敗', '★1');
+  }
+}
+
+// JSON 復元 ── ファイル選択 → STATE 上書き
+function importStateJSON() {
+  if (!confirm('現在のデータを JSON で上書きしますか？（取り消せません）')) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data.state || data.app !== 'pomojikan') throw new Error('format mismatch');
+        Object.assign(STATE, data.state);
+        saveState();
+        toast('📂 復元完了 ・ リロードします', '★14');
+        setTimeout(() => location.reload(), 1200);
+      } catch (err) {
+        toast('JSON 解析失敗: ' + err.message, '★1');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
 async function copyTransferCode() {
   const code = generateTransferCode();
   if (!code) { toast('コード生成に失敗'); return; }
@@ -3974,6 +4024,8 @@ function bindEvents() {
 
   bindOpt('#btn-audio', toggleAudio);
   bindOpt('#btn-issue-code', copyTransferCode);
+  bindOpt('#btn-export-data', exportStateJSON);
+  bindOpt('#btn-import-data', importStateJSON);
   bindOpt('#btn-apply-code', promptApplyTransferCode);
   $('#ob-next').addEventListener('click', obNext);
   $('#ob-skip').addEventListener('click', obSkip);
