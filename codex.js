@@ -4471,6 +4471,72 @@ const _YOJI_S4_MUSIC = [
 ];
 for (const r of _YOJI_S4_MUSIC) YOJI_RECIPES.push(r);
 
+// v8v ── 二字熟語 +50（医療・健康・身体）
+const _YOJI_S3_HEALTH = [
+  // 医療
+  { word:'医療', chars:['医','療'], rarity:'★8',  tags:[], desc:'メディカル', season:'S3' },
+  { word:'治療', chars:['治','療'], rarity:'★8',  tags:[], desc:'トリートメント', season:'S3' },
+  { word:'看護', chars:['看','護'], rarity:'★12', tags:[], desc:'ナーシング', season:'S3' },
+  { word:'手術', chars:['手','術'], rarity:'★8',  tags:[], desc:'サージェリー', season:'S3' },
+  { word:'検査', chars:['検','査'], rarity:'★8',  tags:[], desc:'インスペクション', season:'S3' },
+  { word:'診断', chars:['診','断'], rarity:'★12', tags:[], desc:'ダイアグノシス', season:'S3' },
+  { word:'処方', chars:['処','方'], rarity:'★12', tags:[], desc:'プレスクリプション', season:'S3' },
+  { word:'薬剤', chars:['薬','剤'], rarity:'★12', tags:[], desc:'メディスン', season:'S3' },
+  { word:'予防', chars:['予','防'], rarity:'★8',  tags:[], desc:'プリベンション', season:'S3' },
+  { word:'回復', chars:['回','復'], rarity:'★8',  tags:[], desc:'リカバリ', season:'S3' },
+
+  // 健康
+  { word:'健康', chars:['健','康'], rarity:'★8',  tags:[], desc:'ヘルス', season:'S3' },
+  { word:'体調', chars:['体','調'], rarity:'★8',  tags:[], desc:'コンディション', season:'S3' },
+  { word:'体力', chars:['体','力'], rarity:'★7',  tags:['武'], desc:'スタミナ', season:'S3' },
+  { word:'免疫', chars:['免','疫'], rarity:'★13', tags:[], desc:'イミューン', season:'S3' },
+  { word:'抗体', chars:['抗','体'], rarity:'★13', tags:[], desc:'アンチボディ', season:'S3' },
+  { word:'代謝', chars:['代','謝'], rarity:'★12', tags:[], desc:'メタボリズム', season:'S3' },
+  { word:'栄養', chars:['栄','養'], rarity:'★8',  tags:[], desc:'ニュートリション', season:'S3' },
+
+  // 体の部位
+  { word:'頭部', chars:['頭','部'], rarity:'★8',  tags:[], desc:'ヘッド', season:'S3' },
+  { word:'胸部', chars:['胸','部'], rarity:'★8',  tags:[], desc:'チェスト', season:'S3' },
+  { word:'腹部', chars:['腹','部'], rarity:'★8',  tags:[], desc:'アブドメン', season:'S3' },
+  { word:'背中', chars:['背','中'], rarity:'★7',  tags:[], desc:'バック', season:'S3' },
+  { word:'手足', chars:['手','足'], rarity:'★6',  tags:[], desc:'リム', season:'S3' },
+  { word:'指先', chars:['指','先'], rarity:'★8',  tags:[], desc:'フィンガーティップ', season:'S3' },
+
+  // 内臓
+  { word:'内臓', chars:['内','臓'], rarity:'★12', tags:[], desc:'インテストイン', season:'S3' },
+  { word:'胃腸', chars:['胃','腸'], rarity:'★12', tags:[], desc:'スタマック', season:'S3' },
+  { word:'肝腎', chars:['肝','腎'], rarity:'★14', tags:[], desc:'リバー＆キドニー', season:'S3' },
+
+  // 心身
+  { word:'心身', chars:['心','身'], rarity:'★8',  tags:[], desc:'ボディ＆マインド', season:'S3' },
+  { word:'精神病', chars:['精','神','病'], rarity:'★12', tags:[], desc:'メンタル疾患', season:'S3' },
+  { word:'鬱病', chars:['鬱','病'], rarity:'★13', tags:[], desc:'うつ', season:'S3' },
+  { word:'不眠症', chars:['不','眠','症'], rarity:'★13', tags:[], desc:'不眠', season:'S3' },
+  { word:'疲労', chars:['疲','労'], rarity:'★8',  tags:[], desc:'ファティーグ', season:'S3' },
+  { word:'休息', chars:['休','息'], rarity:'★8',  tags:[], desc:'レスト', season:'S3' },
+
+  // 病
+  { word:'疾患', chars:['疾','患'], rarity:'★12', tags:[], desc:'ディジーズ', season:'S3' },
+  { word:'症状', chars:['症','状'], rarity:'★8',  tags:[], desc:'シンプトム', season:'S3' },
+  { word:'発症', chars:['発','症'], rarity:'★12', tags:[], desc:'オンセット', season:'S3' },
+  { word:'感染', chars:['感','染'], rarity:'★8',  tags:[], desc:'インフェクション', season:'S3' },
+  { word:'伝染', chars:['伝','染'], rarity:'★12', tags:[], desc:'コンタジョン', season:'S3' },
+  { word:'流行', chars:['流','行'], rarity:'★8',  tags:[], desc:'トレンド／パンデミック', season:'S3' },
+
+  // 治療法
+  { word:'針治療', chars:['針','治','療'], rarity:'★12', tags:['古典'], desc:'はり', season:'S3' },
+  { word:'灸治療', chars:['灸','治','療'], rarity:'★15', tags:['古典'], desc:'きゅう', season:'S3' },
+  { word:'指圧', chars:['指','圧'], rarity:'★12', tags:[], desc:'しあつ', season:'S3' },
+  { word:'按摩', chars:['按','摩'], rarity:'★15', tags:['古典'], desc:'マッサージ', season:'S3' },
+  { word:'整体', chars:['整','体'], rarity:'★12', tags:[], desc:'カイロ', season:'S3' },
+
+  // 漢方
+  { word:'漢方', chars:['漢','方'], rarity:'★13', tags:['古典'], desc:'カンポー', season:'S3' },
+  { word:'生薬', chars:['生','薬'], rarity:'★13', tags:[], desc:'ハーバル', season:'S3' },
+  { word:'薬草', chars:['薬','草'], rarity:'★12', tags:['自然'], desc:'ハーブ', season:'S3' },
+];
+for (const r of _YOJI_S3_HEALTH) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
