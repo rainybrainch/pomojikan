@@ -1642,6 +1642,62 @@ const _YOJI_S3_EXPAND = [
 ];
 for (const r of _YOJI_S3_EXPAND) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7g（2026-05-17）── 流行語シーズン拡充（S5 昭和／S6 令和／S7 未来）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_SEASONS_EXPAND = [
+  // ─── S5 昭和文化 ───
+  { word:'高度成長', chars:['高','度','成','長'], rarity:'★12', tags:['昭和','ビジネス'], desc:'高度経済成長期', season:'S5' },
+  { word:'三種神器', chars:['三','種','神','器'], rarity:'★13', tags:['昭和','古典'], desc:'白物家電（冷蔵庫・洗濯機・テレビ）', season:'S5' },
+  { word:'復興期', chars:['復','興','期'], rarity:'★11', tags:['昭和'], desc:'戦後復興', season:'S5' },
+  { word:'戦後復興', chars:['戦','後','復','興'], rarity:'★12', tags:['昭和'], desc:'戦後の建て直し', season:'S5' },
+  { word:'バブル経済', chars:['バ','ブ','ル','経'], rarity:'★13', tags:['昭和','ビジネス'], desc:'80 年代後半', season:'S5' },
+  { word:'万国博覧', chars:['万','国','博','覧'], rarity:'★13', tags:['昭和'], desc:'大阪万博', season:'S5' },
+  { word:'歌謡曲', chars:['歌','謡','曲'], rarity:'★11', tags:['昭和','美'], desc:'昭和ポップス', season:'S5' },
+  { word:'夢の世代', chars:['夢','の','世','代'], rarity:'★11', tags:['昭和'], desc:'夢を見られた時代', season:'S5' },
+  { word:'昭和歌姫', chars:['昭','和','歌','姫'], rarity:'★13', tags:['昭和','美'], desc:'昭和の女性歌手', season:'S5' },
+  { word:'高速道路', chars:['高','速','道','路'], rarity:'★11', tags:['昭和'], desc:'インフラ整備', season:'S5' },
+  { word:'新幹線', chars:['新','幹','線'], rarity:'★11', tags:['昭和'], desc:'高速鉄道', season:'S5' },
+  { word:'公衆電話', chars:['公','衆','電','話'], rarity:'★12', tags:['昭和'], desc:'外で使う電話', season:'S5' },
+  { word:'喫茶店', chars:['喫','茶','店'], rarity:'★12', tags:['昭和'], desc:'コーヒー店', season:'S5' },
+  { word:'雑誌文化', chars:['雑','誌','文','化'], rarity:'★12', tags:['昭和'], desc:'活字メディア', season:'S5' },
+
+  // ─── S6 令和現代 ───
+  { word:'働き方', chars:['働','き','方'], rarity:'★11', tags:['令和','ビジネス'], desc:'ワークスタイル', season:'S6' },
+  { word:'時短勤務', chars:['時','短','勤','務'], rarity:'★12', tags:['令和','ビジネス'], desc:'短時間労働', season:'S6' },
+  { word:'在宅勤務', chars:['在','宅','勤','務'], rarity:'★12', tags:['令和','ビジネス'], desc:'リモートワーク', season:'S6' },
+  { word:'副業解禁', chars:['副','業','解','禁'], rarity:'★12', tags:['令和','ビジネス'], desc:'複業 OK', season:'S6' },
+  { word:'多動力', chars:['多','動','力'], rarity:'★11', tags:['令和','ビジネス'], desc:'いろいろやる', season:'S6' },
+  { word:'断捨離', chars:['断','捨','離'], rarity:'★12', tags:['令和','禅'], desc:'物を減らす', season:'S6' },
+  { word:'丁寧暮らし', chars:['丁','寧','暮','ら'], rarity:'★12', tags:['令和'], desc:'スローライフ', season:'S6' },
+  { word:'自分時間', chars:['自','分','時','間'], rarity:'★11', tags:['令和'], desc:'マイタイム', season:'S6' },
+  { word:'推し活', chars:['推','し','活'], rarity:'★11', tags:['令和'], desc:'推しを応援', season:'S6' },
+  { word:'映え', chars:['映','え'], rarity:'★10', tags:['令和','美'], desc:'インスタ映え', season:'S6' },
+  { word:'共感力', chars:['共','感','力'], rarity:'★11', tags:['令和','感情'], desc:'エンパシー', season:'S6' },
+  { word:'多様性', chars:['多','様','性'], rarity:'★11', tags:['令和'], desc:'ダイバーシティ', season:'S6' },
+  { word:'心理安全', chars:['心','理','安','全'], rarity:'★13', tags:['令和','ビジネス'], desc:'安心して話せる', season:'S6' },
+  { word:'自己肯定', chars:['自','己','肯','定'], rarity:'★12', tags:['令和','感情'], desc:'セルフ・エスティーム', season:'S6' },
+  { word:'マインドフル', chars:['マ','イ','ン','ド'], rarity:'★13', tags:['令和','禅'], desc:'今に意識を向ける', season:'S6' },
+
+  // ─── S7 未来萌芽 ───
+  { word:'宇宙旅行', chars:['宇','宙','旅','行'], rarity:'★14', tags:['未来','天体'], desc:'スペーストラベル', season:'S7' },
+  { word:'火星移住', chars:['火','星','移','住'], rarity:'★15', tags:['未来','天体'], desc:'マーズ・コロニー', season:'S7' },
+  { word:'月面基地', chars:['月','面','基','地'], rarity:'★14', tags:['未来','天体'], desc:'ルナベース', season:'S7' },
+  { word:'人類拡張', chars:['人','類','拡','張'], rarity:'★14', tags:['未来','哲学'], desc:'ヒューマンエンハンス', season:'S7' },
+  { word:'意識転送', chars:['意','識','転','送'], rarity:'★15', tags:['未来','哲学'], desc:'マインドアップロード', season:'S7' },
+  { word:'永遠生命', chars:['永','遠','生','命'], rarity:'★15', tags:['未来','哲学'], desc:'不老不死', season:'S7' },
+  { word:'感情AI', chars:['感','情','A','I'], rarity:'★13', tags:['未来','科学'], desc:'感情を持つAI', season:'S7' },
+  { word:'創造AI', chars:['創','造','A','I'], rarity:'★13', tags:['未来','科学'], desc:'クリエイティブ生成', season:'S7' },
+  { word:'生成知能', chars:['生','成','知','能'], rarity:'★13', tags:['未来','科学'], desc:'Generative AI', season:'S7' },
+  { word:'量子通信', chars:['量','子','通','信'], rarity:'★15', tags:['未来','科学'], desc:'量子もつれ通信', season:'S7' },
+  { word:'核融合炉', chars:['核','融','合','炉'], rarity:'★15', tags:['未来','科学'], desc:'夢のエネルギー', season:'S7' },
+  { word:'脳神経網', chars:['脳','神','経','網'], rarity:'★14', tags:['未来','科学'], desc:'ニューラルネット', season:'S7' },
+  { word:'仮想自我', chars:['仮','想','自','我'], rarity:'★14', tags:['未来','哲学'], desc:'デジタルツイン', season:'S7' },
+  { word:'感性融合', chars:['感','性','融','合'], rarity:'★14', tags:['未来','感情'], desc:'人と機械の感性が融け合う', season:'S7' },
+  { word:'雨の世界', chars:['雨','の','世','界'], rarity:'★14', tags:['未来','RAINY'], desc:'雨を観る世界', season:'S7' },
+];
+for (const r of _YOJI_SEASONS_EXPAND) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
