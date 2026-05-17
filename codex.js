@@ -5152,6 +5152,74 @@ const _YOJI_S3_LEARN = [
 ];
 for (const r of _YOJI_S3_LEARN) YOJI_RECIPES.push(r);
 
+// v9f ── 四字熟語 +50（自己啓発・名言・座右の銘）
+const _YOJI_S4_SELF = [
+  { word:'自己実現', chars:['自','己','実','現'], rarity:'★12', tags:['四字熟語','哲学'], desc:'自己実現', season:'S4' },
+  { word:'自己鍛錬', chars:['自','己','鍛','錬'], rarity:'★13', tags:['四字熟語','武','禅'], desc:'自己鍛錬', season:'S4' },
+  { word:'自己研鑽', chars:['自','己','研','鑽'], rarity:'★15', tags:['四字熟語','古典','学'], desc:'自己研鑽', season:'S4' },
+  { word:'自己投資', chars:['自','己','投','資'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'自己投資', season:'S4' },
+  { word:'自己管理', chars:['自','己','管','理'], rarity:'★12', tags:['四字熟語'], desc:'セルフマネジメント', season:'S4' },
+  { word:'自己分析', chars:['自','己','分','析'], rarity:'★12', tags:['四字熟語'], desc:'セルフアナリシス', season:'S4' },
+  { word:'自己理解', chars:['自','己','理','解'], rarity:'★12', tags:['四字熟語','哲学'], desc:'自己理解', season:'S4' },
+  { word:'自己受容', chars:['自','己','受','容'], rarity:'★13', tags:['四字熟語','感情'], desc:'自己受容', season:'S4' },
+  { word:'自己表現', chars:['自','己','表','現'], rarity:'★12', tags:['四字熟語','美'], desc:'セルフエクスプレッション', season:'S4' },
+  { word:'自己責任', chars:['自','己','責','任'], rarity:'★12', tags:['四字熟語'], desc:'セルフレスポンシビリティ', season:'S4' },
+
+  // 行動指針
+  { word:'初志貫徹', chars:['初','志','貫','徹'], rarity:'★12', tags:['四字熟語','武'], desc:'初志を貫く', season:'S4' },
+  { word:'不撓不屈', chars:['不','撓','不','屈'], rarity:'★13', tags:['四字熟語','武'], desc:'挫けず', season:'S4' },
+  { word:'七転八起', chars:['七','転','八','起'], rarity:'★11', tags:['四字熟語'], desc:'再起', season:'S4' },
+  { word:'臥薪嘗胆', chars:['臥','薪','嘗','胆'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'復讐の志', season:'S4' },
+  { word:'切磋琢磨', chars:['切','磋','琢','磨'], rarity:'★14', tags:['四字熟語','武','学'], desc:'互いに磨く', season:'S4' },
+  { word:'温故知新', chars:['温','故','知','新'], rarity:'★12', tags:['四字熟語','学','儒教'], desc:'古から学ぶ', season:'S4' },
+  { word:'有言実行', chars:['有','言','実','行'], rarity:'★11', tags:['四字熟語','武'], desc:'言ったらやる', season:'S4' },
+  { word:'不言実行', chars:['不','言','実','行'], rarity:'★11', tags:['四字熟語','武'], desc:'黙って実行', season:'S4' },
+
+  // 哲学
+  { word:'格物致知', chars:['格','物','致','知'], rarity:'★15', tags:['四字熟語','儒教','哲学'], desc:'物を究めて知る', season:'S4' },
+  { word:'知行合一', chars:['知','行','合','一'], rarity:'★14', tags:['四字熟語','哲学','儒教'], desc:'知行一致', season:'S4' },
+  { word:'即時即行', chars:['即','時','即','行'], rarity:'★13', tags:['四字熟語','武'], desc:'すぐやる', season:'S4' },
+  { word:'明鏡止水', chars:['明','鏡','止','水'], rarity:'★14', tags:['四字熟語','禅','美'], desc:'澄み切った心', season:'S4' },
+  { word:'泰然自若', chars:['泰','然','自','若'], rarity:'★13', tags:['四字熟語','禅'], desc:'落ち着き', season:'S4' },
+
+  // モチベ
+  { word:'熱意情熱', chars:['熱','意','情','熱'], rarity:'★12', tags:['四字熟語','感情','武'], desc:'パッション', season:'S4' },
+  { word:'動機付け', chars:['動','機','付','け'], rarity:'★12', tags:['四字熟語'], desc:'モチベーション', season:'S4' },
+  { word:'意欲満満', chars:['意','欲','満','満'], rarity:'★12', tags:['四字熟語','武'], desc:'意欲', season:'S4' },
+  { word:'闘志旺盛', chars:['闘','志','旺','盛'], rarity:'★13', tags:['四字熟語','武'], desc:'戦意', season:'S4' },
+  { word:'活気旺盛', chars:['活','気','旺','盛'], rarity:'★12', tags:['四字熟語'], desc:'バイタリティ', season:'S4' },
+
+  // 集中
+  { word:'集中力強', chars:['集','中','力','強'], rarity:'★12', tags:['四字熟語','禅'], desc:'コンセントレーション', season:'S4' },
+  { word:'一心不乱', chars:['一','心','不','乱'], rarity:'★13', tags:['四字熟語','武','禅'], desc:'一心', season:'S4' },
+  { word:'専心集中', chars:['専','心','集','中'], rarity:'★13', tags:['四字熟語','禅'], desc:'専心', season:'S4' },
+  { word:'没頭没我', chars:['没','頭','没','我'], rarity:'★14', tags:['四字熟語','禅'], desc:'没頭', season:'S4' },
+  { word:'忘我境地', chars:['忘','我','境','地'], rarity:'★14', tags:['四字熟語','禅'], desc:'我を忘れる', season:'S4' },
+
+  // 平常心
+  { word:'平常心保', chars:['平','常','心','保'], rarity:'★13', tags:['四字熟語','禅'], desc:'平常心', season:'S4' },
+  { word:'冷静沈着', chars:['冷','静','沈','着'], rarity:'★13', tags:['四字熟語','禅'], desc:'クールヘッド', season:'S4' },
+  { word:'気持充実', chars:['気','持','充','実'], rarity:'★12', tags:['四字熟語','感情'], desc:'充実', season:'S4' },
+  { word:'精神集中', chars:['精','神','集','中'], rarity:'★12', tags:['四字熟語','禅'], desc:'メンタルフォーカス', season:'S4' },
+
+  // 振り返り
+  { word:'反省実行', chars:['反','省','実','行'], rarity:'★12', tags:['四字熟語','武'], desc:'振り返り行動', season:'S4' },
+  { word:'振返検証', chars:['振','返','検','証'], rarity:'★13', tags:['四字熟語'], desc:'検証', season:'S4' },
+  { word:'継続改善', chars:['継','続','改','善'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'カイゼン', season:'S4' },
+  { word:'反省深く', chars:['反','省','深','く'], rarity:'★12', tags:['四字熟語','感情'], desc:'深い反省', season:'S4' },
+
+  // 努力
+  { word:'刻苦勉励', chars:['刻','苦','勉','励'], rarity:'★14', tags:['四字熟語','武','学'], desc:'苦労して励む', season:'S4' },
+  { word:'懸命努力', chars:['懸','命','努','力'], rarity:'★12', tags:['四字熟語','武'], desc:'命懸け努力', season:'S4' },
+  { word:'必死全力', chars:['必','死','全','力'], rarity:'★12', tags:['四字熟語','武'], desc:'フルパワー', season:'S4' },
+  { word:'死力尽力', chars:['死','力','尽','力'], rarity:'★13', tags:['四字熟語','武'], desc:'死力を尽くす', season:'S4' },
+
+  // 自由
+  { word:'自由自在', chars:['自','由','自','在'], rarity:'★11', tags:['四字熟語'], desc:'フリースタイル', season:'S4' },
+  { word:'融通無碍', chars:['融','通','無','碍'], rarity:'★14', tags:['四字熟語','禅'], desc:'自由自在', season:'S4' },
+];
+for (const r of _YOJI_S4_SELF) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
