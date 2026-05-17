@@ -7150,6 +7150,79 @@ const _YOJI_S3_ELEMENT = [
 ];
 for (const r of _YOJI_S3_ELEMENT) YOJI_RECIPES.push(r);
 
+// v10h ── 四字熟語 +50（音楽・芸術深掘り）
+const _YOJI_S4_ART = [
+  { word:'絵画技法', chars:['絵','画','技','法'], rarity:'★13', tags:['四字熟語','美'], desc:'絵画技法', season:'S4' },
+  { word:'抽象画', chars:['抽','象','画'], rarity:'★13', tags:['四字熟語','美'], desc:'アブストラクト', season:'S4' },
+  { word:'具象画', chars:['具','象','画'], rarity:'★13', tags:['四字熟語','美'], desc:'具象', season:'S4' },
+  { word:'印象画派', chars:['印','象','画','派'], rarity:'★14', tags:['四字熟語','美'], desc:'印象派', season:'S4' },
+  { word:'写実主義', chars:['写','実','主','義'], rarity:'★14', tags:['四字熟語','美'], desc:'リアリズム', season:'S4' },
+  { word:'浪漫主義', chars:['浪','漫','主','義'], rarity:'★14', tags:['四字熟語','美'], desc:'ロマンティシズム', season:'S4' },
+  { word:'前衛芸術', chars:['前','衛','芸','術'], rarity:'★14', tags:['四字熟語','美'], desc:'アヴァンギャルド', season:'S4' },
+  { word:'現代芸術', chars:['現','代','芸','術'], rarity:'★12', tags:['四字熟語','美'], desc:'コンテンポラリーアート', season:'S4' },
+  { word:'伝統芸術', chars:['伝','統','芸','術'], rarity:'★12', tags:['四字熟語','美','古典'], desc:'トラディションナル', season:'S4' },
+  { word:'美術館', chars:['美','術','館'], rarity:'★11', tags:['四字熟語','美'], desc:'ミュージアム', season:'S4' },
+
+  // 楽器
+  { word:'弦楽四重', chars:['弦','楽','四','重'], rarity:'★14', tags:['四字熟語','美'], desc:'クァルテット', season:'S4' },
+  { word:'管楽器類', chars:['管','楽','器','類'], rarity:'★14', tags:['四字熟語','美'], desc:'木管', season:'S4' },
+  { word:'打楽器類', chars:['打','楽','器','類'], rarity:'★14', tags:['四字熟語','美'], desc:'パーカッション', season:'S4' },
+  { word:'鍵盤楽器', chars:['鍵','盤','楽','器'], rarity:'★14', tags:['四字熟語','美'], desc:'キーボード', season:'S4' },
+  { word:'撥弦楽器', chars:['撥','弦','楽','器'], rarity:'★16', tags:['四字熟語','美','古典'], desc:'撥弦', season:'S4' },
+
+  // 楽曲
+  { word:'交響曲', chars:['交','響','曲'], rarity:'★13', tags:['四字熟語','美'], desc:'シンフォニー', season:'S4' },
+  { word:'協奏曲', chars:['協','奏','曲'], rarity:'★14', tags:['四字熟語','美'], desc:'コンチェルト', season:'S4' },
+  { word:'室内楽曲', chars:['室','内','楽','曲'], rarity:'★13', tags:['四字熟語','美'], desc:'チャンバー', season:'S4' },
+  { word:'歌劇音楽', chars:['歌','劇','音','楽'], rarity:'★13', tags:['四字熟語','美'], desc:'オペラ', season:'S4' },
+  { word:'楽曲構成', chars:['楽','曲','構','成'], rarity:'★13', tags:['四字熟語','美'], desc:'コンポジション', season:'S4' },
+
+  // 音律
+  { word:'音律和声', chars:['音','律','和','声'], rarity:'★14', tags:['四字熟語','美'], desc:'ハーモニー', season:'S4' },
+  { word:'長調短調', chars:['長','調','短','調'], rarity:'★13', tags:['四字熟語','美'], desc:'メジャーマイナー', season:'S4' },
+  { word:'音律転調', chars:['音','律','転','調'], rarity:'★14', tags:['四字熟語','美'], desc:'モジュレーション', season:'S4' },
+
+  // 舞台
+  { word:'舞台装置', chars:['舞','台','装','置'], rarity:'★13', tags:['四字熟語','美'], desc:'ステージ', season:'S4' },
+  { word:'舞台照明', chars:['舞','台','照','明'], rarity:'★13', tags:['四字熟語','美'], desc:'ライティング', season:'S4' },
+  { word:'演劇公演', chars:['演','劇','公','演'], rarity:'★12', tags:['四字熟語','美'], desc:'パフォーマンス', season:'S4' },
+  { word:'観客動員', chars:['観','客','動','員'], rarity:'★12', tags:['四字熟語'], desc:'観客動員', season:'S4' },
+
+  // 詩
+  { word:'詩集詩歌', chars:['詩','集','詩','歌'], rarity:'★13', tags:['四字熟語','美','学'], desc:'詩集', season:'S4' },
+  { word:'抒情詩歌', chars:['抒','情','詩','歌'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'リリック', season:'S4' },
+  { word:'叙事詩歌', chars:['叙','事','詩','歌'], rarity:'★15', tags:['四字熟語','美','古典'], desc:'エピック', season:'S4' },
+  { word:'詩人気質', chars:['詩','人','気','質'], rarity:'★13', tags:['四字熟語','美'], desc:'ポエティック', season:'S4' },
+
+  // 小説
+  { word:'長編小説', chars:['長','編','小','説'], rarity:'★12', tags:['四字熟語','美','学'], desc:'ノベル', season:'S4' },
+  { word:'短編小説', chars:['短','編','小','説'], rarity:'★12', tags:['四字熟語','美','学'], desc:'ショートストーリ', season:'S4' },
+  { word:'推理小説', chars:['推','理','小','説'], rarity:'★12', tags:['四字熟語','美'], desc:'ミステリ', season:'S4' },
+  { word:'歴史小説', chars:['歴','史','小','説'], rarity:'★12', tags:['四字熟語','美','学'], desc:'歴史小説', season:'S4' },
+  { word:'空想小説', chars:['空','想','小','説'], rarity:'★13', tags:['四字熟語','美'], desc:'ファンタジ', season:'S4' },
+
+  // 漫画・アニメ
+  { word:'漫画作品', chars:['漫','画','作','品'], rarity:'★11', tags:['四字熟語','美','令和'], desc:'マンガ', season:'S4' },
+  { word:'動画作品', chars:['動','画','作','品'], rarity:'★11', tags:['四字熟語','美','令和'], desc:'アニメ', season:'S4' },
+  { word:'物語漫画', chars:['物','語','漫','画'], rarity:'★12', tags:['四字熟語','美','令和'], desc:'ストーリー漫画', season:'S4' },
+
+  // 写真
+  { word:'写真集発', chars:['写','真','集','発'], rarity:'★12', tags:['四字熟語','美'], desc:'写真集', season:'S4' },
+  { word:'肖像写真', chars:['肖','像','写','真'], rarity:'★13', tags:['四字熟語','美'], desc:'ポートレート', season:'S4' },
+  { word:'風景写真', chars:['風','景','写','真'], rarity:'★12', tags:['四字熟語','美','自然'], desc:'ランドスケープ', season:'S4' },
+
+  // 映画
+  { word:'映画製作', chars:['映','画','製','作'], rarity:'★12', tags:['四字熟語','美'], desc:'映画製作', season:'S4' },
+  { word:'映画祭典', chars:['映','画','祭','典'], rarity:'★13', tags:['四字熟語','美'], desc:'映画祭', season:'S4' },
+  { word:'映画批評', chars:['映','画','批','評'], rarity:'★13', tags:['四字熟語','美'], desc:'映画批評', season:'S4' },
+
+  // 工芸
+  { word:'工芸作品', chars:['工','芸','作','品'], rarity:'★12', tags:['四字熟語','美'], desc:'クラフト', season:'S4' },
+  { word:'伝統工芸', chars:['伝','統','工','芸'], rarity:'★13', tags:['四字熟語','美','古典'], desc:'伝統工芸', season:'S4' },
+  { word:'現代工芸', chars:['現','代','工','芸'], rarity:'★13', tags:['四字熟語','美'], desc:'現代工芸', season:'S4' },
+];
+for (const r of _YOJI_S4_ART) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
