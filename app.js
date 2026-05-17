@@ -381,6 +381,7 @@ const DEFAULT_STATE = {
   streak: { current: 0, longest: 0, lastDate: null },  // v7 ─ 連続日数 streak
   dailyCycles: {},                // v7b ─ 日別サイクル数 { '2026-05-17': 5 }
   milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
+  streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
 };
 
 // 長期達成マイルストーン（何十年遊べる目標）
@@ -2689,13 +2690,17 @@ function mergePomoji(src, target) {
 // パーティ表示
 // ═══════════════════════════════════════════════════════════════
 // 連続日数 streak ── サイクル完了時に呼ぶ
+// v10n（2026-05-18）── ストリークフリーズ：10日ごとに +1（最大3）、
+//   1日休んでも自動消費で連続維持。何十年遊べるための「許容」設計。
 function updateStreak() {
   if (!STATE.streak) STATE.streak = { current: 0, longest: 0, lastDate: null };
+  if (typeof STATE.streakFreezes !== 'number') STATE.streakFreezes = 0;
   const today = new Date().toISOString().slice(0, 10);  // YYYY-MM-DD
   const last = STATE.streak.lastDate;
   if (last === today) {
     return;  // 既に今日カウント済
   }
+  const prevTier = Math.floor((STATE.streak.current || 0) / 10);
   if (last) {
     const lastTime = new Date(last + 'T12:00:00').getTime();
     const todayTime = new Date(today + 'T12:00:00').getTime();
@@ -2703,12 +2708,25 @@ function updateStreak() {
     if (diffDays === 1) {
       // 連続 → +1
       STATE.streak.current += 1;
+    } else if (diffDays === 2 && STATE.streakFreezes > 0) {
+      // 1日休み + フリーズあり → 自動消費して連続継続
+      STATE.streakFreezes -= 1;
+      STATE.streak.current += 1;
+      toast(`🛡 ストリークフリーズを 1 消費 ── 連続 ${STATE.streak.current} 日 継続`, '★13');
+      playSFX('milestone');
     } else if (diffDays > 1) {
       // 飛び日 → reset to 1
       STATE.streak.current = 1;
     }
   } else {
     STATE.streak.current = 1;
+  }
+  // 10日刻みでフリーズ +1（最大 3）
+  const newTier = Math.floor(STATE.streak.current / 10);
+  if (newTier > prevTier && STATE.streakFreezes < 3) {
+    STATE.streakFreezes += 1;
+    toast(`🛡 ストリークフリーズ +1（保有 ${STATE.streakFreezes}/3）`, '★14');
+    playSFX('milestone');
   }
   if (STATE.streak.current > STATE.streak.longest) {
     STATE.streak.longest = STATE.streak.current;
@@ -4021,6 +4039,7 @@ function openStats() {
   const cells = [
     { label:'累計サイクル', value: STATE.stats.totalCycles || 0 },
     { label:'🔥 連続日数', value: `${STATE.streak?.current || 0} 日（最長 ${STATE.streak?.longest || 0}）` },
+    { label:'🛡 ストリークフリーズ', value: `${STATE.streakFreezes || 0} / 3（10日毎+1 ・ 1日休み救済）` },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
     { label:'🌏 世界の文字', value: `${discovered.toLocaleString()} / ${totalKanji.toLocaleString()}（${(discovered/totalKanji*100).toFixed(2)}%）`, span:2 },
