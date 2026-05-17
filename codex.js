@@ -2772,6 +2772,74 @@ const _YOJI_S3_NATURE = [
 ];
 for (const r of _YOJI_S3_NATURE) YOJI_RECIPES.push(r);
 
+// v7w ── 四字熟語 +50（名言・教訓・人生の節目）
+const _YOJI_S4_WISDOM = [
+  // 教え
+  { word:'温故知新', chars:['温','故','知','新'], rarity:'★12', tags:['四字熟語','学','儒教'], desc:'古を温め新を知る', season:'S4' },
+  { word:'温良恭儉', chars:['温','良','恭','儉'], rarity:'★16', tags:['四字熟語','古典','七徳'], desc:'温・良・恭・倹・譲', season:'S4' },
+  { word:'温和恭順', chars:['温','和','恭','順'], rarity:'★14', tags:['四字熟語','七徳'], desc:'温厚で従順', season:'S4' },
+  { word:'勤勉努力', chars:['勤','勉','努','力'], rarity:'★12', tags:['四字熟語','武','七徳'], desc:'頑張る', season:'S4' },
+  { word:'継続努力', chars:['継','続','努','力'], rarity:'★12', tags:['四字熟語','武'], desc:'継続は力なり', season:'S4' },
+  { word:'熟考熟慮', chars:['熟','考','熟','慮'], rarity:'★13', tags:['四字熟語','学'], desc:'よく考える', season:'S4' },
+  { word:'熟議熟談', chars:['熟','議','熟','談'], rarity:'★13', tags:['四字熟語'], desc:'十分話し合う', season:'S4' },
+  { word:'反省自省', chars:['反','省','自','省'], rarity:'★12', tags:['四字熟語','七徳'], desc:'振り返る', season:'S4' },
+
+  // 人生の節目
+  { word:'入学卒業', chars:['入','学','卒','業'], rarity:'★11', tags:['四字熟語','学','時'], desc:'入学と卒業', season:'S4' },
+  { word:'結婚式典', chars:['結','婚','式','典'], rarity:'★12', tags:['四字熟語'], desc:'結婚式', season:'S4' },
+  { word:'出産育児', chars:['出','産','育','児'], rarity:'★12', tags:['四字熟語','七徳'], desc:'子育て', season:'S4' },
+  { word:'家族団欒', chars:['家','族','団','欒'], rarity:'★14', tags:['四字熟語','七徳','感情'], desc:'家族の和', season:'S4' },
+  { word:'同窓会合', chars:['同','窓','会','合'], rarity:'★12', tags:['四字熟語'], desc:'同窓会', season:'S4' },
+  { word:'就職転職', chars:['就','職','転','職'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'仕事を始める／変える', season:'S4' },
+  { word:'退職引退', chars:['退','職','引','退'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'仕事を辞める', season:'S4' },
+  { word:'人生最期', chars:['人','生','最','期'], rarity:'★13', tags:['四字熟語','哲学','時'], desc:'人生の終わり', season:'S4' },
+
+  // 努力・継続
+  { word:'石上開花', chars:['石','上','開','花'], rarity:'★14', tags:['四字熟語','武'], desc:'石の上に花咲く', season:'S4' },
+  { word:'雨垂石穿', chars:['雨','垂','石','穿'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'継続は石を穿つ', season:'S4' },
+  { word:'積土成山', chars:['積','土','成','山'], rarity:'★15', tags:['四字熟語','古典'], desc:'土を積めば山となる', season:'S4' },
+  { word:'積小成大', chars:['積','小','成','大'], rarity:'★14', tags:['四字熟語','古典'], desc:'小さなことを積めば大に', season:'S4' },
+  { word:'継続発展', chars:['継','続','発','展'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'継続的発展', season:'S4' },
+
+  // 自然観察
+  { word:'森羅万象', chars:['森','羅','万','象'], rarity:'★15', tags:['四字熟語','自然','哲学'], desc:'全ての自然現象', season:'S4' },
+  { word:'万有引力', chars:['万','有','引','力'], rarity:'★13', tags:['四字熟語','科学','RAINY'], desc:'グラビティ', season:'S4' },
+  { word:'万物相関', chars:['万','物','相','関'], rarity:'★13', tags:['四字熟語','哲学'], desc:'全ては関連する', season:'S4' },
+  { word:'生物多様', chars:['生','物','多','様'], rarity:'★13', tags:['四字熟語','自然','科学'], desc:'バイオダイバーシティ', season:'S4' },
+  { word:'共生共栄', chars:['共','生','共','栄'], rarity:'★12', tags:['四字熟語','七徳'], desc:'共に生き栄える', season:'S4' },
+
+  // 感覚・五感
+  { word:'五感繊細', chars:['五','感','繊','細'], rarity:'★13', tags:['四字熟語'], desc:'感覚が鋭い', season:'S4' },
+  { word:'味覚優れ', chars:['味','覚','優','れ'], rarity:'★13', tags:['四字熟語'], desc:'グルメ', season:'S4' },
+  { word:'嗅覚鋭敏', chars:['嗅','覚','鋭','敏'], rarity:'★14', tags:['四字熟語'], desc:'匂いに敏感', season:'S4' },
+  { word:'触覚優美', chars:['触','覚','優','美'], rarity:'★14', tags:['四字熟語','美'], desc:'触感が美しい', season:'S4' },
+  { word:'聴覚絶妙', chars:['聴','覚','絶','妙'], rarity:'★14', tags:['四字熟語','美'], desc:'耳が良い', season:'S4' },
+
+  // 直観・本能
+  { word:'本能直観', chars:['本','能','直','観'], rarity:'★13', tags:['四字熟語','哲学'], desc:'インスティンクト', season:'S4' },
+  { word:'第六感覚', chars:['第','六','感','覚'], rarity:'★14', tags:['四字熟語','哲学'], desc:'シックスセンス', season:'S4' },
+  { word:'直感判断', chars:['直','感','判','断'], rarity:'★12', tags:['四字熟語'], desc:'インチューイティブ', season:'S4' },
+  { word:'動物的勘', chars:['動','物','的','勘'], rarity:'★13', tags:['四字熟語'], desc:'本能', season:'S4' },
+
+  // 願望・夢
+  { word:'夢実現', chars:['夢','実','現'], rarity:'★11', tags:['四字熟語'], desc:'ドリームカムトゥルー', season:'S4' },
+  { word:'目標達成', chars:['目','標','達','成'], rarity:'★11', tags:['四字熟語','武'], desc:'ゴール達成', season:'S4' },
+  { word:'夢追人', chars:['夢','追','人'], rarity:'★12', tags:['四字熟語'], desc:'ドリーマー', season:'S4' },
+  { word:'夢叶う', chars:['夢','叶','う'], rarity:'★12', tags:['四字熟語'], desc:'夢が叶う', season:'S4' },
+
+  // 時の流れ
+  { word:'歳月流れ', chars:['歳','月','流','れ'], rarity:'★12', tags:['四字熟語','時'], desc:'時は流れる', season:'S4' },
+  { word:'月日経つ', chars:['月','日','経','つ'], rarity:'★11', tags:['四字熟語','時'], desc:'月日が経つ', season:'S4' },
+  { word:'瞬時瞬間', chars:['瞬','時','瞬','間'], rarity:'★12', tags:['四字熟語','時'], desc:'一瞬', season:'S4' },
+  { word:'刻刻変化', chars:['刻','刻','変','化'], rarity:'★13', tags:['四字熟語','時'], desc:'刻一刻と', season:'S4' },
+  { word:'時間流れ', chars:['時','間','流','れ'], rarity:'★11', tags:['四字熟語','時'], desc:'タイムフロー', season:'S4' },
+
+  // 哲学（抽象）
+  { word:'実存哲学', chars:['実','存','哲','学'], rarity:'★14', tags:['四字熟語','哲学'], desc:'エグジステンシャリズム', season:'S4' },
+  { word:'観念世界', chars:['観','念','世','界'], rarity:'★13', tags:['四字熟語','哲学'], desc:'アイディアリズム', season:'S4' },
+];
+for (const r of _YOJI_S4_WISDOM) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
