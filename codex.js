@@ -4537,6 +4537,77 @@ const _YOJI_S3_HEALTH = [
 ];
 for (const r of _YOJI_S3_HEALTH) YOJI_RECIPES.push(r);
 
+// v8w ── 四字熟語 +50（地理・国際・文明）
+const _YOJI_S4_GEOG = [
+  // 大陸
+  { word:'欧州大陸', chars:['欧','州','大','陸'], rarity:'★13', tags:['四字熟語'], desc:'ヨーロッパ', season:'S4' },
+  { word:'亜細亜', chars:['亜','細','亜'], rarity:'★15', tags:['四字熟語','古典'], desc:'アジア', season:'S4' },
+  { word:'北米南米', chars:['北','米','南','米'], rarity:'★13', tags:['四字熟語'], desc:'アメリカ大陸', season:'S4' },
+  { word:'阿弗利加', chars:['阿','弗','利','加'], rarity:'★16', tags:['四字熟語','古典'], desc:'アフリカ', season:'S4' },
+  { word:'大洋州', chars:['大','洋','州'], rarity:'★14', tags:['四字熟語'], desc:'オセアニア', season:'S4' },
+
+  // 文明
+  { word:'古代文明', chars:['古','代','文','明'], rarity:'★13', tags:['四字熟語','古典'], desc:'エンシャント文明', season:'S4' },
+  { word:'四大文明', chars:['四','大','文','明'], rarity:'★14', tags:['四字熟語','古典'], desc:'四大文明', season:'S4' },
+  { word:'西洋文明', chars:['西','洋','文','明'], rarity:'★13', tags:['四字熟語'], desc:'ウェスタン', season:'S4' },
+  { word:'東洋文明', chars:['東','洋','文','明'], rarity:'★13', tags:['四字熟語'], desc:'イースタン', season:'S4' },
+  { word:'近代文明', chars:['近','代','文','明'], rarity:'★12', tags:['四字熟語'], desc:'モダン', season:'S4' },
+  { word:'現代文明', chars:['現','代','文','明'], rarity:'★12', tags:['四字熟語'], desc:'コンテンポラリ', season:'S4' },
+
+  // 文化
+  { word:'文化遺産', chars:['文','化','遺','産'], rarity:'★13', tags:['四字熟語','古典'], desc:'カルチュラルヘリテージ', season:'S4' },
+  { word:'伝統文化', chars:['伝','統','文','化'], rarity:'★12', tags:['四字熟語','古典'], desc:'トラディション', season:'S4' },
+  { word:'郷土文化', chars:['郷','土','文','化'], rarity:'★13', tags:['四字熟語'], desc:'地方文化', season:'S4' },
+  { word:'庶民文化', chars:['庶','民','文','化'], rarity:'★13', tags:['四字熟語'], desc:'ポピュラーカルチャー', season:'S4' },
+
+  // 国際関係
+  { word:'国際関係', chars:['国','際','関','係'], rarity:'★12', tags:['四字熟語'], desc:'インターナショナル', season:'S4' },
+  { word:'国際社会', chars:['国','際','社','会'], rarity:'★12', tags:['四字熟語'], desc:'グローバルソサエティ', season:'S4' },
+  { word:'国際協力', chars:['国','際','協','力'], rarity:'★12', tags:['四字熟語','七徳'], desc:'国際協調', season:'S4' },
+  { word:'国際交流', chars:['国','際','交','流'], rarity:'★12', tags:['四字熟語'], desc:'インターチェンジ', season:'S4' },
+  { word:'文化交流', chars:['文','化','交','流'], rarity:'★12', tags:['四字熟語','七徳'], desc:'カルチャー交流', season:'S4' },
+  { word:'平和外交', chars:['平','和','外','交'], rarity:'★13', tags:['四字熟語','七徳'], desc:'ピースディプロマシ', season:'S4' },
+
+  // 経済圏
+  { word:'経済圏', chars:['経','済','圏'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'エコノミックゾーン', season:'S4' },
+  { word:'通貨圏', chars:['通','貨','圏'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'カレンシーゾーン', season:'S4' },
+  { word:'貿易圏', chars:['貿','易','圏'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'トレーディングゾーン', season:'S4' },
+  { word:'自由貿易', chars:['自','由','貿','易'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'フリートレード', season:'S4' },
+
+  // 政治
+  { word:'民主主義', chars:['民','主','主','義'], rarity:'★13', tags:['四字熟語','七徳'], desc:'デモクラシー', season:'S4' },
+  { word:'自由主義', chars:['自','由','主','義'], rarity:'★12', tags:['四字熟語','哲学'], desc:'リベラリズム', season:'S4' },
+  { word:'資本主義', chars:['資','本','主','義'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'キャピタリズム', season:'S4' },
+  { word:'社会主義', chars:['社','会','主','義'], rarity:'★13', tags:['四字熟語'], desc:'ソーシャリズム', season:'S4' },
+  { word:'共産主義', chars:['共','産','主','義'], rarity:'★13', tags:['四字熟語'], desc:'コミュニズム', season:'S4' },
+
+  // 法・正義
+  { word:'国際法', chars:['国','際','法'], rarity:'★13', tags:['四字熟語'], desc:'インターナショナルロー', season:'S4' },
+  { word:'人権擁護', chars:['人','権','擁','護'], rarity:'★13', tags:['四字熟語','七徳'], desc:'ヒューマンライツ', season:'S4' },
+  { word:'人道主義', chars:['人','道','主','義'], rarity:'★13', tags:['四字熟語','七徳'], desc:'ヒューマニタリアン', season:'S4' },
+  { word:'正義擁護', chars:['正','義','擁','護'], rarity:'★13', tags:['四字熟語','七徳'], desc:'ジャスティス', season:'S4' },
+
+  // 戦争・平和
+  { word:'世界平和', chars:['世','界','平','和'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ワールドピース', season:'S4' },
+  { word:'戦争廃絶', chars:['戦','争','廃','絶'], rarity:'★14', tags:['四字熟語','七徳'], desc:'戦争反対', season:'S4' },
+  { word:'核兵器', chars:['核','兵','器'], rarity:'★13', tags:['四字熟語','科学'], desc:'核兵器', season:'S4' },
+  { word:'軍縮交渉', chars:['軍','縮','交','渉'], rarity:'★14', tags:['四字熟語'], desc:'軍縮', season:'S4' },
+
+  // 都市
+  { word:'国際都市', chars:['国','際','都','市'], rarity:'★12', tags:['四字熟語'], desc:'インターナショナル都市', season:'S4' },
+  { word:'大都市圏', chars:['大','都','市','圏'], rarity:'★12', tags:['四字熟語'], desc:'メトロポリタン', season:'S4' },
+  { word:'近代都市', chars:['近','代','都','市'], rarity:'★12', tags:['四字熟語'], desc:'モダンシティ', season:'S4' },
+  { word:'地方都市', chars:['地','方','都','市'], rarity:'★12', tags:['四字熟語'], desc:'リージョナル', season:'S4' },
+
+  // 民族
+  { word:'多民族国', chars:['多','民','族','国'], rarity:'★13', tags:['四字熟語'], desc:'マルチエスニック', season:'S4' },
+  { word:'少数民族', chars:['少','数','民','族'], rarity:'★13', tags:['四字熟語','七徳'], desc:'マイノリティ', season:'S4' },
+  { word:'先住民族', chars:['先','住','民','族'], rarity:'★13', tags:['四字熟語'], desc:'インディジナス', season:'S4' },
+  { word:'民族文化', chars:['民','族','文','化'], rarity:'★12', tags:['四字熟語'], desc:'エスニック', season:'S4' },
+  { word:'民族衣装', chars:['民','族','衣','装'], rarity:'★12', tags:['四字熟語','美'], desc:'伝統衣装', season:'S4' },
+];
+for (const r of _YOJI_S4_GEOG) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
