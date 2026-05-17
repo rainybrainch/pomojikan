@@ -2763,17 +2763,37 @@ function updateSleepClock() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// トースト ＋ 軽い通知
+// トースト ＋ 軽い通知 ── スタック表示（最大 4 個まで重ねる）
 // ═══════════════════════════════════════════════════════════════
-let toastTimer = 0;
 function toast(msg, rarity=null) {
-  const t = $('#toast');
-  t.textContent = msg;
+  let container = $('#toast-stack');
+  if (!container) {
+    container = el('div', { id:'toast-stack', class:'toast-stack' });
+    document.body.appendChild(container);
+  }
+  // 同一メッセージが直前にあれば抑制（重複防止）
+  const existing = container.querySelector('.toast.show');
+  if (existing && existing.dataset.msg === msg) return;
   const rIdx = rarity ? RARITY_TIERS.indexOf(rarity) : -1;
-  t.className = 'toast' + (rIdx >= 0 ? ' rarity-' + (rIdx + 1) : '');
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  const item = el('div', {
+    class: 'toast' + (rIdx >= 0 ? ' rarity-' + (rIdx + 1) : ''),
+    dataset: { msg },
+  }, msg);
+  container.appendChild(item);
+  // 多すぎる時は古いものから消す
+  const all = Array.from(container.querySelectorAll('.toast'));
+  if (all.length > 4) {
+    const oldest = all[0];
+    oldest.classList.remove('show');
+    setTimeout(() => oldest.remove(), 200);
+  }
+  // フェードイン
+  requestAnimationFrame(() => item.classList.add('show'));
+  // 自動消去
+  setTimeout(() => {
+    item.classList.remove('show');
+    setTimeout(() => item.remove(), 250);
+  }, 2400);
 }
 
 // ═══════════════════════════════════════════════════════════════

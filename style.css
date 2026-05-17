@@ -2070,7 +2070,28 @@ body[data-mode="rest"] #tank{
   100% { transform:scale(2.2); opacity:0; }
 }
 
-/* ════════════════════ トースト ════════════════════ */
+/* ════════════════════ トースト：スタックコンテナ ════════════════════ */
+.toast-stack{
+  position:fixed;
+  left:50%;
+  bottom:30px;
+  transform:translateX(-50%);
+  z-index:90;
+  display:flex; flex-direction:column-reverse;  /* 新しいトーストは上に追加 */
+  gap:8px;
+  pointer-events:none;
+  max-width:calc(100vw - 40px);
+}
+/* 個別トースト ── 旧 #toast の位置依存を上書き */
+.toast-stack .toast{
+  position:static;
+  left:auto; bottom:auto;
+  transform:translateY(10px);
+}
+.toast-stack .toast.show{
+  transform:translateY(0);
+}
+/* 旧 .toast（単独）も残しつつスタックでも動くように */
 .toast{
   position:fixed;left:50%;bottom:30px;
   transform:translateX(-50%) translateY(15px);
@@ -2085,6 +2106,10 @@ body[data-mode="rest"] #tank{
   pointer-events:none;
   transition:opacity .3s, transform .3s;
   box-shadow:0 8px 24px rgba(0,0,0,.45);
+  white-space:nowrap;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 /* レア発見トーストの発光 ── ★16 を頂点に逓減 */
