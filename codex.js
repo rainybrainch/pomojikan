@@ -7377,6 +7377,78 @@ const _YOJI_S4_BODY = [
 ];
 for (const r of _YOJI_S4_BODY) YOJI_RECIPES.push(r);
 
+// v10k ── 二字熟語 +50（地理・国・場所）
+const _YOJI_S3_GEO = [
+  // 大陸・海
+  { word:'大陸', chars:['大','陸'], rarity:'★8',  tags:['自然'], desc:'コンチネント', season:'S3' },
+  { word:'島嶼', chars:['島','嶼'], rarity:'★15', tags:['自然','古典'], desc:'とうしょ', season:'S3' },
+  { word:'半島', chars:['半','島'], rarity:'★10', tags:['自然'], desc:'ペニンシュラ', season:'S3' },
+  { word:'群島', chars:['群','島'], rarity:'★12', tags:['自然'], desc:'アーキペラゴ', season:'S3' },
+  { word:'孤島', chars:['孤','島'], rarity:'★13', tags:['自然','感情'], desc:'孤島', season:'S3' },
+
+  // 都道府県
+  { word:'都府', chars:['都','府'], rarity:'★10', tags:[], desc:'都府', season:'S3' },
+  { word:'県内', chars:['県','内'], rarity:'★8',  tags:[], desc:'県内', season:'S3' },
+  { word:'市内', chars:['市','内'], rarity:'★8',  tags:[], desc:'シティ', season:'S3' },
+  { word:'町村', chars:['町','村'], rarity:'★10', tags:[], desc:'町村', season:'S3' },
+  { word:'郡部', chars:['郡','部'], rarity:'★13', tags:[], desc:'郡部', season:'S3' },
+
+  // 首都
+  { word:'東京', chars:['東','京'], rarity:'★8',  tags:[], desc:'トキオ', season:'S3' },
+  { word:'京都', chars:['京','都'], rarity:'★8',  tags:[], desc:'キョート', season:'S3' },
+  { word:'大阪', chars:['大','阪'], rarity:'★12', tags:[], desc:'オオサカ', season:'S3' },
+  { word:'横浜', chars:['横','浜'], rarity:'★12', tags:[], desc:'ヨコハマ', season:'S3' },
+  { word:'神戸', chars:['神','戸'], rarity:'★12', tags:[], desc:'コウベ', season:'S3' },
+  { word:'札幌', chars:['札','幌'], rarity:'★14', tags:['古典'], desc:'サッポロ', season:'S3' },
+  { word:'仙台', chars:['仙','台'], rarity:'★13', tags:[], desc:'センダイ', season:'S3' },
+  { word:'名古', chars:['名','古'], rarity:'★10', tags:[], desc:'名古屋', season:'S3' },
+  { word:'広島', chars:['広','島'], rarity:'★10', tags:[], desc:'ヒロシマ', season:'S3' },
+  { word:'福岡', chars:['福','岡'], rarity:'★12', tags:[], desc:'フクオカ', season:'S3' },
+
+  // 街
+  { word:'銀座', chars:['銀','座'], rarity:'★13', tags:[], desc:'ギンザ', season:'S3' },
+  { word:'新宿', chars:['新','宿'], rarity:'★12', tags:[], desc:'シンジュク', season:'S3' },
+  { word:'渋谷', chars:['渋','谷'], rarity:'★12', tags:[], desc:'シブヤ', season:'S3' },
+  { word:'浅草', chars:['浅','草'], rarity:'★12', tags:['古典'], desc:'アサクサ', season:'S3' },
+
+  // 古都
+  { word:'平城京', chars:['平','城','京'], rarity:'★13', tags:['古典'], desc:'ヘイジョウキョウ', season:'S3' },
+  { word:'平安京', chars:['平','安','京'], rarity:'★13', tags:['古典'], desc:'ヘイアンキョウ', season:'S3' },
+  { word:'藤原京', chars:['藤','原','京'], rarity:'★14', tags:['古典'], desc:'藤原京', season:'S3' },
+  { word:'飛鳥京', chars:['飛','鳥','京'], rarity:'★14', tags:['古典'], desc:'飛鳥京', season:'S3' },
+
+  // 場所
+  { word:'郊外', chars:['郊','外'], rarity:'★10', tags:[], desc:'郊外', season:'S3' },
+  { word:'都心', chars:['都','心'], rarity:'★10', tags:[], desc:'都心', season:'S3' },
+  { word:'近所', chars:['近','所'], rarity:'★7',  tags:[], desc:'近所', season:'S3' },
+  { word:'隣家', chars:['隣','家'], rarity:'★10', tags:[], desc:'隣家', season:'S3' },
+  { word:'地元', chars:['地','元'], rarity:'★8',  tags:[], desc:'地元', season:'S3' },
+
+  // 自然名所
+  { word:'富士山', chars:['富','士','山'], rarity:'★12', tags:['自然','美'], desc:'富士山', season:'S3' },
+  { word:'天橋立', chars:['天','橋','立'], rarity:'★14', tags:['自然','古典','美'], desc:'天橋立', season:'S3' },
+  { word:'松島湾', chars:['松','島','湾'], rarity:'★14', tags:['自然','古典','美'], desc:'松島', season:'S3' },
+  { word:'宮島社', chars:['宮','島','社'], rarity:'★14', tags:['自然','古典','神字'], desc:'宮島', season:'S3' },
+
+  // 海外
+  { word:'欧州', chars:['欧','州'], rarity:'★10', tags:[], desc:'ヨーロッパ', season:'S3' },
+  { word:'米国', chars:['米','国'], rarity:'★8',  tags:[], desc:'USA', season:'S3' },
+  { word:'英国', chars:['英','国'], rarity:'★8',  tags:[], desc:'UK', season:'S3' },
+  { word:'仏国', chars:['仏','国'], rarity:'★8',  tags:[], desc:'フランス', season:'S3' },
+
+  // 海・川
+  { word:'太平洋', chars:['太','平','洋'], rarity:'★12', tags:['自然'], desc:'パシフィック', season:'S3' },
+  { word:'大西洋', chars:['大','西','洋'], rarity:'★13', tags:['自然'], desc:'アトランティック', season:'S3' },
+  { word:'印度洋', chars:['印','度','洋'], rarity:'★13', tags:['自然'], desc:'インディアン', season:'S3' },
+  { word:'日本海', chars:['日','本','海'], rarity:'★10', tags:['自然'], desc:'日本海', season:'S3' },
+  { word:'瀬戸内', chars:['瀬','戸','内'], rarity:'★13', tags:['自然','古典'], desc:'瀬戸内海', season:'S3' },
+
+  // 山
+  { word:'富嶽', chars:['富','嶽'], rarity:'★16', tags:['自然','古典'], desc:'富嶽', season:'S3' },
+  { word:'霊峰', chars:['霊','峰'], rarity:'★14', tags:['自然','古典','神字'], desc:'霊峰', season:'S3' },
+];
+for (const r of _YOJI_S3_GEO) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
