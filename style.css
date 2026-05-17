@@ -2379,6 +2379,7 @@ body[data-mode="rest"] #tank{
   gap:14px;
   animation:obFadeIn .5s ease-out;
 }
+.ob-step[hidden]{ display:none !important; }
 @keyframes obFadeIn{
   0%   { opacity:0; transform:translateY(12px); }
   100% { opacity:1; transform:translateY(0); }
