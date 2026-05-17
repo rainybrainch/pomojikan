@@ -6718,6 +6718,77 @@ const _YOJI_S3_SACRED = [
 ];
 for (const r of _YOJI_S3_SACRED) YOJI_RECIPES.push(r);
 
+// v10b ── 四字熟語 +50（社会・市民・コミュニティ）
+const _YOJI_S4_SOCIETY = [
+  { word:'地域社会', chars:['地','域','社','会'], rarity:'★12', tags:['四字熟語','令和','七徳'], desc:'コミュニティ', season:'S4' },
+  { word:'市民社会', chars:['市','民','社','会'], rarity:'★13', tags:['四字熟語','七徳'], desc:'シビックソサエティ', season:'S4' },
+  { word:'地域貢献', chars:['地','域','貢','献'], rarity:'★12', tags:['四字熟語','七徳'], desc:'地域貢献', season:'S4' },
+  { word:'社会奉仕', chars:['社','会','奉','仕'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ボランティア', season:'S4' },
+  { word:'地域連携', chars:['地','域','連','携'], rarity:'★12', tags:['四字熟語','令和'], desc:'地域連携', season:'S4' },
+  { word:'町内会員', chars:['町','内','会','員'], rarity:'★12', tags:['四字熟語'], desc:'町内会', season:'S4' },
+  { word:'自治団体', chars:['自','治','団','体'], rarity:'★13', tags:['四字熟語'], desc:'自治体', season:'S4' },
+  { word:'市議会', chars:['市','議','会'], rarity:'★12', tags:['四字熟語'], desc:'シティカウンシル', season:'S4' },
+
+  // 公共
+  { word:'公共施設', chars:['公','共','施','設'], rarity:'★12', tags:['四字熟語'], desc:'公共施設', season:'S4' },
+  { word:'公共交通', chars:['公','共','交','通'], rarity:'★12', tags:['四字熟語'], desc:'公共交通', season:'S4' },
+  { word:'公共空間', chars:['公','共','空','間'], rarity:'★12', tags:['四字熟語'], desc:'公共スペース', season:'S4' },
+  { word:'公共サー', chars:['公','共','サ','ー'], rarity:'★12', tags:['四字熟語'], desc:'公共サービス', season:'S4' },
+
+  // 福祉
+  { word:'社会福祉', chars:['社','会','福','祉'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ウェルフェア', season:'S4' },
+  { word:'高齢福祉', chars:['高','齢','福','祉'], rarity:'★13', tags:['四字熟語','七徳'], desc:'高齢者福祉', season:'S4' },
+  { word:'児童福祉', chars:['児','童','福','祉'], rarity:'★13', tags:['四字熟語','七徳'], desc:'児童福祉', season:'S4' },
+  { word:'障害福祉', chars:['障','害','福','祉'], rarity:'★13', tags:['四字熟語','七徳'], desc:'バリアフリー', season:'S4' },
+
+  // 教育
+  { word:'公教育', chars:['公','教','育'], rarity:'★12', tags:['四字熟語','学'], desc:'パブリック教育', season:'S4' },
+  { word:'義務教育', chars:['義','務','教','育'], rarity:'★12', tags:['四字熟語','学'], desc:'コンプルソリ', season:'S4' },
+  { word:'高等教育', chars:['高','等','教','育'], rarity:'★12', tags:['四字熟語','学'], desc:'ハイヤー', season:'S4' },
+  { word:'専門教育', chars:['専','門','教','育'], rarity:'★12', tags:['四字熟語','学'], desc:'スペシャライズ', season:'S4' },
+
+  // 経済
+  { word:'消費社会', chars:['消','費','社','会'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'コンシューマ', season:'S4' },
+  { word:'消費税法', chars:['消','費','税','法'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'消費税', season:'S4' },
+  { word:'所得税法', chars:['所','得','税','法'], rarity:'★13', tags:['四字熟語','ビジネス'], desc:'所得税', season:'S4' },
+  { word:'年金保険', chars:['年','金','保','険'], rarity:'★13', tags:['四字熟語'], desc:'年金', season:'S4' },
+  { word:'健康保険', chars:['健','康','保','険'], rarity:'★13', tags:['四字熟語'], desc:'健康保険', season:'S4' },
+
+  // 国際
+  { word:'国際機関', chars:['国','際','機','関'], rarity:'★13', tags:['四字熟語'], desc:'インターナショナル', season:'S4' },
+  { word:'国連連合', chars:['国','連','連','合'], rarity:'★13', tags:['四字熟語'], desc:'国連', season:'S4' },
+  { word:'国際援助', chars:['国','際','援','助'], rarity:'★13', tags:['四字熟語','七徳'], desc:'国際援助', season:'S4' },
+  { word:'人道援助', chars:['人','道','援','助'], rarity:'★13', tags:['四字熟語','七徳'], desc:'ヒューマニタリアン', season:'S4' },
+  { word:'災害支援', chars:['災','害','支','援'], rarity:'★12', tags:['四字熟語','七徳'], desc:'災害援助', season:'S4' },
+
+  // 環境
+  { word:'環境問題', chars:['環','境','問','題'], rarity:'★12', tags:['四字熟語','自然','未来'], desc:'環境問題', season:'S4' },
+  { word:'ゴミ問題', chars:['ゴ','ミ','問','題'], rarity:'★12', tags:['四字熟語','令和','自然'], desc:'ごみ問題', season:'S4' },
+  { word:'分別収集', chars:['分','別','収','集'], rarity:'★12', tags:['四字熟語','令和'], desc:'ゴミ分別', season:'S4' },
+  { word:'資源節約', chars:['資','源','節','約'], rarity:'★12', tags:['四字熟語','未来'], desc:'省資源', season:'S4' },
+  { word:'省エネ運', chars:['省','エ','ネ','運'], rarity:'★12', tags:['四字熟語','未来'], desc:'省エネ', season:'S4' },
+
+  // 人権
+  { word:'人権擁護', chars:['人','権','擁','護'], rarity:'★13', tags:['四字熟語','七徳'], desc:'人権', season:'S4' },
+  { word:'男女平等', chars:['男','女','平','等'], rarity:'★12', tags:['四字熟語','七徳','令和'], desc:'ジェンダー平等', season:'S4' },
+  { word:'児童権利', chars:['児','童','権','利'], rarity:'★13', tags:['四字熟語','七徳'], desc:'子供の権利', season:'S4' },
+
+  // 個人
+  { word:'個人主義', chars:['個','人','主','義'], rarity:'★13', tags:['四字熟語','哲学'], desc:'インディビジュアリズム', season:'S4' },
+  { word:'集団主義', chars:['集','団','主','義'], rarity:'★13', tags:['四字熟語'], desc:'コレクティビズム', season:'S4' },
+
+  // 法
+  { word:'法治国家', chars:['法','治','国','家'], rarity:'★13', tags:['四字熟語'], desc:'法治', season:'S4' },
+  { word:'立憲主義', chars:['立','憲','主','義'], rarity:'★13', tags:['四字熟語'], desc:'立憲', season:'S4' },
+  { word:'三権分立', chars:['三','権','分','立'], rarity:'★13', tags:['四字熟語'], desc:'三権分立', season:'S4' },
+
+  // 政府
+  { word:'政府機関', chars:['政','府','機','関'], rarity:'★12', tags:['四字熟語'], desc:'ガバメント', season:'S4' },
+  { word:'行政組織', chars:['行','政','組','織'], rarity:'★12', tags:['四字熟語'], desc:'アドミニ', season:'S4' },
+  { word:'地方自治', chars:['地','方','自','治'], rarity:'★12', tags:['四字熟語'], desc:'地方自治', season:'S4' },
+];
+for (const r of _YOJI_S4_SOCIETY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
