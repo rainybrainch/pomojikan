@@ -1679,6 +1679,7 @@ function spawnPomoji(opts={}) {
   let evoStage = 0;
   let partyLv = 0;
   const partyIdx = partyContainsChar(char);
+  const isHero = partyIdx >= 0 && STATE.party && STATE.party.hero === partyIdx;
   if (partyIdx >= 0) {
     partyLv = STATE.party.members[partyIdx].level;
     evoStage = evolutionStage(partyLv);
@@ -1687,16 +1688,27 @@ function spawnPomoji(opts={}) {
 
   const isFirstSee = !STATE.collection[char];
 
-  // パーティ字で高 Lv なら追加グロー（対数スケール ・ 無限対応）
+  // パーティ字は常に追加グロー（落下中も識別できる）── Lv で強度up
   const styleObj = { left: x+'px', top: y+'px' };
-  if (partyLv > 50) {
-    const glow = lvGlowRadius(partyLv);
+  if (partyIdx >= 0) {
+    const baseGlow = isHero ? 18 : 12;
+    const glow = Math.max(baseGlow, lvGlowRadius(partyLv));
     styleObj.filter = `drop-shadow(0 0 ${glow}px var(--r-color))`;
   }
 
+  // class 構成：rarity / font / evo / party-member / party-leader / party-lv-band
+  const lvBand = partyLv >= 1000 ? 'lvband-divine'
+              : partyLv >= 300  ? 'lvband-cosmic'
+              : partyLv >= 100  ? 'lvband-master'
+              : partyLv >= 30   ? 'lvband-adept'
+              : partyLv >= 10   ? 'lvband-novice'
+              : '';
+  const partyCls = partyIdx >= 0
+    ? ` party-member${isHero ? ' party-leader' : ''}${lvBand ? ' ' + lvBand : ''}`
+    : '';
   const node = el('div', {
-    class: `pomoji ${tierClass} font-${styleClass}${evoStage > 0 ? ` evo-${evoStage}` : ''}`,
-    dataset: { id, char, rarity, tier: tierIdx, evo: evoStage },
+    class: `pomoji ${tierClass} font-${styleClass}${evoStage > 0 ? ` evo-${evoStage}` : ''}${partyCls}`,
+    dataset: { id, char, rarity, tier: tierIdx, evo: evoStage, lv: partyLv },
     style: styleObj
   }, char);
   field.appendChild(node);

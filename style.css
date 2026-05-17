@@ -1596,6 +1596,29 @@ body.stream-mode .party-bar{
   border-color:#f0d48a !important;
   box-shadow:0 0 0 1px rgba(240,212,138,.4), 0 0 12px rgba(240,212,138,.3);
 }
+
+/* ════════════════════ パーティ字 ── 落下中も常に光って識別 ════════════════════ */
+/* 仲間：水色の薄縁＋外光 */
+.pomoji.party-member{
+  border-width:2px !important;
+  border-color:rgba(135,206,235,.85) !important;
+  box-shadow:
+    0 0 0 1px rgba(135,206,235,.35),
+    0 0 18px rgba(135,206,235,.45),
+    inset 0 -4px 8px rgba(120,90,40,.32),
+    inset 0 3px 4px rgba(255,250,230,.55),
+    0 4px 10px rgba(0,0,0,.28) !important;
+}
+/* 主人公：金縁＋強い金外光 */
+.pomoji.party-member.party-leader{
+  border-color:#f0d48a !important;
+  box-shadow:
+    0 0 0 2px rgba(240,212,138,.6),
+    0 0 22px rgba(240,212,138,.55),
+    inset 0 -4px 8px rgba(120,90,40,.32),
+    inset 0 3px 4px rgba(255,250,230,.55),
+    0 4px 10px rgba(0,0,0,.28) !important;
+}
 /* 消えない字をタップしたときの軽い跳ね */
 .pomoji.persistent-bump{
   animation:persistentBump .4s cubic-bezier(.22,1.6,.36,1);
