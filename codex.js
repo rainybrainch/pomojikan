@@ -5852,6 +5852,83 @@ const _YOJI_S3_MEDIA = [
 ];
 for (const r of _YOJI_S3_MEDIA) YOJI_RECIPES.push(r);
 
+// v9p ── 四字熟語 +50（健康・養生・医療）
+const _YOJI_S4_HEALTH = [
+  { word:'医食同源', chars:['医','食','同','源'], rarity:'★13', tags:['四字熟語','古典'], desc:'食は薬', season:'S4' },
+  { word:'健康第一', chars:['健','康','第','一'], rarity:'★11', tags:['四字熟語'], desc:'健康優先', season:'S4' },
+  { word:'無病息災', chars:['無','病','息','災'], rarity:'★13', tags:['四字熟語'], desc:'健康', season:'S4' },
+  { word:'不老長寿', chars:['不','老','長','寿'], rarity:'★13', tags:['四字熟語','古典'], desc:'長命', season:'S4' },
+  { word:'不老不死', chars:['不','老','不','死'], rarity:'★14', tags:['四字熟語','神字'], desc:'不死', season:'S4' },
+  { word:'天寿全う', chars:['天','寿','全','う'], rarity:'★13', tags:['四字熟語','古典'], desc:'天寿', season:'S4' },
+  { word:'長寿祝福', chars:['長','寿','祝','福'], rarity:'★12', tags:['四字熟語'], desc:'長寿', season:'S4' },
+  { word:'健康管理', chars:['健','康','管','理'], rarity:'★11', tags:['四字熟語'], desc:'ヘルス管理', season:'S4' },
+  { word:'体調管理', chars:['体','調','管','理'], rarity:'★11', tags:['四字熟語'], desc:'コンディション', season:'S4' },
+  { word:'食生活', chars:['食','生','活'], rarity:'★11', tags:['四字熟語'], desc:'食習慣', season:'S4' },
+
+  // 運動・体力
+  { word:'運動不足', chars:['運','動','不','足'], rarity:'★11', tags:['四字熟語'], desc:'運動不足', season:'S4' },
+  { word:'体力増進', chars:['体','力','増','進'], rarity:'★12', tags:['四字熟語','武'], desc:'体力アップ', season:'S4' },
+  { word:'準備運動', chars:['準','備','運','動'], rarity:'★10', tags:['四字熟語'], desc:'ウォームアップ', season:'S4' },
+  { word:'整理運動', chars:['整','理','運','動'], rarity:'★12', tags:['四字熟語'], desc:'クールダウン', season:'S4' },
+  { word:'筋力鍛錬', chars:['筋','力','鍛','錬'], rarity:'★13', tags:['四字熟語','武'], desc:'筋トレ', season:'S4' },
+
+  // 食事
+  { word:'栄養補給', chars:['栄','養','補','給'], rarity:'★12', tags:['四字熟語'], desc:'栄養補給', season:'S4' },
+  { word:'栄養満点', chars:['栄','養','満','点'], rarity:'★11', tags:['四字熟語'], desc:'栄養豊富', season:'S4' },
+  { word:'食物繊維', chars:['食','物','繊','維'], rarity:'★13', tags:['四字熟語'], desc:'ファイバー', season:'S4' },
+  { word:'糖質制限', chars:['糖','質','制','限'], rarity:'★13', tags:['四字熟語'], desc:'糖質制限', season:'S4' },
+  { word:'菜食主義', chars:['菜','食','主','義'], rarity:'★13', tags:['四字熟語'], desc:'ベジタリアン', season:'S4' },
+
+  // 睡眠
+  { word:'睡眠不足', chars:['睡','眠','不','足'], rarity:'★11', tags:['四字熟語'], desc:'寝不足', season:'S4' },
+  { word:'熟睡安眠', chars:['熟','睡','安','眠'], rarity:'★13', tags:['四字熟語'], desc:'安眠', season:'S4' },
+  { word:'快眠快適', chars:['快','眠','快','適'], rarity:'★12', tags:['四字熟語'], desc:'快眠', season:'S4' },
+  { word:'夢見心地', chars:['夢','見','心','地'], rarity:'★13', tags:['四字熟語','感情'], desc:'夢心地', season:'S4' },
+
+  // 心
+  { word:'心身一体', chars:['心','身','一','体'], rarity:'★13', tags:['四字熟語','禅'], desc:'心身一体', season:'S4' },
+  { word:'心身健全', chars:['心','身','健','全'], rarity:'★12', tags:['四字熟語'], desc:'心身健康', season:'S4' },
+  { word:'精神安定', chars:['精','神','安','定'], rarity:'★12', tags:['四字熟語','禅'], desc:'メンタル安定', season:'S4' },
+  { word:'心理治療', chars:['心','理','治','療'], rarity:'★13', tags:['四字熟語'], desc:'カウンセリング', season:'S4' },
+
+  // 病気
+  { word:'病気平癒', chars:['病','気','平','癒'], rarity:'★12', tags:['四字熟語'], desc:'治癒', season:'S4' },
+  { word:'病後回復', chars:['病','後','回','復'], rarity:'★12', tags:['四字熟語'], desc:'リカバリ', season:'S4' },
+  { word:'病院通院', chars:['病','院','通','院'], rarity:'★12', tags:['四字熟語'], desc:'通院', season:'S4' },
+  { word:'入院手術', chars:['入','院','手','術'], rarity:'★12', tags:['四字熟語'], desc:'入院手術', season:'S4' },
+
+  // 漢方
+  { word:'漢方医療', chars:['漢','方','医','療'], rarity:'★14', tags:['四字熟語','古典'], desc:'漢方', season:'S4' },
+  { word:'生薬調合', chars:['生','薬','調','合'], rarity:'★14', tags:['四字熟語','古典'], desc:'生薬', season:'S4' },
+  { word:'鍼灸治療', chars:['鍼','灸','治','療'], rarity:'★15', tags:['四字熟語','古典'], desc:'鍼灸', season:'S4' },
+
+  // 救急
+  { word:'救急救命', chars:['救','急','救','命'], rarity:'★13', tags:['四字熟語'], desc:'救急', season:'S4' },
+  { word:'救命処置', chars:['救','命','処','置'], rarity:'★13', tags:['四字熟語'], desc:'救命', season:'S4' },
+  { word:'応急処置', chars:['応','急','処','置'], rarity:'★12', tags:['四字熟語'], desc:'応急', season:'S4' },
+
+  // 予防
+  { word:'予防接種', chars:['予','防','接','種'], rarity:'★13', tags:['四字熟語'], desc:'ワクチン', season:'S4' },
+  { word:'健康診断', chars:['健','康','診','断'], rarity:'★12', tags:['四字熟語'], desc:'検診', season:'S4' },
+  { word:'定期検診', chars:['定','期','検','診'], rarity:'★12', tags:['四字熟語'], desc:'定期検診', season:'S4' },
+
+  // 老化
+  { word:'老衰老化', chars:['老','衰','老','化'], rarity:'★13', tags:['四字熟語'], desc:'老衰', season:'S4' },
+  { word:'若返り効', chars:['若','返','り','効'], rarity:'★13', tags:['四字熟語'], desc:'若返り', season:'S4' },
+  { word:'美容健康', chars:['美','容','健','康'], rarity:'★12', tags:['四字熟語','美'], desc:'美容', season:'S4' },
+  { word:'肌活肌美', chars:['肌','活','肌','美'], rarity:'★13', tags:['四字熟語','美'], desc:'スキンケア', season:'S4' },
+
+  // リハビリ
+  { word:'機能訓練', chars:['機','能','訓','練'], rarity:'★12', tags:['四字熟語'], desc:'リハビリ', season:'S4' },
+  { word:'回復訓練', chars:['回','復','訓','練'], rarity:'★12', tags:['四字熟語'], desc:'回復訓練', season:'S4' },
+
+  // 体型
+  { word:'体型維持', chars:['体','型','維','持'], rarity:'★12', tags:['四字熟語'], desc:'体型維持', season:'S4' },
+  { word:'適正体重', chars:['適','正','体','重'], rarity:'★12', tags:['四字熟語'], desc:'適正体重', season:'S4' },
+  { word:'減量目標', chars:['減','量','目','標'], rarity:'★12', tags:['四字熟語'], desc:'ダイエット', season:'S4' },
+];
+for (const r of _YOJI_S4_HEALTH) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
