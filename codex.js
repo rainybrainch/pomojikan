@@ -3103,6 +3103,68 @@ const _YOJI_S4_SCIENCE = [
 ];
 for (const r of _YOJI_S4_SCIENCE) YOJI_RECIPES.push(r);
 
+// v8b ── 二字熟語 +50（時代・歴史・場所）
+const _YOJI_S3_ERA = [
+  // 時代
+  { word:'古代', chars:['古','代'], rarity:'★8',  tags:['時','古典'], desc:'エンシャント', season:'S3' },
+  { word:'中世', chars:['中','世'], rarity:'★8',  tags:['時','古典'], desc:'ミディーバル', season:'S3' },
+  { word:'近世', chars:['近','世'], rarity:'★8',  tags:['時','古典'], desc:'近代の前', season:'S3' },
+  { word:'近代', chars:['近','代'], rarity:'★7',  tags:['時'], desc:'モダン', season:'S3' },
+  { word:'現代', chars:['現','代'], rarity:'★7',  tags:['時'], desc:'コンテンポラリ', season:'S3' },
+  { word:'昭和', chars:['昭','和'], rarity:'★8',  tags:['時','昭和'], desc:'昭和時代', season:'S3' },
+  { word:'平成', chars:['平','成'], rarity:'★8',  tags:['時'], desc:'平成時代', season:'S3' },
+  { word:'令和', chars:['令','和'], rarity:'★12', tags:['時','令和'], desc:'令和時代', season:'S3' },
+  { word:'大正', chars:['大','正'], rarity:'★8',  tags:['時','古典'], desc:'大正時代', season:'S3' },
+  { word:'明治', chars:['明','治'], rarity:'★8',  tags:['時','古典'], desc:'明治時代', season:'S3' },
+  { word:'江戸', chars:['江','戸'], rarity:'★8',  tags:['時','古典'], desc:'江戸時代', season:'S3' },
+  { word:'戦国', chars:['戦','国'], rarity:'★8',  tags:['時','古典','武'], desc:'戦国時代', season:'S3' },
+  { word:'室町', chars:['室','町'], rarity:'★8',  tags:['時','古典'], desc:'室町時代', season:'S3' },
+  { word:'鎌倉', chars:['鎌','倉'], rarity:'★13', tags:['時','古典'], desc:'鎌倉時代', season:'S3' },
+  { word:'平安', chars:['平','安'], rarity:'★8',  tags:['時','古典'], desc:'平安時代', season:'S3' },
+  { word:'奈良', chars:['奈','良'], rarity:'★8',  tags:['時','古典'], desc:'奈良時代', season:'S3' },
+  { word:'飛鳥', chars:['飛','鳥'], rarity:'★12', tags:['時','古典'], desc:'飛鳥時代', season:'S3' },
+  { word:'縄文', chars:['縄','文'], rarity:'★13', tags:['時','古典'], desc:'縄文時代', season:'S3' },
+  { word:'弥生', chars:['弥','生'], rarity:'★14', tags:['時','古典'], desc:'弥生時代', season:'S3' },
+
+  // 場所（追加）
+  { word:'都市', chars:['都','市'], rarity:'★7',  tags:['場所'], desc:'シティ', season:'S3' },
+  { word:'地方', chars:['地','方'], rarity:'★7',  tags:['場所'], desc:'リージョン', season:'S3' },
+  { word:'田舎', chars:['田','舎'], rarity:'★8',  tags:['場所','自然'], desc:'カントリーサイド', season:'S3' },
+  { word:'国家', chars:['国','家'], rarity:'★8',  tags:['場所'], desc:'ステート', season:'S3' },
+  { word:'世界', chars:['世','界'], rarity:'★7',  tags:['場所'], desc:'ワールド', season:'S3' },
+  { word:'地球', chars:['地','球'], rarity:'★7',  tags:['天体','場所'], desc:'アース', season:'S3' },
+
+  // 国
+  { word:'米国', chars:['米','国'], rarity:'★8',  tags:['国'], desc:'アメリカ', season:'S3' },
+  { word:'英国', chars:['英','国'], rarity:'★8',  tags:['国'], desc:'イギリス', season:'S3' },
+  { word:'仏国', chars:['仏','国'], rarity:'★8',  tags:['国'], desc:'フランス', season:'S3' },
+  { word:'独国', chars:['独','国'], rarity:'★8',  tags:['国'], desc:'ドイツ', season:'S3' },
+  { word:'中国', chars:['中','国'], rarity:'★6',  tags:['国'], desc:'チャイナ', season:'S3' },
+  { word:'韓国', chars:['韓','国'], rarity:'★12', tags:['国'], desc:'コリア', season:'S3' },
+  { word:'印度', chars:['印','度'], rarity:'★12', tags:['国'], desc:'インド', season:'S3' },
+
+  // 制度
+  { word:'憲法', chars:['憲','法'], rarity:'★12', tags:[], desc:'コンスティテューション', season:'S3' },
+  { word:'法律', chars:['法','律'], rarity:'★10', tags:['法'], desc:'ロー', season:'S3' },
+  { word:'政治', chars:['政','治'], rarity:'★8',  tags:[], desc:'ポリティクス', season:'S3' },
+  { word:'政府', chars:['政','府'], rarity:'★8',  tags:[], desc:'ガバメント', season:'S3' },
+  { word:'議会', chars:['議','会'], rarity:'★8',  tags:[], desc:'パーラメント', season:'S3' },
+  { word:'選挙', chars:['選','挙'], rarity:'★10', tags:[], desc:'エレクション', season:'S3' },
+  { word:'投票', chars:['投','票'], rarity:'★8',  tags:[], desc:'ヴォーティング', season:'S3' },
+
+  // 経済
+  { word:'経済', chars:['経','済'], rarity:'★10', tags:['ビジネス'], desc:'エコノミー', season:'S3' },
+  { word:'金融', chars:['金','融'], rarity:'★12', tags:['ビジネス'], desc:'ファイナンス', season:'S3' },
+  { word:'投資', chars:['投','資'], rarity:'★10', tags:['ビジネス'], desc:'インベストメント', season:'S3' },
+  { word:'貯蓄', chars:['貯','蓄'], rarity:'★12', tags:['ビジネス'], desc:'セービング', season:'S3' },
+  { word:'消費', chars:['消','費'], rarity:'★8',  tags:['ビジネス'], desc:'コンサンプション', season:'S3' },
+  { word:'生産', chars:['生','産'], rarity:'★7',  tags:['ビジネス'], desc:'プロダクション', season:'S3' },
+  { word:'販売', chars:['販','売'], rarity:'★10', tags:['ビジネス'], desc:'セールス', season:'S3' },
+  { word:'流通', chars:['流','通'], rarity:'★10', tags:['ビジネス'], desc:'ディストリビューション', season:'S3' },
+  { word:'物流', chars:['物','流'], rarity:'★10', tags:['ビジネス'], desc:'ロジスティクス', season:'S3' },
+];
+for (const r of _YOJI_S3_ERA) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
