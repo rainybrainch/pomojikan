@@ -2510,6 +2510,73 @@ const _YOJI_S4_NUM_COLOR = [
 ];
 for (const r of _YOJI_S4_NUM_COLOR) YOJI_RECIPES.push(r);
 
+// v7s ── 二字熟語 +50（食・旅行・趣味）
+const _YOJI_S3_LIFESTYLE = [
+  // 食事
+  { word:'朝食', chars:['朝','食'], rarity:'★7',  tags:[], desc:'ブレックファスト', season:'S3' },
+  { word:'昼食', chars:['昼','食'], rarity:'★7',  tags:[], desc:'ランチ', season:'S3' },
+  { word:'夕食', chars:['夕','食'], rarity:'★7',  tags:[], desc:'ディナー', season:'S3' },
+  { word:'軽食', chars:['軽','食'], rarity:'★7',  tags:[], desc:'スナック', season:'S3' },
+  { word:'美味', chars:['美','味'], rarity:'★8',  tags:['美'], desc:'デリシャス', season:'S3' },
+  { word:'絶品', chars:['絶','品'], rarity:'★13', tags:['美'], desc:'最高', season:'S3' },
+  { word:'珍味', chars:['珍','味'], rarity:'★13', tags:['美'], desc:'レアな味', season:'S3' },
+  { word:'山菜', chars:['山','菜'], rarity:'★8',  tags:['自然'], desc:'やまな', season:'S3' },
+  { word:'海鮮', chars:['海','鮮'], rarity:'★13', tags:[], desc:'シーフード', season:'S3' },
+  { word:'寿司', chars:['寿','司'], rarity:'★12', tags:[], desc:'すし', season:'S3' },
+  { word:'刺身', chars:['刺','身'], rarity:'★12', tags:[], desc:'さしみ', season:'S3' },
+  { word:'天麩羅', chars:['天','麩','羅'], rarity:'★15', tags:['古典'], desc:'てんぷら', season:'S3' },
+
+  // 飲み物
+  { word:'珈琲', chars:['珈','琲'], rarity:'★13', tags:[], desc:'コーヒー', season:'S3' },
+  { word:'紅茶', chars:['紅','茶'], rarity:'★8',  tags:[], desc:'ティー', season:'S3' },
+  { word:'抹茶', chars:['抹','茶'], rarity:'★12', tags:['美','古典'], desc:'まっちゃ', season:'S3' },
+  { word:'煎茶', chars:['煎','茶'], rarity:'★13', tags:[], desc:'せんちゃ', season:'S3' },
+  { word:'日本酒', chars:['日','本','酒'], rarity:'★8',  tags:[], desc:'にほんしゅ', season:'S3' },
+
+  // 旅行
+  { word:'旅行', chars:['旅','行'], rarity:'★7',  tags:[], desc:'トラベル', season:'S3' },
+  { word:'観光', chars:['観','光'], rarity:'★8',  tags:[], desc:'サイトシーイング', season:'S3' },
+  { word:'探検', chars:['探','検'], rarity:'★8',  tags:[], desc:'エクスプロア', season:'S3' },
+  { word:'冒険', chars:['冒','険'], rarity:'★8',  tags:[], desc:'アドベンチャー', season:'S3' },
+  { word:'巡礼', chars:['巡','礼'], rarity:'★12', tags:['仏教'], desc:'ピルグリム', season:'S3' },
+  { word:'参拝', chars:['参','拝'], rarity:'★12', tags:[], desc:'神社参り', season:'S3' },
+  { word:'放浪', chars:['放','浪'], rarity:'★13', tags:[], desc:'ワンダリング', season:'S3' },
+
+  // 趣味
+  { word:'趣味', chars:['趣','味'], rarity:'★13', tags:[], desc:'ホビー', season:'S3' },
+  { word:'娯楽', chars:['娯','楽'], rarity:'★13', tags:[], desc:'エンタメ', season:'S3' },
+  { word:'遊戯', chars:['遊','戯'], rarity:'★13', tags:[], desc:'ゲーム', season:'S3' },
+  { word:'競技', chars:['競','技'], rarity:'★8',  tags:['武'], desc:'スポーツ', season:'S3' },
+  { word:'運動', chars:['運','動'], rarity:'★8',  tags:[], desc:'スポーツ', season:'S3' },
+  { word:'散歩', chars:['散','歩'], rarity:'★8',  tags:[], desc:'ウォーキング', season:'S3' },
+  { word:'登山', chars:['登','山'], rarity:'★8',  tags:['自然'], desc:'やまのぼり', season:'S3' },
+
+  // 住居
+  { word:'居間', chars:['居','間'], rarity:'★8',  tags:[], desc:'リビング', season:'S3' },
+  { word:'寝室', chars:['寝','室'], rarity:'★8',  tags:[], desc:'ベッドルーム', season:'S3' },
+  { word:'書斎', chars:['書','斎'], rarity:'★13', tags:['学'], desc:'スタディ', season:'S3' },
+  { word:'台所', chars:['台','所'], rarity:'★8',  tags:[], desc:'キッチン', season:'S3' },
+  { word:'浴室', chars:['浴','室'], rarity:'★8',  tags:[], desc:'バスルーム', season:'S3' },
+  { word:'玄関', chars:['玄','関'], rarity:'★12', tags:[], desc:'エントランス', season:'S3' },
+  { word:'庭園', chars:['庭','園'], rarity:'★12', tags:['自然','美'], desc:'ガーデン', season:'S3' },
+
+  // 季節の物
+  { word:'扇子', chars:['扇','子'], rarity:'★12', tags:['古典','美'], desc:'せんす', season:'S3' },
+  { word:'団扇', chars:['団','扇'], rarity:'★13', tags:['古典'], desc:'うちわ', season:'S3' },
+  { word:'浴衣', chars:['浴','衣'], rarity:'★12', tags:['古典','美'], desc:'ゆかた', season:'S3' },
+  { word:'着物', chars:['着','物'], rarity:'★7',  tags:['古典','美'], desc:'きもの', season:'S3' },
+  { word:'帯結', chars:['帯','結'], rarity:'★12', tags:['古典','美'], desc:'おびむすび', season:'S3' },
+
+  // 文具
+  { word:'文房具', chars:['文','房','具'], rarity:'★13', tags:[], desc:'ステーショナリー', season:'S3' },
+  { word:'鉛筆', chars:['鉛','筆'], rarity:'★12', tags:['学'], desc:'えんぴつ', season:'S3' },
+  { word:'万年筆', chars:['万','年','筆'], rarity:'★13', tags:['美'], desc:'まんねんひつ', season:'S3' },
+  { word:'筆記', chars:['筆','記'], rarity:'★8',  tags:['学'], desc:'ライティング', season:'S3' },
+  { word:'墨', chars:['墨'], rarity:'★13', tags:['美','古典'], desc:'すみ', season:'S3' },
+  { word:'硯', chars:['硯'], rarity:'★15', tags:['美','古典'], desc:'すずり', season:'S3' },
+];
+for (const r of _YOJI_S3_LIFESTYLE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
