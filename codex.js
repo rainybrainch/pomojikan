@@ -443,6 +443,10 @@ function buildKanjiCodex(){
   // ★15: U+8000-U+9FFF（低頻度・古典）── 約 8,192 字
   _addUnicodeRange(0x8000, 0x9FFF, '★15', 'S2', ['漢字','古典','拡張']);
 
+  // v10o（2026-05-18）── ハングル 一括追加（U+AC00〜U+D7A3、11,172 字）
+  // ★13: 完成型ハングル全体 ── 別シーズン S8 として扱う
+  _addUnicodeRange(0xAC00, 0xD7A3, '★13', 'S8', ['ハングル','韓国']);
+
   return all;
 }
 
@@ -455,6 +459,7 @@ const POMOJI_SEASONS = {
   'S5': { label:'S5 昭和文化',   desc:'根性／三種の神器／万博／歌謡／銭湯',     color:'#ff9a4c', unlocked:true },
   'S6': { label:'S6 令和現代',   desc:'推し／映え／多様性／絆／AI／バズ／草',   color:'#5cbfdf', unlocked:true },
   'S7': { label:'S7 未来',       desc:'量子／仮想／人工知能 ─ 萌芽',           color:'#9b7ad0', unlocked:true },
+  'S8': { label:'S8 世界の文字',  desc:'ハングル／ギリシャ／キリル／アラビア／古代文字', color:'#7e94d4', unlocked:true },
 };
 
 const KANJI_CODEX = buildKanjiCodex();
