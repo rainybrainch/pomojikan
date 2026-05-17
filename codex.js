@@ -4817,6 +4817,79 @@ const _YOJI_S3_NUM = [
 ];
 for (const r of _YOJI_S3_NUM) YOJI_RECIPES.push(r);
 
+// v9a ── 四字熟語 +50（夢・希望・人生哲学）
+const _YOJI_S4_HOPE = [
+  // 夢
+  { word:'夢想空想', chars:['夢','想','空','想'], rarity:'★12', tags:['四字熟語','思想'], desc:'妄想', season:'S4' },
+  { word:'白昼夢', chars:['白','昼','夢'], rarity:'★12', tags:['四字熟語','感情'], desc:'デイドリーム', season:'S4' },
+  { word:'夢追人', chars:['夢','追','人'], rarity:'★12', tags:['四字熟語'], desc:'ドリーマー', season:'S4' },
+  { word:'夢追旅', chars:['夢','追','旅'], rarity:'★12', tags:['四字熟語'], desc:'夢の旅', season:'S4' },
+  { word:'夢叶える', chars:['夢','叶','え','る'], rarity:'★12', tags:['四字熟語'], desc:'夢叶う', season:'S4' },
+  { word:'夢実現化', chars:['夢','実','現','化'], rarity:'★13', tags:['四字熟語'], desc:'ドリーム実現', season:'S4' },
+  { word:'夢半破', chars:['夢','半','破'], rarity:'★13', tags:['四字熟語'], desc:'夢半ば', season:'S4' },
+
+  // 希望
+  { word:'希望満ち', chars:['希','望','満','ち'], rarity:'★12', tags:['四字熟語','感情'], desc:'希望', season:'S4' },
+  { word:'希望溢', chars:['希','望','溢'], rarity:'★13', tags:['四字熟語','感情'], desc:'希望溢れる', season:'S4' },
+  { word:'明日希望', chars:['明','日','希','望'], rarity:'★12', tags:['四字熟語','感情','時'], desc:'明日への希望', season:'S4' },
+  { word:'前途希望', chars:['前','途','希','望'], rarity:'★13', tags:['四字熟語'], desc:'前途光明', season:'S4' },
+  { word:'前途光明', chars:['前','途','光','明'], rarity:'★13', tags:['四字熟語'], desc:'未来明るい', season:'S4' },
+  { word:'希望大志', chars:['希','望','大','志'], rarity:'★13', tags:['四字熟語','武'], desc:'大志', season:'S4' },
+
+  // 人生哲学
+  { word:'人生酸甘', chars:['人','生','酸','甘'], rarity:'★14', tags:['四字熟語','感情'], desc:'人生いろいろ', season:'S4' },
+  { word:'人生意義', chars:['人','生','意','義'], rarity:'★13', tags:['四字熟語','哲学'], desc:'人生の意義', season:'S4' },
+  { word:'生甲斐', chars:['生','甲','斐'], rarity:'★12', tags:['四字熟語'], desc:'生きがい', season:'S4' },
+  { word:'生命価値', chars:['生','命','価','値'], rarity:'★13', tags:['四字熟語','哲学'], desc:'命の価値', season:'S4' },
+  { word:'生死観', chars:['生','死','観'], rarity:'★13', tags:['四字熟語','哲学'], desc:'死生観', season:'S4' },
+
+  // 自由
+  { word:'自由奔放', chars:['自','由','奔','放'], rarity:'★13', tags:['四字熟語'], desc:'フリースタイル', season:'S4' },
+  { word:'自由意志', chars:['自','由','意','志'], rarity:'★12', tags:['四字熟語','哲学'], desc:'フリーウィル', season:'S4' },
+  { word:'自由解放', chars:['自','由','解','放'], rarity:'★12', tags:['四字熟語'], desc:'リベレーション', season:'S4' },
+  { word:'解放感', chars:['解','放','感'], rarity:'★12', tags:['四字熟語','感情'], desc:'リラクゼーション', season:'S4' },
+
+  // 旅・冒険
+  { word:'旅路果て', chars:['旅','路','果','て'], rarity:'★12', tags:['四字熟語'], desc:'旅の終わり', season:'S4' },
+  { word:'人生旅路', chars:['人','生','旅','路'], rarity:'★12', tags:['四字熟語','古典'], desc:'人生の旅', season:'S4' },
+  { word:'旅愁感慨', chars:['旅','愁','感','慨'], rarity:'★15', tags:['四字熟語','感情','古典'], desc:'旅情', season:'S4' },
+  { word:'放浪旅', chars:['放','浪','旅'], rarity:'★12', tags:['四字熟語'], desc:'放浪', season:'S4' },
+
+  // 喜び
+  { word:'喜悦至福', chars:['喜','悦','至','福'], rarity:'★13', tags:['四字熟語','感情'], desc:'極上の喜び', season:'S4' },
+  { word:'歓喜雀躍', chars:['歓','喜','雀','躍'], rarity:'★14', tags:['四字熟語','感情'], desc:'喜びで踊る', season:'S4' },
+  { word:'感激歓喜', chars:['感','激','歓','喜'], rarity:'★12', tags:['四字熟語','感情'], desc:'感動', season:'S4' },
+  { word:'笑顔満面', chars:['笑','顔','満','面'], rarity:'★12', tags:['四字熟語','感情'], desc:'笑顔', season:'S4' },
+  { word:'幸福追求', chars:['幸','福','追','求'], rarity:'★12', tags:['四字熟語','感情'], desc:'幸せ追求', season:'S4' },
+
+  // 平穏
+  { word:'平穏無事', chars:['平','穏','無','事'], rarity:'★11', tags:['四字熟語','感情'], desc:'平和', season:'S4' },
+  { word:'無病息災', chars:['無','病','息','災'], rarity:'★13', tags:['四字熟語'], desc:'健康', season:'S4' },
+  { word:'家内安全', chars:['家','内','安','全'], rarity:'★12', tags:['四字熟語'], desc:'家族の安全', season:'S4' },
+  { word:'幸福家庭', chars:['幸','福','家','庭'], rarity:'★12', tags:['四字熟語','七徳'], desc:'幸せな家庭', season:'S4' },
+
+  // 美しい人生
+  { word:'美しい人', chars:['美','し','い','人'], rarity:'★12', tags:['四字熟語','美'], desc:'美人', season:'S4' },
+  { word:'美徳人生', chars:['美','徳','人','生'], rarity:'★13', tags:['四字熟語','七徳'], desc:'徳ある人生', season:'S4' },
+  { word:'品行方正', chars:['品','行','方','正'], rarity:'★12', tags:['四字熟語','七徳','儒教'], desc:'品行', season:'S4' },
+
+  // 残り人生
+  { word:'余生楽し', chars:['余','生','楽','し'], rarity:'★13', tags:['四字熟語','時'], desc:'余生', season:'S4' },
+  { word:'晩年幸福', chars:['晩','年','幸','福'], rarity:'★12', tags:['四字熟語','時','感情'], desc:'幸せな晩年', season:'S4' },
+  { word:'円熟期', chars:['円','熟','期'], rarity:'★12', tags:['四字熟語','時'], desc:'マチュア', season:'S4' },
+
+  // 達観
+  { word:'達観悟り', chars:['達','観','悟','り'], rarity:'★14', tags:['四字熟語','禅'], desc:'達観', season:'S4' },
+  { word:'悠然自得', chars:['悠','然','自','得'], rarity:'★14', tags:['四字熟語','禅'], desc:'のんびり満足', season:'S4' },
+  { word:'万事達観', chars:['万','事','達','観'], rarity:'★14', tags:['四字熟語','禅'], desc:'達観', season:'S4' },
+
+  // 後悔・反省
+  { word:'後悔反省', chars:['後','悔','反','省'], rarity:'★12', tags:['四字熟語','感情'], desc:'反省', season:'S4' },
+  { word:'懺悔懺悔', chars:['懺','悔','懺','悔'], rarity:'★16', tags:['四字熟語','仏教'], desc:'懺悔', season:'S4' },
+  { word:'反省精進', chars:['反','省','精','進'], rarity:'★12', tags:['四字熟語','武'], desc:'反省励', season:'S4' },
+];
+for (const r of _YOJI_S4_HOPE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
