@@ -5572,6 +5572,84 @@ const _YOJI_S3_PLACE = [
 ];
 for (const r of _YOJI_S3_PLACE) YOJI_RECIPES.push(r);
 
+// v9l ── 四字熟語 +50（自然観察・風景・景色）
+const _YOJI_S4_VIEW = [
+  { word:'山紫水明', chars:['山','紫','水','明'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'山水明媚', season:'S4' },
+  { word:'山高水長', chars:['山','高','水','長'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'徳の高さ', season:'S4' },
+  { word:'湖光山色', chars:['湖','光','山','色'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'湖と山の景', season:'S4' },
+  { word:'山川草木', chars:['山','川','草','木'], rarity:'★13', tags:['四字熟語','自然'], desc:'すべての自然', season:'S4' },
+  { word:'青山緑水', chars:['青','山','緑','水'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'青山緑水', season:'S4' },
+  { word:'秋月春花', chars:['秋','月','春','花'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'四季の美', season:'S4' },
+  { word:'四季折々', chars:['四','季','折','々'], rarity:'★12', tags:['四字熟語','自然','時'], desc:'季節ごと', season:'S4' },
+  { word:'春霞秋月', chars:['春','霞','秋','月'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'春霞秋月', season:'S4' },
+
+  // 風景
+  { word:'絶景奇景', chars:['絶','景','奇','景'], rarity:'★14', tags:['四字熟語','美'], desc:'絶景奇景', season:'S4' },
+  { word:'山水画景', chars:['山','水','画','景'], rarity:'★14', tags:['四字熟語','美','自然'], desc:'山水画', season:'S4' },
+  { word:'眺望千里', chars:['眺','望','千','里'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'広い眺め', season:'S4' },
+  { word:'壮大景色', chars:['壮','大','景','色'], rarity:'★12', tags:['四字熟語','美'], desc:'壮大', season:'S4' },
+  { word:'美景絶景', chars:['美','景','絶','景'], rarity:'★12', tags:['四字熟語','美'], desc:'絶景', season:'S4' },
+
+  // 風流
+  { word:'清風明月', chars:['清','風','明','月'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'清風明月', season:'S4' },
+  { word:'閑雲野鶴', chars:['閑','雲','野','鶴'], rarity:'★16', tags:['四字熟語','禅','古典'], desc:'隠居の自由', season:'S4' },
+  { word:'花鳥風月', chars:['花','鳥','風','月'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'自然の美', season:'S4' },
+  { word:'山雨海風', chars:['山','雨','海','風'], rarity:'★13', tags:['四字熟語','自然'], desc:'山と海の風雨', season:'S4' },
+  { word:'雪月花鳥', chars:['雪','月','花','鳥'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'季節美', season:'S4' },
+
+  // 静寂
+  { word:'静寂無音', chars:['静','寂','無','音'], rarity:'★13', tags:['四字熟語','禅'], desc:'シレント', season:'S4' },
+  { word:'閑寂幽静', chars:['閑','寂','幽','静'], rarity:'★15', tags:['四字熟語','禅','古典'], desc:'静か', season:'S4' },
+  { word:'幽玄寂寞', chars:['幽','玄','寂','寞'], rarity:'★16', tags:['四字熟語','禅','古典','美'], desc:'幽玄', season:'S4' },
+  { word:'寂寥孤独', chars:['寂','寥','孤','独'], rarity:'★15', tags:['四字熟語','感情','古典'], desc:'孤独', season:'S4' },
+
+  // 海
+  { word:'海洋無限', chars:['海','洋','無','限'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'広い海', season:'S4' },
+  { word:'大海茫茫', chars:['大','海','茫','茫'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'広大な海', season:'S4' },
+  { word:'蒼海碧空', chars:['蒼','海','碧','空'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'青い海と空', season:'S4' },
+
+  // 雲
+  { word:'白雲青天', chars:['白','雲','青','天'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'青空白雲', season:'S4' },
+  { word:'流雲飛雪', chars:['流','雲','飛','雪'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'流れる雲', season:'S4' },
+  { word:'雲海風流', chars:['雲','海','風','流'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'雲海', season:'S4' },
+
+  // 月
+  { word:'明月清光', chars:['明','月','清','光'], rarity:'★14', tags:['四字熟語','自然','美','古典'], desc:'月光', season:'S4' },
+  { word:'三日月夜', chars:['三','日','月','夜'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'三日月', season:'S4' },
+  { word:'満月光輝', chars:['満','月','光','輝'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'満月', season:'S4' },
+  { word:'月夜清涼', chars:['月','夜','清','涼'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'月夜', season:'S4' },
+
+  // 星
+  { word:'満天星辰', chars:['満','天','星','辰'], rarity:'★15', tags:['四字熟語','天体','古典'], desc:'満天の星', season:'S4' },
+  { word:'星屑流星', chars:['星','屑','流','星'], rarity:'★14', tags:['四字熟語','天体','美'], desc:'流星群', season:'S4' },
+  { word:'七夕織姫', chars:['七','夕','織','姫'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'七夕', season:'S4' },
+
+  // 風
+  { word:'微風駘蕩', chars:['微','風','駘','蕩'], rarity:'★15', tags:['四字熟語','自然','古典','美'], desc:'そよかぜ', season:'S4' },
+  { word:'颯爽涼風', chars:['颯','爽','涼','風'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'涼やかな風', season:'S4' },
+  { word:'春風和暢', chars:['春','風','和','暢'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'春風和やか', season:'S4' },
+
+  // 木々
+  { word:'樹木鬱蒼', chars:['樹','木','鬱','蒼'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'木々鬱蒼', season:'S4' },
+  { word:'森林深遠', chars:['森','林','深','遠'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'深い森', season:'S4' },
+  { word:'木陰静か', chars:['木','陰','静','か'], rarity:'★12', tags:['四字熟語','自然','禅'], desc:'木陰', season:'S4' },
+
+  // 水流
+  { word:'清流潺潺', chars:['清','流','潺','潺'], rarity:'★16', tags:['四字熟語','自然','古典','美'], desc:'清流せせらぎ', season:'S4' },
+  { word:'渓流流水', chars:['渓','流','流','水'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'渓流', season:'S4' },
+  { word:'瀑布飛流', chars:['瀑','布','飛','流'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'滝', season:'S4' },
+
+  // 鳥
+  { word:'鳥鳴山幽', chars:['鳥','鳴','山','幽'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'鳥鳴く山', season:'S4' },
+  { word:'雛飛立空', chars:['雛','飛','立','空'], rarity:'★13', tags:['四字熟語','自然'], desc:'雛巣立ち', season:'S4' },
+
+  // 蝶・蛍
+  { word:'蝶舞花間', chars:['蝶','舞','花','間'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'蝶舞う', season:'S4' },
+  { word:'蛍火星屑', chars:['蛍','火','星','屑'], rarity:'★15', tags:['四字熟語','自然','美','古典'], desc:'蛍火と星', season:'S4' },
+  { word:'蛍光点滅', chars:['蛍','光','点','滅'], rarity:'★14', tags:['四字熟語','自然'], desc:'蛍点滅', season:'S4' },
+];
+for (const r of _YOJI_S4_VIEW) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
