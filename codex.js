@@ -1194,6 +1194,126 @@ const _YOJI_S4_EXPAND2 = [
 ];
 for (const r of _YOJI_S4_EXPAND2) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7c（2026-05-17）── 四字熟語 さらに 100+ 個（修行・道徳・心境）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S4_EXPAND3 = [
+  // 修行・武道
+  { word:'一心不乱', chars:['一','心','不','乱'], rarity:'★13', tags:['四字熟語','武','禅'], desc:'一つに集中', season:'S4' },
+  { word:'不動明王', chars:['不','動','明','王'], rarity:'★15', tags:['四字熟語','仏教','武'], desc:'動じない強さ', season:'S4' },
+  { word:'剣豪無双', chars:['剣','豪','無','双'], rarity:'★14', tags:['四字熟語','武'], desc:'剣の達人', season:'S4' },
+  { word:'武芸百般', chars:['武','芸','百','般'], rarity:'★14', tags:['四字熟語','武'], desc:'あらゆる武芸に通じる', season:'S4' },
+  { word:'剣禅一如', chars:['剣','禅','一','如'], rarity:'★15', tags:['四字熟語','武','禅'], desc:'剣と禅は同じ', season:'S4' },
+  { word:'天下無双', chars:['天','下','無','双'], rarity:'★13', tags:['四字熟語','武'], desc:'天下に二つとない', season:'S4' },
+  { word:'闘志満満', chars:['闘','志','満','満'], rarity:'★12', tags:['四字熟語','武'], desc:'戦意がみなぎる', season:'S4' },
+  { word:'勇往邁進', chars:['勇','往','邁','進'], rarity:'★14', tags:['四字熟語','武'], desc:'恐れず進む', season:'S4' },
+  { word:'進取果敢', chars:['進','取','果','敢'], rarity:'★13', tags:['四字熟語','武'], desc:'積極的で勇敢', season:'S4' },
+  { word:'雲水行脚', chars:['雲','水','行','脚'], rarity:'★15', tags:['四字熟語','禅','古典'], desc:'修行の旅', season:'S4' },
+
+  // 道徳・徳目
+  { word:'仁義礼智', chars:['仁','義','礼','智'], rarity:'★14', tags:['四字熟語','七徳','儒教'], desc:'四徳', season:'S4' },
+  { word:'仁義忠孝', chars:['仁','義','忠','孝'], rarity:'★14', tags:['四字熟語','七徳','儒教'], desc:'武士道の徳', season:'S4' },
+  { word:'忠孝両全', chars:['忠','孝','両','全'], rarity:'★14', tags:['四字熟語','七徳'], desc:'忠と孝を両立', season:'S4' },
+  { word:'親孝行', chars:['親','孝','行'], rarity:'★11', tags:['四字熟語','七徳'], desc:'親に尽くす', season:'S4' },
+  { word:'恩人感謝', chars:['恩','人','感','謝'], rarity:'★12', tags:['四字熟語','七徳'], desc:'恩義に感謝', season:'S4' },
+  { word:'有情無情', chars:['有','情','無','情'], rarity:'★13', tags:['四字熟語','感情'], desc:'情けの有無', season:'S4' },
+  { word:'仁愛無辺', chars:['仁','愛','無','辺'], rarity:'★14', tags:['四字熟語','七徳'], desc:'愛が限りなく', season:'S4' },
+  { word:'博愛主義', chars:['博','愛','主','義'], rarity:'★12', tags:['四字熟語','七徳'], desc:'全てを愛する', season:'S4' },
+  { word:'献身奉仕', chars:['献','身','奉','仕'], rarity:'★13', tags:['四字熟語','七徳'], desc:'身を捧げる', season:'S4' },
+  { word:'忠誠心', chars:['忠','誠','心'], rarity:'★11', tags:['四字熟語','七徳'], desc:'忠の心', season:'S4' },
+
+  // 心境・精神状態
+  { word:'静観沈思', chars:['静','観','沈','思'], rarity:'★13', tags:['四字熟語','禅','思想'], desc:'静かに観察し深く考える', season:'S4' },
+  { word:'澄心観照', chars:['澄','心','観','照'], rarity:'★14', tags:['四字熟語','禅'], desc:'澄んだ心で観る', season:'S4' },
+  { word:'清浄無垢', chars:['清','浄','無','垢'], rarity:'★13', tags:['四字熟語','仏教','美'], desc:'けがれがない', season:'S4' },
+  { word:'寂静涅槃', chars:['寂','静','涅','槃'], rarity:'★16', tags:['四字熟語','仏教','神字'], desc:'静かなる悟りの境地', season:'S4' },
+  { word:'梵我一如', chars:['梵','我','一','如'], rarity:'★16', tags:['四字熟語','仏教','哲学','神字'], desc:'宇宙と自我は一つ', season:'S4' },
+  { word:'不立文字', chars:['不','立','文','字'], rarity:'★15', tags:['四字熟語','禅'], desc:'言葉では伝えられない', season:'S4' },
+  { word:'以心伝心', chars:['以','心','伝','心'], rarity:'★12', tags:['四字熟語','禅','感情'], desc:'心と心が通う', season:'S4' },
+  { word:'拈華微笑', chars:['拈','華','微','笑'], rarity:'★16', tags:['四字熟語','禅','古典'], desc:'禅の悟り（言葉なき伝達）', season:'S4' },
+
+  // 学問・知識（追加）
+  { word:'文人墨客', chars:['文','人','墨','客'], rarity:'★14', tags:['四字熟語','学','古典'], desc:'文芸の人々', season:'S4' },
+  { word:'詩歌管弦', chars:['詩','歌','管','弦'], rarity:'★14', tags:['四字熟語','学','美'], desc:'詩と音楽', season:'S4' },
+  { word:'手習い', chars:['手','習','い'], rarity:'★10', tags:['四字熟語','学'], desc:'文字を書く練習', season:'S4' },
+  { word:'読書百遍', chars:['読','書','百','遍'], rarity:'★13', tags:['四字熟語','学','古典'], desc:'何度も読めば意味が分かる', season:'S4' },
+  { word:'独学独習', chars:['独','学','独','習'], rarity:'★12', tags:['四字熟語','学'], desc:'一人で学ぶ', season:'S4' },
+  { word:'熟読玩味', chars:['熟','読','玩','味'], rarity:'★14', tags:['四字熟語','学'], desc:'よく読み味わう', season:'S4' },
+  { word:'好学敏求', chars:['好','学','敏','求'], rarity:'★14', tags:['四字熟語','学','儒教'], desc:'学問を好み素早く追求', season:'S4' },
+  { word:'学問追求', chars:['学','問','追','求'], rarity:'★12', tags:['四字熟語','学'], desc:'学を究める', season:'S4' },
+
+  // 努力・苦労
+  { word:'刻苦勉励', chars:['刻','苦','勉','励'], rarity:'★14', tags:['四字熟語','武','学'], desc:'苦労して励む', season:'S4' },
+  { word:'刻苦精励', chars:['刻','苦','精','励'], rarity:'★14', tags:['四字熟語','武'], desc:'苦労して打ち込む', season:'S4' },
+  { word:'粒粒辛苦', chars:['粒','粒','辛','苦'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'小さな努力の積み重ね', season:'S4' },
+  { word:'蛍雪之功', chars:['蛍','雪','之','功'], rarity:'★15', tags:['四字熟語','学','古典'], desc:'貧しくとも勉強した功績', season:'S4' },
+  { word:'懸頭刺股', chars:['懸','頭','刺','股'], rarity:'★16', tags:['四字熟語','学','古典'], desc:'眠気と戦って勉強', season:'S4' },
+  { word:'晴耕雨読', chars:['晴','耕','雨','読'], rarity:'★13', tags:['四字熟語','古典'], desc:'のどかな田舎暮らし', season:'S4' },
+  { word:'孜孜不倦', chars:['孜','孜','不','倦'], rarity:'★15', tags:['四字熟語','学','古典'], desc:'飽きずに励む', season:'S4' },
+
+  // 自由・解放
+  { word:'天衣無縫', chars:['天','衣','無','縫'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'自然で技巧的でない', season:'S4' },
+  { word:'天馬行空', chars:['天','馬','行','空'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'自由奔放', season:'S4' },
+  { word:'放歌高吟', chars:['放','歌','高','吟'], rarity:'★13', tags:['四字熟語','美'], desc:'声高らかに歌う', season:'S4' },
+  { word:'清風明月', chars:['清','風','明','月'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'清らかな自然', season:'S4' },
+  { word:'風流韻事', chars:['風','流','韻','事'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'雅な遊び', season:'S4' },
+
+  // 自然・季節（追加）
+  { word:'桜花爛漫', chars:['桜','花','爛','漫'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'桜が咲き誇る', season:'S4' },
+  { word:'紅葉錦繍', chars:['紅','葉','錦','繍'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'秋の紅葉の美', season:'S4' },
+  { word:'梅花落雪', chars:['梅','花','落','雪'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'梅と雪の風景', season:'S4' },
+  { word:'松柏之操', chars:['松','柏','之','操'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'変わらぬ志', season:'S4' },
+  { word:'春和景明', chars:['春','和','景','明'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'春の穏やかさ', season:'S4' },
+  { word:'夏炉冬扇', chars:['夏','炉','冬','扇'], rarity:'★14', tags:['四字熟語','古典'], desc:'季節違いで役立たぬ', season:'S4' },
+  { word:'氷山一角', chars:['氷','山','一','角'], rarity:'★12', tags:['四字熟語','自然'], desc:'見えてる部分はわずか', season:'S4' },
+  { word:'湖光山色', chars:['湖','光','山','色'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'湖と山の風景', season:'S4' },
+
+  // 状況・形勢
+  { word:'青天霹靂', chars:['青','天','霹','靂'], rarity:'★15', tags:['四字熟語','古典'], desc:'突然の出来事', season:'S4' },
+  { word:'急転直下', chars:['急','転','直','下'], rarity:'★12', tags:['四字熟語'], desc:'急に展開する', season:'S4' },
+  { word:'破竹之勢', chars:['破','竹','之','勢'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'止められない勢い', season:'S4' },
+  { word:'順風満帆', chars:['順','風','満','帆'], rarity:'★12', tags:['四字熟語'], desc:'順調に進む', season:'S4' },
+  { word:'逆風長浪', chars:['逆','風','長','浪'], rarity:'★13', tags:['四字熟語'], desc:'困難が続く', season:'S4' },
+  { word:'不労所得', chars:['不','労','所','得'], rarity:'★11', tags:['四字熟語'], desc:'働かずに得る', season:'S4' },
+  { word:'有名無実', chars:['有','名','無','実'], rarity:'★12', tags:['四字熟語'], desc:'名前だけで中身がない', season:'S4' },
+  { word:'名実一致', chars:['名','実','一','致'], rarity:'★12', tags:['四字熟語'], desc:'名前通り', season:'S4' },
+
+  // 戦略・智略
+  { word:'兵法奥義', chars:['兵','法','奥','義'], rarity:'★14', tags:['四字熟語','武'], desc:'戦の深奥', season:'S4' },
+  { word:'孫子兵法', chars:['孫','子','兵','法'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'古代の戦略書', season:'S4' },
+  { word:'神算鬼謀', chars:['神','算','鬼','謀'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'神業の計略', season:'S4' },
+  { word:'奇策縦横', chars:['奇','策','縦','横'], rarity:'★14', tags:['四字熟語','武'], desc:'自在に奇策を放つ', season:'S4' },
+  { word:'用意周到', chars:['用','意','周','到'], rarity:'★12', tags:['四字熟語'], desc:'準備万全', season:'S4' },
+  { word:'準備万端', chars:['準','備','万','端'], rarity:'★11', tags:['四字熟語'], desc:'完璧な準備', season:'S4' },
+
+  // 風流・優美
+  { word:'雪月風花', chars:['雪','月','風','花'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'四季の美の象徴', season:'S4' },
+  { word:'金枝玉葉', chars:['金','枝','玉','葉'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'高貴な存在', season:'S4' },
+  { word:'珠玉名品', chars:['珠','玉','名','品'], rarity:'★14', tags:['四字熟語','美'], desc:'素晴らしい品', season:'S4' },
+  { word:'清雅高潔', chars:['清','雅','高','潔'], rarity:'★14', tags:['四字熟語','美','七徳'], desc:'清らかで気高い', season:'S4' },
+  { word:'優美典雅', chars:['優','美','典','雅'], rarity:'★13', tags:['四字熟語','美'], desc:'上品で美しい', season:'S4' },
+
+  // 数字＋故事
+  { word:'十中八九', chars:['十','中','八','九'], rarity:'★11', tags:['四字熟語'], desc:'ほぼ確実', season:'S4' },
+  { word:'百年一日', chars:['百','年','一','日'], rarity:'★13', tags:['四字熟語'], desc:'長期間変わらず', season:'S4' },
+  { word:'万世一系', chars:['万','世','一','系'], rarity:'★14', tags:['四字熟語','古典'], desc:'一つの血統が永遠に続く', season:'S4' },
+  { word:'三顧之礼', chars:['三','顧','之','礼'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'三度訪ねる礼儀', season:'S4' },
+  { word:'三人寄れば', chars:['三','人','寄','れば'], rarity:'★11', tags:['四字熟語'], desc:'三人寄れば文殊の知恵', season:'S4' },
+  { word:'三日天下', chars:['三','日','天','下'], rarity:'★12', tags:['四字熟語','古典'], desc:'すぐ終わる権力', season:'S4' },
+  { word:'七難八苦', chars:['七','難','八','苦'], rarity:'★13', tags:['四字熟語','仏教'], desc:'多くの困難', season:'S4' },
+  { word:'四方八方', chars:['四','方','八','方'], rarity:'★11', tags:['四字熟語'], desc:'あちこち全方向', season:'S4' },
+
+  // 抽象・哲学（さらに）
+  { word:'有為転変', chars:['有','為','転','変'], rarity:'★14', tags:['四字熟語','仏教'], desc:'万物は変化する', season:'S4' },
+  { word:'生死流転', chars:['生','死','流','転'], rarity:'★14', tags:['四字熟語','仏教'], desc:'生と死が巡る', season:'S4' },
+  { word:'業火地獄', chars:['業','火','地','獄'], rarity:'★15', tags:['四字熟語','仏教'], desc:'罪の報いの火', season:'S4' },
+  { word:'極楽浄土', chars:['極','楽','浄','土'], rarity:'★14', tags:['四字熟語','仏教'], desc:'理想の世界', season:'S4' },
+  { word:'天上界', chars:['天','上','界'], rarity:'★12', tags:['四字熟語','仏教'], desc:'神々の世界', season:'S4' },
+  { word:'三千世界', chars:['三','千','世','界'], rarity:'★14', tags:['四字熟語','仏教'], desc:'全宇宙', season:'S4' },
+  { word:'六道輪廻', chars:['六','道','輪','廻'], rarity:'★15', tags:['四字熟語','仏教'], desc:'六つの世界の巡り', season:'S4' },
+];
+for (const r of _YOJI_S4_EXPAND3) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
