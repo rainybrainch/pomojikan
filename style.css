@@ -2239,6 +2239,23 @@ body[data-mode="rest"] #tank{
   font-size:.7rem; color:var(--ink-mute);
   font-family:'JetBrains Mono', monospace;
 }
+/* 未解放ティア：legend / tab / セクション見出しを薄く */
+.cl-row.tier-locked,
+.codex-tab.tier-locked{
+  opacity:.4;
+  color:var(--ink-mute) !important;
+  background:rgba(255,255,255,.02) !important;
+  border-style:dashed !important;
+  filter:blur(.3px);
+  cursor:not-allowed;
+}
+.codex-tab.tier-locked{ pointer-events:none; }
+.codex-section.tier-locked .codex-section-title{
+  color:var(--ink-mute);
+  letter-spacing:.15em;
+  opacity:.6;
+}
+
 /* 未発見の熟語：もやがかった「？？？」表示 ─ 解放欲を煽る */
 .codex-yoji-item.locked{
   opacity:.5;

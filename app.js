@@ -2952,7 +2952,52 @@ function applyPreset(idx) {
 let codexFilter = { tier: 'all', season: 'all', onlySeen: false, query: '' };
 function openCodex() {
   $('#codex-modal').classList.add('show');
+  applyCodexLegendMask();
+  applyCodexTabMask();
   renderCodex();
+}
+
+// 未解放ティアの legend pill を「？？？」に隠す（解放欲を煽る）
+function applyCodexLegendMask() {
+  const unlocked = STATE.unlockedTier;
+  const pills = $$('.codex-legend .cl-row');
+  pills.forEach((pill, i) => {
+    const isLocked = i > unlocked;
+    pill.classList.toggle('tier-locked', isLocked);
+    const tag = pill.querySelector('.cl-tag');
+    if (!tag) return;
+    if (isLocked) {
+      // 残りのテキストノードを置換
+      const label = pill.textContent.replace(tag.textContent, '').trim();
+      pill.dataset.origLabel = pill.dataset.origLabel || label;
+      // 全部「？？？」化
+      pill.innerHTML = `<span class="cl-tag">？？</span>？？？`;
+    } else if (pill.dataset.origLabel) {
+      // 解放されたら復元
+      pill.innerHTML = `<span class="cl-tag">${RARITY_TIERS[i]}</span>${pill.dataset.origLabel}`;
+      delete pill.dataset.origLabel;
+    }
+  });
+}
+
+// 未解放ティアの tab を「？」に隠す
+function applyCodexTabMask() {
+  const unlocked = STATE.unlockedTier;
+  const tabs = $$('.codex-tab');
+  tabs.forEach((tab) => {
+    const tierData = tab.dataset.tier;
+    if (tierData === 'all') return;
+    const idx = parseInt(tierData);
+    const isLocked = idx > unlocked;
+    tab.classList.toggle('tier-locked', isLocked);
+    if (isLocked) {
+      if (!tab.dataset.origLabel) tab.dataset.origLabel = tab.textContent;
+      tab.textContent = '？';
+    } else if (tab.dataset.origLabel) {
+      tab.textContent = tab.dataset.origLabel;
+      delete tab.dataset.origLabel;
+    }
+  });
 }
 function closeCodex() { $('#codex-modal').classList.remove('show'); }
 
@@ -3149,9 +3194,14 @@ function renderCodex() {
       return (STATE.collection[c] || 0) > 0;
     });
     if (!visible.length) return;
-    const section = el('div', { class:'codex-section' },
+    // 未解放の上位ティアは「???」でマスク（達成名・帯名すら隠して解放欲を煽る）
+    const isUnrevealed = tierIdx > STATE.unlockedTier;
+    const tierLabel = isUnrevealed ? '？？？' : tier;
+    const achievement = isUnrevealed ? '─ 未解放の領域 ─' : TIER_ACHIEVEMENT[tierIdx];
+    const stateText = tierIdx <= STATE.unlockedTier ? '解放済' : '🔒 Lv.' + UNLOCK_LV[tier];
+    const section = el('div', { class:'codex-section' + (isUnrevealed ? ' tier-locked' : '') },
       el('h3', { class:'codex-section-title' },
-        `${tier} ${TIER_ACHIEVEMENT[tierIdx]} （${tierIdx <= STATE.unlockedTier ? '解放済' : '🔒 Lv.' + UNLOCK_LV[tier]}）`)
+        `${tierLabel} ${achievement} （${stateText}）`)
     );
     const tierGrid = el('div', { class:'codex-tier-grid' });
     visible.forEach(k => {
