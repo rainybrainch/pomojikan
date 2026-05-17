@@ -2453,6 +2453,26 @@ body[data-mode="rest"] #tank{
   font-size:.7rem; color:var(--ink-mute);
   font-family:'JetBrains Mono', monospace;
 }
+/* シーズンタブの個数バッジ ── ジャンルの厚みが一目で分かる */
+.cs-badge{
+  display:inline-block;
+  margin-left:4px;
+  padding:1px 6px;
+  background:rgba(135,206,235,.18);
+  border:1px solid rgba(135,206,235,.4);
+  color:#cfe6ff;
+  border-radius:99px;
+  font-size:.62rem;
+  font-weight:600;
+  font-family:'JetBrains Mono', monospace;
+  vertical-align:middle;
+}
+.codex-season.active .cs-badge{
+  background:rgba(240,212,138,.25);
+  border-color:rgba(240,212,138,.6);
+  color:var(--gold);
+}
+
 /* 進捗バー（ティア解放率・熟語発見率）── 解放欲の視覚化 */
 .codex-progress-bar{
   height:5px;

@@ -3308,7 +3308,32 @@ function openCodex() {
   $('#codex-modal').classList.add('show');
   applyCodexLegendMask();
   applyCodexTabMask();
+  applyCodexSeasonBadges();
   renderCodex();
+}
+
+// シーズンタブに「N件」バッジを付与（解放欲を煽る）
+function applyCodexSeasonBadges() {
+  const codex = window.KANJI_CODEX || [];
+  const recipes = window.YOJI_RECIPES || [];
+  const counts = {
+    'all': codex.length + recipes.length,
+    'S1': codex.filter(k => (k.season||'S1') === 'S1').length,
+    'S2': codex.filter(k => k.season === 'S2').length,
+    'S3': recipes.filter(r => r.season === 'S3').length,
+    'S4': recipes.filter(r => r.season === 'S4').length,
+    'S5': recipes.filter(r => r.season === 'S5').length,
+    'S6': recipes.filter(r => r.season === 'S6').length,
+    'S7': recipes.filter(r => r.season === 'S7').length,
+    'PERKS': Object.keys(PERKS || {}).length,
+  };
+  $$('.codex-season').forEach(btn => {
+    const s = btn.dataset.season;
+    const n = counts[s];
+    if (n == null) return;
+    if (!btn.dataset.origLabel) btn.dataset.origLabel = btn.textContent;
+    btn.innerHTML = btn.dataset.origLabel + ` <span class="cs-badge">${n}</span>`;
+  });
 }
 
 // 未解放ティアの legend pill を「？？？」に隠す（解放欲を煽る）
