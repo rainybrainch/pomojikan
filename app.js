@@ -2467,6 +2467,31 @@ function mergePomoji(src, target) {
 // ═══════════════════════════════════════════════════════════════
 // パーティ表示
 // ═══════════════════════════════════════════════════════════════
+// 仲間 → 主人公昇格（ダブルタップで切り替え）
+function promoteToHero(idx) {
+  if (!STATE.party || !STATE.party.members) return;
+  if (idx === STATE.party.hero) {
+    toast('既に主人公です');
+    return;
+  }
+  const newHero = STATE.party.members[idx];
+  if (!newHero) return;
+  const oldHero = STATE.party.members[STATE.party.hero];
+  STATE.party.hero = idx;
+  invalidateAggCache();
+  // 主人公の guardian 特性を新しい hero に付け替え（旧 hero からは外す）
+  if (oldHero && oldHero.perks) {
+    oldHero.perks = oldHero.perks.filter(p => p !== 'guardian');
+  }
+  if (!newHero.perks) newHero.perks = [];
+  if (!newHero.perks.includes('guardian')) newHero.perks.push('guardian');
+  saveState();
+  renderParty();
+  updateProgressPill();
+  toast(`★ ${newHero.char} が主人公に`, newHero.rarity);
+  playSFX('unlock');
+}
+
 function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
@@ -2487,8 +2512,9 @@ function renderParty() {
     const card = el('div', {
       class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}${stage > 0 ? ' evo-' + stage : ''}`,
       dataset: { idx, evo: stage, lv: m.level },
-      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}`,
-      onclick: () => openPartyMemberAction(idx)
+      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nダブルタップで主人公に`,
+      onclick: () => openPartyMemberAction(idx),
+      ondblclick: () => promoteToHero(idx),
     },
       el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage] || '𓂀') : null),
       el('div', { class:'pc-meta' },
