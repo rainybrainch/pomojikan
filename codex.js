@@ -3037,6 +3037,72 @@ const _YOJI_S3_EDUCATION = [
 ];
 for (const r of _YOJI_S3_EDUCATION) YOJI_RECIPES.push(r);
 
+// v8a ── 四字熟語 +50（科学・宇宙・物理）
+const _YOJI_S4_SCIENCE = [
+  // 宇宙
+  { word:'宇宙開闢', chars:['宇','宙','開','闢'], rarity:'★16', tags:['四字熟語','科学','古典'], desc:'宇宙の始まり', season:'S4' },
+  { word:'銀河系外', chars:['銀','河','系','外'], rarity:'★14', tags:['四字熟語','天体','未来'], desc:'銀河の外', season:'S4' },
+  { word:'光年距離', chars:['光','年','距','離'], rarity:'★13', tags:['四字熟語','天体','科学'], desc:'ライトイヤー', season:'S4' },
+  { word:'宇宙膨張', chars:['宇','宙','膨','張'], rarity:'★14', tags:['四字熟語','科学','天体'], desc:'インフレーション', season:'S4' },
+  { word:'銀河衝突', chars:['銀','河','衝','突'], rarity:'★15', tags:['四字熟語','天体','科学'], desc:'ギャラクシークラッシュ', season:'S4' },
+  { word:'宇宙黒洞', chars:['宇','宙','黒','洞'], rarity:'★15', tags:['四字熟語','天体','科学'], desc:'ブラックホール', season:'S4' },
+  { word:'白色矮星', chars:['白','色','矮','星'], rarity:'★16', tags:['四字熟語','天体','科学'], desc:'ホワイトドワーフ', season:'S4' },
+  { word:'中性子星', chars:['中','性','子','星'], rarity:'★15', tags:['四字熟語','天体','科学'], desc:'ニュートロンスター', season:'S4' },
+  { word:'超新星爆', chars:['超','新','星','爆'], rarity:'★15', tags:['四字熟語','天体','科学'], desc:'スーパーノヴァ', season:'S4' },
+  { word:'暗黒物質', chars:['暗','黒','物','質'], rarity:'★15', tags:['四字熟語','科学','未来'], desc:'ダークマター', season:'S4' },
+
+  // 物理
+  { word:'万有引力', chars:['万','有','引','力'], rarity:'★13', tags:['四字熟語','科学','RAINY'], desc:'グラビティ', season:'S4' },
+  { word:'電磁波長', chars:['電','磁','波','長'], rarity:'★13', tags:['四字熟語','科学'], desc:'波長', season:'S4' },
+  { word:'光速不変', chars:['光','速','不','変'], rarity:'★15', tags:['四字熟語','科学'], desc:'光速度一定', season:'S4' },
+  { word:'相対性論', chars:['相','対','性','論'], rarity:'★14', tags:['四字熟語','科学','哲学'], desc:'リレーティビティ', season:'S4' },
+  { word:'量子力学', chars:['量','子','力','学'], rarity:'★14', tags:['四字熟語','科学'], desc:'クォンタムメカニクス', season:'S4' },
+  { word:'波動関数', chars:['波','動','関','数'], rarity:'★14', tags:['四字熟語','科学'], desc:'ウェーブファンクション', season:'S4' },
+  { word:'熱力学第', chars:['熱','力','学','第'], rarity:'★14', tags:['四字熟語','科学'], desc:'熱力学法則', season:'S4' },
+  { word:'絶対零度', chars:['絶','対','零','度'], rarity:'★14', tags:['四字熟語','科学'], desc:'アブソリュートゼロ', season:'S4' },
+  { word:'核融合炉', chars:['核','融','合','炉'], rarity:'★15', tags:['四字熟語','科学','未来'], desc:'フュージョン', season:'S4' },
+  { word:'核分裂炉', chars:['核','分','裂','炉'], rarity:'★15', tags:['四字熟語','科学'], desc:'フィッション', season:'S4' },
+
+  // 化学
+  { word:'化学反応', chars:['化','学','反','応'], rarity:'★12', tags:['四字熟語','科学'], desc:'ケミカルリアクション', season:'S4' },
+  { word:'酸化還元', chars:['酸','化','還','元'], rarity:'★14', tags:['四字熟語','科学'], desc:'レドックス', season:'S4' },
+  { word:'触媒作用', chars:['触','媒','作','用'], rarity:'★14', tags:['四字熟語','科学'], desc:'カタリスト', season:'S4' },
+  { word:'有機化学', chars:['有','機','化','学'], rarity:'★13', tags:['四字熟語','科学','学'], desc:'オーガニックケミ', season:'S4' },
+  { word:'無機化学', chars:['無','機','化','学'], rarity:'★13', tags:['四字熟語','科学','学'], desc:'インオーガニック', season:'S4' },
+
+  // 生物
+  { word:'遺伝子組', chars:['遺','伝','子','組'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'ジェノム編集', season:'S4' },
+  { word:'進化適応', chars:['進','化','適','応'], rarity:'★13', tags:['四字熟語','科学'], desc:'エボリューション', season:'S4' },
+  { word:'自然淘汰', chars:['自','然','淘','汰'], rarity:'★14', tags:['四字熟語','科学'], desc:'ナチュラルセレクション', season:'S4' },
+  { word:'生命進化', chars:['生','命','進','化'], rarity:'★13', tags:['四字熟語','科学'], desc:'バイオエボリューション', season:'S4' },
+  { word:'細胞分裂', chars:['細','胞','分','裂'], rarity:'★13', tags:['四字熟語','科学'], desc:'セルディビジョン', season:'S4' },
+
+  // IT・AI
+  { word:'人工知能', chars:['人','工','知','能'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'AI', season:'S4' },
+  { word:'機械学習', chars:['機','械','学','習'], rarity:'★13', tags:['四字熟語','科学','未来'], desc:'ML', season:'S4' },
+  { word:'神経網絡', chars:['神','経','網','絡'], rarity:'★15', tags:['四字熟語','科学','未来'], desc:'ニューラルネット', season:'S4' },
+  { word:'深層学習', chars:['深','層','学','習'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'ディープラーニング', season:'S4' },
+  { word:'生成生成', chars:['生','成','生','成'], rarity:'★13', tags:['四字熟語','未来'], desc:'生成AI', season:'S4' },
+  { word:'仮想現実', chars:['仮','想','現','実'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'VR', season:'S4' },
+  { word:'拡張現実', chars:['拡','張','現','実'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'AR', season:'S4' },
+  { word:'複合現実', chars:['複','合','現','実'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'MR', season:'S4' },
+  { word:'自律制御', chars:['自','律','制','御'], rarity:'★13', tags:['四字熟語','科学'], desc:'オートノマス', season:'S4' },
+  { word:'人工生命', chars:['人','工','生','命'], rarity:'★14', tags:['四字熟語','科学','未来'], desc:'アーティフィシャルライフ', season:'S4' },
+
+  // 通信
+  { word:'光通信網', chars:['光','通','信','網'], rarity:'★13', tags:['四字熟語','科学'], desc:'オプティカルネット', season:'S4' },
+  { word:'量子通信', chars:['量','子','通','信'], rarity:'★15', tags:['四字熟語','科学','未来'], desc:'クォンタムコム', season:'S4' },
+  { word:'衛星通信', chars:['衛','星','通','信'], rarity:'★13', tags:['四字熟語','科学'], desc:'サテライト', season:'S4' },
+  { word:'無線送信', chars:['無','線','送','信'], rarity:'★12', tags:['四字熟語','科学'], desc:'ワイヤレス', season:'S4' },
+  { word:'通信速度', chars:['通','信','速','度'], rarity:'★12', tags:['四字熟語','科学'], desc:'バンド幅', season:'S4' },
+
+  // データ
+  { word:'情報処理', chars:['情','報','処','理'], rarity:'★12', tags:['四字熟語','科学'], desc:'データプロセシング', season:'S4' },
+  { word:'画像処理', chars:['画','像','処','理'], rarity:'★13', tags:['四字熟語','科学'], desc:'イメージプロセシング', season:'S4' },
+  { word:'音声認識', chars:['音','声','認','識'], rarity:'★13', tags:['四字熟語','科学'], desc:'スピーチ認識', season:'S4' },
+];
+for (const r of _YOJI_S4_SCIENCE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
