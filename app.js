@@ -74,45 +74,47 @@ const SIZE_BASE = 56;
 // ═══════════════════════════════════════════════════════════════
 // PERK SYSTEM ── ヴァンパイアサバイバー方式
 // ═══════════════════════════════════════════════════════════════
+// v5（2026-05-17 リバランス）── Lv 1 の効果を控えめに、育成で開花する設計
+// base 値を ~1/3 に下げて「Lv1=★1で取得して即OP」を防ぐ
 const PERKS = {
   // ─── basic：基本ステータス系（どの字でも付き得る・どんな字でも +0.5 で育つ）───
-  haste:       { name:'急降下',  desc:'落下速度 +30%（育てて最大 +78%）',                       category:'basic' },
-  feather:     { name:'ふわふわ',desc:'落下速度 -30% ／ 合体判定 +25%',                          category:'basic' },
-  wide:        { name:'求心',    desc:'合体判定範囲 +40%',                                       category:'basic' },
-  bounty:      { name:'豊穣',    desc:'サイクル完了時 落下数 +2粒（育てて最大 +5粒）',           category:'basic' },
-  scholar:     { name:'積み重ね',desc:'EXP獲得 +30%（育てて最大 +78%）',                        category:'basic' },
-  prodigy:     { name:'神童',    desc:'進化Lv閾値 -25%（早く書体進化）',                         category:'basic' },
+  haste:       { name:'急降下',  desc:'落下速度 +10% × Lv（Lv1=+10% → Lv1000=+27%）',           category:'basic' },
+  feather:     { name:'ふわふわ',desc:'落下 -10% × Lv ／ 合体判定 +8% × Lv',                     category:'basic' },
+  wide:        { name:'求心',    desc:'合体判定範囲 +12% × Lv（Lv1=+12% → Lv1000=+32%）',       category:'basic' },
+  bounty:      { name:'豊穣',    desc:'サイクル完了時 落下数 +育成段階（Lv10=+1粒 / Lv1000=+5粒）',category:'basic' },
+  scholar:     { name:'積み重ね',desc:'EXP獲得 +10% × Lv（Lv1=+10% → Lv1000=+27%）',            category:'basic' },
+  prodigy:     { name:'神童',    desc:'進化Lv閾値 -8% × Lv（早く書体進化・最大 -21%）',          category:'basic' },
   magnet:      { name:'磁字',    desc:'着地時に近くの同字を引き寄せて自動合体',                  category:'basic' },
 
   // ─── special：主人公専用（自動付与）───
-  guardian:    { name:'守護',    desc:'主人公が消滅しない（タップでも残る）／ EXP分配 +20%',     category:'special' },
+  guardian:    { name:'守護',    desc:'主人公が消滅しない（タップでも残る）／ EXP分配 +10%',     category:'special' },
 
   // ─── tag：タグ系（その字のタグから自動派生・対応タグの字ストックで育つ）───
-  tag_virtue:  { name:'七徳の徳',  desc:'七徳熟語成立時 全員XP +50% × 育成倍率',                  category:'tag', tag:'七徳'  },
-  tag_sin:     { name:'七大罪の業',desc:'七大罪字は落下時 +1粒派生 × 育成倍率',                   category:'tag', tag:'七大罪'},
-  tag_emo:     { name:'感応',     desc:'感情字を融合時 XP +100% × 育成倍率',                     category:'tag', tag:'感情'  },
-  tag_time:    { name:'時の継',   desc:'時字を融合時 サイクル時間 -10秒',                        category:'tag', tag:'時'    },
-  tag_zen:     { name:'禅静',     desc:'禅字を持つと休憩中の上昇泡が 2倍 × 育成倍率',            category:'tag', tag:'禅'    },
-  tag_sacred:  { name:'神威',     desc:'神字を融合時 ★解放を 10Lv 早める',                       category:'tag', tag:'神字'  },
-  tag_war:     { name:'闘気',     desc:'武字を融合時 連鎖判定 +1字',                             category:'tag', tag:'武'    },
-  tag_learn:   { name:'求道',     desc:'学字を融合時 EXP +75% × 育成倍率',                       category:'tag', tag:'学'    },
-  tag_nature:  { name:'自然律',   desc:'自然字を融合時 落下数 +1',                              category:'tag', tag:'自然'  },
+  tag_virtue:  { name:'七徳の徳',  desc:'七徳タグの字をストックで XP +15% × Lv',                 category:'tag', tag:'七徳'  },
+  tag_sin:     { name:'七大罪の業',desc:'七大罪字は落下時 +1粒派生（Lv で確率上昇）',             category:'tag', tag:'七大罪'},
+  tag_emo:     { name:'感応',     desc:'感情字を融合時 XP +30% × Lv',                            category:'tag', tag:'感情'  },
+  tag_time:    { name:'時の継',   desc:'時字を融合時 EXP +10% × Lv',                             category:'tag', tag:'時'    },
+  tag_zen:     { name:'禅静',     desc:'禅字ストックで休憩泡 +15% × Lv',                         category:'tag', tag:'禅'    },
+  tag_sacred:  { name:'神威',     desc:'神字 XP +15% × Lv（融合時さらに加算）',                  category:'tag', tag:'神字'  },
+  tag_war:     { name:'闘気',     desc:'武字を融合時 XP +15% × Lv',                              category:'tag', tag:'武'    },
+  tag_learn:   { name:'求道',     desc:'学字を融合時 EXP +25% × Lv',                             category:'tag', tag:'学'    },
+  tag_nature:  { name:'自然律',   desc:'自然字 +育成段階 落下数（Lv50=+1）',                     category:'tag', tag:'自然'  },
   tag_beauty:  { name:'幽美',     desc:'美字を融合時 書体が即時進化（強力）',                    category:'tag', tag:'美'    },
-  tag_numeral: { name:'計算',     desc:'数字字を融合時 サイクル EXP +20',                        category:'tag', tag:'数字'  },
-  tag_english: { name:'発音',     desc:'英語字を融合時 落下速度 -15%',                           category:'tag', tag:'英語'  },
-  tag_order:   { name:'順序',     desc:'順序タグ字を持つと早押し EXP +10% × 育成倍率',           category:'tag', tag:'順序'  },
+  tag_numeral: { name:'計算',     desc:'数字字 XP +10% × Lv（base EXP +2%）',                    category:'tag', tag:'数字'  },
+  tag_english: { name:'発音',     desc:'英語字を融合時 落下 -5% × Lv',                           category:'tag', tag:'英語'  },
+  tag_order:   { name:'順序',     desc:'順序タグ字で全 EXP +3% × Lv',                            category:'tag', tag:'順序'  },
 
   // ─── rare：レア特性（★8 以降の字を仲間にすると稀に付与 ・ 効果大）─────────
   chain:              { name:'連鎖',   desc:'3字以上同字融合で大爆発（パーティ全員 Lv+1）',     category:'rare' },
   blessing:           { name:'祝詞',   desc:'5サイクル毎に 1段上のレア字が降ってくる',          category:'rare' },
-  legendary_radiance: { name:'輝度',   desc:'パーティ全員 EXP獲得 +50% × 育成倍率',             category:'rare' },
-  legendary_growth:   { name:'爆速',   desc:'Lv up 必要 EXP -30% × 育成倍率',                    category:'rare' },
-  legendary_link:     { name:'共鳴',   desc:'仲間の他特性の効果を +20% × 育成倍率（重ね掛け）',  category:'rare' },
-  legendary_burst:    { name:'神撃',   desc:'合体時 10% で EXP ×10 メガバースト',                category:'rare' },
+  legendary_radiance: { name:'輝度',   desc:'パーティ全員 EXP +20% × Lv（最大 +53%）',           category:'rare' },
+  legendary_growth:   { name:'爆速',   desc:'Lv up 必要 EXP -10% × Lv',                          category:'rare' },
+  legendary_link:     { name:'共鳴',   desc:'仲間の他特性の効果を +8% × Lv（重ね掛け）',         category:'rare' },
+  legendary_burst:    { name:'神撃',   desc:'合体時 5% × Lv で EXP ×10 メガバースト',           category:'rare' },
   legendary_aurora:   { name:'極光',   desc:'背景演出 派手化 ＋ 全特性 +5% × Lv（成長型）',       category:'rare' },
   legendary_void:     { name:'虚無',   desc:'消滅した字も合体判定に残る（残響）',               category:'rare' },
-  legendary_destiny:  { name:'運命',   desc:'★1 解放上限を超えて高レアが稀に降る',              category:'rare' },
-  legendary_compass:  { name:'羅針',   desc:'パーティ字の出現率 +30% × 育成倍率',                category:'rare' },
+  legendary_destiny:  { name:'運命',   desc:'★解放上限を超えて高レアが稀に降る（Lv で確率上昇）',category:'rare' },
+  legendary_compass:  { name:'羅針',   desc:'パーティ字の出現率 +10% × Lv',                      category:'rare' },
 };
 
 // レア特性候補（★8 以降の字を仲間にしたとき抽選で付く ・ ★16 で確定）
@@ -270,39 +272,40 @@ function aggregatePartyPerks() {
       seenPerks.add(pid);
       const p = PERKS[pid]; if (!p) continue;
       const pw = perkPower(pid);  // Lv による倍率（1.0〜2.6+）
+      // v5（2026-05-17）リバランス：base 係数 ~1/3 に減衰
       switch (pid) {
-        case 'haste':    agg.gravityMul *= 1 + (0.3 * pw); break;
-        case 'feather':  agg.gravityMul *= 1 - (0.3 * Math.min(pw, 2.5)); agg.mergeRadiusMul *= 1 + (0.25 * pw); break;
-        case 'wide':     agg.mergeRadiusMul *= 1 + (0.4 * pw); break;
-        case 'bounty':   agg.dropCountAdd += Math.floor(2 * pw); break;
-        case 'scholar':  agg.expMul *= 1 + (0.3 * pw); break;
-        case 'prodigy':  agg.evoDiscount += 0.25 * pw; break;
+        case 'haste':    agg.gravityMul *= 1 + (0.10 * pw); break;
+        case 'feather':  agg.gravityMul *= 1 - (0.10 * Math.min(pw, 2.5)); agg.mergeRadiusMul *= 1 + (0.08 * pw); break;
+        case 'wide':     agg.mergeRadiusMul *= 1 + (0.12 * pw); break;
+        case 'bounty':   agg.dropCountAdd += Math.max(0, Math.round((pw - 1) * 3)); break;  // Lv1=0/Lv10=1/Lv100=3/Lv1000=5
+        case 'scholar':  agg.expMul *= 1 + (0.10 * pw); break;
+        case 'prodigy':  agg.evoDiscount += 0.08 * pw; break;
         case 'magnet':   agg.magnet = true; break;
         case 'chain':    agg.chain = true; break;
         case 'blessing': agg.blessing = Math.max(1, Math.round(5 / pw)); break;
         case 'guardian': /* 既存仕様 */ break;
-        case 'tag_emo':    agg.tagBonus['感情'] = (agg.tagBonus['感情']||1) + (1.0 * pw); break;
-        case 'tag_learn':  agg.tagBonus['学']   = (agg.tagBonus['学']||1)   + (0.75 * pw); break;
-        case 'tag_nature': agg.dropCountAdd += Math.floor(1 * pw); break;
-        case 'tag_war':    agg.tagBonus['武']   = (agg.tagBonus['武']||1)   + (0.5 * pw); break;
-        case 'tag_sin':    agg.dropCountAdd += Math.floor(1 * pw); break;
-        case 'tag_zen':    agg.tagBonus['禅']   = (agg.tagBonus['禅']||1)   + (0.5 * pw); break;
+        case 'tag_emo':    agg.tagBonus['感情'] = (agg.tagBonus['感情']||1) + (0.30 * pw); break;
+        case 'tag_learn':  agg.tagBonus['学']   = (agg.tagBonus['学']||1)   + (0.25 * pw); break;
+        case 'tag_nature': agg.dropCountAdd += Math.max(0, Math.round((pw - 1) * 2)); break;  // Lv50=+1
+        case 'tag_war':    agg.tagBonus['武']   = (agg.tagBonus['武']||1)   + (0.15 * pw); break;
+        case 'tag_sin':    agg.dropCountAdd += Math.max(0, Math.round((pw - 1) * 2)); break;
+        case 'tag_zen':    agg.tagBonus['禅']   = (agg.tagBonus['禅']||1)   + (0.15 * pw); break;
         case 'tag_beauty': agg.instantEvoOn.push('美'); break;
-        case 'tag_sacred': agg.tagBonus['神字'] = (agg.tagBonus['神字']||1) + (0.5 * pw); break;
-        case 'tag_time':   agg.tagBonus['時']   = (agg.tagBonus['時']||1)   + (0.3 * pw); break;
-        case 'tag_virtue': agg.tagBonus['七徳'] = (agg.tagBonus['七徳']||1) + (0.5 * pw); break;
-        case 'tag_numeral': agg.expMul *= 1 + (0.05 * pw); agg.tagBonus['数字'] = (agg.tagBonus['数字']||1) + (0.3 * pw); break;
-        case 'tag_english': agg.gravityMul *= 1 - (0.15 * Math.min(pw, 2)); agg.tagBonus['英語'] = (agg.tagBonus['英語']||1) + (0.3 * pw); break;
-        case 'tag_order':   agg.expMul *= 1 + (0.10 * pw); break;
+        case 'tag_sacred': agg.tagBonus['神字'] = (agg.tagBonus['神字']||1) + (0.15 * pw); break;
+        case 'tag_time':   agg.tagBonus['時']   = (agg.tagBonus['時']||1)   + (0.10 * pw); break;
+        case 'tag_virtue': agg.tagBonus['七徳'] = (agg.tagBonus['七徳']||1) + (0.15 * pw); break;
+        case 'tag_numeral': agg.expMul *= 1 + (0.02 * pw); agg.tagBonus['数字'] = (agg.tagBonus['数字']||1) + (0.10 * pw); break;
+        case 'tag_english': agg.gravityMul *= 1 - (0.05 * Math.min(pw, 2)); agg.tagBonus['英語'] = (agg.tagBonus['英語']||1) + (0.10 * pw); break;
+        case 'tag_order':   agg.expMul *= 1 + (0.03 * pw); break;
         // ─── レア特性 ────────────────────────────────────────
-        case 'legendary_radiance': agg.expMul *= 1 + (0.5 * pw); break;
-        case 'legendary_growth':   agg.evoDiscount += 0.3 * pw; break;
-        case 'legendary_link':     agg.linkBonus = (agg.linkBonus || 0) + 0.2 * pw; break;
-        case 'legendary_burst':    agg.megaBurst = (agg.megaBurst || 0) + 0.1 * pw; break;
+        case 'legendary_radiance': agg.expMul *= 1 + (0.20 * pw); break;
+        case 'legendary_growth':   agg.evoDiscount += 0.10 * pw; break;
+        case 'legendary_link':     agg.linkBonus = (agg.linkBonus || 0) + 0.08 * pw; break;
+        case 'legendary_burst':    agg.megaBurst = (agg.megaBurst || 0) + 0.05 * pw; break;
         case 'legendary_aurora':   agg.expMul *= 1 + (0.05 * perkLv(pid)); document.body?.classList.add('aurora-mode'); break;
         case 'legendary_void':     agg.voidEcho = true; break;
-        case 'legendary_destiny':  agg.destinyChance = (agg.destinyChance || 0) + 0.05 * pw; break;
-        case 'legendary_compass':  agg.partyDropRate = 1 + (0.3 * pw); break;
+        case 'legendary_destiny':  agg.destinyChance = (agg.destinyChance || 0) + 0.02 * pw; break;
+        case 'legendary_compass':  agg.partyDropRate = 1 + (0.10 * pw); break;
       }
     }
   }
@@ -1285,10 +1288,13 @@ function renderPickerPool() {
       const primary = pickInherentPerk(_pickerSelected);
       const pName = PERKS[primary]?.name || '—';
       const pDesc = PERKS[primary]?.desc || '';
+      // 取得直後は Lv1 から（ストックで育つ）── ユーザーに「Lv1」を明示
+      const lvBadge = `<span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;background:rgba(135,206,235,.18);border:1px solid rgba(135,206,235,.4);color:#cfe6ff;border-radius:4px;padding:1px 6px;margin-left:6px;">Lv1</span>`;
       status.innerHTML = `
         主人公候補：<strong style="font-size:1.1rem">${_pickerSelected}</strong>（${k.rarity}）<br>
-        基本特性：<strong style="color:var(--gold)">${pName}</strong>＋<strong style="color:#ffb888">守護</strong>（主人公専用）<br>
-        <small style="color:var(--ink-mute);font-size:.7rem">${pDesc}</small>
+        基本特性：<strong style="color:var(--gold)">${pName}</strong>${lvBadge}＋<strong style="color:#ffb888">守護</strong>${lvBadge}<br>
+        <small style="color:var(--ink-mute);font-size:.7rem">${pDesc}</small><br>
+        <small style="color:var(--ink-mute);font-size:.66rem;opacity:.7">字をストックすると特性 Lv が育つ（Lv 10 で約 ×1.34、Lv 100 で ×2.0）</small>
       `;
       confirmBtn.disabled = false;
     } else {
@@ -2130,15 +2136,16 @@ function addStock(char) {
   if (isPCMode()) refreshPCPanels();
 }
 
-// 特性の実効レベル ── 1, 2, 3, ... と整数で返す（小数累積は内部だけ）
+// 特性の実効レベル ── 最低 Lv1（取得した瞬間に Lv1）／ストックで +1, +2 ...
+// 内部は小数で累積するが、表示は floor。Lv1 が当たり前なのを明示するため +1。
 function perkLv(perkId){
-  return Math.floor((STATE.perkLevels && STATE.perkLevels[perkId]) || 0);
+  const raw = (STATE.perkLevels && STATE.perkLevels[perkId]) || 0;
+  return Math.floor(raw) + 1;
 }
 // 特性の Lv を「効力倍率」に変換（対数曲線：Lv 1 = 1.0、Lv 10 = 1.34、Lv 100 = 2.0、Lv 1000 = 2.66）
 function perkPower(perkId){
   const lv = perkLv(perkId);
-  if (lv <= 0) return 1.0;
-  return 1 + Math.log10(1 + lv) / 1.5;
+  return 1 + Math.log10(lv) / 1.5;
 }
 
 // 浮上する「+N XP」表示（ジューシー要素）
@@ -2368,8 +2375,8 @@ function openPartyMemberAction(idx) {
     },
       el('div', { style:{ display:'flex', justifyContent:'space-between', fontSize:'.85rem', fontWeight:700 } },
         el('span', {}, (isRare ? '✦ ' : '') + p.name),
-        el('span', { style:{ color: lv > 0 ? 'var(--gold)' : 'var(--ink-mute)', fontFamily:'JetBrains Mono, monospace', fontSize:'.75rem' } },
-          lv > 0 ? `Lv.${lv} (×${pw.toFixed(2)})` : '未育成'
+        el('span', { style:{ color:'var(--gold)', fontFamily:'JetBrains Mono, monospace', fontSize:'.75rem' } },
+          `Lv.${lv} (×${pw.toFixed(2)})`
         ),
       ),
       el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', lineHeight:1.3 } }, p.desc || ''),
@@ -2984,7 +2991,7 @@ function renderCodex() {
       const card = el('div', { class:'perk-card cat-' + cat + (isRare ? ' rare' : '') + (isOwned ? ' owned' : ' locked') },
         el('div', { class:'pck-head' },
           el('span', { class:'pck-name' }, (isRare ? '✦ ' : isSpecial ? '★ ' : '') + p.name),
-          el('span', { class:'pck-lv' }, isOwned ? (lv > 0 ? `Lv.${lv} ×${pw.toFixed(2)}` : '未育成') : '未獲得'),
+          el('span', { class:'pck-lv' }, isOwned ? `Lv.${lv} ×${pw.toFixed(2)}` : '未獲得'),
         ),
         el('div', { class:'pck-cat' }, catLabel),
         el('div', { class:'pck-desc' }, p.desc || ''),
@@ -3132,12 +3139,12 @@ function openStats() {
   const heroChar = isPartyChosen() ? STATE.party.members[STATE.party.hero || 0]?.char || '—' : '—';
   const totalStock = Object.values(STATE.stock || {}).reduce((a,b)=>a+b, 0);
   const writings = (STATE.writings || []).length;
-  // 特性 Lv トップ 3
+  // 特性 Lv トップ 3（perkLevels に蓄積された raw 累計でソート ・ 表示は perkLv 経由 Lv1+）
   const topPerks = Object.entries(STATE.perkLevels || {})
-    .filter(([pid, lv]) => lv >= 1 && PERKS[pid])
+    .filter(([pid, raw]) => raw >= 1 && PERKS[pid])
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
-    .map(([pid, lv]) => `${PERKS[pid].name} Lv.${Math.floor(lv)}`)
+    .map(([pid]) => `${PERKS[pid].name} Lv.${perkLv(pid)}`)
     .join(' / ') || '─';
   list.innerHTML = '';
   const cells = [

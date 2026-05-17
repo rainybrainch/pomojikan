@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260517l">
+<link rel="stylesheet" href="style.css?v=20260517m">
 </head>
 <body data-mode="idle">
 
@@ -439,14 +439,14 @@
     </section>
 
     <section class="help-section">
-      <h3 class="help-h">⑦ 育つ特性（ストック連動）</h3>
+      <h3 class="help-h">⑦ 育つ特性（ストック連動）── v5 リバランス</h3>
       <p class="help-text">
-        字を消す／合体する／5分寿命で消えるたびに <strong>ストックが +1</strong>。<br>
-        ストックを稼ぐと、パーティ字のもつ特性 Lv も育つ：<br>
+        特性は <strong>取得した瞬間に Lv 1</strong>（控えめな効果）。字をストックすると Lv が育って効果が伸びる。<br>
         ・タグ系特性（感情・神字・武 等）：そのタグの字をストックで +1<br>
-        ・基本系特性（haste・feather 等）：どんな字でも +0.5（累積）<br><br>
+        ・基本系特性（積み重ね・急降下 等）：どんな字でも +0.5（累積）<br><br>
         <strong>倍率曲線（対数 ・ 無限スケール）</strong>：<br>
-        Lv 1 ＝ ×1.00 ／ Lv 10 ＝ ×1.34 ／ Lv 100 ＝ ×2.00 ／ Lv 1000 ＝ ×2.66<br><br>
+        Lv 1 ＝ ×1.00 ／ Lv 10 ＝ ×1.34 ／ Lv 100 ＝ ×2.00 ／ Lv 1000 ＝ ×2.66<br>
+        例：積み重ね（EXP+10% × Lv）── Lv1=+10% / Lv100=+20% / Lv1000=+27%<br><br>
         図鑑（📖）→「✦ 特性」タブ で 全特性と現在 Lv を確認できます。
       </p>
     </section>
@@ -454,15 +454,16 @@
     <section class="help-section">
       <h3 class="help-h">⑧ ✦ レア特性 ── ★9 以降の宝</h3>
       <p class="help-text">
-        ★9 以降の字を仲間にすると、確率で<strong>レア特性</strong>が付くことがあります。★16 は確定。<br><br>
-        ・<strong>輝度</strong>：パーティ全員 EXP +50% × 育成倍率<br>
-        ・<strong>爆速</strong>：Lv up 必要 EXP -30% × 倍率<br>
-        ・<strong>共鳴</strong>：仲間の他特性も +20% × 倍率（重ね掛け）<br>
-        ・<strong>神撃</strong>：合体時 10% で EXP×10 メガバースト<br>
-        ・<strong>極光</strong>：背景演出 派手化＋全体 +5%/Lv<br>
+        ★9 以降の字を仲間にすると、確率で<strong>レア特性</strong>が付くことがあります。★16 は確定。<br>
+        Lv1 では控えめ、育成で本領発揮：<br><br>
+        ・<strong>輝度</strong> Lv1=+20% EXP（Lv1000=+53%）<br>
+        ・<strong>爆速</strong> Lv1=-10% Lv up コスト<br>
+        ・<strong>共鳴</strong> Lv1=+8% 仲間効果（重ね掛け）<br>
+        ・<strong>神撃</strong> Lv1=5% 合体メガバースト確率<br>
+        ・<strong>極光</strong>：背景派手化＋全特性 +5%/Lv<br>
         ・<strong>虚無</strong>：消滅した字も合体判定に残る<br>
-        ・<strong>運命</strong>：★1 解放上限を超えて高レアが稀に降る<br>
-        ・<strong>羅針</strong>：パーティ字の出現率 +30% × 倍率
+        ・<strong>運命</strong>：★解放上限を超えて高レアが稀に降る<br>
+        ・<strong>羅針</strong> Lv1=+10% パーティ字出現率
       </p>
     </section>
 
@@ -550,7 +551,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260517l" defer></script>
-<script src="app.js?v=20260517l" defer></script>
+<script src="codex.js?v=20260517m" defer></script>
+<script src="app.js?v=20260517m" defer></script>
 </body>
 </html>
