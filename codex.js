@@ -7080,6 +7080,76 @@ const _YOJI_S4_MEDIC = [
 ];
 for (const r of _YOJI_S4_MEDIC) YOJI_RECIPES.push(r);
 
+// v10g ── 二字熟語 +50（自然要素・物理）
+const _YOJI_S3_ELEMENT = [
+  // 火・水・木・金・土
+  { word:'炎熱', chars:['炎','熱'], rarity:'★12', tags:['自然'], desc:'ヒート', season:'S3' },
+  { word:'炎上', chars:['炎','上'], rarity:'★12', tags:['自然'], desc:'バーン', season:'S3' },
+  { word:'火炎', chars:['火','炎'], rarity:'★12', tags:['自然'], desc:'フレイム', season:'S3' },
+  { word:'熱風', chars:['熱','風'], rarity:'★12', tags:['自然'], desc:'ホットウィンド', season:'S3' },
+  { word:'熱気', chars:['熱','気'], rarity:'★10', tags:['自然'], desc:'ヒート', season:'S3' },
+  { word:'灼熱', chars:['灼','熱'], rarity:'★14', tags:['自然','古典'], desc:'バーニング', season:'S3' },
+
+  // 水
+  { word:'水流', chars:['水','流'], rarity:'★8',  tags:['自然','水'], desc:'フロー', season:'S3' },
+  { word:'水滴', chars:['水','滴'], rarity:'★12', tags:['自然','水'], desc:'ドロップ', season:'S3' },
+  { word:'水蒸', chars:['水','蒸'], rarity:'★12', tags:['自然','科学'], desc:'スチーム', season:'S3' },
+  { word:'水蒸気', chars:['水','蒸','気'], rarity:'★12', tags:['自然','科学'], desc:'水蒸気', season:'S3' },
+  { word:'水分', chars:['水','分'], rarity:'★8',  tags:['自然','水'], desc:'モイスチャー', season:'S3' },
+  { word:'水質', chars:['水','質'], rarity:'★12', tags:['自然','水'], desc:'水質', season:'S3' },
+
+  // 木・植物
+  { word:'木材', chars:['木','材'], rarity:'★8',  tags:['自然'], desc:'ティンバー', season:'S3' },
+  { word:'木陰', chars:['木','陰'], rarity:'★10', tags:['自然','美'], desc:'こかげ', season:'S3' },
+  { word:'木枯', chars:['木','枯'], rarity:'★13', tags:['自然','古典'], desc:'こがらし', season:'S3' },
+
+  // 金・銀・銅
+  { word:'貴金属', chars:['貴','金','属'], rarity:'★12', tags:[], desc:'プレシャスメタル', season:'S3' },
+  { word:'純金', chars:['純','金'], rarity:'★12', tags:[], desc:'ピュアゴールド', season:'S3' },
+  { word:'純銀', chars:['純','銀'], rarity:'★13', tags:[], desc:'ピュアシルバー', season:'S3' },
+  { word:'金粉', chars:['金','粉'], rarity:'★12', tags:[], desc:'ゴールドダスト', season:'S3' },
+  { word:'銀粉', chars:['銀','粉'], rarity:'★13', tags:[], desc:'シルバーダスト', season:'S3' },
+
+  // 土・石
+  { word:'土壌', chars:['土','壌'], rarity:'★12', tags:['自然'], desc:'ソイル', season:'S3' },
+  { word:'土地', chars:['土','地'], rarity:'★7',  tags:['自然'], desc:'ランド', season:'S3' },
+  { word:'土砂', chars:['土','砂'], rarity:'★10', tags:['自然'], desc:'土砂', season:'S3' },
+  { word:'砂利', chars:['砂','利'], rarity:'★12', tags:['自然'], desc:'グラベル', season:'S3' },
+  { word:'岩石', chars:['岩','石'], rarity:'★10', tags:['自然'], desc:'ロック', season:'S3' },
+  { word:'巨石', chars:['巨','石'], rarity:'★12', tags:['自然'], desc:'ビッグストーン', season:'S3' },
+
+  // 空気
+  { word:'酸素', chars:['酸','素'], rarity:'★12', tags:['科学'], desc:'オキシジェン', season:'S3' },
+  { word:'空気', chars:['空','気'], rarity:'★7',  tags:[], desc:'エアー', season:'S3' },
+  { word:'大気', chars:['大','気'], rarity:'★10', tags:['自然','科学'], desc:'アトモスフィア', season:'S3' },
+  { word:'排気', chars:['排','気'], rarity:'★12', tags:[], desc:'エキゾースト', season:'S3' },
+  { word:'換気', chars:['換','気'], rarity:'★12', tags:[], desc:'ベンチレーション', season:'S3' },
+
+  // エネルギー
+  { word:'熱量', chars:['熱','量'], rarity:'★12', tags:['科学'], desc:'カロリー', season:'S3' },
+  { word:'電気', chars:['電','気'], rarity:'★7',  tags:['科学'], desc:'エレクトリシティ', season:'S3' },
+  { word:'発電', chars:['発','電'], rarity:'★10', tags:['科学'], desc:'パワージェネレーション', season:'S3' },
+  { word:'電源', chars:['電','源'], rarity:'★10', tags:['科学'], desc:'パワーソース', season:'S3' },
+  { word:'動力', chars:['動','力'], rarity:'★10', tags:['科学'], desc:'パワー', season:'S3' },
+  { word:'原動', chars:['原','動'], rarity:'★12', tags:['科学'], desc:'モーティブ', season:'S3' },
+
+  // 光
+  { word:'採光', chars:['採','光'], rarity:'★13', tags:[], desc:'ライティング', season:'S3' },
+  { word:'反射', chars:['反','射'], rarity:'★10', tags:['科学'], desc:'リフレクション', season:'S3' },
+  { word:'屈折', chars:['屈','折'], rarity:'★12', tags:['科学'], desc:'リフラクション', season:'S3' },
+  { word:'透過', chars:['透','過'], rarity:'★13', tags:['科学'], desc:'トランスミット', season:'S3' },
+  { word:'透明', chars:['透','明'], rarity:'★10', tags:[], desc:'トランスペアレント', season:'S3' },
+
+  // 物質状態
+  { word:'固体', chars:['固','体'], rarity:'★8',  tags:['科学'], desc:'ソリッド', season:'S3' },
+  { word:'液体', chars:['液','体'], rarity:'★8',  tags:['科学'], desc:'リクィッド', season:'S3' },
+  { word:'気体', chars:['気','体'], rarity:'★10', tags:['科学'], desc:'ガス', season:'S3' },
+  { word:'結晶', chars:['結','晶'], rarity:'★13', tags:['科学'], desc:'クリスタル', season:'S3' },
+  { word:'融解', chars:['融','解'], rarity:'★13', tags:['科学'], desc:'メルト', season:'S3' },
+  { word:'凝固', chars:['凝','固'], rarity:'★13', tags:['科学'], desc:'コングリーション', season:'S3' },
+];
+for (const r of _YOJI_S3_ELEMENT) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
