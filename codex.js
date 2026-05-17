@@ -4193,6 +4193,74 @@ const _YOJI_S4_EARTH = [
 ];
 for (const r of _YOJI_S4_EARTH) YOJI_RECIPES.push(r);
 
+// v8r ── 二字熟語 +50（趣味・スポーツ・娯楽）
+const _YOJI_S3_HOBBY = [
+  // スポーツ
+  { word:'野球', chars:['野','球'], rarity:'★7',  tags:['武'], desc:'ベースボール', season:'S3' },
+  { word:'蹴球', chars:['蹴','球'], rarity:'★13', tags:['武'], desc:'サッカー', season:'S3' },
+  { word:'籠球', chars:['籠','球'], rarity:'★14', tags:['武'], desc:'バスケット', season:'S3' },
+  { word:'排球', chars:['排','球'], rarity:'★12', tags:['武'], desc:'バレーボール', season:'S3' },
+  { word:'卓球', chars:['卓','球'], rarity:'★12', tags:['武'], desc:'テーブルテニス', season:'S3' },
+  { word:'庭球', chars:['庭','球'], rarity:'★12', tags:['武'], desc:'テニス', season:'S3' },
+  { word:'相撲', chars:['相','撲'], rarity:'★13', tags:['武','古典'], desc:'すもう', season:'S3' },
+  { word:'柔道', chars:['柔','道'], rarity:'★10', tags:['武','道'], desc:'じゅうどう', season:'S3' },
+  { word:'剣道', chars:['剣','道'], rarity:'★12', tags:['武','道'], desc:'けんどう', season:'S3' },
+  { word:'空手', chars:['空','手'], rarity:'★8',  tags:['武','道'], desc:'からて', season:'S3' },
+  { word:'弓道', chars:['弓','道'], rarity:'★10', tags:['武','道'], desc:'きゅうどう', season:'S3' },
+  { word:'合気道', chars:['合','気','道'], rarity:'★13', tags:['武','道'], desc:'あいきどう', season:'S3' },
+
+  // 遊び
+  { word:'遊戯', chars:['遊','戯'], rarity:'★13', tags:[], desc:'ゲーム', season:'S3' },
+  { word:'囲碁', chars:['囲','碁'], rarity:'★13', tags:['古典','学'], desc:'ご', season:'S3' },
+  { word:'将棋', chars:['将','棋'], rarity:'★12', tags:['古典','学'], desc:'しょうぎ', season:'S3' },
+  { word:'麻雀', chars:['麻','雀'], rarity:'★14', tags:[], desc:'マージャン', season:'S3' },
+  { word:'花札', chars:['花','札'], rarity:'★13', tags:['古典'], desc:'はなふだ', season:'S3' },
+  { word:'歌留多', chars:['歌','留','多'], rarity:'★15', tags:['古典'], desc:'カルタ', season:'S3' },
+  { word:'凧揚', chars:['凧','揚'], rarity:'★15', tags:['古典'], desc:'たこあげ', season:'S3' },
+  { word:'独楽', chars:['独','楽'], rarity:'★15', tags:['古典'], desc:'こま', season:'S3' },
+
+  // 鑑賞
+  { word:'観劇', chars:['観','劇'], rarity:'★12', tags:['美'], desc:'シアター', season:'S3' },
+  { word:'観賞', chars:['観','賞'], rarity:'★8',  tags:['美'], desc:'アプリシエーション', season:'S3' },
+  { word:'映写', chars:['映','写'], rarity:'★13', tags:[], desc:'プロジェクション', season:'S3' },
+  { word:'上映', chars:['上','映'], rarity:'★12', tags:[], desc:'スクリーニング', season:'S3' },
+
+  // 撮影・記録
+  { word:'撮影', chars:['撮','影'], rarity:'★13', tags:['美'], desc:'シューティング', season:'S3' },
+  { word:'録音', chars:['録','音'], rarity:'★12', tags:[], desc:'レコーディング', season:'S3' },
+  { word:'録画', chars:['録','画'], rarity:'★12', tags:[], desc:'レコーディング', season:'S3' },
+  { word:'放映', chars:['放','映'], rarity:'★13', tags:[], desc:'ブロードキャスト', season:'S3' },
+  { word:'放送', chars:['放','送'], rarity:'★8',  tags:[], desc:'ブロードキャスティング', season:'S3' },
+
+  // 演劇
+  { word:'舞台', chars:['舞','台'], rarity:'★8',  tags:['美'], desc:'ステージ', season:'S3' },
+  { word:'劇団', chars:['劇','団'], rarity:'★13', tags:['美'], desc:'シアターカンパニ', season:'S3' },
+  { word:'劇場', chars:['劇','場'], rarity:'★12', tags:['美'], desc:'シアター', season:'S3' },
+  { word:'観客', chars:['観','客'], rarity:'★10', tags:[], desc:'オーディエンス', season:'S3' },
+
+  // 旅
+  { word:'山登', chars:['山','登'], rarity:'★8',  tags:['自然'], desc:'マウンテン', season:'S3' },
+  { word:'川下', chars:['川','下'], rarity:'★8',  tags:['自然'], desc:'ラフティング', season:'S3' },
+  { word:'潜水', chars:['潜','水'], rarity:'★13', tags:[], desc:'ダイビング', season:'S3' },
+  { word:'狩猟', chars:['狩','猟'], rarity:'★13', tags:['古典'], desc:'ハンティング', season:'S3' },
+  { word:'魚釣', chars:['魚','釣'], rarity:'★8',  tags:[], desc:'フィッシング', season:'S3' },
+
+  // 趣味・コレクション
+  { word:'収集', chars:['収','集'], rarity:'★10', tags:[], desc:'コレクション', season:'S3' },
+  { word:'蒐集', chars:['蒐','集'], rarity:'★15', tags:['古典'], desc:'コレクション', season:'S3' },
+  { word:'採集', chars:['採','集'], rarity:'★8',  tags:['自然'], desc:'ピッキング', season:'S3' },
+  { word:'園芸', chars:['園','芸'], rarity:'★12', tags:['美','自然'], desc:'ガーデニング', season:'S3' },
+  { word:'盆栽', chars:['盆','栽'], rarity:'★14', tags:['美','古典'], desc:'ボンサイ', season:'S3' },
+
+  // 料理
+  { word:'料理', chars:['料','理'], rarity:'★7',  tags:[], desc:'クッキング', season:'S3' },
+  { word:'菓子', chars:['菓','子'], rarity:'★12', tags:[], desc:'お菓子', season:'S3' },
+  { word:'和菓子', chars:['和','菓','子'], rarity:'★12', tags:['美'], desc:'わがし', season:'S3' },
+  { word:'洋菓子', chars:['洋','菓','子'], rarity:'★12', tags:['美'], desc:'ようがし', season:'S3' },
+  { word:'味噌', chars:['味','噌'], rarity:'★13', tags:[], desc:'みそ', season:'S3' },
+];
+for (const r of _YOJI_S3_HOBBY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
