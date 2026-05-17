@@ -5357,6 +5357,75 @@ const _YOJI_S4_STRATEGY = [
 ];
 for (const r of _YOJI_S4_STRATEGY) YOJI_RECIPES.push(r);
 
+// v9i ── 二字熟語 +50（音・色・感覚）
+const _YOJI_S3_SENSE = [
+  // 音
+  { word:'音響', chars:['音','響'], rarity:'★12', tags:['美'], desc:'サウンド', season:'S3' },
+  { word:'音律', chars:['音','律'], rarity:'★12', tags:['美'], desc:'チューン', season:'S3' },
+  { word:'音感', chars:['音','感'], rarity:'★10', tags:['美'], desc:'音感', season:'S3' },
+  { word:'絶対音', chars:['絶','対','音'], rarity:'★13', tags:['美'], desc:'絶対音感', season:'S3' },
+  { word:'残響', chars:['残','響'], rarity:'★13', tags:['美'], desc:'リバーブ', season:'S3' },
+  { word:'共振', chars:['共','振'], rarity:'★13', tags:['科学','美'], desc:'レゾナンス', season:'S3' },
+  { word:'振動', chars:['振','動'], rarity:'★10', tags:['科学'], desc:'ヴィブレーション', season:'S3' },
+  { word:'静音', chars:['静','音'], rarity:'★12', tags:['禅'], desc:'サイレント', season:'S3' },
+  { word:'騒音', chars:['騒','音'], rarity:'★12', tags:[], desc:'ノイズ', season:'S3' },
+  { word:'雑音', chars:['雑','音'], rarity:'★12', tags:[], desc:'ノイズ', season:'S3' },
+
+  // 色
+  { word:'色彩', chars:['色','彩'], rarity:'★12', tags:['美'], desc:'カラー', season:'S3' },
+  { word:'色合', chars:['色','合'], rarity:'★10', tags:['美'], desc:'シェード', season:'S3' },
+  { word:'配色', chars:['配','色'], rarity:'★12', tags:['美'], desc:'カラーリング', season:'S3' },
+  { word:'原色', chars:['原','色'], rarity:'★12', tags:['美'], desc:'プライマリ', season:'S3' },
+  { word:'中間色', chars:['中','間','色'], rarity:'★12', tags:['美'], desc:'インターメディエート', season:'S3' },
+
+  // 光
+  { word:'光線', chars:['光','線'], rarity:'★8',  tags:['美'], desc:'ライトレイ', season:'S3' },
+  { word:'光景', chars:['光','景'], rarity:'★10', tags:['美'], desc:'シーン', season:'S3' },
+  { word:'光輝', chars:['光','輝'], rarity:'★12', tags:['美'], desc:'シャイン', season:'S3' },
+  { word:'発光', chars:['発','光'], rarity:'★10', tags:[], desc:'グロー', season:'S3' },
+  { word:'発色', chars:['発','色'], rarity:'★12', tags:['美'], desc:'発色', season:'S3' },
+
+  // 影
+  { word:'影法', chars:['影','法'], rarity:'★12', tags:[], desc:'シャドウ法', season:'S3' },
+  { word:'影絵', chars:['影','絵'], rarity:'★12', tags:['美'], desc:'シャドウペインティング', season:'S3' },
+  { word:'人影', chars:['人','影'], rarity:'★10', tags:[], desc:'シルエット', season:'S3' },
+  { word:'木陰', chars:['木','陰'], rarity:'★10', tags:['自然','美'], desc:'こかげ', season:'S3' },
+
+  // 視覚
+  { word:'視覚', chars:['視','覚'], rarity:'★10', tags:[], desc:'ヴィジョン', season:'S3' },
+  { word:'視野', chars:['視','野'], rarity:'★10', tags:[], desc:'ビュー', season:'S3' },
+  { word:'視線', chars:['視','線'], rarity:'★10', tags:[], desc:'ガゼ', season:'S3' },
+  { word:'眺望', chars:['眺','望'], rarity:'★13', tags:['美'], desc:'パノラマ', season:'S3' },
+  { word:'眼差', chars:['眼','差'], rarity:'★13', tags:['古典'], desc:'まなざし', season:'S3' },
+  { word:'盲点', chars:['盲','点'], rarity:'★13', tags:[], desc:'ブラインドスポット', season:'S3' },
+
+  // 聴覚
+  { word:'聴覚', chars:['聴','覚'], rarity:'★12', tags:[], desc:'ヒアリング', season:'S3' },
+  { word:'聴力', chars:['聴','力'], rarity:'★12', tags:[], desc:'ヒアリング力', season:'S3' },
+  { word:'耳元', chars:['耳','元'], rarity:'★10', tags:[], desc:'みみもと', season:'S3' },
+  { word:'囁き', chars:['囁','き'], rarity:'★15', tags:['古典'], desc:'ささやき', season:'S3' },
+
+  // 嗅覚・味覚
+  { word:'嗅覚', chars:['嗅','覚'], rarity:'★14', tags:[], desc:'スメル', season:'S3' },
+  { word:'味覚', chars:['味','覚'], rarity:'★12', tags:[], desc:'テイスト', season:'S3' },
+  { word:'香り', chars:['香','り'], rarity:'★8',  tags:['美'], desc:'フレグランス', season:'S3' },
+  { word:'匂い', chars:['匂','い'], rarity:'★13', tags:[], desc:'においる', season:'S3' },
+  { word:'香水', chars:['香','水'], rarity:'★12', tags:['美'], desc:'パフューム', season:'S3' },
+
+  // 触覚
+  { word:'触覚', chars:['触','覚'], rarity:'★12', tags:[], desc:'タッチ', season:'S3' },
+  { word:'感触', chars:['感','触'], rarity:'★12', tags:['感情'], desc:'フィール', season:'S3' },
+  { word:'手触', chars:['手','触'], rarity:'★10', tags:[], desc:'てざわり', season:'S3' },
+  { word:'肌触', chars:['肌','触'], rarity:'★12', tags:[], desc:'はだざわり', season:'S3' },
+
+  // 第六感
+  { word:'予感', chars:['予','感'], rarity:'★10', tags:['感情'], desc:'プレモニション', season:'S3' },
+  { word:'直感', chars:['直','感'], rarity:'★10', tags:['感情'], desc:'インチューイション', season:'S3' },
+  { word:'霊感', chars:['霊','感'], rarity:'★13', tags:['神字','感情'], desc:'インスピレーション', season:'S3' },
+  { word:'勘違', chars:['勘','違'], rarity:'★10', tags:[], desc:'ミスアンダースタンディング', season:'S3' },
+];
+for (const r of _YOJI_S3_SENSE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
