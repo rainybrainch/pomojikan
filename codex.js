@@ -3438,6 +3438,76 @@ const _YOJI_S3_ARCH = [
 ];
 for (const r of _YOJI_S3_ARCH) YOJI_RECIPES.push(r);
 
+// v8g ── 四字熟語 +50（漢詩・古文の名句）
+const _YOJI_S4_POETRY = [
+  // 唐詩
+  { word:'山雨欲来', chars:['山','雨','欲','来'], rarity:'★16', tags:['四字熟語','古典','自然'], desc:'嵐の前の静けさ', season:'S4' },
+  { word:'白雲青山', chars:['白','雲','青','山'], rarity:'★14', tags:['四字熟語','古典','自然','美'], desc:'白雲と青山', season:'S4' },
+  { word:'青山緑水', chars:['青','山','緑','水'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'青山緑水', season:'S4' },
+  { word:'山高月小', chars:['山','高','月','小'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'山高ければ月小さし', season:'S4' },
+  { word:'江天暮雪', chars:['江','天','暮','雪'], rarity:'★16', tags:['四字熟語','古典','美'], desc:'江の上の暮雪', season:'S4' },
+  { word:'江月年年', chars:['江','月','年','年'], rarity:'★15', tags:['四字熟語','古典','時'], desc:'江上の月は同じ', season:'S4' },
+  { word:'秋月春風', chars:['秋','月','春','風'], rarity:'★13', tags:['四字熟語','自然','時','美'], desc:'秋の月、春の風', season:'S4' },
+  { word:'落日寒林', chars:['落','日','寒','林'], rarity:'★15', tags:['四字熟語','古典','自然','美'], desc:'落日と寒林', season:'S4' },
+
+  // 古典名句
+  { word:'桃源郷里', chars:['桃','源','郷','里'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'桃源郷', season:'S4' },
+  { word:'武陵桃源', chars:['武','陵','桃','源'], rarity:'★16', tags:['四字熟語','古典'], desc:'桃源郷', season:'S4' },
+  { word:'蓬萊仙境', chars:['蓬','萊','仙','境'], rarity:'★16', tags:['四字熟語','古典','神字'], desc:'仙人の世界', season:'S4' },
+  { word:'仙人境地', chars:['仙','人','境','地'], rarity:'★15', tags:['四字熟語','古典','神字'], desc:'仙人の境地', season:'S4' },
+  { word:'山中暦日', chars:['山','中','暦','日'], rarity:'★15', tags:['四字熟語','古典','時'], desc:'山中に暦なし', season:'S4' },
+
+  // 日本古典
+  { word:'枕草子', chars:['枕','草','子'], rarity:'★15', tags:['四字熟語','古典'], desc:'清少納言', season:'S4' },
+  { word:'源氏物語', chars:['源','氏','物','語'], rarity:'★15', tags:['四字熟語','古典'], desc:'紫式部', season:'S4' },
+  { word:'徒然草', chars:['徒','然','草'], rarity:'★15', tags:['四字熟語','古典'], desc:'吉田兼好', season:'S4' },
+  { word:'方丈記', chars:['方','丈','記'], rarity:'★15', tags:['四字熟語','古典'], desc:'鴨長明', season:'S4' },
+  { word:'平家物語', chars:['平','家','物','語'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'平家', season:'S4' },
+  { word:'今昔物語', chars:['今','昔','物','語'], rarity:'★15', tags:['四字熟語','古典'], desc:'今昔物語集', season:'S4' },
+  { word:'更級日記', chars:['更','級','日','記'], rarity:'★16', tags:['四字熟語','古典'], desc:'更級日記', season:'S4' },
+
+  // 俳句・短歌
+  { word:'俳諧連歌', chars:['俳','諧','連','歌'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'俳諧', season:'S4' },
+  { word:'五七五調', chars:['五','七','五','調'], rarity:'★13', tags:['四字熟語','美','時'], desc:'俳句の調', season:'S4' },
+  { word:'五七五七', chars:['五','七','五','七'], rarity:'★13', tags:['四字熟語','美'], desc:'短歌の調', season:'S4' },
+  { word:'季語入り', chars:['季','語','入','り'], rarity:'★13', tags:['四字熟語','美','時'], desc:'俳句要素', season:'S4' },
+
+  // 名歌人
+  { word:'柿本人麿', chars:['柿','本','人','麿'], rarity:'★16', tags:['四字熟語','古典'], desc:'万葉歌人', season:'S4' },
+  { word:'山部赤人', chars:['山','部','赤','人'], rarity:'★16', tags:['四字熟語','古典'], desc:'万葉歌人', season:'S4' },
+  { word:'紫式部歌', chars:['紫','式','部','歌'], rarity:'★15', tags:['四字熟語','古典'], desc:'紫式部', season:'S4' },
+  { word:'松尾芭蕉', chars:['松','尾','芭','蕉'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'俳聖', season:'S4' },
+
+  // 漢詩語
+  { word:'夜半月光', chars:['夜','半','月','光'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'真夜中の月光', season:'S4' },
+  { word:'江月照人', chars:['江','月','照','人'], rarity:'★16', tags:['四字熟語','古典','美'], desc:'江上の月人を照らす', season:'S4' },
+  { word:'明月清風', chars:['明','月','清','風'], rarity:'★14', tags:['四字熟語','古典','自然','美'], desc:'明月と清風', season:'S4' },
+  { word:'清風明月', chars:['清','風','明','月'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'清風と明月', season:'S4' },
+  { word:'孤舟蓑笠', chars:['孤','舟','蓑','笠'], rarity:'★16', tags:['四字熟語','古典','美'], desc:'孤舟蓑笠の翁', season:'S4' },
+
+  // 季節漢詩
+  { word:'桜花散落', chars:['桜','花','散','落'], rarity:'★13', tags:['四字熟語','自然','美','古典'], desc:'桜散る', season:'S4' },
+  { word:'秋蛍点滅', chars:['秋','蛍','点','滅'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'秋の蛍', season:'S4' },
+  { word:'冬雪閑寂', chars:['冬','雪','閑','寂'], rarity:'★14', tags:['四字熟語','自然','美','禅'], desc:'冬雪の静寂', season:'S4' },
+  { word:'春暁春眠', chars:['春','暁','春','眠'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'春眠暁を覚えず', season:'S4' },
+
+  // 名詩フレーズ
+  { word:'山紫水明', chars:['山','紫','水','明'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'山紫水明の地', season:'S4' },
+  { word:'渓深谷幽', chars:['渓','深','谷','幽'], rarity:'★15', tags:['四字熟語','自然','古典','美'], desc:'渓深く谷幽', season:'S4' },
+  { word:'霧雨煙波', chars:['霧','雨','煙','波'], rarity:'★15', tags:['四字熟語','自然','美'], desc:'霧と煙波', season:'S4' },
+  { word:'天涯海角', chars:['天','涯','海','角'], rarity:'★15', tags:['四字熟語','古典'], desc:'世界の果て', season:'S4' },
+
+  // 名歌の語
+  { word:'夢のごとし', chars:['夢','の','ご','と'], rarity:'★13', tags:['四字熟語','古典','哲学'], desc:'夢の如し', season:'S4' },
+  { word:'露の如し', chars:['露','の','如','し'], rarity:'★13', tags:['四字熟語','古典','美'], desc:'露の如し', season:'S4' },
+  { word:'雷の如', chars:['雷','の','如'], rarity:'★12', tags:['四字熟語','古典'], desc:'雷の如し', season:'S4' },
+  { word:'風の如', chars:['風','の','如'], rarity:'★12', tags:['四字熟語','古典','武'], desc:'武田信玄', season:'S4' },
+  { word:'林の如', chars:['林','の','如'], rarity:'★12', tags:['四字熟語','古典','武'], desc:'動かざる林', season:'S4' },
+  { word:'火の如', chars:['火','の','如'], rarity:'★12', tags:['四字熟語','古典','武'], desc:'侵略は火の如く', season:'S4' },
+  { word:'山の如', chars:['山','の','如'], rarity:'★12', tags:['四字熟語','古典','武'], desc:'動かざる山', season:'S4' },
+];
+for (const r of _YOJI_S4_POETRY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
