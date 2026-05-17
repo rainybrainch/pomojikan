@@ -3579,7 +3579,9 @@ function updateProgressPill() {
     STATE.mode === 'paused' ? '⏸ 一時停止' :
     '⌛ 準備中';
   bandEl.textContent = `${modeLabel} ・ ${tierName}帯 ${achName}`;
-  cycEl.textContent = `${STATE.stats.totalCycles || 0} 回完了`;
+  const streak = STATE.streak?.current || 0;
+  const streakStr = streak > 0 ? `🔥${streak}日 ・ ` : '';
+  cycEl.textContent = `${streakStr}${STATE.stats.totalCycles || 0} 回完了`;
   // リーダー Lv ＋ 次解放までの差分
   const ldrEl = $('#pp-leader');
   if (ldrEl) {
