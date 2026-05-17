@@ -1,5 +1,5 @@
 // ぽもじかん v30 Service Worker（network-first）── レアリティ体系 v2
-const CACHE_NAME = 'pomojikan-20260521s';
+const CACHE_NAME = 'pomojikan-20260521t';
 const PRECACHE = [
   './', './index.html', './manifest.json', './icon.svg',
   './style.css', './app.js', './codex.js'

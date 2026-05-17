@@ -5426,6 +5426,85 @@ const _YOJI_S3_SENSE = [
 ];
 for (const r of _YOJI_S3_SENSE) YOJI_RECIPES.push(r);
 
+// v9j ── 四字熟語 +50（仁・徳・儒教道徳）
+const _YOJI_S4_CONFU = [
+  { word:'仁義礼智', chars:['仁','義','礼','智'], rarity:'★14', tags:['四字熟語','儒教','七徳'], desc:'四徳', season:'S4' },
+  { word:'仁義礼節', chars:['仁','義','礼','節'], rarity:'★13', tags:['四字熟語','儒教','七徳'], desc:'仁義礼節', season:'S4' },
+  { word:'仁義道徳', chars:['仁','義','道','徳'], rarity:'★13', tags:['四字熟語','儒教','七徳'], desc:'仁義道徳', season:'S4' },
+  { word:'忠孝節義', chars:['忠','孝','節','義'], rarity:'★15', tags:['四字熟語','儒教','七徳'], desc:'武士四徳', season:'S4' },
+  { word:'信義誠忠', chars:['信','義','誠','忠'], rarity:'★14', tags:['四字熟語','儒教','七徳'], desc:'信誠', season:'S4' },
+  { word:'温情厚誼', chars:['温','情','厚','誼'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'温情厚誼', season:'S4' },
+  { word:'温故為新', chars:['温','故','為','新'], rarity:'★14', tags:['四字熟語','儒教','学'], desc:'温故知新', season:'S4' },
+  { word:'修身斉家', chars:['修','身','斉','家'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'修身', season:'S4' },
+  { word:'治国平天', chars:['治','国','平','天'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'治国平天下', season:'S4' },
+  { word:'四書五経', chars:['四','書','五','経'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'儒教経典', season:'S4' },
+
+  // 教え
+  { word:'三省一日', chars:['三','省','一','日'], rarity:'★16', tags:['四字熟語','儒教','古典'], desc:'吾日三省吾身', season:'S4' },
+  { word:'恭儉譲温', chars:['恭','儉','譲','温'], rarity:'★16', tags:['四字熟語','儒教','古典'], desc:'温良恭儉譲', season:'S4' },
+  { word:'恭儉讓良', chars:['恭','儉','讓','良'], rarity:'★16', tags:['四字熟語','儒教','古典'], desc:'孔子五徳', season:'S4' },
+  { word:'恕慈大度', chars:['恕','慈','大','度'], rarity:'★15', tags:['四字熟語','七徳'], desc:'恕慈寛大', season:'S4' },
+
+  // 君臣
+  { word:'君臣不和', chars:['君','臣','不','和'], rarity:'★14', tags:['四字熟語','儒教'], desc:'君臣の不和', season:'S4' },
+  { word:'君主臣下', chars:['君','主','臣','下'], rarity:'★13', tags:['四字熟語','古典'], desc:'君臣', season:'S4' },
+  { word:'王道仁政', chars:['王','道','仁','政'], rarity:'★14', tags:['四字熟語','儒教','古典'], desc:'王道', season:'S4' },
+  { word:'徳政清廉', chars:['徳','政','清','廉'], rarity:'★14', tags:['四字熟語','七徳'], desc:'清廉な政治', season:'S4' },
+
+  // 親子
+  { word:'孝子順母', chars:['孝','子','順','母'], rarity:'★15', tags:['四字熟語','儒教','七徳'], desc:'孝順', season:'S4' },
+  { word:'親孝行', chars:['親','孝','行'], rarity:'★11', tags:['四字熟語','七徳'], desc:'親孝行', season:'S4' },
+  { word:'子孫繁栄', chars:['子','孫','繁','栄'], rarity:'★13', tags:['四字熟語','七徳'], desc:'子孫繁栄', season:'S4' },
+  { word:'父母兄弟', chars:['父','母','兄','弟'], rarity:'★11', tags:['四字熟語','七徳'], desc:'家族', season:'S4' },
+
+  // 教育
+  { word:'師弟相伝', chars:['師','弟','相','伝'], rarity:'★14', tags:['四字熟語','学'], desc:'師弟伝承', season:'S4' },
+  { word:'教師指導', chars:['教','師','指','導'], rarity:'★12', tags:['四字熟語','学'], desc:'指導', season:'S4' },
+  { word:'孔子学院', chars:['孔','子','学','院'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'孔子学院', season:'S4' },
+  { word:'孟子教え', chars:['孟','子','教','え'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'孟子', season:'S4' },
+
+  // 礼節
+  { word:'礼儀正し', chars:['礼','儀','正','し'], rarity:'★12', tags:['四字熟語','七徳'], desc:'マナー', season:'S4' },
+  { word:'礼節恭敬', chars:['礼','節','恭','敬'], rarity:'★14', tags:['四字熟語','儒教','七徳'], desc:'礼節', season:'S4' },
+  { word:'礼節作法', chars:['礼','節','作','法'], rarity:'★13', tags:['四字熟語','儒教'], desc:'マナー', season:'S4' },
+  { word:'敬語丁寧', chars:['敬','語','丁','寧'], rarity:'★12', tags:['四字熟語'], desc:'敬語', season:'S4' },
+
+  // 言行
+  { word:'言行不一', chars:['言','行','不','一'], rarity:'★13', tags:['四字熟語'], desc:'言行不一致', season:'S4' },
+  { word:'巧言令色', chars:['巧','言','令','色'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'口先だけ', season:'S4' },
+  { word:'剛毅木訥', chars:['剛','毅','木','訥'], rarity:'★16', tags:['四字熟語','儒教','古典'], desc:'剛毅で訥弁', season:'S4' },
+  { word:'三思而行', chars:['三','思','而','行'], rarity:'★16', tags:['四字熟語','儒教','古典'], desc:'三思して行う', season:'S4' },
+
+  // 学問
+  { word:'好学厚学', chars:['好','学','厚','学'], rarity:'★14', tags:['四字熟語','学','儒教'], desc:'学好む', season:'S4' },
+  { word:'読書好古', chars:['読','書','好','古'], rarity:'★15', tags:['四字熟語','学','古典'], desc:'読書愛好', season:'S4' },
+  { word:'求学好問', chars:['求','学','好','問'], rarity:'★15', tags:['四字熟語','学'], desc:'問い学ぶ', season:'S4' },
+
+  // 仁
+  { word:'仁愛無辺', chars:['仁','愛','無','辺'], rarity:'★14', tags:['四字熟語','七徳','儒教'], desc:'無限の愛', season:'S4' },
+  { word:'仁政広大', chars:['仁','政','広','大'], rarity:'★14', tags:['四字熟語','儒教','七徳'], desc:'広い仁政', season:'S4' },
+  { word:'仁恕広博', chars:['仁','恕','広','博'], rarity:'★15', tags:['四字熟語','儒教','七徳'], desc:'広い仁恕', season:'S4' },
+
+  // 義
+  { word:'義務責任', chars:['義','務','責','任'], rarity:'★12', tags:['四字熟語','七徳'], desc:'義務', season:'S4' },
+  { word:'正義感', chars:['正','義','感'], rarity:'★11', tags:['四字熟語','七徳','感情'], desc:'ジャスティス', season:'S4' },
+  { word:'義理人情', chars:['義','理','人','情'], rarity:'★13', tags:['四字熟語','七徳','感情'], desc:'義理人情', season:'S4' },
+
+  // 礼
+  { word:'礼楽典法', chars:['礼','楽','典','法'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'礼楽', season:'S4' },
+  { word:'礼節文化', chars:['礼','節','文','化'], rarity:'★13', tags:['四字熟語','古典'], desc:'礼節', season:'S4' },
+
+  // 智
+  { word:'智慧経験', chars:['智','慧','経','験'], rarity:'★14', tags:['四字熟語','学'], desc:'智慧', season:'S4' },
+  { word:'智者賢者', chars:['智','者','賢','者'], rarity:'★14', tags:['四字熟語','学','古典'], desc:'智者賢者', season:'S4' },
+  { word:'明智英断', chars:['明','智','英','断'], rarity:'★14', tags:['四字熟語','学','武'], desc:'英断', season:'S4' },
+
+  // 信
+  { word:'信頼信用', chars:['信','頼','信','用'], rarity:'★12', tags:['四字熟語','七徳','ビジネス'], desc:'信頼', season:'S4' },
+  { word:'信義信頼', chars:['信','義','信','頼'], rarity:'★13', tags:['四字熟語','七徳'], desc:'信義', season:'S4' },
+];
+for (const r of _YOJI_S4_CONFU) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
