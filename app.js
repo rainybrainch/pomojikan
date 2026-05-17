@@ -1497,7 +1497,7 @@ function openOnboarding() {
   const yojiCount = (window.YOJI_RECIPES || []).length;
   const perkCount = Object.keys(PERKS || {}).length;
   const obc = $('#ob-counts');
-  if (obc) obc.textContent = `${charCount}字 ・ ${yojiCount}熟語 ・ ${perkCount}特性 ・ 無限 Lv`;
+  if (obc) obc.textContent = `${charCount.toLocaleString()}字 ・ ${yojiCount.toLocaleString()}熟語 ・ ${perkCount}特性 ・ 15段階進化 ・ ${MILESTONES.length}達成バッジ`;
   showOnboardingStep();
   $('#onboarding-modal').classList.add('show');
 }
