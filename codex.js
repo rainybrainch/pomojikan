@@ -2706,6 +2706,72 @@ const _YOJI_S4_FOOD = [
 ];
 for (const r of _YOJI_S4_FOOD) YOJI_RECIPES.push(r);
 
+// v7v ── 二字熟語 +50（自然・天候・天体）
+const _YOJI_S3_NATURE = [
+  // 天候
+  { word:'晴天', chars:['晴','天'], rarity:'★7',  tags:['天候','自然'], desc:'青空', season:'S3' },
+  { word:'曇天', chars:['曇','天'], rarity:'★12', tags:['天候','自然'], desc:'くもり', season:'S3' },
+  { word:'霧雨', chars:['霧','雨'], rarity:'★13', tags:['天候','自然','美'], desc:'きりさめ', season:'S3' },
+  { word:'時雨', chars:['時','雨'], rarity:'★13', tags:['天候','古典','美'], desc:'しぐれ', season:'S3' },
+  { word:'夕立', chars:['夕','立'], rarity:'★8',  tags:['天候','自然'], desc:'ゆうだち', season:'S3' },
+  { word:'豪雨', chars:['豪','雨'], rarity:'★13', tags:['天候','自然'], desc:'大雨', season:'S3' },
+  { word:'吹雪', chars:['吹','雪'], rarity:'★8',  tags:['天候','自然'], desc:'ふぶき', season:'S3' },
+  { word:'霜柱', chars:['霜','柱'], rarity:'★13', tags:['天候','自然'], desc:'しもばしら', season:'S3' },
+  { word:'氷柱', chars:['氷','柱'], rarity:'★13', tags:['天候','自然'], desc:'つらら', season:'S3' },
+  { word:'稲妻', chars:['稲','妻'], rarity:'★13', tags:['天候','自然'], desc:'いなずま', season:'S3' },
+
+  // 風
+  { word:'微風', chars:['微','風'], rarity:'★12', tags:['天候','自然','美'], desc:'そよかぜ', season:'S3' },
+  { word:'順風', chars:['順','風'], rarity:'★8',  tags:['天候'], desc:'順調な風', season:'S3' },
+  { word:'逆風', chars:['逆','風'], rarity:'★8',  tags:['天候'], desc:'向かい風', season:'S3' },
+  { word:'疾風', chars:['疾','風'], rarity:'★13', tags:['天候','武'], desc:'はやて', season:'S3' },
+  { word:'颯風', chars:['颯','風'], rarity:'★14', tags:['天候','美'], desc:'さっぷう', season:'S3' },
+
+  // 天体
+  { word:'太陽系', chars:['太','陽','系'], rarity:'★12', tags:['天体','科学'], desc:'ソーラーシステム', season:'S3' },
+  { word:'銀河系', chars:['銀','河','系'], rarity:'★12', tags:['天体','科学'], desc:'ギャラクシー', season:'S3' },
+  { word:'宇宙船', chars:['宇','宙','船'], rarity:'★13', tags:['天体','未来'], desc:'スペースシップ', season:'S3' },
+  { word:'惑星', chars:['惑','星'], rarity:'★13', tags:['天体','科学'], desc:'プラネット', season:'S3' },
+  { word:'恒星', chars:['恒','星'], rarity:'★13', tags:['天体','科学'], desc:'スター', season:'S3' },
+  { word:'流星群', chars:['流','星','群'], rarity:'★12', tags:['天体'], desc:'流星雨', season:'S3' },
+  { word:'彗星', chars:['彗','星'], rarity:'★15', tags:['天体','古典'], desc:'コメット', season:'S3' },
+  { word:'月食', chars:['月','食'], rarity:'★12', tags:['天体'], desc:'月の食', season:'S3' },
+  { word:'日食', chars:['日','食'], rarity:'★12', tags:['天体'], desc:'太陽の食', season:'S3' },
+
+  // 海・水
+  { word:'波浪', chars:['波','浪'], rarity:'★13', tags:['自然','水'], desc:'うねり', season:'S3' },
+  { word:'潮流', chars:['潮','流'], rarity:'★12', tags:['自然','水'], desc:'うしお', season:'S3' },
+  { word:'波音', chars:['波','音'], rarity:'★10', tags:['自然','美'], desc:'なみおと', season:'S3' },
+  { word:'波頭', chars:['波','頭'], rarity:'★13', tags:['自然','美'], desc:'なみがしら', season:'S3' },
+  { word:'渚辺', chars:['渚','辺'], rarity:'★15', tags:['自然','古典','美'], desc:'なぎさ', season:'S3' },
+  { word:'潮騒', chars:['潮','騒'], rarity:'★15', tags:['自然','古典','美'], desc:'しおさい', season:'S3' },
+  { word:'砂浜', chars:['砂','浜'], rarity:'★8',  tags:['自然'], desc:'ビーチ', season:'S3' },
+  { word:'磯辺', chars:['磯','辺'], rarity:'★14', tags:['自然','古典'], desc:'いそべ', season:'S3' },
+
+  // 山・大地
+  { word:'山脈', chars:['山','脈'], rarity:'★10', tags:['自然'], desc:'マウンテンレンジ', season:'S3' },
+  { word:'山岳', chars:['山','岳'], rarity:'★12', tags:['自然'], desc:'マウンテン', season:'S3' },
+  { word:'峡谷', chars:['峡','谷'], rarity:'★13', tags:['自然'], desc:'キャニオン', season:'S3' },
+  { word:'渓流', chars:['渓','流'], rarity:'★13', tags:['自然'], desc:'渓谷の流れ', season:'S3' },
+  { word:'瀑布', chars:['瀑','布'], rarity:'★15', tags:['自然','古典'], desc:'ばくふ・滝', season:'S3' },
+  { word:'高原', chars:['高','原'], rarity:'★8',  tags:['自然'], desc:'プラトー', season:'S3' },
+  { word:'平原', chars:['平','原'], rarity:'★8',  tags:['自然'], desc:'プレーン', season:'S3' },
+
+  // 植物
+  { word:'花弁', chars:['花','弁'], rarity:'★12', tags:['自然','植物','美'], desc:'はなびら', season:'S3' },
+  { word:'花瓣', chars:['花','瓣'], rarity:'★15', tags:['自然','古典','美'], desc:'はなびら（古字）', season:'S3' },
+  { word:'紫陽花', chars:['紫','陽','花'], rarity:'★13', tags:['自然','美'], desc:'あじさい', season:'S3' },
+  { word:'撫子', chars:['撫','子'], rarity:'★14', tags:['自然','美','古典'], desc:'なでしこ', season:'S3' },
+  { word:'桔梗', chars:['桔','梗'], rarity:'★14', tags:['自然','美','古典'], desc:'ききょう', season:'S3' },
+  { word:'菖蒲', chars:['菖','蒲'], rarity:'★14', tags:['自然','美','古典'], desc:'しょうぶ', season:'S3' },
+  { word:'萩月', chars:['萩','月'], rarity:'★14', tags:['自然','美','古典'], desc:'秋の月', season:'S3' },
+
+  // 動物
+  { word:'雛鳥', chars:['雛','鳥'], rarity:'★13', tags:['自然','動物'], desc:'ひな', season:'S3' },
+  { word:'渡鳥', chars:['渡','鳥'], rarity:'★13', tags:['自然','動物','古典'], desc:'わたりどり', season:'S3' },
+];
+for (const r of _YOJI_S3_NATURE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
