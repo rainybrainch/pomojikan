@@ -4890,6 +4890,76 @@ const _YOJI_S4_HOPE = [
 ];
 for (const r of _YOJI_S4_HOPE) YOJI_RECIPES.push(r);
 
+// v9b ── 二字熟語 +50（時計・暦・季節）
+const _YOJI_S3_CAL = [
+  // 時計
+  { word:'時計', chars:['時','計'], rarity:'★7',  tags:['時'], desc:'クロック', season:'S3' },
+  { word:'時刻', chars:['時','刻'], rarity:'★8',  tags:['時'], desc:'タイム', season:'S3' },
+  { word:'時針', chars:['時','針'], rarity:'★13', tags:['時'], desc:'時計の針', season:'S3' },
+  { word:'分針', chars:['分','針'], rarity:'★13', tags:['時'], desc:'分の針', season:'S3' },
+  { word:'秒針', chars:['秒','針'], rarity:'★13', tags:['時'], desc:'秒針', season:'S3' },
+  { word:'時報', chars:['時','報'], rarity:'★12', tags:['時'], desc:'タイムシグナル', season:'S3' },
+  { word:'瞬間', chars:['瞬','間'], rarity:'★12', tags:['時'], desc:'モーメント', season:'S3' },
+  { word:'刹那', chars:['刹','那'], rarity:'★15', tags:['時','仏教'], desc:'瞬間', season:'S3' },
+  { word:'今宵', chars:['今','宵'], rarity:'★13', tags:['時','古典','美'], desc:'こよい', season:'S3' },
+  { word:'宵闇', chars:['宵','闇'], rarity:'★14', tags:['時','古典','美'], desc:'よいやみ', season:'S3' },
+
+  // 朝
+  { word:'朝陽', chars:['朝','陽'], rarity:'★8',  tags:['時','自然','美'], desc:'モーニングサン', season:'S3' },
+  { word:'朝霧', chars:['朝','霧'], rarity:'★12', tags:['時','自然','美'], desc:'モーニングミスト', season:'S3' },
+  { word:'朝靄', chars:['朝','靄'], rarity:'★15', tags:['時','自然','古典'], desc:'あさもや', season:'S3' },
+  { word:'朝露', chars:['朝','露'], rarity:'★13', tags:['時','自然','美'], desc:'あさつゆ', season:'S3' },
+  { word:'夜明', chars:['夜','明'], rarity:'★8',  tags:['時'], desc:'ドーン', season:'S3' },
+  { word:'暁光', chars:['暁','光'], rarity:'★15', tags:['時','古典','美'], desc:'あかつき', season:'S3' },
+
+  // 夜
+  { word:'夜空', chars:['夜','空'], rarity:'★7',  tags:['時','天体','美'], desc:'ナイトスカイ', season:'S3' },
+  { word:'夜月', chars:['夜','月'], rarity:'★8',  tags:['時','天体','美'], desc:'夜の月', season:'S3' },
+  { word:'月夜', chars:['月','夜'], rarity:'★8',  tags:['時','天体','美'], desc:'ムーンライトナイト', season:'S3' },
+  { word:'月光', chars:['月','光'], rarity:'★8',  tags:['天体','美'], desc:'ムーンライト', season:'S3' },
+  { word:'星月', chars:['星','月'], rarity:'★12', tags:['天体','美'], desc:'星と月', season:'S3' },
+  { word:'星辰', chars:['星','辰'], rarity:'★15', tags:['天体','古典'], desc:'星座', season:'S3' },
+
+  // 暦
+  { word:'暦日', chars:['暦','日'], rarity:'★12', tags:['時','古典'], desc:'カレンダー', season:'S3' },
+  { word:'暦年', chars:['暦','年'], rarity:'★12', tags:['時'], desc:'年暦', season:'S3' },
+  { word:'年月', chars:['年','月'], rarity:'★7',  tags:['時'], desc:'イヤーズ', season:'S3' },
+  { word:'月日', chars:['月','日'], rarity:'★6',  tags:['時'], desc:'デイズ', season:'S3' },
+  { word:'歳月', chars:['歳','月'], rarity:'★10', tags:['時'], desc:'タイム', season:'S3' },
+
+  // 春
+  { word:'春風', chars:['春','風'], rarity:'★7',  tags:['時','自然','美'], desc:'スプリングブリーズ', season:'S3' },
+  { word:'春雨', chars:['春','雨'], rarity:'★7',  tags:['時','自然','美'], desc:'はるさめ', season:'S3' },
+  { word:'春霞', chars:['春','霞'], rarity:'★15', tags:['時','自然','古典','美'], desc:'はるがすみ', season:'S3' },
+  { word:'若葉', chars:['若','葉'], rarity:'★10', tags:['自然','美'], desc:'若葉', season:'S3' },
+
+  // 夏
+  { word:'夏陽', chars:['夏','陽'], rarity:'★8',  tags:['時','自然','美'], desc:'夏の太陽', season:'S3' },
+  { word:'夏空', chars:['夏','空'], rarity:'★8',  tags:['時','自然','美'], desc:'夏空', season:'S3' },
+  { word:'青葉', chars:['青','葉'], rarity:'★8',  tags:['自然','美'], desc:'グリーンリーブス', season:'S3' },
+  { word:'蝉声', chars:['蝉','声'], rarity:'★14', tags:['自然','古典'], desc:'せみのこえ', season:'S3' },
+
+  // 秋
+  { word:'秋風', chars:['秋','風'], rarity:'★7',  tags:['時','自然','美'], desc:'オータムウィンド', season:'S3' },
+  { word:'秋雨', chars:['秋','雨'], rarity:'★7',  tags:['時','自然','美'], desc:'秋雨', season:'S3' },
+  { word:'紅葉', chars:['紅','葉'], rarity:'★10', tags:['自然','美'], desc:'もみじ', season:'S3' },
+  { word:'落葉', chars:['落','葉'], rarity:'★8',  tags:['自然','美'], desc:'らくよう', season:'S3' },
+
+  // 冬
+  { word:'冬枯', chars:['冬','枯'], rarity:'★12', tags:['時','自然','美'], desc:'ふゆがれ', season:'S3' },
+  { word:'氷雪', chars:['氷','雪'], rarity:'★12', tags:['自然','美'], desc:'アイススノー', season:'S3' },
+  { word:'霜雪', chars:['霜','雪'], rarity:'★13', tags:['自然','美'], desc:'霜と雪', season:'S3' },
+  { word:'凍雪', chars:['凍','雪'], rarity:'★13', tags:['自然'], desc:'凍った雪', season:'S3' },
+
+  // 雨
+  { word:'雨音', chars:['雨','音'], rarity:'★8',  tags:['天候','自然','美'], desc:'レインサウンド', season:'S3' },
+  { word:'雨滴', chars:['雨','滴'], rarity:'★13', tags:['天候','自然'], desc:'レインドロップ', season:'S3' },
+  { word:'雨水', chars:['雨','水'], rarity:'★7',  tags:['天候','自然'], desc:'レインウォーター', season:'S3' },
+  { word:'長雨', chars:['長','雨'], rarity:'★8',  tags:['天候','自然'], desc:'ながあめ', season:'S3' },
+  { word:'梅雨', chars:['梅','雨'], rarity:'★10', tags:['天候','自然'], desc:'つゆ', season:'S3' },
+];
+for (const r of _YOJI_S3_CAL) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
