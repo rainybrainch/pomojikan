@@ -3064,10 +3064,10 @@ function detectGenre(chars) {
   if (n === 4) return '四字熟語';
   if (n === 5) return '五字 ・ 俳句の上の句';
   if (n === 7) return '七字 ・ 俳句の中の句';
-  if (n === 17) return '俳句（5-7-5）';
-  if (n === 31) return '短歌（5-7-5-7-7）';
-  if (n >= 8 && n <= 16) return `短文（${n}字）`;
-  if (n >= 18 && n <= 30) return `詩（${n}字）`;
+  if (n === 17) return '🎯 俳句（5-7-5）';
+  if (n === 31) return '🎯 短歌（5-7-5-7-7）';
+  if (n >= 8 && n <= 16) return `短文（${n}字 ／ 俳句まで -${17-n}）`;
+  if (n >= 18 && n <= 30) return `詩（${n}字 ／ 短歌まで -${31-n}）`;
   if (n > 31 && n <= 50) return `散文（${n}字）`;
   return `長文（${n}字）`;
 }
