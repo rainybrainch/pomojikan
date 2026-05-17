@@ -2305,6 +2305,77 @@ const _YOJI_S4_LIFE = [
 ];
 for (const r of _YOJI_S4_LIFE) YOJI_RECIPES.push(r);
 
+// v7p ── 四字熟語 +50（健康・武芸・職人）
+const _YOJI_S4_TRADES = [
+  // 健康・養生
+  { word:'養生健康', chars:['養','生','健','康'], rarity:'★12', tags:['四字熟語'], desc:'健康を養う', season:'S4' },
+  { word:'医食同源', chars:['医','食','同','源'], rarity:'★13', tags:['四字熟語','古典'], desc:'食事は医療', season:'S4' },
+  { word:'不老長寿', chars:['不','老','長','寿'], rarity:'★13', tags:['四字熟語','古典'], desc:'いつまでも若く', season:'S4' },
+  { word:'不老不死', chars:['不','老','不','死'], rarity:'★14', tags:['四字熟語','古典','神字'], desc:'死なず老いず', season:'S4' },
+  { word:'長命百歳', chars:['長','命','百','歳'], rarity:'★13', tags:['四字熟語'], desc:'長生き', season:'S4' },
+  { word:'健康増進', chars:['健','康','増','進'], rarity:'★11', tags:['四字熟語'], desc:'ヘルスアップ', season:'S4' },
+  { word:'病気平癒', chars:['病','気','平','癒'], rarity:'★12', tags:['四字熟語'], desc:'病からの回復', season:'S4' },
+  { word:'天寿全う', chars:['天','寿','全','う'], rarity:'★13', tags:['四字熟語','古典'], desc:'天命を生き切る', season:'S4' },
+
+  // 武芸
+  { word:'抜刀術', chars:['抜','刀','術'], rarity:'★13', tags:['四字熟語','武'], desc:'居合の技', season:'S4' },
+  { word:'弓馬之道', chars:['弓','馬','之','道'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'武士の道', season:'S4' },
+  { word:'武士魂', chars:['武','士','魂'], rarity:'★13', tags:['四字熟語','武'], desc:'侍精神', season:'S4' },
+  { word:'剛剣豪刀', chars:['剛','剣','豪','刀'], rarity:'★14', tags:['四字熟語','武'], desc:'強い剣', season:'S4' },
+  { word:'達人技巧', chars:['達','人','技','巧'], rarity:'★13', tags:['四字熟語','武','学'], desc:'匠の技', season:'S4' },
+  { word:'神技神業', chars:['神','技','神','業'], rarity:'★14', tags:['四字熟語','武','神字'], desc:'神の業', season:'S4' },
+  { word:'修練修行', chars:['修','練','修','行'], rarity:'★13', tags:['四字熟語','武','禅'], desc:'修行する', season:'S4' },
+
+  // 職人・芸事
+  { word:'匠の技', chars:['匠','の','技'], rarity:'★12', tags:['四字熟語','美'], desc:'クラフトマンシップ', season:'S4' },
+  { word:'職人気質', chars:['職','人','気','質'], rarity:'★13', tags:['四字熟語','美'], desc:'プロ気質', season:'S4' },
+  { word:'伝統工芸', chars:['伝','統','工','芸'], rarity:'★13', tags:['四字熟語','美'], desc:'伝統技', season:'S4' },
+  { word:'手仕事', chars:['手','仕','事'], rarity:'★11', tags:['四字熟語','美'], desc:'ハンドメイド', season:'S4' },
+  { word:'絶妙細工', chars:['絶','妙','細','工'], rarity:'★13', tags:['四字熟語','美'], desc:'精巧な細工', season:'S4' },
+  { word:'精緻巧妙', chars:['精','緻','巧','妙'], rarity:'★15', tags:['四字熟語','美'], desc:'極めて精巧', season:'S4' },
+  { word:'絶品技巧', chars:['絶','品','技','巧'], rarity:'★13', tags:['四字熟語','美'], desc:'絶品の技', season:'S4' },
+  { word:'巧言令色', chars:['巧','言','令','色'], rarity:'★15', tags:['四字熟語','古典','儒教'], desc:'口先だけの飾り', season:'S4' },
+
+  // 学者・研究
+  { word:'学者気質', chars:['学','者','気','質'], rarity:'★13', tags:['四字熟語','学'], desc:'アカデミックタイプ', season:'S4' },
+  { word:'研究開発', chars:['研','究','開','発'], rarity:'★12', tags:['四字熟語','学','ビジネス'], desc:'R&D', season:'S4' },
+  { word:'論文発表', chars:['論','文','発','表'], rarity:'★12', tags:['四字熟語','学'], desc:'パブリッシュ', season:'S4' },
+  { word:'実証研究', chars:['実','証','研','究'], rarity:'★13', tags:['四字熟語','科学','学'], desc:'エビデンス研究', season:'S4' },
+  { word:'仮説検証', chars:['仮','説','検','証'], rarity:'★13', tags:['四字熟語','科学'], desc:'ハイポセシス検証', season:'S4' },
+  { word:'学術論争', chars:['学','術','論','争'], rarity:'★13', tags:['四字熟語','学'], desc:'アカデミック論争', season:'S4' },
+  { word:'学際融合', chars:['学','際','融','合'], rarity:'★14', tags:['四字熟語','学'], desc:'分野横断', season:'S4' },
+
+  // 商売・金
+  { word:'商売道徳', chars:['商','売','道','徳'], rarity:'★13', tags:['四字熟語','ビジネス','七徳'], desc:'商道', season:'S4' },
+  { word:'信用第一', chars:['信','用','第','一'], rarity:'★12', tags:['四字熟語','ビジネス','七徳'], desc:'信頼が第一', season:'S4' },
+  { word:'商道徳心', chars:['商','道','徳','心'], rarity:'★13', tags:['四字熟語','ビジネス','七徳'], desc:'商人の心得', season:'S4' },
+  { word:'物販販売', chars:['物','販','販','売'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'物を売る', season:'S4' },
+  { word:'価格交渉', chars:['価','格','交','渉'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'プライス交渉', season:'S4' },
+
+  // 軍・国
+  { word:'国家安泰', chars:['国','家','安','泰'], rarity:'★13', tags:['四字熟語','武'], desc:'国の安全', season:'S4' },
+  { word:'富国強兵', chars:['富','国','強','兵'], rarity:'★13', tags:['四字熟語','武','古典'], desc:'明治国策', season:'S4' },
+  { word:'天下泰平', chars:['天','下','泰','平'], rarity:'★13', tags:['四字熟語','武'], desc:'天下は平和', season:'S4' },
+  { word:'世界平和', chars:['世','界','平','和'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ワールドピース', season:'S4' },
+
+  // 心・思いやり
+  { word:'思いやり', chars:['思','い','や','り'], rarity:'★11', tags:['四字熟語','七徳','感情'], desc:'コンシダレーション', season:'S4' },
+  { word:'心配り', chars:['心','配','り'], rarity:'★11', tags:['四字熟語','七徳','感情'], desc:'気遣い', season:'S4' },
+  { word:'心遣い', chars:['心','遣','い'], rarity:'★11', tags:['四字熟語','感情'], desc:'配慮', season:'S4' },
+  { word:'真心親切', chars:['真','心','親','切'], rarity:'★13', tags:['四字熟語','七徳','感情'], desc:'真心と親切', season:'S4' },
+
+  // 環境・生態
+  { word:'生態系統', chars:['生','態','系','統'], rarity:'★13', tags:['四字熟語','自然','科学'], desc:'エコシステム', season:'S4' },
+  { word:'森林保護', chars:['森','林','保','護'], rarity:'★12', tags:['四字熟語','自然'], desc:'森を守る', season:'S4' },
+  { word:'海洋汚染', chars:['海','洋','汚','染'], rarity:'★12', tags:['四字熟語','自然','未来'], desc:'海洋ゴミ', season:'S4' },
+  { word:'環境危機', chars:['環','境','危','機'], rarity:'★13', tags:['四字熟語','自然','未来'], desc:'環境問題', season:'S4' },
+
+  // 完璧性
+  { word:'完全無欠', chars:['完','全','無','欠'], rarity:'★13', tags:['四字熟語'], desc:'パーフェクト', season:'S4' },
+  { word:'万全万策', chars:['万','全','万','策'], rarity:'★13', tags:['四字熟語'], desc:'すべて手を尽くす', season:'S4' },
+];
+for (const r of _YOJI_S4_TRADES) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
