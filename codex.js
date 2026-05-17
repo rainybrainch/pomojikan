@@ -6861,6 +6861,81 @@ const _YOJI_S3_NATURE2 = [
 ];
 for (const r of _YOJI_S3_NATURE2) YOJI_RECIPES.push(r);
 
+// v10d ── 四字熟語 +50（自由・解放・人権）
+const _YOJI_S4_FREEDOM = [
+  { word:'自由自在', chars:['自','由','自','在'], rarity:'★11', tags:['四字熟語'], desc:'フリースタイル', season:'S4' },
+  { word:'自由気儘', chars:['自','由','気','儘'], rarity:'★15', tags:['四字熟語','古典'], desc:'自由気儘', season:'S4' },
+  { word:'自由奔放', chars:['自','由','奔','放'], rarity:'★13', tags:['四字熟語'], desc:'フリー', season:'S4' },
+  { word:'天衣無縫', chars:['天','衣','無','縫'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'自然な美', season:'S4' },
+  { word:'天真爛漫', chars:['天','真','爛','漫'], rarity:'★13', tags:['四字熟語','美'], desc:'無邪気', season:'S4' },
+  { word:'天衣無縫', chars:['天','衣','無','縫'], rarity:'★14', tags:['四字熟語','古典'], desc:'自然', season:'S4' },
+  { word:'神出鬼没', chars:['神','出','鬼','没'], rarity:'★14', tags:['四字熟語','古典'], desc:'神出鬼没', season:'S4' },
+
+  // 解放
+  { word:'自由解放', chars:['自','由','解','放'], rarity:'★12', tags:['四字熟語'], desc:'リベレーション', season:'S4' },
+  { word:'解放戦争', chars:['解','放','戦','争'], rarity:'★13', tags:['四字熟語','武'], desc:'独立戦争', season:'S4' },
+  { word:'独立宣言', chars:['独','立','宣','言'], rarity:'★13', tags:['四字熟語'], desc:'独立宣言', season:'S4' },
+  { word:'独立独歩', chars:['独','立','独','歩'], rarity:'★13', tags:['四字熟語'], desc:'独り立ち', season:'S4' },
+
+  // 人権
+  { word:'基本人権', chars:['基','本','人','権'], rarity:'★13', tags:['四字熟語','七徳'], desc:'基本的人権', season:'S4' },
+  { word:'人間尊厳', chars:['人','間','尊','厳'], rarity:'★13', tags:['四字熟語','七徳','哲学'], desc:'人間の尊厳', season:'S4' },
+  { word:'生存権利', chars:['生','存','権','利'], rarity:'★13', tags:['四字熟語','七徳'], desc:'生存権', season:'S4' },
+  { word:'表現自由', chars:['表','現','自','由'], rarity:'★13', tags:['四字熟語','哲学'], desc:'表現の自由', season:'S4' },
+  { word:'言論自由', chars:['言','論','自','由'], rarity:'★13', tags:['四字熟語','哲学'], desc:'言論の自由', season:'S4' },
+  { word:'思想自由', chars:['思','想','自','由'], rarity:'★13', tags:['四字熟語','哲学'], desc:'思想の自由', season:'S4' },
+  { word:'信教自由', chars:['信','教','自','由'], rarity:'★13', tags:['四字熟語','神字'], desc:'信教の自由', season:'S4' },
+
+  // 平等
+  { word:'万人平等', chars:['万','人','平','等'], rarity:'★13', tags:['四字熟語','七徳'], desc:'全員平等', season:'S4' },
+  { word:'機会均等', chars:['機','会','均','等'], rarity:'★12', tags:['四字熟語','七徳','ビジネス'], desc:'機会均等', season:'S4' },
+  { word:'平等社会', chars:['平','等','社','会'], rarity:'★12', tags:['四字熟語','七徳'], desc:'平等', season:'S4' },
+  { word:'差別撤廃', chars:['差','別','撤','廃'], rarity:'★13', tags:['四字熟語','七徳'], desc:'差別撤廃', season:'S4' },
+
+  // 民主主義
+  { word:'国民主権', chars:['国','民','主','権'], rarity:'★13', tags:['四字熟語','七徳'], desc:'国民主権', season:'S4' },
+  { word:'普通選挙', chars:['普','通','選','挙'], rarity:'★13', tags:['四字熟語'], desc:'普通選挙', season:'S4' },
+  { word:'立憲民主', chars:['立','憲','民','主'], rarity:'★13', tags:['四字熟語'], desc:'立憲民主主義', season:'S4' },
+  { word:'代議制度', chars:['代','議','制','度'], rarity:'★13', tags:['四字熟語'], desc:'代議制', season:'S4' },
+
+  // 平和
+  { word:'絶対平和', chars:['絶','対','平','和'], rarity:'★13', tags:['四字熟語','七徳'], desc:'絶対平和', season:'S4' },
+  { word:'恒久平和', chars:['恒','久','平','和'], rarity:'★13', tags:['四字熟語','七徳'], desc:'永久平和', season:'S4' },
+  { word:'軍縮交渉', chars:['軍','縮','交','渉'], rarity:'★14', tags:['四字熟語'], desc:'軍縮', season:'S4' },
+  { word:'戦争反対', chars:['戦','争','反','対'], rarity:'★13', tags:['四字熟語','七徳'], desc:'反戦', season:'S4' },
+
+  // 革命
+  { word:'革命運動', chars:['革','命','運','動'], rarity:'★13', tags:['四字熟語'], desc:'レボリューション', season:'S4' },
+  { word:'産業革命', chars:['産','業','革','命'], rarity:'★13', tags:['四字熟語','古典'], desc:'インダストリアル', season:'S4' },
+  { word:'技術革命', chars:['技','術','革','命'], rarity:'★13', tags:['四字熟語','未来'], desc:'テックレボ', season:'S4' },
+  { word:'情報革命', chars:['情','報','革','命'], rarity:'★13', tags:['四字熟語','未来'], desc:'IT革命', season:'S4' },
+
+  // 啓蒙
+  { word:'啓蒙運動', chars:['啓','蒙','運','動'], rarity:'★14', tags:['四字熟語','古典','学'], desc:'エンライトメント', season:'S4' },
+  { word:'文明開化', chars:['文','明','開','化'], rarity:'★13', tags:['四字熟語','古典'], desc:'文明開化', season:'S4' },
+  { word:'近代化進', chars:['近','代','化','進'], rarity:'★12', tags:['四字熟語'], desc:'モダニゼーション', season:'S4' },
+
+  // 自由意志
+  { word:'独立独行', chars:['独','立','独','行'], rarity:'★13', tags:['四字熟語'], desc:'独立独歩', season:'S4' },
+  { word:'独自路線', chars:['独','自','路','線'], rarity:'★12', tags:['四字熟語'], desc:'オリジナルパス', season:'S4' },
+  { word:'独創独自', chars:['独','創','独','自'], rarity:'★13', tags:['四字熟語'], desc:'独創', season:'S4' },
+
+  // 解放感
+  { word:'開放感覚', chars:['開','放','感','覚'], rarity:'★12', tags:['四字熟語','感情'], desc:'リラクゼーション', season:'S4' },
+  { word:'自由感覚', chars:['自','由','感','覚'], rarity:'★12', tags:['四字熟語','感情'], desc:'自由', season:'S4' },
+  { word:'広大無辺', chars:['広','大','無','辺'], rarity:'★14', tags:['四字熟語','古典'], desc:'広大', season:'S4' },
+
+  // 法律
+  { word:'法的権利', chars:['法','的','権','利'], rarity:'★13', tags:['四字熟語'], desc:'リーガルライト', season:'S4' },
+  { word:'弁護権利', chars:['弁','護','権','利'], rarity:'★13', tags:['四字熟語'], desc:'弁護権', season:'S4' },
+  { word:'公正裁判', chars:['公','正','裁','判'], rarity:'★13', tags:['四字熟語','七徳'], desc:'公正な裁判', season:'S4' },
+
+  // 公共
+  { word:'公平公正', chars:['公','平','公','正'], rarity:'★12', tags:['四字熟語','七徳'], desc:'公平公正', season:'S4' },
+  { word:'公明正大', chars:['公','明','正','大'], rarity:'★12', tags:['四字熟語','七徳'], desc:'公明正大', season:'S4' },
+];
+for (const r of _YOJI_S4_FREEDOM) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
