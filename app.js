@@ -826,9 +826,12 @@ function updateAudioButton() {
 function buildBackgroundLayers() {
   const rain = $('#rain-bg');
   const bub  = $('#bubble-bg');
+  // 雨：パーティの最高 Lv に応じて密度を上げる（最大 120 粒）
+  const heroLv = isPartyChosen() ? partyHeroLevel() : 0;
+  const rainN = Math.min(120, 60 + Math.floor(heroLv / 10));
+  const bubN  = Math.min(60, 28 + Math.floor(heroLv / 20));
   if (rain && !rain.children.length) {
-    const N = 60;
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < rainN; i++) {
       const d = document.createElement('div');
       d.className = 'rd';
       d.style.left = (Math.random() * 100) + 'vw';
@@ -839,8 +842,7 @@ function buildBackgroundLayers() {
     }
   }
   if (bub && !bub.children.length) {
-    const N = 28;
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < bubN; i++) {
       const b = document.createElement('div');
       b.className = 'bb';
       const size = 6 + Math.random() * 14;
@@ -852,6 +854,15 @@ function buildBackgroundLayers() {
       bub.appendChild(b);
     }
   }
+}
+
+// パーティ Lv が大きく上がった時に背景密度を更新（毎回 dispose して再構築）
+function refreshBackgroundDensity() {
+  const rain = $('#rain-bg');
+  const bub  = $('#bubble-bg');
+  if (rain) rain.innerHTML = '';
+  if (bub) bub.innerHTML = '';
+  buildBackgroundLayers();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1274,6 +1285,8 @@ function spawnTierUnlockCelebration(tierIdx) {
   const achName  = TIER_ACHIEVEMENT[tierIdx];
   // 既存があれば消す
   $$('.tier-unlock-celebration').forEach(n => n.remove());
+  // 背景密度も更新（高ティアで雨が濃くなる）
+  refreshBackgroundDensity();
   const overlay = el('div', { class:`tier-unlock-celebration tier-${tierIdx + 1}` },
     el('div', { class:'tuc-mask' }, '？？？'),
     el('div', { class:'tuc-arrow' }, '↓'),
