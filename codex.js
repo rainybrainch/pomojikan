@@ -3979,6 +3979,78 @@ const _YOJI_S3_SPIRIT = [
 ];
 for (const r of _YOJI_S3_SPIRIT) YOJI_RECIPES.push(r);
 
+// v8o ── 四字熟語 +50（時の流れ・無常・哲学）
+const _YOJI_S4_TIME = [
+  { word:'光陰矢如', chars:['光','陰','矢','如'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'時は矢の如し', season:'S4' },
+  { word:'歳月流水', chars:['歳','月','流','水'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'年月は流れる水', season:'S4' },
+  { word:'一刻千金', chars:['一','刻','千','金'], rarity:'★13', tags:['四字熟語','時','古典'], desc:'時は金なり', season:'S4' },
+  { word:'白駒過隙', chars:['白','駒','過','隙'], rarity:'★16', tags:['四字熟語','時','古典'], desc:'時の流れの速さ', season:'S4' },
+  { word:'寸陰惜む', chars:['寸','陰','惜','む'], rarity:'★15', tags:['四字熟語','時','古典'], desc:'一瞬を惜しむ', season:'S4' },
+  { word:'時々刻々', chars:['時','々','刻','々'], rarity:'★13', tags:['四字熟語','時'], desc:'一刻一刻', season:'S4' },
+  { word:'刻一刻', chars:['刻','一','刻'], rarity:'★12', tags:['四字熟語','時'], desc:'秒刻み', season:'S4' },
+
+  // 過去・現在・未来
+  { word:'過現未来', chars:['過','現','未','来'], rarity:'★14', tags:['四字熟語','時','仏教'], desc:'過去現在未来', season:'S4' },
+  { word:'三世因縁', chars:['三','世','因','縁'], rarity:'★15', tags:['四字熟語','仏教'], desc:'過去現在未来の因縁', season:'S4' },
+  { word:'前世来世', chars:['前','世','来','世'], rarity:'★14', tags:['四字熟語','仏教'], desc:'前世と来世', season:'S4' },
+  { word:'今生今世', chars:['今','生','今','世'], rarity:'★13', tags:['四字熟語','仏教'], desc:'今の人生', season:'S4' },
+  { word:'未来永劫', chars:['未','来','永','劫'], rarity:'★15', tags:['四字熟語','仏教','時'], desc:'永遠の未来', season:'S4' },
+
+  // 永遠
+  { word:'永遠不滅', chars:['永','遠','不','滅'], rarity:'★15', tags:['四字熟語','哲学','神字'], desc:'エターナル', season:'S4' },
+  { word:'無始無終', chars:['無','始','無','終'], rarity:'★16', tags:['四字熟語','仏教','哲学'], desc:'始まりも終わりも無い', season:'S4' },
+  { word:'始終無常', chars:['始','終','無','常'], rarity:'★14', tags:['四字熟語','仏教'], desc:'始まりと終わり', season:'S4' },
+  { word:'万古不易', chars:['万','古','不','易'], rarity:'★15', tags:['四字熟語','古典'], desc:'永遠に変わらない', season:'S4' },
+
+  // 瞬時
+  { word:'一瞬千変', chars:['一','瞬','千','変'], rarity:'★14', tags:['四字熟語','時'], desc:'瞬時に千変化', season:'S4' },
+  { word:'刹那刹那', chars:['刹','那','刹','那'], rarity:'★15', tags:['四字熟語','仏教','時'], desc:'一瞬一瞬', season:'S4' },
+  { word:'瞬間瞬間', chars:['瞬','間','瞬','間'], rarity:'★12', tags:['四字熟語','時'], desc:'瞬時', season:'S4' },
+  { word:'刹那的生', chars:['刹','那','的','生'], rarity:'★14', tags:['四字熟語','仏教'], desc:'刹那的生き方', season:'S4' },
+
+  // 時の比喩
+  { word:'流転無常', chars:['流','転','無','常'], rarity:'★14', tags:['四字熟語','仏教'], desc:'万物流転', season:'S4' },
+  { word:'有為転変', chars:['有','為','転','変'], rarity:'★14', tags:['四字熟語','仏教'], desc:'すべては変化', season:'S4' },
+  { word:'生死流転', chars:['生','死','流','転'], rarity:'★14', tags:['四字熟語','仏教'], desc:'生と死が巡る', season:'S4' },
+  { word:'万化千変', chars:['万','化','千','変'], rarity:'★14', tags:['四字熟語','哲学'], desc:'絶え間ない変化', season:'S4' },
+
+  // 季節の哲学
+  { word:'春秋富風', chars:['春','秋','富','風'], rarity:'★15', tags:['四字熟語','古典','時'], desc:'春秋の風', season:'S4' },
+  { word:'冬来春到', chars:['冬','来','春','到'], rarity:'★14', tags:['四字熟語','時','自然'], desc:'冬来たれば春遠からじ', season:'S4' },
+  { word:'四季変化', chars:['四','季','変','化'], rarity:'★12', tags:['四字熟語','時','自然'], desc:'四季の移ろい', season:'S4' },
+  { word:'季節廻り', chars:['季','節','廻','り'], rarity:'★13', tags:['四字熟語','時'], desc:'季節循環', season:'S4' },
+
+  // 朝・夕・夜
+  { word:'朝令暮改', chars:['朝','令','暮','改'], rarity:'★15', tags:['四字熟語','古典'], desc:'命令の頻変', season:'S4' },
+  { word:'朝礼暮改', chars:['朝','礼','暮','改'], rarity:'★15', tags:['四字熟語','古典'], desc:'朝令暮改', season:'S4' },
+  { word:'朝三暮四', chars:['朝','三','暮','四'], rarity:'★13', tags:['四字熟語','古典'], desc:'言い回しで誤魔化す', season:'S4' },
+  { word:'朝雲暮雨', chars:['朝','雲','暮','雨'], rarity:'★15', tags:['四字熟語','古典','美'], desc:'男女の情', season:'S4' },
+  { word:'朝令夕改', chars:['朝','令','夕','改'], rarity:'★15', tags:['四字熟語','古典'], desc:'頻繁な変更', season:'S4' },
+
+  // 老・幼
+  { word:'老若男女', chars:['老','若','男','女'], rarity:'★12', tags:['四字熟語'], desc:'みんな', season:'S4' },
+  { word:'老成熟達', chars:['老','成','熟','達'], rarity:'★13', tags:['四字熟語','古典'], desc:'熟達', season:'S4' },
+  { word:'幼若童', chars:['幼','若','童'], rarity:'★12', tags:['四字熟語'], desc:'こども', season:'S4' },
+  { word:'老成円熟', chars:['老','成','円','熟'], rarity:'★14', tags:['四字熟語'], desc:'円熟', season:'S4' },
+
+  // 暦・天文
+  { word:'天文暦', chars:['天','文','暦'], rarity:'★13', tags:['四字熟語','天体','時'], desc:'天文暦学', season:'S4' },
+  { word:'十干十二', chars:['十','干','十','二'], rarity:'★15', tags:['四字熟語','古典','時'], desc:'十干十二支', season:'S4' },
+  { word:'干支歳', chars:['干','支','歳'], rarity:'★14', tags:['四字熟語','古典','時'], desc:'干支', season:'S4' },
+
+  // 一日の流れ
+  { word:'日々精進', chars:['日','々','精','進'], rarity:'★12', tags:['四字熟語','禅','武'], desc:'毎日努力', season:'S4' },
+  { word:'日進月歩', chars:['日','進','月','歩'], rarity:'★11', tags:['四字熟語','時'], desc:'毎日進歩', season:'S4' },
+  { word:'明朝目覚', chars:['明','朝','目','覚'], rarity:'★13', tags:['四字熟語','時'], desc:'明日の朝', season:'S4' },
+  { word:'今日今宵', chars:['今','日','今','宵'], rarity:'★13', tags:['四字熟語','時'], desc:'今夜', season:'S4' },
+
+  // 命の時
+  { word:'天寿全う', chars:['天','寿','全','う'], rarity:'★13', tags:['四字熟語','時'], desc:'寿命を全う', season:'S4' },
+  { word:'人生百年', chars:['人','生','百','年'], rarity:'★13', tags:['四字熟語','時'], desc:'百年人生', season:'S4' },
+  { word:'長寿万歳', chars:['長','寿','万','歳'], rarity:'★12', tags:['四字熟語'], desc:'長生き', season:'S4' },
+];
+for (const r of _YOJI_S4_TIME) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
