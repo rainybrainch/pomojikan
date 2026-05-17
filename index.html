@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260517j">
+<link rel="stylesheet" href="style.css?v=20260517k">
 </head>
 <body data-mode="idle">
 
@@ -50,6 +50,7 @@
       <li><button class="menu-item" id="m-edit-party"><span class="mi-emoji">🛡️</span><span class="mi-label">パーティ編成</span></button></li>
       <li><button class="menu-item" id="m-writings"><span class="mi-emoji">📝</span><span class="mi-label">文章を編む</span></button></li>
       <li><button class="menu-item" id="m-timer"><span class="mi-emoji">⏱</span><span class="mi-label">時間設定</span></button></li>
+      <li><button class="menu-item" id="m-sleep"><span class="mi-emoji">💤</span><span class="mi-label">スリープ</span><span class="mi-state">画面を休める</span></button></li>
     </ul>
     <div class="menu-foot">v30 ・ <a href="changelog.html" target="_blank" rel="noopener">変更履歴</a></div>
   </nav>
@@ -82,15 +83,27 @@
     </div>
 
     <div class="party-bar empty" id="party-bar">
-      <button class="party-pick-cta" id="party-pick-cta">パーティを編成する →</button>
+      <button class="party-pick-cta" id="party-pick-cta">✦ 主人公を選んで始める</button>
     </div>
 
     <div class="tank-hint" id="tank-hint">
-      タイマー開始で <strong>字（ぽもじ）が画面に降ってくる</strong><br>
-      <small>ドラッグして重ねると <strong>融合</strong> ／ タップで <strong>消滅・経験値化</strong></small>
+      タイマー開始で <strong>字（ぽもじ）が画面に降ってくる</strong>。<br>
+      <small>👆 タップで <strong>はじけてストック</strong> ／ 🤏 ドラッグして重ねると <strong>合体・進化</strong></small>
     </div>
   </div>
 </main>
+
+<!-- 💤 スリープオーバーレイ（タップで起きる） -->
+<div class="sleep-overlay" id="sleep-overlay" aria-hidden="true">
+  <div class="sleep-zzz" aria-hidden="true">
+    <span class="sz-z sz-z1">z</span>
+    <span class="sz-z sz-z2">z</span>
+    <span class="sz-z sz-z3">Z</span>
+  </div>
+  <div class="sleep-clock" id="sleep-clock">25:00</div>
+  <div class="sleep-mode-label" id="sleep-mode-label">休む</div>
+  <div class="sleep-tip">画面のどこでもタップで起きる</div>
+</div>
 
 <!-- 完了バースト -->
 <div class="complete-burst" id="complete-burst" aria-live="assertive">
@@ -246,56 +259,62 @@
   </div>
 </div>
 
-<!-- 初回オンボーディング ── v4 体系（4ステップ）-->
+<!-- 初回オンボーディング ── 3ステップに圧縮・ヒーロー演出 -->
 <div class="modal" id="onboarding-modal" role="dialog" aria-modal="true">
   <div class="modal-card onboarding-card">
+
     <div class="ob-step" data-step="1">
-      <div class="ob-icon">🌧</div>
-      <h2 class="ob-title">ぽもじかん へようこそ</h2>
+      <div class="ob-hero">
+        <span class="ob-hero-char ob-c1">あ</span>
+        <span class="ob-hero-char ob-c2">い</span>
+        <span class="ob-hero-char ob-c3">う</span>
+      </div>
+      <h2 class="ob-title">字が、降る。</h2>
+      <p class="ob-tag">ポモドーロ × 文字育成</p>
       <p class="ob-text">
-        集中の時間 ── <strong>字（ぽもじ）</strong>が餅のように降ってくる。<br>
-        休憩の時間 ── 字が <strong>泡</strong>となって主人公を育てる。<br>
-        <small>ポモドーロ × 文字育成 × 文章モード。重力と引力の物理可視化。</small>
+        集中の25分、<strong>字（ぽもじ）</strong>が餅のように降ってくる。<br>
+        休憩で泡となって浮上、<strong>主人公の経験値</strong>になる。
       </p>
+      <p class="ob-small">2606字 ・ 457熟語 ・ 31特性 ・ 無限 Lv</p>
     </div>
+
     <div class="ob-step" data-step="2" hidden>
-      <div class="ob-icon">🎯</div>
-      <h2 class="ob-title">3 つの操作</h2>
+      <div class="ob-hero ob-hero-actions">
+        <span class="ob-action"><span class="oa-emoji">👆</span><span class="oa-label">タップ</span></span>
+        <span class="ob-action"><span class="oa-emoji">🤏</span><span class="oa-label">ドラッグ</span></span>
+        <span class="ob-action"><span class="oa-emoji">🪙</span><span class="oa-label">ストック</span></span>
+      </div>
+      <h2 class="ob-title">触れて、重ねて、貯める。</h2>
       <p class="ob-text">
-        <strong>① ▶ 始める</strong> でタイマー開始<br>
-        <strong>② ドラッグして重ねる</strong> ── 同じ字なら <span style="color:var(--gold)">合体・進化</span>（2048式）<br>
-        <strong>③ タップ</strong> ── 字が <span style="color:#ff9090">はじけて</span> ストック＋経験値化<br>
-        <small>字をストックすると、パーティ字も特性も育ちます。</small>
+        <strong>タップ</strong>でぽもじが <span style="color:#ff9090">はじけて</span> 所有字に。<br>
+        <strong>ドラッグして重ねる</strong>と同字が <span style="color:var(--gold)">合体・進化</span>（2048式）。<br>
+        貯めた字でパーティも特性も育つ。
       </p>
     </div>
+
     <div class="ob-step" data-step="3" hidden>
-      <div class="ob-icon">🌱</div>
-      <h2 class="ob-title">主人公とパーティ</h2>
+      <div class="ob-hero ob-hero-stars">
+        <span class="ob-star ob-s1">★1</span>
+        <span class="ob-star-arrow">→</span>
+        <span class="ob-star ob-s4">★4</span>
+        <span class="ob-star-arrow">→</span>
+        <span class="ob-star ob-s10">★10</span>
+        <span class="ob-star-arrow">→</span>
+        <span class="ob-star ob-s16">★16</span>
+      </div>
+      <h2 class="ob-title">★ で、世界が広がる。</h2>
       <p class="ob-text">
-        まず <strong>ひらがな 1 字</strong>を主人公に選ぶ（リーダー）。<br>
-        休憩で泡が浮上 → 主人公の経験値に。<br>
-        <small>★1=1個 ／ ★8=2個 ／ ★16=3個＋✦レア特性 持ち。<br>
-        高レアな字を仲間にするほど、特性も派手になる。</small>
+        最初は <strong>★1 ひらがな</strong>だけ。リーダーの Lv が上がると<br>
+        カタカナ → 数字 → 英語 → 漢字（小1→拾段神字）と段階解放。<br>
+        <strong>Lv 上限なし</strong>、字も特性も無限に育つ。
       </p>
+      <p class="ob-small">あなたのパーティが熟語を成立させると <strong style="color:var(--gold)">⚡ コンボ</strong> 発動。</p>
     </div>
-    <div class="ob-step" data-step="4" hidden>
-      <div class="ob-icon">✨</div>
-      <h2 class="ob-title">★1-★16・無限 Lv</h2>
-      <p class="ob-text">
-        最初は <strong>★1 ひらがな</strong>だけ。リーダー Lv に応じて：<br>
-        <small style="line-height:1.7;display:inline-block;margin-top:6px;">
-        ★2 カタカナ → ★3 数字 → ★4 英語 → ★5 ローマ<br>
-        ★6〜★11 小1〜小6漢字 ・ ★12 中学 ・ ★13 高校<br>
-        ★14 人名 ・ ★15 古典 ・ ★16 神字（七徳七大罪）
-        </small>
-        <br>Lv に上限なし。<strong>𓂀 Lv 10000</strong> まで字も特性も育つ。
-      </p>
-    </div>
+
     <div class="ob-dots">
       <div class="ob-dot active" data-dot="1"></div>
       <div class="ob-dot" data-dot="2"></div>
       <div class="ob-dot" data-dot="3"></div>
-      <div class="ob-dot" data-dot="4"></div>
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" id="ob-skip">スキップ</button>
@@ -458,7 +477,27 @@
     </section>
 
     <section class="help-section">
-      <h3 class="help-h">⑩ 文章を編む ── 集めた字で日記・俳句</h3>
+      <h3 class="help-h">⑩ 🌟 隠しコンボ（アプリ名）</h3>
+      <p class="help-text">
+        パーティに <strong>特定の4字</strong> を揃えると、通常熟語より段違いに強い <strong>🌟 隠しコンボ</strong> が発動。<br>
+        虹色の枠で大きく演出される。ヒント：<br>
+        ・<strong>ぽも◯◯</strong>（時 ＋ 間）── <em>時の凝縮</em>：EXP ×1.5・落下 -30%・進化加速<br>
+        ・<strong>ぽ◯字漢</strong>（文 ＋ ◯）── <em>字を集める</em>：粒数 +3・合体判定 +40%・ストック深化<br>
+        <small>「ぽ」はひらがな帯、「時/間/文/字/漢」は小学〜中学帯で集まる。仲間にしてみよう。</small>
+      </p>
+    </section>
+
+    <section class="help-section">
+      <h3 class="help-h">💤 スリープ</h3>
+      <p class="help-text">
+        メニュー → <strong>💤 スリープ</strong> で画面を黒くして時計だけ大きく表示。<br>
+        集中中はタイマー残時間／停止中は現在時刻を表示。<br>
+        タップ／クリック／Esc で復帰。タイマーは止まらないので「机に置きっぱなし」運用に。
+      </p>
+    </section>
+
+    <section class="help-section">
+      <h3 class="help-h">⑪ 文章を編む ── 集めた字で日記・俳句</h3>
       <p class="help-text">
         メニュー → <strong>📝 文章を編む</strong>。<br>
         所有している字（ストック）を並べて、ジャンル自動判定（5字＝俳句上の句、17字＝俳句、31字＝短歌、4字＝四字熟語…）。<br>
@@ -511,7 +550,7 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
-<script src="codex.js?v=20260517j" defer></script>
-<script src="app.js?v=20260517j" defer></script>
+<script src="codex.js?v=20260517k" defer></script>
+<script src="app.js?v=20260517k" defer></script>
 </body>
 </html>

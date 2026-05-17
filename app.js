@@ -317,8 +317,13 @@ function aggregatePartyPerks() {
   if (combo.expMul > 1.0) {
     agg.expMul *= combo.expMul;
     agg.evoDiscount += combo.evoBoost;
-    agg.activeCombos = combo.combos;
   }
+  // 🌟 SPECIAL コンボ系の追加効果（落下／合体／粒数／ストックEXP）
+  if (combo.gravityMul && combo.gravityMul !== 1.0)        agg.gravityMul *= combo.gravityMul;
+  if (combo.mergeRadiusMul && combo.mergeRadiusMul !== 1.0) agg.mergeRadiusMul *= combo.mergeRadiusMul;
+  if (combo.dropCountAdd)                                   agg.dropCountAdd += combo.dropCountAdd;
+  if (combo.stockExpMul && combo.stockExpMul !== 1.0)       agg.stockExpMul = (agg.stockExpMul || 1.0) * combo.stockExpMul;
+  agg.activeCombos = combo.combos;
   return agg;
 }
 
@@ -923,12 +928,43 @@ function partyAverageLevel() {
 // パーティコンボ ── 主人公+仲間の字組み合わせが熟語と一致したら発動
 // 公式構想：4体パーティで「春夏秋冬」「諸行無常」等の四字熟語コンボ
 // ═══════════════════════════════════════════════════════════════
+
+// 🌟 アプリ名隠しコンボ（SPECIAL_COMBOS）── 通常熟語より段違いの効果
+// 「ぽも時間」＝時の凝縮（時間を彫る）
+// 「ぽ文字漢」＝字を集める（収集に特化）
+const SPECIAL_COMBOS = [
+  {
+    word: 'ぽも時間',
+    chars: ['ぽ','も','時','間'],
+    rarity: '★16',
+    season: 'SPECIAL',
+    desc: '時の凝縮 ── 落下が緩み EXP が深く沁みる',
+    effect: { expMul: 1.5, gravityMul: 0.7, evoBoost: 0.20, dropCountAdd: 1 },
+    special: true,
+  },
+  {
+    word: 'ぽ文字漢',
+    chars: ['ぽ','文','字','漢'],
+    rarity: '★16',
+    season: 'SPECIAL',
+    desc: '字を集める ── 字が多く降り、合体しやすくなる',
+    effect: { dropCountAdd: 3, mergeRadiusMul: 1.4, expMul: 1.2, stockExpMul: 1.3 },
+    special: true,
+  },
+];
+
 function detectPartyCombos() {
   if (!STATE.party || !STATE.party.members.length) return [];
   const partyChars = STATE.party.members.map(m => m.char);
   const partySet = new Set(partyChars);
   const recipes = window.YOJI_RECIPES || [];
   const matches = [];
+  // 🌟 アプリ名コンボ優先判定（通常熟語より上に）
+  for (const sc of SPECIAL_COMBOS) {
+    if (sc.chars.every(c => partySet.has(c))) {
+      matches.push(sc);
+    }
+  }
   for (const r of recipes) {
     if (!r.chars || r.chars.length === 0) continue;
     // r.chars すべてがパーティに含まれるか
@@ -936,8 +972,10 @@ function detectPartyCombos() {
       matches.push(r);
     }
   }
-  // レア順（高い順）→ 字数（多い順）でソート
+  // SPECIAL は最上位、その他はレア順（高い順）→ 字数（多い順）でソート
   matches.sort((a,b) => {
+    if (a.special && !b.special) return -1;
+    if (!a.special && b.special) return 1;
     const ra = RARITY_TIERS.indexOf(a.rarity);
     const rb = RARITY_TIERS.indexOf(b.rarity);
     if (ra !== rb) return rb - ra;
@@ -946,19 +984,34 @@ function detectPartyCombos() {
   return matches;
 }
 
-// コンボのボーナス倍率合計（EXP × multiplier ＋ 進化加速）
+// コンボのボーナス倍率合計（EXP × multiplier ＋ 進化加速 ＋ SPECIAL 効果）
 function getComboBonus() {
   const combos = detectPartyCombos();
   let expMul = 1.0;
   let evoBoost = 0;
+  let gravityMul = 1.0;
+  let mergeRadiusMul = 1.0;
+  let dropCountAdd = 0;
+  let stockExpMul = 1.0;
   for (const r of combos) {
+    if (r.special && r.effect) {
+      // 🌟 SPECIAL：効果は乗算／加算
+      const e = r.effect;
+      if (e.expMul)        expMul *= e.expMul;
+      if (e.evoBoost)      evoBoost += e.evoBoost;
+      if (e.gravityMul)    gravityMul *= e.gravityMul;
+      if (e.mergeRadiusMul)mergeRadiusMul *= e.mergeRadiusMul;
+      if (e.dropCountAdd)  dropCountAdd += e.dropCountAdd;
+      if (e.stockExpMul)   stockExpMul *= e.stockExpMul;
+      continue;
+    }
     const n = r.chars.length;
     if (n === 2)      expMul += 0.10;  // 二字熟語：EXP +10%
     else if (n === 3) expMul += 0.30;  // 三字熟語：EXP +30%
     else if (n === 4) { expMul += 0.60; evoBoost += 0.10; }  // 四字熟語：EXP +60% & 進化加速
     else if (n >= 5)  { expMul += 1.0;  evoBoost += 0.20; }  // 五字以上：EXP +100% & 大加速
   }
-  return { combos, expMul, evoBoost };
+  return { combos, expMul, evoBoost, gravityMul, mergeRadiusMul, dropCountAdd, stockExpMul };
 }
 
 // パーティ Lv up / 編成変更時にチェック ── 初発動なら祝祭演出
@@ -971,8 +1024,13 @@ function checkComboPickup() {
     if (!_comboPrev.has(r.word)) {
       // 初発動
       spawnComboBurst(r);
-      playSFX(r.chars.length >= 4 ? 'milestone' : 'merge');
-      toast(`⚡ コンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
+      if (r.special) {
+        playSFX('unlock'); setTimeout(() => playSFX('milestone'), 250);
+        toast(`🌟 隠しコンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
+      } else {
+        playSFX(r.chars.length >= 4 ? 'milestone' : 'merge');
+        toast(`⚡ コンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
+      }
     }
   }
   _comboPrev = current;
@@ -984,16 +1042,18 @@ function spawnComboBurst(recipe) {
   if (!field) return;
   const W = window.innerWidth, H = window.innerHeight;
   const rIdx = RARITY_TIERS.indexOf(recipe.rarity);
+  const isSpecial = !!recipe.special;
+  const width = isSpecial ? 360 : 300;
   const node = el('div', {
-    class: `combo-burst rarity-${rIdx + 1}`,
-    style: { left: (W/2 - 150) + 'px', top: (H/2 - 70) + 'px' },
+    class: `combo-burst rarity-${rIdx + 1}${isSpecial ? ' combo-special' : ''}`,
+    style: { left: (W/2 - width/2) + 'px', top: (H/2 - (isSpecial ? 90 : 70)) + 'px' },
   },
-    el('div', { class:'cb-label' }, '⚡ コンボ発動'),
+    el('div', { class:'cb-label' }, isSpecial ? '🌟 隠しコンボ発動' : '⚡ コンボ発動'),
     el('div', { class:'cb-word' }, recipe.word),
     recipe.desc ? el('div', { class:'cb-desc' }, recipe.desc) : null,
   );
   field.appendChild(node);
-  setTimeout(() => node.remove(), 2200);
+  setTimeout(() => node.remove(), isSpecial ? 3000 : 2200);
 }
 
 // リーダー（主人公）の Lv ── 落下プール tier の判定基準（v3 / 2026-05-16）
@@ -1135,7 +1195,7 @@ function spawnEvolutionBurst(char, glyph, rarity) {
 // 初回オンボーディング（世界観 → パーティ選択）
 // ═══════════════════════════════════════════════════════════════
 let _obStep = 1;
-const _obMaxStep = 4;
+const _obMaxStep = 3;
 function openOnboarding() {
   _obStep = 1;
   showOnboardingStep();
@@ -2031,7 +2091,10 @@ function addStock(char) {
 
   if (STATE.party && STATE.party.members) {
     // ストック→Lv：パーティ全員に rarity 比例の小 EXP
-    const expPerStock = Math.max(1, rIdx + 1);
+    // 🌟「ぽ文字漢」コンボ成立時は ×1.3
+    const agg = aggregatePartyPerks();
+    const stockMul = (agg && agg.stockExpMul) ? agg.stockExpMul : 1.0;
+    const expPerStock = Math.max(1, Math.round((rIdx + 1) * stockMul));
     for (let i = 0; i < STATE.party.members.length; i++) {
       const m = STATE.party.members[i];
       m.exp = (m.exp || 0) + expPerStock;
@@ -2191,7 +2254,7 @@ function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
     bar.classList.add('empty');
-    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">主人公を選ぶ →</button>';
+    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">✦ 主人公を選んで始める</button>';
     $('#party-pick-cta').onclick = () => openPartyPicker();
     return;
   }
@@ -2375,6 +2438,46 @@ function recruitToParty(c, rarity) {
   renderParty();
   toast(`${c} が仲間になった！特性「${PERKS[perk]?.name || '—'}」`);
   return true;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 💤 スリープモード ── 画面を休める（タイマーは止めない）
+// ═══════════════════════════════════════════════════════════════
+let _sleepTickId = 0;
+function openSleep() {
+  const ov = $('#sleep-overlay');
+  if (!ov) return;
+  ov.classList.add('show');
+  ov.setAttribute('aria-hidden', 'false');
+  updateSleepClock();
+  clearInterval(_sleepTickId);
+  _sleepTickId = setInterval(updateSleepClock, 500);
+  // body にクラスを当てて他演出を軽量化（将来用）
+  document.body.classList.add('sleep-mode');
+}
+function closeSleep() {
+  const ov = $('#sleep-overlay');
+  if (!ov) return;
+  ov.classList.remove('show');
+  ov.setAttribute('aria-hidden', 'true');
+  clearInterval(_sleepTickId);
+  _sleepTickId = 0;
+  document.body.classList.remove('sleep-mode');
+}
+function updateSleepClock() {
+  const cl = $('#sleep-clock');
+  const lb = $('#sleep-mode-label');
+  if (!cl) return;
+  // 走行中ならタイマー残時間、停止中なら現在時刻
+  if (STATE.mode === 'work' || STATE.mode === 'rest') {
+    const remain = Math.max(0, Math.ceil((STATE.phaseEnd - Date.now()) / 1000));
+    cl.textContent = fmtTime(remain);
+    if (lb) lb.textContent = STATE.mode === 'work' ? '集 中' : '休 憩';
+  } else {
+    const d = new Date();
+    cl.textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    if (lb) lb.textContent = '休 む';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3194,6 +3297,13 @@ function bindEvents() {
       openPartyPicker();
     }
   });
+  menuClick('#m-sleep', openSleep);
+  // スリープ：オーバーレイのどこでもタップで起きる
+  const sleepOv = $('#sleep-overlay');
+  if (sleepOv) {
+    sleepOv.addEventListener('click', closeSleep);
+    sleepOv.addEventListener('touchstart', (e) => { e.preventDefault(); closeSleep(); }, { passive:false });
+  }
 
   // ── 旧ヘッダー個別ボタン（HTML から削除済 ・防御的に null チェック）──
   const bindOpt = (id, fn) => { const e = $(id); if (e) e.addEventListener('click', fn); };
@@ -3313,6 +3423,8 @@ function bindEvents() {
 
     switch (e.key) {
       case 'Escape':
+        // スリープが最優先で閉じる
+        if ($('#sleep-overlay')?.classList.contains('show')) { closeSleep(); break; }
         // 開いているモーダルを閉じる、なければドロワー閉じる
         $$('.modal.show').forEach(m => m.classList.remove('show'));
         const dr = $('#menu-drawer');
