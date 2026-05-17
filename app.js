@@ -1441,6 +1441,10 @@ function openOnboarding() {
         `%c☔ ぽもじかん コレクション総量 ── 字 ${charCount} ・ 熟語 ${yojiCount} ・ 特性 ${perkCount}`,
         'color:#f0d48a; font-weight:900;'
       );
+      console.log(
+        '%c 🎉 100 サイクルリリース達成 ── 開発進化v9c時点',
+        'color:#ff6b9d; font-weight:900; font-size:14px;'
+      );
     }, 500);
   } catch (e) {}
 })();
