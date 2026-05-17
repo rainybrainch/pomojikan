@@ -374,7 +374,52 @@ const DEFAULT_STATE = {
   discoveredYoji: {},             // v6 ─ 解放済の熟語 { '一期一会': 1746543210 }
   streak: { current: 0, longest: 0, lastDate: null },  // v7 ─ 連続日数 streak
   dailyCycles: {},                // v7b ─ 日別サイクル数 { '2026-05-17': 5 }
+  milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
 };
+
+// 長期達成マイルストーン（何十年遊べる目標）
+const MILESTONES = [
+  // サイクル系
+  { id:'cycle_10',    label:'初心', desc:'累計 10 サイクル', check: s => (s.stats?.totalCycles || 0) >= 10 },
+  { id:'cycle_100',   label:'継続', desc:'累計 100 サイクル', check: s => (s.stats?.totalCycles || 0) >= 100 },
+  { id:'cycle_1000',  label:'熟達', desc:'累計 1,000 サイクル（約 1 年）', check: s => (s.stats?.totalCycles || 0) >= 1000 },
+  { id:'cycle_10000', label:'達人', desc:'累計 10,000 サイクル（約 10 年）', check: s => (s.stats?.totalCycles || 0) >= 10000 },
+  // 連続日数
+  { id:'streak_7',    label:'一週間', desc:'連続 7 日', check: s => (s.streak?.longest || 0) >= 7 },
+  { id:'streak_30',   label:'一か月', desc:'連続 30 日', check: s => (s.streak?.longest || 0) >= 30 },
+  { id:'streak_100',  label:'百日', desc:'連続 100 日', check: s => (s.streak?.longest || 0) >= 100 },
+  { id:'streak_365',  label:'一年', desc:'連続 365 日', check: s => (s.streak?.longest || 0) >= 365 },
+  { id:'streak_1000', label:'千日', desc:'連続 1,000 日（約 3 年）', check: s => (s.streak?.longest || 0) >= 1000 },
+  // 字発見系
+  { id:'char_100',   label:'初学', desc:'100 字 発見', check: s => Object.keys(s.collection||{}).length >= 100 },
+  { id:'char_1000',  label:'学識', desc:'1,000 字 発見', check: s => Object.keys(s.collection||{}).length >= 1000 },
+  { id:'char_10000', label:'博学', desc:'10,000 字 発見', check: s => Object.keys(s.collection||{}).length >= 10000 },
+  { id:'char_all',   label:'世界の文字', desc:'全字発見（41,890+）', check: s => Object.keys(s.collection||{}).length >= 41890 },
+  // 熟語系
+  { id:'yoji_100',  label:'語彙', desc:'100 熟語 解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 100 },
+  { id:'yoji_1000', label:'語学', desc:'1,000 熟語 解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 1000 },
+  { id:'yoji_4000', label:'達語', desc:'4,000 熟語 全解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 4000 },
+];
+
+// 達成チェック（completePhase, addStock 等から定期的に呼ぶ）
+function checkMilestones() {
+  if (!STATE.milestones) STATE.milestones = {};
+  let newlyAchieved = [];
+  for (const m of MILESTONES) {
+    if (STATE.milestones[m.id]) continue;
+    if (m.check(STATE)) {
+      STATE.milestones[m.id] = Date.now();
+      newlyAchieved.push(m);
+    }
+  }
+  if (newlyAchieved.length > 0) {
+    saveState();
+    for (const m of newlyAchieved) {
+      toast(`🏆 達成「${m.label}」 ── ${m.desc}`, '★16');
+      try { playSFX('milestone'); } catch(_) {}
+    }
+  }
+}
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
@@ -1729,6 +1774,7 @@ function completePhase() {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
     updateStreak();
+    checkMilestones();
     // 日別カウント
     if (!STATE.dailyCycles) STATE.dailyCycles = {};
     const today = new Date().toISOString().slice(0, 10);
