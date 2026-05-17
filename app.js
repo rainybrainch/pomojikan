@@ -3659,16 +3659,29 @@ function openStats() {
     ));
   });
 
-  // 解放ティア表示
+  // 解放ティア表示（発見字数 N/M も併記）
   const tiers = $('#stats-tiers');
   tiers.innerHTML = '';
+  const codex = window.KANJI_CODEX || [];
   RARITY_TIERS.forEach((tier, i) => {
     const unlocked = i <= STATE.unlockedTier;
+    const tierChars = codex.filter(k => k.rarity === tier);
+    const seenN = tierChars.filter(k => (STATE.collection[k.char||k.c]||0) > 0).length;
+    const totalN = tierChars.length;
+    const pct = totalN > 0 ? Math.round(seenN / totalN * 100) : 0;
+    const statusText = unlocked
+      ? (totalN > 0 ? `${seenN} / ${totalN}（${pct}%）` : '─')
+      : `Lv.${UNLOCK_LV[tier]} 必要`;
     const row = el('div', { class: `stats-tier-row rarity-${i+1}${unlocked ? ' unlocked' : ' locked'}` },
       el('span', { class:'str-name' }, `${tier} ${TIER_ACHIEVEMENT[i]}`),
-      el('span', { class: 'str-status' + (unlocked ? ' ok' : '') },
-        unlocked ? '✓ 解放済' : `Lv.${UNLOCK_LV[tier]} 必要`)
+      el('span', { class: 'str-status' + (unlocked ? ' ok' : '') }, statusText)
     );
+    // 進捗バーを追加（解放済のみ）
+    if (unlocked && totalN > 0) {
+      row.appendChild(el('div', { class:'str-bar' },
+        el('div', { class:'str-bar-fill', style: { width: pct + '%' } })
+      ));
+    }
     tiers.appendChild(row);
   });
 
