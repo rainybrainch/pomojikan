@@ -5998,6 +5998,70 @@ const _YOJI_S3_TRAVEL = [
 ];
 for (const r of _YOJI_S3_TRAVEL) YOJI_RECIPES.push(r);
 
+// v9r ── 四字熟語 +50（年中行事・季節儀礼）
+const _YOJI_S4_ANNUAL = [
+  { word:'正月三が', chars:['正','月','三','が'], rarity:'★12', tags:['四字熟語','時','古典'], desc:'正月', season:'S4' },
+  { word:'初日の出', chars:['初','日','の','出'], rarity:'★12', tags:['四字熟語','時','自然'], desc:'元旦', season:'S4' },
+  { word:'初詣で', chars:['初','詣','で'], rarity:'★12', tags:['四字熟語','古典'], desc:'初詣', season:'S4' },
+  { word:'お年玉', chars:['お','年','玉'], rarity:'★11', tags:['四字熟語','時'], desc:'お年玉', season:'S4' },
+  { word:'門松締縄', chars:['門','松','締','縄'], rarity:'★15', tags:['四字熟語','古典'], desc:'正月飾り', season:'S4' },
+  { word:'鏡開き', chars:['鏡','開','き'], rarity:'★13', tags:['四字熟語','古典'], desc:'鏡開き', season:'S4' },
+  { word:'節分豆撒', chars:['節','分','豆','撒'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'節分', season:'S4' },
+  { word:'立春暦', chars:['立','春','暦'], rarity:'★13', tags:['四字熟語','時','古典'], desc:'立春', season:'S4' },
+
+  // 春
+  { word:'桃の節句', chars:['桃','の','節','句'], rarity:'★13', tags:['四字熟語','時','古典'], desc:'ひな祭り', season:'S4' },
+  { word:'雛人形', chars:['雛','人','形'], rarity:'★13', tags:['四字熟語','古典','美'], desc:'ひな人形', season:'S4' },
+  { word:'桜花見会', chars:['桜','花','見','会'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'お花見', season:'S4' },
+  { word:'春分秋分', chars:['春','分','秋','分'], rarity:'★13', tags:['四字熟語','時'], desc:'春秋分', season:'S4' },
+
+  // 夏
+  { word:'端午節句', chars:['端','午','節','句'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'こどもの日', season:'S4' },
+  { word:'五月飾り', chars:['五','月','飾','り'], rarity:'★13', tags:['四字熟語','古典'], desc:'五月飾', season:'S4' },
+  { word:'鯉幟ぼり', chars:['鯉','幟','ぼ','り'], rarity:'★15', tags:['四字熟語','古典'], desc:'こいのぼり', season:'S4' },
+  { word:'七夕祭り', chars:['七','夕','祭','り'], rarity:'★13', tags:['四字熟語','時','古典'], desc:'たなばた', season:'S4' },
+  { word:'夏祭り', chars:['夏','祭','り'], rarity:'★12', tags:['四字熟語','時'], desc:'夏祭り', season:'S4' },
+  { word:'盆踊り', chars:['盆','踊','り'], rarity:'★13', tags:['四字熟語','古典','美'], desc:'ぼんおどり', season:'S4' },
+  { word:'盂蘭盆会', chars:['盂','蘭','盆','会'], rarity:'★16', tags:['四字熟語','仏教','古典'], desc:'お盆', season:'S4' },
+  { word:'花火大会', chars:['花','火','大','会'], rarity:'★12', tags:['四字熟語','時','美'], desc:'花火大会', season:'S4' },
+  { word:'夏休み', chars:['夏','休','み'], rarity:'★11', tags:['四字熟語','時'], desc:'夏休み', season:'S4' },
+
+  // 秋
+  { word:'秋祭り', chars:['秋','祭','り'], rarity:'★12', tags:['四字熟語','時'], desc:'秋祭り', season:'S4' },
+  { word:'紅葉狩り', chars:['紅','葉','狩','り'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'もみじがり', season:'S4' },
+  { word:'十五夜月', chars:['十','五','夜','月'], rarity:'★14', tags:['四字熟語','自然','古典'], desc:'お月見', season:'S4' },
+  { word:'月見団子', chars:['月','見','団','子'], rarity:'★13', tags:['四字熟語','古典'], desc:'月見', season:'S4' },
+  { word:'秋分の日', chars:['秋','分','の','日'], rarity:'★13', tags:['四字熟語','時'], desc:'秋分', season:'S4' },
+  { word:'敬老の日', chars:['敬','老','の','日'], rarity:'★12', tags:['四字熟語','七徳','時'], desc:'敬老', season:'S4' },
+  { word:'文化の日', chars:['文','化','の','日'], rarity:'★11', tags:['四字熟語','時'], desc:'文化の日', season:'S4' },
+  { word:'勤労感謝', chars:['勤','労','感','謝'], rarity:'★12', tags:['四字熟語','時','七徳'], desc:'勤労感謝', season:'S4' },
+
+  // 冬
+  { word:'冬至太陽', chars:['冬','至','太','陽'], rarity:'★13', tags:['四字熟語','時','古典'], desc:'冬至', season:'S4' },
+  { word:'柚子湯', chars:['柚','子','湯'], rarity:'★13', tags:['四字熟語','古典'], desc:'ゆず湯', season:'S4' },
+  { word:'年末年始', chars:['年','末','年','始'], rarity:'★11', tags:['四字熟語','時'], desc:'年末年始', season:'S4' },
+  { word:'大晦日除', chars:['大','晦','日','除'], rarity:'★15', tags:['四字熟語','古典'], desc:'大晦日', season:'S4' },
+  { word:'除夜の鐘', chars:['除','夜','の','鐘'], rarity:'★15', tags:['四字熟語','仏教','古典'], desc:'除夜の鐘', season:'S4' },
+  { word:'年越し蕎', chars:['年','越','し','蕎'], rarity:'★14', tags:['四字熟語','古典'], desc:'年越しそば', season:'S4' },
+  { word:'忘年新年', chars:['忘','年','新','年'], rarity:'★12', tags:['四字熟語','時'], desc:'忘年新年', season:'S4' },
+
+  // 国民の祝日
+  { word:'建国記念', chars:['建','国','記','念'], rarity:'★12', tags:['四字熟語','時'], desc:'建国記念', season:'S4' },
+  { word:'天皇誕生', chars:['天','皇','誕','生'], rarity:'★13', tags:['四字熟語','時','古典'], desc:'天皇誕生日', season:'S4' },
+  { word:'みどりの日', chars:['み','ど','り','の'], rarity:'★12', tags:['四字熟語','時','自然'], desc:'みどりの日', season:'S4' },
+  { word:'憲法記念', chars:['憲','法','記','念'], rarity:'★12', tags:['四字熟語','時'], desc:'憲法記念日', season:'S4' },
+  { word:'子供の日', chars:['子','供','の','日'], rarity:'★11', tags:['四字熟語','時'], desc:'こどもの日', season:'S4' },
+  { word:'海の日山', chars:['海','の','日','山'], rarity:'★11', tags:['四字熟語','時','自然'], desc:'海山の日', season:'S4' },
+  { word:'山の日海', chars:['山','の','日','海'], rarity:'★11', tags:['四字熟語','時','自然'], desc:'山の日', season:'S4' },
+
+  // 通過儀礼
+  { word:'入学卒業', chars:['入','学','卒','業'], rarity:'★11', tags:['四字熟語','時','学'], desc:'入学卒業', season:'S4' },
+  { word:'成人式典', chars:['成','人','式','典'], rarity:'★12', tags:['四字熟語'], desc:'成人式', season:'S4' },
+  { word:'結婚出産', chars:['結','婚','出','産'], rarity:'★12', tags:['四字熟語'], desc:'結婚出産', season:'S4' },
+  { word:'葬式法要', chars:['葬','式','法','要'], rarity:'★13', tags:['四字熟語','仏教'], desc:'葬儀', season:'S4' },
+];
+for (const r of _YOJI_S4_ANNUAL) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
