@@ -4040,6 +4040,43 @@ function openStats() {
     recentZone.appendChild(grid);
   }
 
+  // 長期達成バッジ ── 何十年も遊べる育成型ポモドーロの記憶
+  const badgeZone = $('#stats-milestones') || (() => {
+    const z = el('div', { class:'stats-milestones-zone', id:'stats-milestones' });
+    tiers.parentElement?.insertBefore(z, tiers.nextSibling);
+    return z;
+  })();
+  badgeZone.innerHTML = '';
+  const achieved = MILESTONES.filter(m => STATE.milestones?.[m.id]);
+  const locked = MILESTONES.filter(m => !STATE.milestones?.[m.id]);
+  badgeZone.appendChild(el('h3', { class:'stats-section-title' },
+    `🏆 長期達成バッジ（${achieved.length} / ${MILESTONES.length}）`
+  ));
+  const badgeGrid = el('div', { class:'milestone-grid' });
+  // 達成済：時系列順（新→旧）
+  achieved
+    .sort((a,b) => (STATE.milestones[b.id]||0) - (STATE.milestones[a.id]||0))
+    .forEach(m => {
+      const d = new Date(STATE.milestones[m.id]);
+      const dateStr = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+      badgeGrid.appendChild(el('div', { class:'milestone-cell achieved', title: m.desc },
+        el('div', { class:'milestone-icon' }, '🏆'),
+        el('div', { class:'milestone-label' }, m.label),
+        el('div', { class:'milestone-desc' }, m.desc),
+        el('div', { class:'milestone-date' }, dateStr)
+      ));
+    });
+  // 未達成：解放するワクワクを残す
+  locked.forEach(m => {
+    badgeGrid.appendChild(el('div', { class:'milestone-cell locked', title: m.desc },
+      el('div', { class:'milestone-icon' }, '🔒'),
+      el('div', { class:'milestone-label' }, '？？？'),
+      el('div', { class:'milestone-desc' }, m.desc),
+      el('div', { class:'milestone-date' }, '未達成')
+    ));
+  });
+  badgeZone.appendChild(badgeGrid);
+
   $('#stats-modal').classList.add('show');
 }
 function closeStats() { $('#stats-modal').classList.remove('show'); }

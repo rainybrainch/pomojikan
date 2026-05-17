@@ -3437,6 +3437,74 @@ body[data-mode="rest"] #tank{
   font-family:'JetBrains Mono', monospace;
 }
 
+/* ════════════════════ 🏆 長期達成バッジ ════════════════════ */
+.stats-milestones-zone{
+  margin-top:18px;
+  padding:14px;
+  background:linear-gradient(180deg, rgba(255,200,80,.05) 0%, rgba(135,206,235,.02) 100%);
+  border:1px dashed rgba(255,200,80,.25);
+  border-radius:8px;
+}
+.milestone-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+  gap:8px;
+  margin-top:8px;
+}
+.milestone-cell{
+  display:flex; flex-direction:column; align-items:center;
+  gap:4px;
+  padding:10px 8px;
+  border-radius:8px;
+  text-align:center;
+  transition:transform .2s, box-shadow .2s;
+}
+.milestone-cell.achieved{
+  background:linear-gradient(180deg, rgba(255,200,80,.12) 0%, rgba(255,170,40,.04) 100%);
+  border:1px solid rgba(255,200,80,.5);
+  box-shadow:0 0 12px rgba(255,200,80,.18) inset, 0 0 8px rgba(255,200,80,.12);
+}
+.milestone-cell.achieved:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 16px rgba(255,200,80,.28) inset, 0 4px 12px rgba(255,200,80,.2);
+}
+.milestone-cell.locked{
+  background:rgba(255,255,255,.02);
+  border:1px dashed rgba(255,255,255,.12);
+  opacity:.55;
+}
+.milestone-icon{
+  font-size:1.6rem;
+  filter:drop-shadow(0 0 4px rgba(255,200,80,.5));
+}
+.milestone-cell.locked .milestone-icon{
+  filter:grayscale(1) opacity(.6);
+}
+.milestone-label{
+  font-family:'Noto Serif JP', serif;
+  font-weight:900;
+  font-size:1.0rem;
+  color:var(--gold);
+  letter-spacing:.05em;
+}
+.milestone-cell.locked .milestone-label{
+  color:var(--ink-mute); font-weight:700;
+}
+.milestone-desc{
+  font-size:.72rem;
+  color:var(--ink-mute);
+  line-height:1.3;
+}
+.milestone-date{
+  font-size:.65rem;
+  color:rgba(255,200,80,.7);
+  font-family:'JetBrains Mono', monospace;
+  margin-top:2px;
+}
+.milestone-cell.locked .milestone-date{
+  color:rgba(255,255,255,.25);
+}
+
 /* ════════════════════ ✨ 熟語初解放セレモニー ════════════════════ */
 /* 構成字 → 「？？？」マスク剥がし → 熟語 → desc の流れ（最大 4.2 秒）*/
 .yoji-unlock-celebration{
