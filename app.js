@@ -1076,20 +1076,52 @@ function checkComboPickup() {
   for (const r of combos) {
     if (!_comboPrev.has(r.word)) {
       // 初発動 ── 熟語図鑑に永久解放（次から ??? が外れる）
+      const wasNew = !STATE.discoveredYoji || !STATE.discoveredYoji[r.word];
       if (!STATE.discoveredYoji) STATE.discoveredYoji = {};
       STATE.discoveredYoji[r.word] = Date.now();
       saveState();
       spawnComboBurst(r);
+      // 全く初の解放（過去にも一度も発動経験なし）なら盛大なセレモニー
+      if (wasNew && !r.special) {
+        spawnYojiUnlockCelebration(r);
+      }
       if (r.special) {
         playSFX('unlock'); setTimeout(() => playSFX('milestone'), 250);
         toast(`🌟 隠しコンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
       } else {
         playSFX(r.chars.length >= 4 ? 'milestone' : 'merge');
-        toast(`⚡ コンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
+        if (wasNew) { setTimeout(() => playSFX('unlock'), 200); setTimeout(() => playSFX('discover'), 600); }
+        toast(`${wasNew ? '✨ 新熟語解放' : '⚡ コンボ発動'}「${r.word}」 ${r.desc || ''}`, r.rarity);
       }
     }
   }
   _comboPrev = current;
+}
+
+// 熟語初解放：構成字 → 「？？？」マスク剥がし → 熟語表示 → desc の流れ
+function spawnYojiUnlockCelebration(recipe) {
+  $$('.yoji-unlock-celebration').forEach(n => n.remove());
+  const rIdx = RARITY_TIERS.indexOf(recipe.rarity);
+  const chars = recipe.chars || [];
+  // 構成字を順に並べる → arrow → 熟語 → desc
+  const charRow = el('div', { class:'yuc-chars' },
+    ...chars.flatMap((c, i) => i > 0
+      ? [el('span', { class:'yuc-plus' }, '＋'), el('span', { class:'yuc-char' }, c)]
+      : [el('span', { class:'yuc-char' }, c)]
+    )
+  );
+  const overlay = el('div', { class:`yoji-unlock-celebration rarity-${rIdx + 1}` },
+    el('div', { class:'yuc-label' }, '✨ 新しい熟語を解放'),
+    charRow,
+    el('div', { class:'yuc-arrow' }, '↓'),
+    el('div', { class:'yuc-mask' }, '？'.repeat(Math.max(2, recipe.word.length))),
+    el('div', { class:'yuc-word' }, recipe.word),
+    recipe.desc ? el('div', { class:'yuc-desc' }, recipe.desc) : null,
+    el('div', { class:'yuc-rarity' }, recipe.rarity),
+  );
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', () => overlay.remove(), { once:true });
+  setTimeout(() => overlay.remove(), 4200);
 }
 
 // コンボ発動演出（画面中央バースト）
