@@ -5505,6 +5505,73 @@ const _YOJI_S4_CONFU = [
 ];
 for (const r of _YOJI_S4_CONFU) YOJI_RECIPES.push(r);
 
+// v9k ── 二字熟語 +50（場所・地形・建物）
+const _YOJI_S3_PLACE = [
+  // 地形
+  { word:'平地', chars:['平','地'], rarity:'★7',  tags:['自然'], desc:'プレーン', season:'S3' },
+  { word:'坂道', chars:['坂','道'], rarity:'★7',  tags:[], desc:'スロープ', season:'S3' },
+  { word:'丘陵', chars:['丘','陵'], rarity:'★13', tags:['自然'], desc:'ヒル', season:'S3' },
+  { word:'谷底', chars:['谷','底'], rarity:'★10', tags:['自然'], desc:'バレー', season:'S3' },
+  { word:'山頂', chars:['山','頂'], rarity:'★11', tags:['自然'], desc:'サミット', season:'S3' },
+  { word:'山麓', chars:['山','麓'], rarity:'★15', tags:['自然','古典'], desc:'さんろく', season:'S3' },
+  { word:'高台', chars:['高','台'], rarity:'★8',  tags:[], desc:'プラトー', season:'S3' },
+  { word:'湿地', chars:['湿','地'], rarity:'★12', tags:['自然'], desc:'ウェットランド', season:'S3' },
+  { word:'砂漠', chars:['砂','漠'], rarity:'★12', tags:['自然'], desc:'デザート', season:'S3' },
+  { word:'氷原', chars:['氷','原'], rarity:'★13', tags:['自然'], desc:'アイスフィールド', season:'S3' },
+
+  // 河海湖
+  { word:'河川', chars:['河','川'], rarity:'★10', tags:['自然','水'], desc:'リバー', season:'S3' },
+  { word:'湖沼', chars:['湖','沼'], rarity:'★13', tags:['自然','水'], desc:'湖と沼', season:'S3' },
+  { word:'海岸', chars:['海','岸'], rarity:'★8',  tags:['自然'], desc:'コースト', season:'S3' },
+  { word:'入江', chars:['入','江'], rarity:'★10', tags:['自然','古典'], desc:'コーブ', season:'S3' },
+  { word:'湾内', chars:['湾','内'], rarity:'★13', tags:['自然'], desc:'湾内', season:'S3' },
+  { word:'岬端', chars:['岬','端'], rarity:'★13', tags:['自然','古典'], desc:'みさき', season:'S3' },
+
+  // 都市
+  { word:'首都', chars:['首','都'], rarity:'★10', tags:[], desc:'キャピタル', season:'S3' },
+  { word:'港町', chars:['港','町'], rarity:'★8',  tags:[], desc:'ハーバータウン', season:'S3' },
+  { word:'城下町', chars:['城','下','町'], rarity:'★12', tags:['古典'], desc:'城下', season:'S3' },
+  { word:'門前', chars:['門','前'], rarity:'★8',  tags:[], desc:'ゲート前', season:'S3' },
+  { word:'門前町', chars:['門','前','町'], rarity:'★13', tags:['古典'], desc:'門前町', season:'S3' },
+
+  // 建物
+  { word:'宮殿', chars:['宮','殿'], rarity:'★13', tags:['古典'], desc:'パレス', season:'S3' },
+  { word:'城壁', chars:['城','壁'], rarity:'★12', tags:['古典'], desc:'カッスルウォール', season:'S3' },
+  { word:'要塞', chars:['要','塞'], rarity:'★13', tags:['武'], desc:'フォートレス', season:'S3' },
+  { word:'砦壁', chars:['砦','壁'], rarity:'★15', tags:['古典','武'], desc:'要塞壁', season:'S3' },
+  { word:'天守', chars:['天','守'], rarity:'★12', tags:['古典','武'], desc:'天守閣', season:'S3' },
+  { word:'本丸', chars:['本','丸'], rarity:'★12', tags:['古典','武'], desc:'城の本丸', season:'S3' },
+
+  // 庭
+  { word:'池畔', chars:['池','畔'], rarity:'★13', tags:['美','古典'], desc:'池のほとり', season:'S3' },
+  { word:'枯山水', chars:['枯','山','水'], rarity:'★15', tags:['禅','美','古典'], desc:'枯山水庭', season:'S3' },
+  { word:'石庭', chars:['石','庭'], rarity:'★13', tags:['禅','美','古典'], desc:'石の庭', season:'S3' },
+  { word:'池泉', chars:['池','泉'], rarity:'★13', tags:['美','古典'], desc:'池と泉', season:'S3' },
+
+  // 室
+  { word:'寝床', chars:['寝','床'], rarity:'★10', tags:[], desc:'ベッド', season:'S3' },
+  { word:'寝具', chars:['寝','具'], rarity:'★10', tags:[], desc:'ベディング', season:'S3' },
+  { word:'寝室', chars:['寝','室'], rarity:'★8',  tags:[], desc:'ベッドルーム', season:'S3' },
+  { word:'居間', chars:['居','間'], rarity:'★8',  tags:[], desc:'リビング', season:'S3' },
+  { word:'書斎', chars:['書','斎'], rarity:'★13', tags:['学'], desc:'スタディ', season:'S3' },
+
+  // 道
+  { word:'通路', chars:['通','路'], rarity:'★8',  tags:[], desc:'パセージ', season:'S3' },
+  { word:'廊下', chars:['廊','下'], rarity:'★12', tags:[], desc:'コリドー', season:'S3' },
+  { word:'階段', chars:['階','段'], rarity:'★8',  tags:[], desc:'ステアー', season:'S3' },
+  { word:'歩道', chars:['歩','道'], rarity:'★7',  tags:[], desc:'シドウォーク', season:'S3' },
+  { word:'車道', chars:['車','道'], rarity:'★7',  tags:[], desc:'ドライブウェイ', season:'S3' },
+
+  // 公共
+  { word:'公共', chars:['公','共'], rarity:'★8',  tags:[], desc:'パブリック', season:'S3' },
+  { word:'私有', chars:['私','有'], rarity:'★12', tags:[], desc:'プライベート', season:'S3' },
+  { word:'公園', chars:['公','園'], rarity:'★7',  tags:[], desc:'パーク', season:'S3' },
+  { word:'植物園', chars:['植','物','園'], rarity:'★12', tags:['自然'], desc:'ボタニカル', season:'S3' },
+  { word:'動物園', chars:['動','物','園'], rarity:'★8',  tags:[], desc:'ズー', season:'S3' },
+  { word:'水族館', chars:['水','族','館'], rarity:'★13', tags:[], desc:'アクアリウム', season:'S3' },
+];
+for (const r of _YOJI_S3_PLACE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
