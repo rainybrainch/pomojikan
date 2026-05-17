@@ -995,34 +995,76 @@ function detectPartyCombos() {
   return matches;
 }
 
-// コンボのボーナス倍率合計（EXP × multiplier ＋ 進化加速 ＋ SPECIAL 効果）
+// レア重み：★が高いコンボほど効果倍増（無限スケールの足がかり）
+const COMBO_RARITY_MUL = {
+  '★1':1.0,  '★2':1.0,  '★3':1.0,  '★4':1.0,  '★5':1.0,
+  '★6':1.3,  '★7':1.4,  '★8':1.5,
+  '★9':1.7,  '★10':1.9, '★11':2.0,
+  '★12':2.3, '★13':2.6,
+  '★14':3.0, '★15':3.5,
+  '★16':4.0,
+};
+
+// タグ別の追加効果フック（コンボの「味」を出す）
+function applyComboTagEffects(r, acc) {
+  const tags = r.tags || [];
+  const w = (acc._lastWeight || 1);  // レア×字数の重み
+  for (const t of tags) {
+    switch (t) {
+      case '七徳':     acc.expMul       *= 1 + 0.10 * w; break;  // 徳：EXP特化
+      case '七大罪':   acc.dropCountAdd += Math.floor(1 * w); break;  // 罪：粒数
+      case '神字':     acc.evoBoost     += 0.05 * w; break;  // 神：進化加速
+      case '禅':       acc.gravityMul   *= Math.max(0.4, 1 - 0.08 * w); break;  // 禅：時を緩める
+      case '仏教':     acc.gravityMul   *= Math.max(0.5, 1 - 0.05 * w); break;
+      case '武':       acc.megaBurstAdd = (acc.megaBurstAdd || 0) + 0.02 * w; break;
+      case '思想':     acc.expMul       *= 1 + 0.08 * w; break;
+      case '科学':     acc.stockExpMul  *= 1 + 0.08 * w; break;  // ストック EXP +
+      case '美':       acc.mergeRadiusMul *= 1 + 0.05 * w; break;
+      case '天体':     acc.expMul       *= 1 + 0.06 * w; break;
+      case '未来':     acc.evoBoost     += 0.03 * w; break;
+      case '昭和':     acc.expMul       *= 1 + 0.05 * w; break;
+      case '令和':     acc.dropCountAdd += Math.floor(0.5 * w); break;
+    }
+  }
+}
+
+// コンボのボーナス倍率合計（レア × 字数 × タグ）
 function getComboBonus() {
   const combos = detectPartyCombos();
-  let expMul = 1.0;
-  let evoBoost = 0;
-  let gravityMul = 1.0;
-  let mergeRadiusMul = 1.0;
-  let dropCountAdd = 0;
-  let stockExpMul = 1.0;
+  const acc = {
+    expMul: 1.0, evoBoost: 0,
+    gravityMul: 1.0, mergeRadiusMul: 1.0,
+    dropCountAdd: 0, stockExpMul: 1.0,
+  };
   for (const r of combos) {
     if (r.special && r.effect) {
-      // 🌟 SPECIAL：効果は乗算／加算
+      // 🌟 SPECIAL：固定値を加算（旧仕様維持）
       const e = r.effect;
-      if (e.expMul)        expMul *= e.expMul;
-      if (e.evoBoost)      evoBoost += e.evoBoost;
-      if (e.gravityMul)    gravityMul *= e.gravityMul;
-      if (e.mergeRadiusMul)mergeRadiusMul *= e.mergeRadiusMul;
-      if (e.dropCountAdd)  dropCountAdd += e.dropCountAdd;
-      if (e.stockExpMul)   stockExpMul *= e.stockExpMul;
+      if (e.expMul)         acc.expMul        *= e.expMul;
+      if (e.evoBoost)       acc.evoBoost      += e.evoBoost;
+      if (e.gravityMul)     acc.gravityMul    *= e.gravityMul;
+      if (e.mergeRadiusMul) acc.mergeRadiusMul*= e.mergeRadiusMul;
+      if (e.dropCountAdd)   acc.dropCountAdd  += e.dropCountAdd;
+      if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul;
       continue;
     }
     const n = r.chars.length;
-    if (n === 2)      expMul += 0.10;  // 二字熟語：EXP +10%
-    else if (n === 3) expMul += 0.30;  // 三字熟語：EXP +30%
-    else if (n === 4) { expMul += 0.60; evoBoost += 0.10; }  // 四字熟語：EXP +60% & 進化加速
-    else if (n >= 5)  { expMul += 1.0;  evoBoost += 0.20; }  // 五字以上：EXP +100% & 大加速
+    const rarMul = COMBO_RARITY_MUL[r.rarity] || 1.0;
+    // 基礎 EXP ボーナス（字数ベース）× レア重み
+    let baseExp = 0;
+    if (n === 2)      baseExp = 0.10;
+    else if (n === 3) baseExp = 0.30;
+    else if (n === 4) baseExp = 0.60;
+    else              baseExp = 1.0;
+    acc.expMul *= 1 + baseExp * rarMul;
+    if (n === 4) acc.evoBoost += 0.10 * rarMul;
+    if (n >= 5)  acc.evoBoost += 0.20 * rarMul;
+    // タグ追加効果（味付け）
+    acc._lastWeight = (n / 2) * rarMul;
+    applyComboTagEffects(r, acc);
   }
-  return { combos, expMul, evoBoost, gravityMul, mergeRadiusMul, dropCountAdd, stockExpMul };
+  delete acc._lastWeight;
+  return { combos, ...acc };
 }
 
 // パーティ Lv up / 編成変更時にチェック ── 初発動なら祝祭演出
@@ -1520,7 +1562,8 @@ function completePhase() {
     burstPartyPersistents();
     playSFX('cycle');
     writeSharedRbJikoku();   // 5本柱接続：時刻メトリクスを共有
-    startRest();
+    // rest モード開始を少し遅らせる：cycle drops が画面に着地〜泡化する余裕を持たせる
+    setTimeout(() => startRest(), 600);
   } else if (STATE.mode === 'rest') {
     flashCompletionBurst('🫧 発散 完了');
     stopRisingPomoji();
@@ -1571,18 +1614,19 @@ function burstPartyPersistents(){
 // 「集中で貯めて、休憩で育つ」
 // ═══════════════════════════════════════════════════════════════
 function startRisingPomoji() {
-  // 着底済の全ぽもじを順番に泡化
-  const settled = Array.from(livePomoji.values())
-    .filter(p => p.settled && !p.dragging && !p.rising)
+  // 全ぽもじ（settled も落下中も）を順番に泡化
+  // persistent（パーティ字）は対象外 ── 永続スポーンとして残す
+  const targets = Array.from(livePomoji.values())
+    .filter(p => !p.dragging && !p.rising && !p.persistent)
     .sort((a, b) => a.y - b.y); // 上にあるものから（演出順）
-  if (settled.length === 0) {
+  if (targets.length === 0) {
     toast('泡にする字がない（集中で貯めよう）');
     return;
   }
-  settled.forEach((p, i) => {
-    setTimeout(() => convertToRising(p), i * 180);
+  targets.forEach((p, i) => {
+    setTimeout(() => convertToRising(p), i * 100);  // 180ms → 100ms に短縮
   });
-  toast(`${settled.length}粒の字が育つ`);
+  toast(`${targets.length}粒の字が育つ`);
 }
 function stopRisingPomoji() {
   // 上昇中の字を着底に戻す（一時停止用）— 実装簡略：そのまま継続でOK
@@ -2006,6 +2050,11 @@ function physicsStep() {
       } else {
         p.vy = 0;
         p.vx = 0;
+        // 🫧 休憩中に着地した字は即座に泡（rising）化 ── 取り残し防止
+        if (STATE.mode === 'rest' && !p.persistent) {
+          convertToRising(p);
+          continue;
+        }
         if (!p.settled && agg.magnet) attractSameChar(p);
         if (!p.settled) {
           p.el.classList.add('settled');
