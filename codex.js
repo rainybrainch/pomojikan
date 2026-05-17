@@ -6423,6 +6423,81 @@ const _YOJI_S3_TASTE = [
 ];
 for (const r of _YOJI_S3_TASTE) YOJI_RECIPES.push(r);
 
+// v9x ── 四字熟語 +50（哲学・存在論・形而上）
+const _YOJI_S4_META = [
+  { word:'存在意義', chars:['存','在','意','義'], rarity:'★13', tags:['四字熟語','哲学'], desc:'生きる意味', season:'S4' },
+  { word:'本質追究', chars:['本','質','追','究'], rarity:'★13', tags:['四字熟語','哲学'], desc:'本質追究', season:'S4' },
+  { word:'実在概念', chars:['実','在','概','念'], rarity:'★14', tags:['四字熟語','哲学'], desc:'実在', season:'S4' },
+  { word:'真理探究', chars:['真','理','探','究'], rarity:'★13', tags:['四字熟語','哲学','学'], desc:'真理', season:'S4' },
+  { word:'絶対真理', chars:['絶','対','真','理'], rarity:'★14', tags:['四字熟語','哲学'], desc:'絶対真理', season:'S4' },
+  { word:'絶対精神', chars:['絶','対','精','神'], rarity:'★14', tags:['四字熟語','哲学'], desc:'ヘーゲル', season:'S4' },
+  { word:'実存哲学', chars:['実','存','哲','学'], rarity:'★14', tags:['四字熟語','哲学'], desc:'エグジステンシャル', season:'S4' },
+  { word:'観念論', chars:['観','念','論'], rarity:'★13', tags:['四字熟語','哲学'], desc:'アイディアリズム', season:'S4' },
+  { word:'唯物論', chars:['唯','物','論'], rarity:'★13', tags:['四字熟語','哲学'], desc:'マテリアリズム', season:'S4' },
+  { word:'唯心論', chars:['唯','心','論'], rarity:'★14', tags:['四字熟語','哲学'], desc:'スピリチュアリズム', season:'S4' },
+
+  // 認識論
+  { word:'認識主観', chars:['認','識','主','観'], rarity:'★14', tags:['四字熟語','哲学'], desc:'認識主観', season:'S4' },
+  { word:'認識客観', chars:['認','識','客','観'], rarity:'★14', tags:['四字熟語','哲学'], desc:'客観', season:'S4' },
+  { word:'主観客観', chars:['主','観','客','観'], rarity:'★13', tags:['四字熟語','哲学'], desc:'主客', season:'S4' },
+  { word:'相対主義', chars:['相','対','主','義'], rarity:'★14', tags:['四字熟語','哲学'], desc:'リレーティビズム', season:'S4' },
+
+  // 倫理学
+  { word:'徳倫理学', chars:['徳','倫','理','学'], rarity:'★14', tags:['四字熟語','哲学','七徳'], desc:'徳倫理', season:'S4' },
+  { word:'功利主義', chars:['功','利','主','義'], rarity:'★14', tags:['四字熟語','哲学'], desc:'ユーティリタリアン', season:'S4' },
+  { word:'義務論', chars:['義','務','論'], rarity:'★13', tags:['四字熟語','哲学','七徳'], desc:'デオントロジー', season:'S4' },
+
+  // 自然観
+  { word:'自然観察', chars:['自','然','観','察'], rarity:'★12', tags:['四字熟語','自然','学'], desc:'自然観察', season:'S4' },
+  { word:'自然法則', chars:['自','然','法','則'], rarity:'★12', tags:['四字熟語','科学','自然'], desc:'自然法則', season:'S4' },
+  { word:'物理法則', chars:['物','理','法','則'], rarity:'★12', tags:['四字熟語','科学'], desc:'物理法則', season:'S4' },
+  { word:'宇宙法則', chars:['宇','宙','法','則'], rarity:'★13', tags:['四字熟語','天体','科学'], desc:'宇宙法則', season:'S4' },
+
+  // 神学
+  { word:'神学神論', chars:['神','学','神','論'], rarity:'★14', tags:['四字熟語','神字','哲学'], desc:'セオロジー', season:'S4' },
+  { word:'有神論', chars:['有','神','論'], rarity:'★14', tags:['四字熟語','神字','哲学'], desc:'有神論', season:'S4' },
+  { word:'無神論', chars:['無','神','論'], rarity:'★14', tags:['四字熟語','哲学'], desc:'無神論', season:'S4' },
+  { word:'汎神論', chars:['汎','神','論'], rarity:'★15', tags:['四字熟語','神字','哲学'], desc:'パンセイズム', season:'S4' },
+
+  // 自由意志
+  { word:'自由意志', chars:['自','由','意','志'], rarity:'★12', tags:['四字熟語','哲学'], desc:'フリーウィル', season:'S4' },
+  { word:'決定論', chars:['決','定','論'], rarity:'★14', tags:['四字熟語','哲学'], desc:'決定論', season:'S4' },
+  { word:'運命論者', chars:['運','命','論','者'], rarity:'★13', tags:['四字熟語','哲学'], desc:'運命論', season:'S4' },
+
+  // 美学
+  { word:'美学観', chars:['美','学','観'], rarity:'★13', tags:['四字熟語','美','哲学'], desc:'美意識', season:'S4' },
+  { word:'美的価値', chars:['美','的','価','値'], rarity:'★13', tags:['四字熟語','美','哲学'], desc:'美的価値', season:'S4' },
+  { word:'美的体験', chars:['美','的','体','験'], rarity:'★13', tags:['四字熟語','美','哲学'], desc:'美的体験', season:'S4' },
+  { word:'崇高美', chars:['崇','高','美'], rarity:'★14', tags:['四字熟語','美','哲学'], desc:'崇高', season:'S4' },
+
+  // 時間論
+  { word:'時間論', chars:['時','間','論'], rarity:'★13', tags:['四字熟語','時','哲学'], desc:'タイム哲学', season:'S4' },
+  { word:'現在過去', chars:['現','在','過','去'], rarity:'★13', tags:['四字熟語','時','哲学'], desc:'時間軸', season:'S4' },
+  { word:'現在未来', chars:['現','在','未','来'], rarity:'★13', tags:['四字熟語','時','哲学'], desc:'時間軸', season:'S4' },
+
+  // 言語論
+  { word:'言語学', chars:['言','語','学'], rarity:'★13', tags:['四字熟語','哲学','学'], desc:'リンギスティクス', season:'S4' },
+  { word:'記号論', chars:['記','号','論'], rarity:'★14', tags:['四字熟語','哲学'], desc:'セミオティクス', season:'S4' },
+  { word:'意味論', chars:['意','味','論'], rarity:'★14', tags:['四字熟語','哲学','学'], desc:'セマンティクス', season:'S4' },
+
+  // 構造主義
+  { word:'構造主義', chars:['構','造','主','義'], rarity:'★14', tags:['四字熟語','哲学'], desc:'ストラクチュラリズム', season:'S4' },
+  { word:'脱構築', chars:['脱','構','築'], rarity:'★15', tags:['四字熟語','哲学'], desc:'デコンストラクション', season:'S4' },
+  { word:'現象学', chars:['現','象','学'], rarity:'★14', tags:['四字熟語','哲学'], desc:'フェノメノロジー', season:'S4' },
+
+  // 心身問題
+  { word:'心身問題', chars:['心','身','問','題'], rarity:'★14', tags:['四字熟語','哲学'], desc:'マインドボディ', season:'S4' },
+  { word:'心身二元', chars:['心','身','二','元'], rarity:'★14', tags:['四字熟語','哲学'], desc:'二元論', season:'S4' },
+  { word:'心身一元', chars:['心','身','一','元'], rarity:'★14', tags:['四字熟語','哲学','禅'], desc:'一元論', season:'S4' },
+
+  // 智慧
+  { word:'叡智知慧', chars:['叡','智','知','慧'], rarity:'★16', tags:['四字熟語','古典','学'], desc:'最高の智慧', season:'S4' },
+  { word:'絶対智慧', chars:['絶','対','智','慧'], rarity:'★15', tags:['四字熟語','仏教','哲学'], desc:'絶対智', season:'S4' },
+  { word:'根本智', chars:['根','本','智'], rarity:'★15', tags:['四字熟語','仏教','古典'], desc:'根本智', season:'S4' },
+  { word:'般若智慧', chars:['般','若','智','慧'], rarity:'★15', tags:['四字熟語','仏教','古典'], desc:'般若', season:'S4' },
+];
+for (const r of _YOJI_S4_META) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
