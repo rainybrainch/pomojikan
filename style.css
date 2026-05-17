@@ -2167,7 +2167,19 @@ body[data-mode="rest"] #tank{
   display:flex; flex-direction:column; gap:4px;
 }
 .perk-card.owned{ border-color:rgba(135,206,235,.4); }
-.perk-card.locked{ opacity:.55; }
+.perk-card.locked{
+  opacity:.55;
+  border-style:dashed;
+  background:rgba(255,255,255,.015);
+}
+.perk-card.locked .pck-name{
+  color:var(--ink-mute);
+  letter-spacing:.18em;
+}
+.perk-card.locked .pck-desc{
+  font-style:italic;
+  opacity:.7;
+}
 .perk-card.rare{
   background:linear-gradient(180deg, rgba(240,212,138,.12), rgba(240,212,138,.04));
   border-color:rgba(240,212,138,.5);
@@ -2226,6 +2238,25 @@ body[data-mode="rest"] #tank{
 .cy-meta{
   font-size:.7rem; color:var(--ink-mute);
   font-family:'JetBrains Mono', monospace;
+}
+/* 未発見の熟語：もやがかった「？？？」表示 ─ 解放欲を煽る */
+.codex-yoji-item.locked{
+  opacity:.5;
+  background:rgba(255,255,255,.015);
+  border-style:dashed;
+  border-color:rgba(255,255,255,.12);
+}
+.codex-yoji-item.locked .cy-text{
+  color:var(--ink-mute);
+  letter-spacing:.15em;
+  filter:blur(.4px);
+}
+.codex-yoji-item.locked .cy-meta{
+  opacity:.7;
+  font-style:italic;
+}
+.codex-yoji-item.found{
+  background:rgba(135,206,235,.04);
 }
 
 /* シーズンタブ（RBAI 公式構想 S1-S7+）── 図鑑の上位フィルタ */

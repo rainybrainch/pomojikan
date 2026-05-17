@@ -371,6 +371,7 @@ const DEFAULT_STATE = {
   writings: [],                   // 文章モード v0.1 ─ 保存した文章配列
   stock: {},                      // 文章モード v0.2 ─ 字の所有数 { char: N }
   perkLevels: {},                 // v4 ─ 育つ特性：perkId → ストック累計 { 'tag_emo': 23 }
+  discoveredYoji: {},             // v6 ─ 解放済の熟語 { '一期一会': 1746543210 }
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1032,7 +1033,10 @@ function checkComboPickup() {
   // 新規発動した熟語
   for (const r of combos) {
     if (!_comboPrev.has(r.word)) {
-      // 初発動
+      // 初発動 ── 熟語図鑑に永久解放（次から ??? が外れる）
+      if (!STATE.discoveredYoji) STATE.discoveredYoji = {};
+      STATE.discoveredYoji[r.word] = Date.now();
+      saveState();
       spawnComboBurst(r);
       if (r.special) {
         playSFX('unlock'); setTimeout(() => playSFX('milestone'), 250);
@@ -2982,6 +2986,13 @@ function renderCodex() {
   const seasonMatch = (k) =>
     codexFilter.season === 'all' || (k.season || 'S1') === codexFilter.season;
 
+  // 熟語の発見判定 ── 構成字全て発見済 or パーティで一度コンボ発動済
+  const isYojiDiscovered = (r) => {
+    if (!r || !r.chars) return false;
+    if (STATE.discoveredYoji && STATE.discoveredYoji[r.word]) return true;
+    return r.chars.every(c => (STATE.collection[c] || 0) > 0);
+  };
+
   // 特性図鑑：全 PERKS をカードで表示
   if (codexFilter.season === 'PERKS') {
     const perks = Object.entries(PERKS);
@@ -3002,35 +3013,45 @@ function renderCodex() {
       if (oa !== ob) return oa - ob;
       return (catOrder[a[1].category]||9) - (catOrder[b[1].category]||9);
     });
+    let ownedCnt = 0;
     perks.forEach(([pid, p]) => {
       const lv = perkLv(pid);
-      const pw = perkPower(pid);
       const cat = p.category || 'basic';
       const isRare = cat === 'rare';
       const isSpecial = cat === 'special';
       const isOwned = ownedPerks.has(pid);
+      if (isOwned) ownedCnt++;
       const catLabel = {
         basic:'基本', tag:'タグ系', rare:'✦ レア', special:'主人公専用',
       }[cat] || cat;
+      // 未獲得：名前・効果を「???」でマスク。カテゴリと「入手方法」だけ見せる
+      const displayName = isOwned
+        ? ((isRare ? '✦ ' : isSpecial ? '★ ' : '') + p.name)
+        : '？？？';
+      const displayDesc = isOwned ? (p.desc || '') : '─ 入手して効果を確認 ─';
       const card = el('div', { class:'perk-card cat-' + cat + (isRare ? ' rare' : '') + (isOwned ? ' owned' : ' locked') },
         el('div', { class:'pck-head' },
-          el('span', { class:'pck-name' }, (isRare ? '✦ ' : isSpecial ? '★ ' : '') + p.name),
+          el('span', { class:'pck-name' }, displayName),
           el('span', { class:'pck-lv' }, isOwned ? `Lv.${lv}` : '未獲得'),
         ),
         el('div', { class:'pck-cat' }, catLabel),
-        el('div', { class:'pck-desc' }, p.desc || ''),
+        el('div', { class:'pck-desc' }, displayDesc),
         el('div', { class:'pck-grow' },
-          p.tag ? `育て方：「${p.tag}」タグの字をストック → +1/個`
-                : isSpecial ? '入手：主人公にすると自動付与'
-                : isRare ? '入手：★8 以降の字を仲間にすると抽選で付与（★16 で確定）'
-                : '育て方：どの字でもストック → +0.5/個（累積）'
+          isOwned
+            ? (p.tag ? `育て方：「${p.tag}」タグの字をストック → +1/個`
+                    : isSpecial ? '主人公にすると自動付与'
+                    : isRare ? '★8 以降の字を仲間にすると抽選で付与（★16 で確定）'
+                    : '育て方：どの字でもストック → +0.5/個（累積）')
+            : (isSpecial ? '入手：主人公を選ぶと自動付与'
+                : isRare ? '入手：★8 以降の字を仲間にすると抽選'
+                : '入手：パーティ字の属性で自動付与')
         ),
       );
       list.appendChild(card);
     });
     section.appendChild(list);
     grid.appendChild(section);
-    $('#codex-summary').textContent = `特性 ${perks.length} 種 ／ パーティ獲得 ${ownedPerks.size} 種`;
+    $('#codex-summary').textContent = `特性 ${ownedCnt} / ${perks.length} 解放`;
     return;
   }
 
@@ -3046,15 +3067,25 @@ function renderCodex() {
         `${codexFilter.season} ${SEASON_LABEL[codexFilter.season] || ''}（${recipes.length} 個）`)
     );
     const list = el('div', { class:'codex-yoji-list' });
+    let foundCnt = 0;
     recipes.forEach(r => {
       const rIdx = RARITY_TIERS.indexOf(r.rarity);
-      const item = el('div', { class:`codex-yoji-item rarity-${rIdx+1}` },
-        el('span', { class:'cy-text' }, r.word),
-        el('span', { class:'cy-meta' }, `${r.rarity} ${r.desc || ''}`)
+      const found = isYojiDiscovered(r);
+      if (found) foundCnt++;
+      // 未発見：字を全部「？」にする ・ desc も隠す
+      const mask = '？'.repeat(Math.max(2, (r.word || '').length));
+      const wordText  = found ? r.word : mask;
+      const metaText  = found ? `${r.rarity} ${r.desc || ''}` : `${r.rarity} ─ 構成字を集めると解放`;
+      const item = el('div', { class:`codex-yoji-item rarity-${rIdx+1}` + (found ? ' found' : ' locked') },
+        el('span', { class:'cy-text' }, wordText),
+        el('span', { class:'cy-meta' }, metaText)
       );
       list.appendChild(item);
     });
     section.appendChild(list);
+    // セクション見出しに発見率を追記
+    const head = section.querySelector('.codex-section-title');
+    if (head) head.textContent = head.textContent.replace(/（[^）]*）$/, `（${foundCnt} / ${recipes.length} 発見）`);
     grid.appendChild(section);
     const discovered = Object.keys(STATE.collection).length;
     const totalKanji = codex.length;
