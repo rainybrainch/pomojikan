@@ -3478,12 +3478,23 @@ function openStats() {
     .slice(0, 3)
     .map(([pid]) => `${PERKS[pid].name} Lv.${perkLv(pid)}`)
     .join(' / ') || '─';
+  // 解放した熟語の数
+  const totalYoji = (window.YOJI_RECIPES || []).length;
+  const unlockedYoji = Object.keys(STATE.discoveredYoji || {}).length;
+  // 特性総数 vs 獲得数
+  const totalPerks = Object.keys(PERKS || {}).length;
+  const ownedPerks = new Set();
+  if (STATE.party && STATE.party.members) {
+    for (const m of STATE.party.members) for (const pid of (m.perks||[])) ownedPerks.add(pid);
+  }
   list.innerHTML = '';
   const cells = [
     { label:'累計サイクル', value: STATE.stats.totalCycles || 0 },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
     { label:'発見字', value: `${discovered} / ${totalKanji}` },
+    { label:'解放熟語', value: `${unlockedYoji} / ${totalYoji}` },
+    { label:'獲得特性', value: `${ownedPerks.size} / ${totalPerks}` },
     { label:'所有字 合計', value: totalStock.toLocaleString() },
     { label:'保存した文章', value: writings },
     { label:'★ リーダー', value: `${heroChar} Lv.${heroLv}` },
@@ -3512,6 +3523,33 @@ function openStats() {
     );
     tiers.appendChild(row);
   });
+
+  // 最近解放した熟語 ── 達成感の振り返り（最新 6 個）
+  const recentZone = $('#stats-recent-yoji') || (() => {
+    const z = el('div', { class:'stats-recent-zone', id:'stats-recent-yoji' });
+    tiers.parentElement?.insertBefore(z, tiers.nextSibling);
+    return z;
+  })();
+  recentZone.innerHTML = '';
+  recentZone.appendChild(el('h3', { class:'stats-section-title' }, '最近解放した熟語'));
+  const recent = Object.entries(STATE.discoveredYoji || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([word, ts]) => ({ word, ts }));
+  if (recent.length === 0) {
+    recentZone.appendChild(el('div', { class:'sry-empty' }, 'まだ解放した熟語はありません ・ パーティを組んで字を揃えよう'));
+  } else {
+    const grid = el('div', { class:'sry-grid' });
+    for (const r of recent) {
+      const recipe = (window.YOJI_RECIPES || []).find(y => y.word === r.word);
+      const rIdx = recipe ? RARITY_TIERS.indexOf(recipe.rarity) : 0;
+      grid.appendChild(el('div', { class:`sry-item rarity-${rIdx + 1}` },
+        el('span', { class:'sry-word' }, r.word),
+        el('span', { class:'sry-rarity' }, recipe?.rarity || '★?')
+      ));
+    }
+    recentZone.appendChild(grid);
+  }
 
   $('#stats-modal').classList.add('show');
 }

@@ -3145,6 +3145,39 @@ body[data-mode="rest"] #tank{
     hsl(calc(var(--i, 0) * 30deg), 80%, 70%), white);
 }
 
+/* ════════════════════ 統計：最近解放した熟語 ════════════════════ */
+.stats-recent-zone{
+  margin-top:18px;
+  padding:12px;
+  background:rgba(135,206,235,.03);
+  border:1px dashed rgba(135,206,235,.18);
+  border-radius:8px;
+}
+.sry-empty{
+  font-size:.8rem; color:var(--ink-mute);
+  text-align:center; padding:12px;
+  font-style:italic;
+}
+.sry-grid{
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.sry-item{
+  display:flex; align-items:center; gap:6px;
+  padding:6px 10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--r-color, rgba(255,255,255,.12));
+  border-radius:6px;
+  font-family:'Noto Serif JP', serif;
+}
+.sry-word{
+  font-weight:700; color:var(--r-color, var(--ink));
+  font-size:1.05rem;
+}
+.sry-rarity{
+  font-size:.7rem; color:var(--ink-mute);
+  font-family:'JetBrains Mono', monospace;
+}
+
 /* ════════════════════ ✨ 熟語初解放セレモニー ════════════════════ */
 /* 構成字 → 「？？？」マスク剥がし → 熟語 → desc の流れ（最大 4.2 秒）*/
 .yoji-unlock-celebration{
