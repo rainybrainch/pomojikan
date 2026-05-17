@@ -4280,7 +4280,7 @@ function bindEvents() {
         break;
       case 'k': case 'K':
         // K でキー一覧トースト
-        toast('Space: 開始/停止 / M: メニュー / B: 図鑑 / S: 記録 / W: 文章 / Z: スリープ / R: ランダム熟語', '★13');
+        toast('Space: 開始 / M: メニュー / B: 図鑑 / S: 記録 / W: 文章 / R: ランダム熟語 / N: コンボ提案 / Z: スリープ', '★13');
         break;
       case 'r': case 'R':
         // R でランダム熟語表示
