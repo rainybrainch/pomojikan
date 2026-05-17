@@ -3584,7 +3584,24 @@ body[data-mode="rest"] #tank{
   margin-top:2px;
 }
 .milestone-cell.locked .milestone-date{
-  color:rgba(255,255,255,.25);
+  color:rgba(135,206,235,.55);
+  font-weight:700;
+}
+/* 「あと少し」進捗バー（未達成バッジの解放欲を煽る） */
+.milestone-progress-bar{
+  width:100%;
+  height:4px;
+  background:rgba(255,255,255,.05);
+  border-radius:2px;
+  overflow:hidden;
+  margin:4px 0 2px;
+}
+.milestone-progress-bar .mpb-fill{
+  height:100%;
+  background:linear-gradient(90deg, rgba(135,206,235,.5) 0%, rgba(240,212,138,.7) 100%);
+  border-radius:2px;
+  transition:width .8s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 0 6px rgba(240,212,138,.4);
 }
 
 /* ════════════════════ ✨ 熟語初解放セレモニー ════════════════════ */

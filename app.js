@@ -384,33 +384,47 @@ const DEFAULT_STATE = {
 };
 
 // 長期達成マイルストーン（何十年遊べる目標）
+// progress: (state) => [current, threshold] を返す ── 「あと何」「進捗バー」算出用
+const _cur = (s) => ({
+  cyc: s.stats?.totalCycles || 0,
+  str: s.streak?.longest || 0,
+  chr: Object.keys(s.collection||{}).length,
+  yoj: Object.keys(s.discoveredYoji||{}).length,
+  lv:  s.party?.members?.[s.party?.hero||0]?.level || 0,
+});
+const _mk = (id, label, desc, kind, thr) => ({
+  id, label, desc,
+  check: s => _cur(s)[kind] >= thr,
+  progress: s => [_cur(s)[kind], thr],
+});
+
 const MILESTONES = [
   // サイクル系
-  { id:'cycle_10',    label:'初心', desc:'累計 10 サイクル', check: s => (s.stats?.totalCycles || 0) >= 10 },
-  { id:'cycle_100',   label:'継続', desc:'累計 100 サイクル', check: s => (s.stats?.totalCycles || 0) >= 100 },
-  { id:'cycle_1000',  label:'熟達', desc:'累計 1,000 サイクル（約 1 年）', check: s => (s.stats?.totalCycles || 0) >= 1000 },
-  { id:'cycle_10000', label:'達人', desc:'累計 10,000 サイクル（約 10 年）', check: s => (s.stats?.totalCycles || 0) >= 10000 },
+  _mk('cycle_10',    '初心', '累計 10 サイクル', 'cyc', 10),
+  _mk('cycle_100',   '継続', '累計 100 サイクル', 'cyc', 100),
+  _mk('cycle_1000',  '熟達', '累計 1,000 サイクル（約 1 年）', 'cyc', 1000),
+  _mk('cycle_10000', '達人', '累計 10,000 サイクル（約 10 年）', 'cyc', 10000),
   // 連続日数
-  { id:'streak_7',    label:'一週間', desc:'連続 7 日', check: s => (s.streak?.longest || 0) >= 7 },
-  { id:'streak_30',   label:'一か月', desc:'連続 30 日', check: s => (s.streak?.longest || 0) >= 30 },
-  { id:'streak_100',  label:'百日', desc:'連続 100 日', check: s => (s.streak?.longest || 0) >= 100 },
-  { id:'streak_365',  label:'一年', desc:'連続 365 日', check: s => (s.streak?.longest || 0) >= 365 },
-  { id:'streak_1000', label:'千日', desc:'連続 1,000 日（約 3 年）', check: s => (s.streak?.longest || 0) >= 1000 },
+  _mk('streak_7',    '一週間', '連続 7 日', 'str', 7),
+  _mk('streak_30',   '一か月', '連続 30 日', 'str', 30),
+  _mk('streak_100',  '百日',   '連続 100 日', 'str', 100),
+  _mk('streak_365',  '一年',   '連続 365 日', 'str', 365),
+  _mk('streak_1000', '千日',   '連続 1,000 日（約 3 年）', 'str', 1000),
   // 字発見系
-  { id:'char_100',   label:'初学', desc:'100 字 発見', check: s => Object.keys(s.collection||{}).length >= 100 },
-  { id:'char_1000',  label:'学識', desc:'1,000 字 発見', check: s => Object.keys(s.collection||{}).length >= 1000 },
-  { id:'char_10000', label:'博学', desc:'10,000 字 発見', check: s => Object.keys(s.collection||{}).length >= 10000 },
-  { id:'char_all',   label:'世界の文字', desc:'全字発見（41,890+）', check: s => Object.keys(s.collection||{}).length >= 41890 },
+  _mk('char_100',   '初学',       '100 字 発見', 'chr', 100),
+  _mk('char_1000',  '学識',       '1,000 字 発見', 'chr', 1000),
+  _mk('char_10000', '博学',       '10,000 字 発見', 'chr', 10000),
+  _mk('char_all',   '世界の文字', '全字発見（41,890+）', 'chr', 41890),
   // 熟語系
-  { id:'yoji_100',  label:'語彙', desc:'100 熟語 解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 100 },
-  { id:'yoji_1000', label:'語学', desc:'1,000 熟語 解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 1000 },
-  { id:'yoji_4000', label:'達語', desc:'4,000 熟語 全解放', check: s => Object.keys(s.discoveredYoji||{}).length >= 4000 },
+  _mk('yoji_100',  '語彙', '100 熟語 解放', 'yoj', 100),
+  _mk('yoji_1000', '語学', '1,000 熟語 解放', 'yoj', 1000),
+  _mk('yoji_4000', '達語', '4,000 熟語 全解放', 'yoj', 4000),
   // Lv 系（無限育成の到達点）── 何十年遊べる育成型ポモドーロの記憶
-  { id:'lv_100',     label:'楷書師', desc:'主人公 Lv.100 到達', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 100 },
-  { id:'lv_1000',    label:'創造主', desc:'主人公 Lv.1,000 到達（進化10段階）', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 1000 },
-  { id:'lv_10000',   label:'永劫者', desc:'主人公 Lv.10,000 到達', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 10000 },
-  { id:'lv_100000',  label:'無始',   desc:'主人公 Lv.100,000 到達', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 100000 },
-  { id:'lv_1000000', label:'永遠',   desc:'主人公 Lv.1,000,000 到達（人智の極）', check: s => (s.party?.members?.[s.party?.hero||0]?.level || 0) >= 1000000 },
+  _mk('lv_100',     '楷書師', '主人公 Lv.100 到達',                       'lv', 100),
+  _mk('lv_1000',    '創造主', '主人公 Lv.1,000 到達（進化10段階）',       'lv', 1000),
+  _mk('lv_10000',   '永劫者', '主人公 Lv.10,000 到達',                    'lv', 10000),
+  _mk('lv_100000',  '無始',   '主人公 Lv.100,000 到達',                   'lv', 100000),
+  _mk('lv_1000000', '永遠',   '主人公 Lv.1,000,000 到達（人智の極）',    'lv', 1000000),
 ];
 
 // 達成チェック（completePhase, addStock 等から定期的に呼ぶ）
@@ -4144,13 +4158,24 @@ function openStats() {
         el('div', { class:'milestone-date' }, dateStr)
       ));
     });
-  // 未達成：解放するワクワクを残す
-  locked.forEach(m => {
+  // 未達成：「あと少し」順にソート（進捗率の高いものから ── 解放するワクワクを煽る）
+  const lockedWithProgress = locked.map(m => {
+    const [cur, thr] = m.progress ? m.progress(STATE) : [0, 1];
+    const ratio = thr > 0 ? Math.min(1, cur / thr) : 0;
+    return { m, cur, thr, ratio };
+  }).sort((a, b) => b.ratio - a.ratio);
+
+  lockedWithProgress.forEach(({ m, cur, thr, ratio }) => {
+    const pct = Math.round(ratio * 100);
+    const remain = Math.max(0, thr - cur);
     badgeGrid.appendChild(el('div', { class:'milestone-cell locked', title: m.desc },
       el('div', { class:'milestone-icon' }, '🔒'),
       el('div', { class:'milestone-label' }, '？？？'),
       el('div', { class:'milestone-desc' }, m.desc),
-      el('div', { class:'milestone-date' }, '未達成')
+      el('div', { class:'milestone-progress-bar' },
+        el('div', { class:'mpb-fill', style:{ width: pct + '%' } })
+      ),
+      el('div', { class:'milestone-date' }, `あと ${remain.toLocaleString()}（${pct}%）`)
     ));
   });
   badgeZone.appendChild(badgeGrid);
