@@ -2124,6 +2124,81 @@ const _YOJI_S3_ABSTRACT = [
 ];
 for (const r of _YOJI_S3_ABSTRACT) YOJI_RECIPES.push(r);
 
+// v7m ── 二字熟語 +60（科学・技術・現代）
+const _YOJI_S3_TECH = [
+  // 科学
+  { word:'実験', chars:['実','験'], rarity:'★8',  tags:['科学','学'], desc:'実証', season:'S3' },
+  { word:'理論', chars:['理','論'], rarity:'★8',  tags:['科学','学'], desc:'セオリー', season:'S3' },
+  { word:'仮説', chars:['仮','説'], rarity:'★10', tags:['科学','学'], desc:'ハイポセシス', season:'S3' },
+  { word:'証明', chars:['証','明'], rarity:'★8',  tags:['科学'], desc:'プルーフ', season:'S3' },
+  { word:'分析', chars:['分','析'], rarity:'★8',  tags:['科学','学'], desc:'アナリシス', season:'S3' },
+  { word:'統計', chars:['統','計'], rarity:'★8',  tags:['科学','数'], desc:'スタッツ', season:'S3' },
+  { word:'計算', chars:['計','算'], rarity:'★7',  tags:['数','科学'], desc:'カリキュレーション', season:'S3' },
+  { word:'方程式', chars:['方','程','式'], rarity:'★12', tags:['数','科学'], desc:'イコエーション', season:'S3' },
+  { word:'関数', chars:['関','数'], rarity:'★8',  tags:['数','科学'], desc:'ファンクション', season:'S3' },
+  { word:'変数', chars:['変','数'], rarity:'★8',  tags:['数','科学'], desc:'バリアブル', season:'S3' },
+  { word:'定数', chars:['定','数'], rarity:'★8',  tags:['数','科学'], desc:'コンスタント', season:'S3' },
+  { word:'測定', chars:['測','定'], rarity:'★8',  tags:['科学'], desc:'メジャー', season:'S3' },
+  { word:'観測', chars:['観','測'], rarity:'★10', tags:['科学','天体'], desc:'オブザベーション', season:'S3' },
+
+  // 物質
+  { word:'物質', chars:['物','質'], rarity:'★8',  tags:['科学'], desc:'マター', season:'S3' },
+  { word:'元素', chars:['元','素'], rarity:'★8',  tags:['科学'], desc:'エレメント', season:'S3' },
+  { word:'分子', chars:['分','子'], rarity:'★8',  tags:['科学'], desc:'モレキュール', season:'S3' },
+  { word:'原子', chars:['原','子'], rarity:'★8',  tags:['科学'], desc:'アトム', season:'S3' },
+  { word:'素粒子', chars:['素','粒','子'], rarity:'★13', tags:['科学'], desc:'パーティクル', season:'S3' },
+  { word:'量子', chars:['量','子'], rarity:'★8',  tags:['科学','未来'], desc:'クォンタム', season:'S3' },
+  { word:'重力', chars:['重','力'], rarity:'★8',  tags:['科学','RAINY'], desc:'グラビティ', season:'S3' },
+  { word:'引力', chars:['引','力'], rarity:'★8',  tags:['科学','RAINY'], desc:'アトラクション', season:'S3' },
+  { word:'磁力', chars:['磁','力'], rarity:'★8',  tags:['科学'], desc:'マグネティズム', season:'S3' },
+  { word:'電力', chars:['電','力'], rarity:'★7',  tags:['科学'], desc:'パワー', season:'S3' },
+
+  // 技術・IT
+  { word:'技術', chars:['技','術'], rarity:'★8',  tags:['ビジネス','科学'], desc:'テクノロジー', season:'S3' },
+  { word:'設計', chars:['設','計'], rarity:'★8',  tags:['ビジネス'], desc:'デザイン', season:'S3' },
+  { word:'実装', chars:['実','装'], rarity:'★12', tags:['ビジネス','科学'], desc:'インプリメント', season:'S3' },
+  { word:'開発', chars:['開','発'], rarity:'★8',  tags:['ビジネス'], desc:'デベロップ', season:'S3' },
+  { word:'運用', chars:['運','用'], rarity:'★8',  tags:['ビジネス'], desc:'オペレーション', season:'S3' },
+  { word:'保守', chars:['保','守'], rarity:'★8',  tags:['ビジネス'], desc:'メンテナンス', season:'S3' },
+  { word:'検証', chars:['検','証'], rarity:'★12', tags:['ビジネス','科学'], desc:'バリデーション', season:'S3' },
+  { word:'試験', chars:['試','験'], rarity:'★8',  tags:['学'], desc:'テスト', season:'S3' },
+
+  // 体験・経験
+  { word:'体験', chars:['体','験'], rarity:'★8',  tags:[], desc:'エクスペリエンス', season:'S3' },
+  { word:'経験', chars:['経','験'], rarity:'★8',  tags:[], desc:'エクスペリエンス', season:'S3' },
+  { word:'実体', chars:['実','体'], rarity:'★8',  tags:['哲学'], desc:'サブスタンス', season:'S3' },
+  { word:'実感', chars:['実','感'], rarity:'★8',  tags:['感情'], desc:'リアリティ', season:'S3' },
+  { word:'臨場', chars:['臨','場'], rarity:'★13', tags:[], desc:'プレゼンス', season:'S3' },
+
+  // 動植物
+  { word:'昆虫', chars:['昆','虫'], rarity:'★12', tags:['自然','動物'], desc:'インセクト', season:'S3' },
+  { word:'蝶々', chars:['蝶','々'], rarity:'★13', tags:['自然','動物'], desc:'ちょうちょ', season:'S3' },
+  { word:'蜜蜂', chars:['蜜','蜂'], rarity:'★13', tags:['自然','動物'], desc:'はちみつバチ', season:'S3' },
+  { word:'蛍火', chars:['蛍','火'], rarity:'★13', tags:['自然','古典'], desc:'ほたるの光', season:'S3' },
+  { word:'夜鶯', chars:['夜','鶯'], rarity:'★14', tags:['自然','古典'], desc:'よるのうぐいす', season:'S3' },
+  { word:'白鳥', chars:['白','鳥'], rarity:'★8',  tags:['自然','動物'], desc:'スワン', season:'S3' },
+  { word:'白馬', chars:['白','馬'], rarity:'★8',  tags:['自然','動物'], desc:'しろうま', season:'S3' },
+
+  // 場所（追加）
+  { word:'本社', chars:['本','社'], rarity:'★8',  tags:['ビジネス'], desc:'本拠地', season:'S3' },
+  { word:'支社', chars:['支','社'], rarity:'★8',  tags:['ビジネス'], desc:'支店', season:'S3' },
+  { word:'店舗', chars:['店','舗'], rarity:'★12', tags:['ビジネス'], desc:'ショップ', season:'S3' },
+  { word:'工場', chars:['工','場'], rarity:'★8',  tags:[], desc:'ファクトリー', season:'S3' },
+  { word:'倉庫', chars:['倉','庫'], rarity:'★12', tags:[], desc:'ウェアハウス', season:'S3' },
+  { word:'会場', chars:['会','場'], rarity:'★8',  tags:[], desc:'ベニュー', season:'S3' },
+  { word:'劇場', chars:['劇','場'], rarity:'★12', tags:['美'], desc:'シアター', season:'S3' },
+  { word:'庭園', chars:['庭','園'], rarity:'★8',  tags:['自然','美'], desc:'ガーデン', season:'S3' },
+
+  // 抽象（追加）
+  { word:'平和', chars:['平','和'], rarity:'★7',  tags:['七徳'], desc:'ピース', season:'S3' },
+  { word:'調和', chars:['調','和'], rarity:'★8',  tags:['七徳','美'], desc:'ハーモニー', season:'S3' },
+  { word:'秩序', chars:['秩','序'], rarity:'★12', tags:['哲学'], desc:'オーダー', season:'S3' },
+  { word:'混沌', chars:['混','沌'], rarity:'★14', tags:['哲学'], desc:'カオス', season:'S3' },
+  { word:'流動', chars:['流','動'], rarity:'★10', tags:['哲学'], desc:'フロー', season:'S3' },
+  { word:'安定', chars:['安','定'], rarity:'★8',  tags:[], desc:'スタビリティ', season:'S3' },
+];
+for (const r of _YOJI_S3_TECH) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
