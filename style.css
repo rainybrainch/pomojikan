@@ -2453,6 +2453,33 @@ body[data-mode="rest"] #tank{
   font-size:.7rem; color:var(--ink-mute);
   font-family:'JetBrains Mono', monospace;
 }
+/* タグフィルタ pill 行 */
+.codex-tag-row{
+  display:flex; flex-wrap:wrap; gap:4px;
+  margin:6px 0;
+}
+.codex-tag-pill{
+  padding:3px 9px;
+  background:rgba(240,212,138,.05);
+  border:1px solid rgba(240,212,138,.2);
+  color:var(--ink-mute);
+  border-radius:99px;
+  font-size:.7rem;
+  cursor:pointer;
+  font-family:inherit;
+  transition:all .15s;
+}
+.codex-tag-pill:hover{
+  background:rgba(240,212,138,.12);
+  color:var(--ink);
+}
+.codex-tag-pill.active{
+  background:rgba(240,212,138,.2);
+  border-color:var(--gold);
+  color:var(--gold);
+  font-weight:700;
+}
+
 /* シーズンタブの個数バッジ ── ジャンルの厚みが一目で分かる */
 .cs-badge{
   display:inline-block;

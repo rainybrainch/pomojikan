@@ -3558,6 +3558,10 @@ function renderCodex() {
   // S3/S4/S5/S6/S7（熟語シーズン）が選ばれているときは熟語をリスト表示
   if (['S3','S4','S5','S6','S7'].includes(codexFilter.season)) {
     let recipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    // タグフィルタ：選択中なら抽出
+    if (codexFilter.tag) {
+      recipes = recipes.filter(r => (r.tags || []).includes(codexFilter.tag));
+    }
     // 検索クエリでフィルタ
     if (codexFilter.query) {
       const q = codexFilter.query.toLowerCase();
@@ -3620,6 +3624,31 @@ function renderCodex() {
       el('div', { class:'cpb-fill', style:{ width: pct + '%' } })
     );
     section.insertBefore(bar, list);
+    // タグフィルタ pill 行（このシーズンに登場するタグから動的生成）
+    const allRecipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    const tagCounts = {};
+    for (const r of allRecipes) {
+      for (const t of (r.tags || [])) {
+        if (t === '四字熟語') continue;  // 全部に付くので除外
+        tagCounts[t] = (tagCounts[t] || 0) + 1;
+      }
+    }
+    const topTags = Object.entries(tagCounts)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 12);
+    if (topTags.length > 0) {
+      const tagRow = el('div', { class:'codex-tag-row' },
+        el('button', {
+          class:'codex-tag-pill' + (!codexFilter.tag ? ' active' : ''),
+          onclick: () => { codexFilter.tag = null; renderCodex(); },
+        }, '全タグ'),
+        ...topTags.map(([t, n]) => el('button', {
+          class:'codex-tag-pill' + (codexFilter.tag === t ? ' active' : ''),
+          onclick: () => { codexFilter.tag = t; renderCodex(); },
+        }, `${t} ${n}`)),
+      );
+      section.insertBefore(tagRow, bar);
+    }
     grid.appendChild(section);
     const discovered = Object.keys(STATE.collection).length;
     const totalKanji = codex.length;
@@ -4062,6 +4091,7 @@ function bindEvents() {
   // シーズンタブ（RBAI 公式構想）
   $$('.codex-season').forEach(s => s.addEventListener('click', () => {
     codexFilter.season = s.dataset.season;
+    codexFilter.tag = null;  // シーズン切替時にタグフィルタもリセット
     $$('.codex-season').forEach(x => x.classList.toggle('active', x === s));
     renderCodex();
   }));
