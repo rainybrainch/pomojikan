@@ -3350,6 +3350,31 @@ function showRandomYoji() {
   showYojiDetail(r);
 }
 
+// 「あと 1 字でコンボ成立」する熟語を推薦
+function suggestNearComboYoji() {
+  if (!STATE.party || !STATE.party.members?.length) {
+    toast('先にパーティ編成して');
+    return;
+  }
+  const partySet = new Set(STATE.party.members.map(m => m.char));
+  const candidates = [];
+  for (const r of (window.YOJI_RECIPES || [])) {
+    if (!r.chars || r.chars.length < 2) continue;
+    const missing = r.chars.filter(c => !partySet.has(c));
+    if (missing.length === 1) {
+      // 1 字だけ足りない → 推薦候補
+      candidates.push({ recipe: r, missingChar: missing[0] });
+    }
+  }
+  if (candidates.length === 0) {
+    toast('あと 1 字で成立する熟語はないみたい');
+    return;
+  }
+  // ランダムで 1 個ピックして表示
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+  toast(`💡 「${pick.missingChar}」を仲間にすれば「${pick.recipe.word}」発動`, pick.recipe.rarity);
+}
+
 // シーズンタブに「N件」バッジを付与（解放欲を煽る）
 function applyCodexSeasonBadges() {
   const codex = window.KANJI_CODEX || [];
@@ -4245,6 +4270,10 @@ function bindEvents() {
       case 'r': case 'R':
         // R でランダム熟語表示
         showRandomYoji();
+        break;
+      case 'n': case 'N':
+        // N で「あと 1 字でコンボ成立」サジェスト
+        suggestNearComboYoji();
         break;
     }
   });
