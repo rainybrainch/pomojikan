@@ -2644,6 +2644,68 @@ const _YOJI_S4_BATTLE = [
 ];
 for (const r of _YOJI_S4_BATTLE) YOJI_RECIPES.push(r);
 
+// v7u ── 四字熟語 +50（食・グルメ・季節料理）
+const _YOJI_S4_FOOD = [
+  { word:'美食三昧', chars:['美','食','三','昧'], rarity:'★13', tags:['四字熟語'], desc:'グルメ三昧', season:'S4' },
+  { word:'酒池肉林', chars:['酒','池','肉','林'], rarity:'★14', tags:['四字熟語','古典'], desc:'贅沢三昧', season:'S4' },
+  { word:'山海珍味', chars:['山','海','珍','味'], rarity:'★14', tags:['四字熟語'], desc:'山海の珍味', season:'S4' },
+  { word:'珍味佳肴', chars:['珍','味','佳','肴'], rarity:'★15', tags:['四字熟語','古典'], desc:'美味珍味', season:'S4' },
+  { word:'美酒佳肴', chars:['美','酒','佳','肴'], rarity:'★14', tags:['四字熟語'], desc:'美味しい酒と料理', season:'S4' },
+  { word:'粗茶粗食', chars:['粗','茶','粗','食'], rarity:'★13', tags:['四字熟語','禅'], desc:'質素な食', season:'S4' },
+  { word:'飯店繁盛', chars:['飯','店','繁','盛'], rarity:'★12', tags:['四字熟語'], desc:'レストラン繁盛', season:'S4' },
+  { word:'食通通', chars:['食','通','通'], rarity:'★12', tags:['四字熟語'], desc:'グルメ通', season:'S4' },
+  { word:'食欲増進', chars:['食','欲','増','進'], rarity:'★11', tags:['四字熟語'], desc:'食欲アップ', season:'S4' },
+  { word:'美味珍味', chars:['美','味','珍','味'], rarity:'★13', tags:['四字熟語'], desc:'美と珍', season:'S4' },
+
+  // 旅・道
+  { word:'長途旅行', chars:['長','途','旅','行'], rarity:'★13', tags:['四字熟語'], desc:'長距離旅', season:'S4' },
+  { word:'巡礼旅', chars:['巡','礼','旅'], rarity:'★13', tags:['四字熟語','仏教'], desc:'巡礼の旅', season:'S4' },
+  { word:'秘湯巡り', chars:['秘','湯','巡','り'], rarity:'★13', tags:['四字熟語'], desc:'温泉巡り', season:'S4' },
+  { word:'宿場町', chars:['宿','場','町'], rarity:'★13', tags:['四字熟語','古典'], desc:'昔の宿場', season:'S4' },
+  { word:'街道宿駅', chars:['街','道','宿','駅'], rarity:'★14', tags:['四字熟語','古典'], desc:'宿場道', season:'S4' },
+
+  // 衣・装い
+  { word:'紳士淑女', chars:['紳','士','淑','女'], rarity:'★13', tags:['四字熟語','美'], desc:'男女の正装', season:'S4' },
+  { word:'晴着姿', chars:['晴','着','姿'], rarity:'★12', tags:['四字熟語','美'], desc:'晴れ着', season:'S4' },
+  { word:'豪華絢爛', chars:['豪','華','絢','爛'], rarity:'★15', tags:['四字熟語','美'], desc:'豪華で美しい', season:'S4' },
+  { word:'簡素淡白', chars:['簡','素','淡','白'], rarity:'★13', tags:['四字熟語','禅'], desc:'シンプル', season:'S4' },
+  { word:'清潔感', chars:['清','潔','感'], rarity:'★11', tags:['四字熟語','美'], desc:'クリーンな印象', season:'S4' },
+
+  // 休息・くつろぎ
+  { word:'安息日', chars:['安','息','日'], rarity:'★12', tags:['四字熟語'], desc:'リラックス日', season:'S4' },
+  { word:'休息時間', chars:['休','息','時','間'], rarity:'★11', tags:['四字熟語'], desc:'休み時間', season:'S4' },
+  { word:'休養充実', chars:['休','養','充','実'], rarity:'★12', tags:['四字熟語'], desc:'リカバリー', season:'S4' },
+  { word:'閑暇悠悠', chars:['閑','暇','悠','悠'], rarity:'★14', tags:['四字熟語','禅'], desc:'のんびり', season:'S4' },
+  { word:'悠悠自適', chars:['悠','悠','自','適'], rarity:'★13', tags:['四字熟語','禅'], desc:'のんびり自由', season:'S4' },
+
+  // 美意識
+  { word:'美的感覚', chars:['美','的','感','覚'], rarity:'★13', tags:['四字熟語','美'], desc:'美感', season:'S4' },
+  { word:'美的価値', chars:['美','的','価','値'], rarity:'★13', tags:['四字熟語','美','哲学'], desc:'美の価値', season:'S4' },
+  { word:'造形美', chars:['造','形','美'], rarity:'★12', tags:['四字熟語','美'], desc:'フォーム', season:'S4' },
+  { word:'機能美', chars:['機','能','美'], rarity:'★12', tags:['四字熟語','美'], desc:'ファンクショナル', season:'S4' },
+  { word:'装飾美', chars:['装','飾','美'], rarity:'★12', tags:['四字熟語','美'], desc:'デコラティブ', season:'S4' },
+
+  // 想像・空想
+  { word:'空想科学', chars:['空','想','科','学'], rarity:'★13', tags:['四字熟語','思想'], desc:'SF', season:'S4' },
+  { word:'空想小説', chars:['空','想','小','説'], rarity:'★13', tags:['四字熟語','美'], desc:'ファンタジー', season:'S4' },
+  { word:'夢想空想', chars:['夢','想','空','想'], rarity:'★12', tags:['四字熟語','思想'], desc:'妄想', season:'S4' },
+  { word:'幻想世界', chars:['幻','想','世','界'], rarity:'★13', tags:['四字熟語'], desc:'ファンタジー', season:'S4' },
+  { word:'幻覚現象', chars:['幻','覚','現','象'], rarity:'★14', tags:['四字熟語'], desc:'ハルシネーション', season:'S4' },
+
+  // 時間・時節
+  { word:'時節到来', chars:['時','節','到','来'], rarity:'★13', tags:['四字熟語','時'], desc:'タイミング', season:'S4' },
+  { word:'四季変遷', chars:['四','季','変','遷'], rarity:'★13', tags:['四字熟語','時'], desc:'季節の移ろい', season:'S4' },
+  { word:'歳月人事', chars:['歳','月','人','事'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'年月と人の事', season:'S4' },
+  { word:'時代変革', chars:['時','代','変','革'], rarity:'★12', tags:['四字熟語','時'], desc:'時代を変える', season:'S4' },
+
+  // 心情・思い
+  { word:'心情吐露', chars:['心','情','吐','露'], rarity:'★14', tags:['四字熟語','感情'], desc:'本音', season:'S4' },
+  { word:'心情豊か', chars:['心','情','豊','か'], rarity:'★12', tags:['四字熟語','感情'], desc:'豊かな心', season:'S4' },
+  { word:'感情豊か', chars:['感','情','豊','か'], rarity:'★12', tags:['四字熟語','感情'], desc:'豊かな感情', season:'S4' },
+  { word:'喜悦至極', chars:['喜','悦','至','極'], rarity:'★14', tags:['四字熟語','感情'], desc:'喜びの極み', season:'S4' },
+];
+for (const r of _YOJI_S4_FOOD) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
