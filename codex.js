@@ -4261,6 +4261,76 @@ const _YOJI_S3_HOBBY = [
 ];
 for (const r of _YOJI_S3_HOBBY) YOJI_RECIPES.push(r);
 
+// v8s ── 四字熟語 +50（神話・伝説・古代史）
+const _YOJI_S4_MYTH = [
+  // ギリシャ神話風
+  { word:'天空神話', chars:['天','空','神','話'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'スカイミス', season:'S4' },
+  { word:'海洋神話', chars:['海','洋','神','話'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'海神話', season:'S4' },
+  { word:'冥界神話', chars:['冥','界','神','話'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'冥界神話', season:'S4' },
+  { word:'地母神', chars:['地','母','神'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'マザー', season:'S4' },
+  { word:'太陽神', chars:['太','陽','神'], rarity:'★13', tags:['四字熟語','神字','天体'], desc:'サンゴッド', season:'S4' },
+
+  // 日本神話
+  { word:'国産み話', chars:['国','産','み','話'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'国生み神話', season:'S4' },
+  { word:'天地開闢', chars:['天','地','開','闢'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'世界創造', season:'S4' },
+  { word:'天孫降臨', chars:['天','孫','降','臨'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'神の降臨', season:'S4' },
+  { word:'神武東征', chars:['神','武','東','征'], rarity:'★16', tags:['四字熟語','古典','神字'], desc:'神武天皇', season:'S4' },
+  { word:'記紀神話', chars:['記','紀','神','話'], rarity:'★15', tags:['四字熟語','古典','神字'], desc:'古事記日本書紀', season:'S4' },
+
+  // 龍・神獣
+  { word:'龍神召喚', chars:['龍','神','召','喚'], rarity:'★15', tags:['四字熟語','神字'], desc:'ドラゴン召喚', season:'S4' },
+  { word:'青龍白虎', chars:['青','龍','白','虎'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'四神', season:'S4' },
+  { word:'朱雀玄武', chars:['朱','雀','玄','武'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'四神', season:'S4' },
+  { word:'四神獣', chars:['四','神','獣'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'四神', season:'S4' },
+  { word:'神獣召喚', chars:['神','獣','召','喚'], rarity:'★15', tags:['四字熟語','神字'], desc:'神獣呼び出し', season:'S4' },
+
+  // 古代王朝
+  { word:'古代王朝', chars:['古','代','王','朝'], rarity:'★13', tags:['四字熟語','古典'], desc:'エンシャント王朝', season:'S4' },
+  { word:'秦始皇帝', chars:['秦','始','皇','帝'], rarity:'★15', tags:['四字熟語','古典'], desc:'始皇帝', season:'S4' },
+  { word:'漢王朝', chars:['漢','王','朝'], rarity:'★13', tags:['四字熟語','古典'], desc:'漢', season:'S4' },
+  { word:'唐王朝', chars:['唐','王','朝'], rarity:'★13', tags:['四字熟語','古典'], desc:'唐', season:'S4' },
+  { word:'宋元明清', chars:['宋','元','明','清'], rarity:'★15', tags:['四字熟語','古典'], desc:'中国四王朝', season:'S4' },
+
+  // 古代英雄
+  { word:'英雄譚', chars:['英','雄','譚'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'ヒーロー物語', season:'S4' },
+  { word:'武勇伝', chars:['武','勇','伝'], rarity:'★12', tags:['四字熟語','武'], desc:'勇者伝説', season:'S4' },
+  { word:'英雄物語', chars:['英','雄','物','語'], rarity:'★13', tags:['四字熟語','武'], desc:'ヒーローテール', season:'S4' },
+  { word:'英傑豪傑', chars:['英','傑','豪','傑'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'英雄達', season:'S4' },
+
+  // 物語類型
+  { word:'桃太郎話', chars:['桃','太','郎','話'], rarity:'★13', tags:['四字熟語','古典'], desc:'桃太郎', season:'S4' },
+  { word:'浦島太郎', chars:['浦','島','太','郎'], rarity:'★13', tags:['四字熟語','古典'], desc:'浦島伝説', season:'S4' },
+  { word:'金太郎', chars:['金','太','郎'], rarity:'★12', tags:['四字熟語','古典'], desc:'金太郎伝説', season:'S4' },
+  { word:'一寸法師', chars:['一','寸','法','師'], rarity:'★13', tags:['四字熟語','古典'], desc:'一寸法師', season:'S4' },
+  { word:'桃源郷話', chars:['桃','源','郷','話'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'桃源郷', season:'S4' },
+
+  // 妖怪
+  { word:'妖怪百話', chars:['妖','怪','百','話'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'妖怪物語', season:'S4' },
+  { word:'天狗鞍馬', chars:['天','狗','鞍','馬'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'天狗', season:'S4' },
+  { word:'河童伝説', chars:['河','童','伝','説'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'カッパ', season:'S4' },
+  { word:'鬼神退治', chars:['鬼','神','退','治'], rarity:'★13', tags:['四字熟語','武','神字'], desc:'鬼退治', season:'S4' },
+  { word:'百鬼夜行', chars:['百','鬼','夜','行'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'百鬼夜行', season:'S4' },
+
+  // 仙人
+  { word:'仙人霞食', chars:['仙','人','霞','食'], rarity:'★16', tags:['四字熟語','神字','古典'], desc:'仙人は霞を食う', season:'S4' },
+  { word:'仙人修行', chars:['仙','人','修','行'], rarity:'★14', tags:['四字熟語','神字','古典'], desc:'仙人になる修行', season:'S4' },
+  { word:'蓬莱山', chars:['蓬','莱','山'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'仙人の山', season:'S4' },
+  { word:'仙術秘伝', chars:['仙','術','秘','伝'], rarity:'★15', tags:['四字熟語','神字','古典'], desc:'仙術', season:'S4' },
+
+  // 古代征服
+  { word:'天下統一', chars:['天','下','統','一'], rarity:'★13', tags:['四字熟語','武'], desc:'全土制覇', season:'S4' },
+  { word:'征服戦争', chars:['征','服','戦','争'], rarity:'★13', tags:['四字熟語','武'], desc:'侵略', season:'S4' },
+  { word:'侵略戦争', chars:['侵','略','戦','争'], rarity:'★13', tags:['四字熟語','武'], desc:'インヴェイジョン', season:'S4' },
+  { word:'防衛戦争', chars:['防','衛','戦','争'], rarity:'★13', tags:['四字熟語','武'], desc:'防衛戦', season:'S4' },
+
+  // 同盟・盟約
+  { word:'血盟同盟', chars:['血','盟','同','盟'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'血の盟約', season:'S4' },
+  { word:'神聖同盟', chars:['神','聖','同','盟'], rarity:'★14', tags:['四字熟語','神字','武'], desc:'ホーリーアライアンス', season:'S4' },
+  { word:'裏切叛逆', chars:['裏','切','叛','逆'], rarity:'★14', tags:['四字熟語','武'], desc:'反逆', season:'S4' },
+  { word:'同盟解消', chars:['同','盟','解','消'], rarity:'★13', tags:['四字熟語','武'], desc:'同盟破棄', season:'S4' },
+];
+for (const r of _YOJI_S4_MYTH) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
