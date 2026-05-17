@@ -3327,6 +3327,14 @@ function openCodex() {
   renderCodex();
 }
 
+// ランダム熟語表示 ── サプライズ発見モチベ
+function showRandomYoji() {
+  const recipes = window.YOJI_RECIPES || [];
+  if (recipes.length === 0) return;
+  const r = recipes[Math.floor(Math.random() * recipes.length)];
+  showYojiDetail(r);
+}
+
 // シーズンタブに「N件」バッジを付与（解放欲を煽る）
 function applyCodexSeasonBadges() {
   const codex = window.KANJI_CODEX || [];
@@ -4119,6 +4127,8 @@ function bindEvents() {
     codexFilter.onlySeen = e.target.checked;
     renderCodex();
   });
+  const shuffleBtn = $('#codex-shuffle');
+  if (shuffleBtn) shuffleBtn.addEventListener('click', showRandomYoji);
   // 図鑑検索バー（debounce 150ms）
   const cs = $('#codex-search');
   if (cs) {
