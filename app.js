@@ -373,6 +373,7 @@ const DEFAULT_STATE = {
   perkLevels: {},                 // v4 ─ 育つ特性：perkId → ストック累計 { 'tag_emo': 23 }
   discoveredYoji: {},             // v6 ─ 解放済の熟語 { '一期一会': 1746543210 }
   streak: { current: 0, longest: 0, lastDate: null },  // v7 ─ 連続日数 streak
+  dailyCycles: {},                // v7b ─ 日別サイクル数 { '2026-05-17': 5 }
 };
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1613,6 +1614,10 @@ function completePhase() {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
     updateStreak();
+    // 日別カウント
+    if (!STATE.dailyCycles) STATE.dailyCycles = {};
+    const today = new Date().toISOString().slice(0, 10);
+    STATE.dailyCycles[today] = (STATE.dailyCycles[today] || 0) + 1;
     stopWorkSpawning();
     spawnCycleDrops();
     updateProgressPill();
@@ -3666,6 +3671,39 @@ function openStats() {
     );
     tiers.appendChild(row);
   });
+
+  // 過去 30 日のヒートマップ
+  const heatZone = $('#stats-heatmap') || (() => {
+    const z = el('div', { class:'stats-heatmap-zone', id:'stats-heatmap' });
+    tiers.parentElement?.insertBefore(z, tiers.nextSibling);
+    return z;
+  })();
+  heatZone.innerHTML = '';
+  heatZone.appendChild(el('h3', { class:'stats-section-title' }, '過去 30 日のサイクル'));
+  const today = new Date();
+  const heatGrid = el('div', { class:'heat-grid' });
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const cnt = (STATE.dailyCycles || {})[key] || 0;
+    const lvl = cnt === 0 ? 0 : cnt < 2 ? 1 : cnt < 5 ? 2 : cnt < 10 ? 3 : 4;
+    const cell = el('div', {
+      class: `heat-cell heat-lv-${lvl}`,
+      title: `${key}: ${cnt} 回`,
+    });
+    heatGrid.appendChild(cell);
+  }
+  heatZone.appendChild(heatGrid);
+  heatZone.appendChild(el('div', { class:'heat-legend' },
+    el('span', {}, '少'),
+    el('span', { class:'heat-cell heat-lv-0' }),
+    el('span', { class:'heat-cell heat-lv-1' }),
+    el('span', { class:'heat-cell heat-lv-2' }),
+    el('span', { class:'heat-cell heat-lv-3' }),
+    el('span', { class:'heat-cell heat-lv-4' }),
+    el('span', {}, '多')
+  ));
 
   // 最近解放した熟語 ── 達成感の振り返り（最新 6 個）
   const recentZone = $('#stats-recent-yoji') || (() => {
