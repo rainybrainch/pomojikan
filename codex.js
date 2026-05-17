@@ -2376,6 +2376,75 @@ const _YOJI_S4_TRADES = [
 ];
 for (const r of _YOJI_S4_TRADES) YOJI_RECIPES.push(r);
 
+// v7q ── 二字熟語 +50（古代・神話・伝統）
+const _YOJI_S3_ANCIENT = [
+  // 神話・伝説
+  { word:'天孫', chars:['天','孫'], rarity:'★15', tags:['神字','古典'], desc:'天の子孫', season:'S3' },
+  { word:'天皇', chars:['天','皇'], rarity:'★12', tags:['古典'], desc:'スメラミコト', season:'S3' },
+  { word:'皇位', chars:['皇','位'], rarity:'★13', tags:['古典'], desc:'皇の位', season:'S3' },
+  { word:'神器', chars:['神','器'], rarity:'★13', tags:['神字','古典'], desc:'神聖な器物', season:'S3' },
+  { word:'神剣', chars:['神','剣'], rarity:'★14', tags:['神字','武'], desc:'神聖な剣', season:'S3' },
+  { word:'剣神', chars:['剣','神'], rarity:'★14', tags:['神字','武'], desc:'剣の神', season:'S3' },
+  { word:'神威', chars:['神','威'], rarity:'★14', tags:['神字'], desc:'神の威光', season:'S3' },
+  { word:'神域', chars:['神','域'], rarity:'★14', tags:['神字'], desc:'神聖な領域', season:'S3' },
+  { word:'神聖', chars:['神','聖'], rarity:'★12', tags:['神字'], desc:'ホーリー', season:'S3' },
+  { word:'神秘', chars:['神','秘'], rarity:'★12', tags:['神字','哲学'], desc:'ミスティック', season:'S3' },
+
+  // 古代王
+  { word:'帝王', chars:['帝','王'], rarity:'★14', tags:['古典','武'], desc:'エンペラー', season:'S3' },
+  { word:'王権', chars:['王','権'], rarity:'★13', tags:['古典','武'], desc:'キングダム', season:'S3' },
+  { word:'王朝', chars:['王','朝'], rarity:'★13', tags:['古典','時'], desc:'ダイナスティ', season:'S3' },
+  { word:'国王', chars:['国','王'], rarity:'★8',  tags:['古典','武'], desc:'キング', season:'S3' },
+  { word:'女王', chars:['女','王'], rarity:'★8',  tags:['古典'], desc:'クイーン', season:'S3' },
+  { word:'貴族', chars:['貴','族'], rarity:'★12', tags:['古典'], desc:'ノーブル', season:'S3' },
+  { word:'公爵', chars:['公','爵'], rarity:'★13', tags:['古典'], desc:'デューク', season:'S3' },
+  { word:'伯爵', chars:['伯','爵'], rarity:'★13', tags:['古典'], desc:'カウント', season:'S3' },
+
+  // 古典舞・芸
+  { word:'雅楽', chars:['雅','楽'], rarity:'★14', tags:['美','古典'], desc:'宮廷音楽', season:'S3' },
+  { word:'能楽', chars:['能','楽'], rarity:'★13', tags:['美','古典'], desc:'のうがく', season:'S3' },
+  { word:'歌舞', chars:['歌','舞'], rarity:'★12', tags:['美','古典'], desc:'歌と舞', season:'S3' },
+  { word:'舞踊', chars:['舞','踊'], rarity:'★12', tags:['美'], desc:'ダンス', season:'S3' },
+  { word:'歌舞伎', chars:['歌','舞','伎'], rarity:'★13', tags:['美','古典'], desc:'カブキ', season:'S3' },
+  { word:'狂言', chars:['狂','言'], rarity:'★13', tags:['美','古典'], desc:'コメディ能', season:'S3' },
+  { word:'歌仙', chars:['歌','仙'], rarity:'★14', tags:['美','古典'], desc:'歌の名人', season:'S3' },
+
+  // 古代の場所
+  { word:'宮中', chars:['宮','中'], rarity:'★12', tags:['古典'], desc:'宮廷', season:'S3' },
+  { word:'御所', chars:['御','所'], rarity:'★13', tags:['古典'], desc:'天皇の住まい', season:'S3' },
+  { word:'禁裏', chars:['禁','裏'], rarity:'★15', tags:['古典'], desc:'宮中の別名', season:'S3' },
+  { word:'内裏', chars:['内','裏'], rarity:'★13', tags:['古典'], desc:'天皇住居', season:'S3' },
+  { word:'院政', chars:['院','政'], rarity:'★14', tags:['古典'], desc:'天皇引退後の政治', season:'S3' },
+
+  // 哲学概念（追加）
+  { word:'道理', chars:['道','理'], rarity:'★8',  tags:['哲学','道'], desc:'理屈', season:'S3' },
+  { word:'天理', chars:['天','理'], rarity:'★13', tags:['哲学','古典'], desc:'天の理', season:'S3' },
+  { word:'地理', chars:['地','理'], rarity:'★8',  tags:['学'], desc:'地の理', season:'S3' },
+  { word:'摂理', chars:['摂','理'], rarity:'★13', tags:['哲学'], desc:'プロビデンス', season:'S3' },
+  { word:'真諦', chars:['真','諦'], rarity:'★15', tags:['哲学','仏教'], desc:'絶対真理', season:'S3' },
+  { word:'俗諦', chars:['俗','諦'], rarity:'★15', tags:['哲学','仏教'], desc:'世俗の真理', season:'S3' },
+
+  // 美術（追加）
+  { word:'書画', chars:['書','画'], rarity:'★8',  tags:['美'], desc:'書と画', season:'S3' },
+  { word:'山水画', chars:['山','水','画'], rarity:'★13', tags:['美','自然'], desc:'風景画', season:'S3' },
+  { word:'墨絵', chars:['墨','絵'], rarity:'★13', tags:['美'], desc:'モノクロ画', season:'S3' },
+  { word:'屏風', chars:['屏','風'], rarity:'★13', tags:['美','古典'], desc:'びょうぶ', season:'S3' },
+
+  // 武具
+  { word:'兜', chars:['兜'], rarity:'★13', tags:['武','古典'], desc:'かぶと', season:'S3' },
+  { word:'甲冑', chars:['甲','冑'], rarity:'★15', tags:['武','古典'], desc:'よろい', season:'S3' },
+  { word:'弓矢', chars:['弓','矢'], rarity:'★8',  tags:['武'], desc:'ボー＆アロー', season:'S3' },
+  { word:'刀剣', chars:['刀','剣'], rarity:'★12', tags:['武'], desc:'スウォード', season:'S3' },
+  { word:'槍刀', chars:['槍','刀'], rarity:'★13', tags:['武'], desc:'武器', season:'S3' },
+
+  // 自然霊
+  { word:'霊魂', chars:['霊','魂'], rarity:'★13', tags:['神字'], desc:'スピリット', season:'S3' },
+  { word:'精霊', chars:['精','霊'], rarity:'★13', tags:['神字'], desc:'スピリチュアル', season:'S3' },
+  { word:'妖怪', chars:['妖','怪'], rarity:'★13', tags:['神字','古典'], desc:'ヨウカイ', season:'S3' },
+  { word:'魔王', chars:['魔','王'], rarity:'★13', tags:['神字'], desc:'デモンキング', season:'S3' },
+];
+for (const r of _YOJI_S3_ANCIENT) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
