@@ -6205,6 +6205,80 @@ const _YOJI_S4_CRAFT = [
 ];
 for (const r of _YOJI_S4_CRAFT) YOJI_RECIPES.push(r);
 
+// v9u ── 二字熟語 +50（精神状態・心境・気持ち）
+const _YOJI_S3_MIND = [
+  // ポジティブ
+  { word:'幸福', chars:['幸','福'], rarity:'★8',  tags:['感情'], desc:'ハピネス', season:'S3' },
+  { word:'歓喜', chars:['歓','喜'], rarity:'★12', tags:['感情'], desc:'ジョイ', season:'S3' },
+  { word:'喜悦', chars:['喜','悦'], rarity:'★13', tags:['感情'], desc:'喜び', season:'S3' },
+  { word:'愉悦', chars:['愉','悦'], rarity:'★14', tags:['感情','古典'], desc:'プレジャー', season:'S3' },
+  { word:'快楽', chars:['快','楽'], rarity:'★8',  tags:['感情'], desc:'プレジャー', season:'S3' },
+  { word:'満足', chars:['満','足'], rarity:'★8',  tags:['感情'], desc:'サティスファクション', season:'S3' },
+  { word:'充足', chars:['充','足'], rarity:'★12', tags:['感情'], desc:'フルフィルメント', season:'S3' },
+  { word:'達成', chars:['達','成'], rarity:'★8',  tags:[], desc:'アチーブメント', season:'S3' },
+
+  // ネガティブ
+  { word:'悲嘆', chars:['悲','嘆'], rarity:'★12', tags:['感情'], desc:'グリーフ', season:'S3' },
+  { word:'絶望', chars:['絶','望'], rarity:'★12', tags:['感情'], desc:'デスペア', season:'S3' },
+  { word:'失望', chars:['失','望'], rarity:'★10', tags:['感情'], desc:'ディサポイントメント', season:'S3' },
+  { word:'憂鬱', chars:['憂','鬱'], rarity:'★14', tags:['感情'], desc:'メランコリ', season:'S3' },
+  { word:'抑鬱', chars:['抑','鬱'], rarity:'★14', tags:['感情'], desc:'デプレッション', season:'S3' },
+  { word:'憂愁', chars:['憂','愁'], rarity:'★13', tags:['感情','古典'], desc:'メランコリ', season:'S3' },
+  { word:'哀傷', chars:['哀','傷'], rarity:'★13', tags:['感情','古典'], desc:'ソロー', season:'S3' },
+  { word:'痛恨', chars:['痛','恨'], rarity:'★13', tags:['感情'], desc:'リグレット', season:'S3' },
+
+  // 怒り
+  { word:'怒気', chars:['怒','気'], rarity:'★10', tags:['感情'], desc:'アンガー', season:'S3' },
+  { word:'憤怒', chars:['憤','怒'], rarity:'★13', tags:['七大罪','感情'], desc:'ラージ', season:'S3' },
+  { word:'激怒', chars:['激','怒'], rarity:'★12', tags:['感情'], desc:'フューリ', season:'S3' },
+  { word:'激情', chars:['激','情'], rarity:'★12', tags:['感情'], desc:'パッション', season:'S3' },
+  { word:'憤慨', chars:['憤','慨'], rarity:'★14', tags:['感情'], desc:'インディグネーション', season:'S3' },
+
+  // 恐怖
+  { word:'恐怖', chars:['恐','怖'], rarity:'★12', tags:['感情'], desc:'フィアー', season:'S3' },
+  { word:'戦慄', chars:['戦','慄'], rarity:'★15', tags:['感情','古典'], desc:'シヴァー', season:'S3' },
+  { word:'恐慌', chars:['恐','慌'], rarity:'★13', tags:['感情'], desc:'パニック', season:'S3' },
+  { word:'驚愕', chars:['驚','愕'], rarity:'★14', tags:['感情'], desc:'アストニッシュ', season:'S3' },
+  { word:'驚嘆', chars:['驚','嘆'], rarity:'★13', tags:['感情'], desc:'アメイズ', season:'S3' },
+
+  // 静かさ
+  { word:'平静', chars:['平','静'], rarity:'★10', tags:['感情','禅'], desc:'カーム', season:'S3' },
+  { word:'穏和', chars:['穏','和'], rarity:'★13', tags:['感情','七徳'], desc:'マイルド', season:'S3' },
+  { word:'安寧', chars:['安','寧'], rarity:'★13', tags:['感情'], desc:'ピース', season:'S3' },
+  { word:'安泰', chars:['安','泰'], rarity:'★12', tags:[], desc:'セーフ', season:'S3' },
+
+  // 愛
+  { word:'愛情', chars:['愛','情'], rarity:'★8',  tags:['感情','七徳'], desc:'ラブ', season:'S3' },
+  { word:'恋情', chars:['恋','情'], rarity:'★12', tags:['感情'], desc:'ロマンス', season:'S3' },
+  { word:'恋慕', chars:['恋','慕'], rarity:'★13', tags:['感情','古典'], desc:'クラッシュ', season:'S3' },
+  { word:'仁愛', chars:['仁','愛'], rarity:'★12', tags:['感情','七徳'], desc:'コンパッション', season:'S3' },
+  { word:'慈愛', chars:['慈','愛'], rarity:'★12', tags:['感情','七徳'], desc:'マーシー', season:'S3' },
+  { word:'慈悲', chars:['慈','悲'], rarity:'★13', tags:['感情','七徳','仏教'], desc:'コンパッション', season:'S3' },
+
+  // 憎しみ
+  { word:'憎悪', chars:['憎','悪'], rarity:'★13', tags:['感情'], desc:'ヘイト', season:'S3' },
+  { word:'嫉妬', chars:['嫉','妬'], rarity:'★13', tags:['感情','七大罪'], desc:'ジェラシー', season:'S3' },
+  { word:'怨念', chars:['怨','念'], rarity:'★14', tags:['感情','古典'], desc:'ランカー', season:'S3' },
+  { word:'恨み', chars:['恨','み'], rarity:'★10', tags:['感情'], desc:'グラッジ', season:'S3' },
+
+  // 信頼
+  { word:'信頼', chars:['信','頼'], rarity:'★8',  tags:['感情','七徳'], desc:'トラスト', season:'S3' },
+  { word:'安堵', chars:['安','堵'], rarity:'★13', tags:['感情'], desc:'リリーフ', season:'S3' },
+  { word:'安息', chars:['安','息'], rarity:'★12', tags:['禅'], desc:'レスト', season:'S3' },
+
+  // 自信
+  { word:'自信', chars:['自','信'], rarity:'★8',  tags:['感情'], desc:'コンフィデンス', season:'S3' },
+  { word:'自尊', chars:['自','尊'], rarity:'★12', tags:['感情'], desc:'プライド', season:'S3' },
+  { word:'自負', chars:['自','負'], rarity:'★12', tags:['感情'], desc:'プライド', season:'S3' },
+  { word:'誇り', chars:['誇','り'], rarity:'★8',  tags:['感情','七徳'], desc:'プライド', season:'S3' },
+
+  // 後悔
+  { word:'後悔', chars:['後','悔'], rarity:'★10', tags:['感情'], desc:'リグレット', season:'S3' },
+  { word:'反省', chars:['反','省'], rarity:'★10', tags:['感情'], desc:'リフレクション', season:'S3' },
+  { word:'懺悔', chars:['懺','悔'], rarity:'★15', tags:['感情','仏教'], desc:'コンフェッション', season:'S3' },
+];
+for (const r of _YOJI_S3_MIND) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
