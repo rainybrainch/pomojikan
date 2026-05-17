@@ -935,9 +935,27 @@ function exitPreviewMode() {
 async function copyShareURL() {
   const url = buildShareURL();
   if (!url) { toast('先にパーティを編成してください'); return; }
+  // Web Share API 対応端末ではネイティブ共有を優先
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'ぽもじかん ── パーティ共有',
+        text: 'このパーティで集中タイマー、試してみる？',
+        url,
+      });
+      return;
+    } catch (e) {
+      // ユーザーキャンセル等は無視してフォールバック
+      if (e.name !== 'AbortError') {
+        // 続行
+      } else {
+        return;
+      }
+    }
+  }
   try {
     await navigator.clipboard.writeText(url);
-    toast('共有 URL をコピーしました');
+    toast('🔗 共有 URL をコピーしました', '★12');
   } catch (e) {
     prompt('共有 URL をコピーしてください', url);
   }
