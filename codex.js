@@ -4122,6 +4122,77 @@ const _YOJI_S3_PHILOSO = [
 ];
 for (const r of _YOJI_S3_PHILOSO) YOJI_RECIPES.push(r);
 
+// v8q ── 四字熟語 +50（自然界・地球・生態）
+const _YOJI_S4_EARTH = [
+  // 地球
+  { word:'地球規模', chars:['地','球','規','模'], rarity:'★13', tags:['四字熟語','自然','未来'], desc:'グローバル', season:'S4' },
+  { word:'地球環境', chars:['地','球','環','境'], rarity:'★12', tags:['四字熟語','自然','未来'], desc:'地球環境', season:'S4' },
+  { word:'生命起源', chars:['生','命','起','源'], rarity:'★13', tags:['四字熟語','科学','自然'], desc:'生命の始まり', season:'S4' },
+  { word:'進化起源', chars:['進','化','起','源'], rarity:'★13', tags:['四字熟語','科学'], desc:'進化のはじまり', season:'S4' },
+  { word:'物種起源', chars:['物','種','起','源'], rarity:'★14', tags:['四字熟語','科学'], desc:'種の起原', season:'S4' },
+
+  // 山岳
+  { word:'山岳信仰', chars:['山','岳','信','仰'], rarity:'★14', tags:['四字熟語','古典','神字','自然'], desc:'山を神と崇める', season:'S4' },
+  { word:'霊峰富士', chars:['霊','峰','富','士'], rarity:'★14', tags:['四字熟語','古典','自然','神字'], desc:'富士山', season:'S4' },
+  { word:'万年雪', chars:['万','年','雪'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'万年雪', season:'S4' },
+  { word:'活火山', chars:['活','火','山'], rarity:'★12', tags:['四字熟語','自然'], desc:'活火山', season:'S4' },
+  { word:'休火山', chars:['休','火','山'], rarity:'★13', tags:['四字熟語','自然'], desc:'休火山', season:'S4' },
+
+  // 海
+  { word:'大海原', chars:['大','海','原'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'大海', season:'S4' },
+  { word:'深海生物', chars:['深','海','生','物'], rarity:'★13', tags:['四字熟語','自然','科学'], desc:'深海生物', season:'S4' },
+  { word:'深海未知', chars:['深','海','未','知'], rarity:'★14', tags:['四字熟語','自然','未来'], desc:'深海の謎', season:'S4' },
+  { word:'海溝海嶺', chars:['海','溝','海','嶺'], rarity:'★15', tags:['四字熟語','自然','科学'], desc:'海底地形', season:'S4' },
+  { word:'潮汐満干', chars:['潮','汐','満','干'], rarity:'★14', tags:['四字熟語','自然'], desc:'潮の満ち引き', season:'S4' },
+
+  // 川・湖
+  { word:'大河長流', chars:['大','河','長','流'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'大きな川', season:'S4' },
+  { word:'江河奔流', chars:['江','河','奔','流'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'流れ', season:'S4' },
+  { word:'湖水鏡面', chars:['湖','水','鏡','面'], rarity:'★14', tags:['四字熟語','自然','美'], desc:'鏡のような湖', season:'S4' },
+  { word:'清流渓谷', chars:['清','流','渓','谷'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'清流の谷', season:'S4' },
+  { word:'渓谷瀑布', chars:['渓','谷','瀑','布'], rarity:'★15', tags:['四字熟語','自然','古典'], desc:'渓谷の滝', season:'S4' },
+
+  // 動物界
+  { word:'弱肉強食', chars:['弱','肉','強','食'], rarity:'★12', tags:['四字熟語','自然','古典'], desc:'自然の摂理', season:'S4' },
+  { word:'動物世界', chars:['動','物','世','界'], rarity:'★11', tags:['四字熟語','自然'], desc:'アニマルワールド', season:'S4' },
+  { word:'野生動物', chars:['野','生','動','物'], rarity:'★12', tags:['四字熟語','自然'], desc:'ワイルドライフ', season:'S4' },
+  { word:'渡り鳥群', chars:['渡','り','鳥','群'], rarity:'★13', tags:['四字熟語','自然'], desc:'渡り鳥', season:'S4' },
+  { word:'鶴亀寿', chars:['鶴','亀','寿'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'長寿の象徴', season:'S4' },
+
+  // 植物界
+  { word:'植物生態', chars:['植','物','生','態'], rarity:'★12', tags:['四字熟語','自然','科学'], desc:'プラント生態', season:'S4' },
+  { word:'森林資源', chars:['森','林','資','源'], rarity:'★12', tags:['四字熟語','自然'], desc:'フォレスト', season:'S4' },
+  { word:'熱帯雨林', chars:['熱','帯','雨','林'], rarity:'★13', tags:['四字熟語','自然'], desc:'レインフォレスト', season:'S4' },
+  { word:'温帯林', chars:['温','帯','林'], rarity:'★13', tags:['四字熟語','自然'], desc:'温帯林', season:'S4' },
+  { word:'高山植物', chars:['高','山','植','物'], rarity:'★13', tags:['四字熟語','自然'], desc:'アルパインプラント', season:'S4' },
+
+  // 季節と気候
+  { word:'温暖気候', chars:['温','暖','気','候'], rarity:'★12', tags:['四字熟語','自然'], desc:'暖かい気候', season:'S4' },
+  { word:'寒冷気候', chars:['寒','冷','気','候'], rarity:'★12', tags:['四字熟語','自然'], desc:'寒い気候', season:'S4' },
+  { word:'熱帯気候', chars:['熱','帯','気','候'], rarity:'★12', tags:['四字熟語','自然'], desc:'トロピカル', season:'S4' },
+  { word:'乾燥気候', chars:['乾','燥','気','候'], rarity:'★12', tags:['四字熟語','自然'], desc:'ドライ気候', season:'S4' },
+  { word:'湿潤気候', chars:['湿','潤','気','候'], rarity:'★12', tags:['四字熟語','自然'], desc:'ウェット気候', season:'S4' },
+
+  // 自然現象
+  { word:'地震雷火', chars:['地','震','雷','火'], rarity:'★12', tags:['四字熟語','自然'], desc:'災害', season:'S4' },
+  { word:'噴火爆発', chars:['噴','火','爆','発'], rarity:'★13', tags:['四字熟語','自然'], desc:'噴火', season:'S4' },
+  { word:'津波警報', chars:['津','波','警','報'], rarity:'★13', tags:['四字熟語','自然'], desc:'ツナミ警告', season:'S4' },
+  { word:'天変地異', chars:['天','変','地','異'], rarity:'★12', tags:['四字熟語','自然'], desc:'天変地異', season:'S4' },
+
+  // 環境保護
+  { word:'地球温暖', chars:['地','球','温','暖'], rarity:'★12', tags:['四字熟語','自然','未来'], desc:'温暖化', season:'S4' },
+  { word:'二酸化炭', chars:['二','酸','化','炭'], rarity:'★13', tags:['四字熟語','科学','自然'], desc:'CO2', season:'S4' },
+  { word:'生物多様', chars:['生','物','多','様'], rarity:'★13', tags:['四字熟語','自然','科学'], desc:'バイオダイバーシティ', season:'S4' },
+  { word:'絶滅危惧', chars:['絶','滅','危','惧'], rarity:'★13', tags:['四字熟語','自然','未来'], desc:'絶滅危機', season:'S4' },
+  { word:'保護区域', chars:['保','護','区','域'], rarity:'★12', tags:['四字熟語','自然'], desc:'保護区', season:'S4' },
+
+  // 自然の美
+  { word:'山水自然', chars:['山','水','自','然'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'自然美', season:'S4' },
+  { word:'絶景自然', chars:['絶','景','自','然'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'絶景', season:'S4' },
+  { word:'神秘自然', chars:['神','秘','自','然'], rarity:'★13', tags:['四字熟語','自然','神字'], desc:'自然の神秘', season:'S4' },
+];
+for (const r of _YOJI_S4_EARTH) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
