@@ -3508,6 +3508,76 @@ const _YOJI_S4_POETRY = [
 ];
 for (const r of _YOJI_S4_POETRY) YOJI_RECIPES.push(r);
 
+// v8h ── 二字熟語 +50（祭・儀式・伝統）
+const _YOJI_S3_FESTIVAL = [
+  // 祭・儀式
+  { word:'祭典', chars:['祭','典'], rarity:'★8',  tags:['古典'], desc:'フェスティバル', season:'S3' },
+  { word:'祭礼', chars:['祭','礼'], rarity:'★12', tags:['古典'], desc:'祭り', season:'S3' },
+  { word:'祭壇', chars:['祭','壇'], rarity:'★13', tags:['古典','神字'], desc:'アルター', season:'S3' },
+  { word:'式典', chars:['式','典'], rarity:'★8',  tags:[], desc:'セレモニー', season:'S3' },
+  { word:'儀式', chars:['儀','式'], rarity:'★12', tags:['古典'], desc:'リチュアル', season:'S3' },
+  { word:'神事', chars:['神','事'], rarity:'★13', tags:['神字','古典'], desc:'神聖な行事', season:'S3' },
+  { word:'初詣', chars:['初','詣'], rarity:'★13', tags:['古典'], desc:'はつもうで', season:'S3' },
+  { word:'七五三', chars:['七','五','三'], rarity:'★13', tags:['古典'], desc:'子供の祝い', season:'S3' },
+  { word:'成人式', chars:['成','人','式'], rarity:'★11', tags:[], desc:'成人の日', season:'S3' },
+  { word:'結婚式', chars:['結','婚','式'], rarity:'★11', tags:[], desc:'ウェディング', season:'S3' },
+
+  // 季節祭
+  { word:'桜祭', chars:['桜','祭'], rarity:'★12', tags:['自然','美'], desc:'桜まつり', season:'S3' },
+  { word:'夏祭', chars:['夏','祭'], rarity:'★12', tags:[], desc:'夏まつり', season:'S3' },
+  { word:'秋祭', chars:['秋','祭'], rarity:'★12', tags:[], desc:'秋まつり', season:'S3' },
+  { word:'雛祭', chars:['雛','祭'], rarity:'★13', tags:['古典'], desc:'ひな祭り', season:'S3' },
+  { word:'端午', chars:['端','午'], rarity:'★14', tags:['古典'], desc:'端午の節句', season:'S3' },
+  { word:'七夕', chars:['七','夕'], rarity:'★12', tags:['古典'], desc:'たなばた', season:'S3' },
+  { word:'盆踊', chars:['盆','踊'], rarity:'★13', tags:['古典','美'], desc:'ぼんおどり', season:'S3' },
+  { word:'お正月', chars:['お','正','月'], rarity:'★11', tags:['時'], desc:'お正月', season:'S3' },
+
+  // 茶道・華道（追加）
+  { word:'茶会', chars:['茶','会'], rarity:'★8',  tags:['道','禅'], desc:'お茶会', season:'S3' },
+  { word:'茶碗', chars:['茶','碗'], rarity:'★13', tags:['道','美'], desc:'ちゃわん', season:'S3' },
+  { word:'茶釜', chars:['茶','釜'], rarity:'★14', tags:['道','古典'], desc:'ちゃがま', season:'S3' },
+  { word:'抹茶碗', chars:['抹','茶','碗'], rarity:'★13', tags:['道','美'], desc:'抹茶用茶碗', season:'S3' },
+  { word:'花瓶', chars:['花','瓶'], rarity:'★13', tags:['美'], desc:'ベース', season:'S3' },
+  { word:'生花', chars:['生','花'], rarity:'★12', tags:['美','植物'], desc:'生け花', season:'S3' },
+
+  // 服装
+  { word:'袴姿', chars:['袴','姿'], rarity:'★14', tags:['古典','美'], desc:'はかま', season:'S3' },
+  { word:'振袖', chars:['振','袖'], rarity:'★14', tags:['古典','美'], desc:'ふりそで', season:'S3' },
+  { word:'留袖', chars:['留','袖'], rarity:'★14', tags:['古典','美'], desc:'とめそで', season:'S3' },
+  { word:'帯結', chars:['帯','結'], rarity:'★12', tags:['古典','美'], desc:'おびむすび', season:'S3' },
+  { word:'草履', chars:['草','履'], rarity:'★13', tags:['古典'], desc:'ぞうり', season:'S3' },
+  { word:'下駄', chars:['下','駄'], rarity:'★13', tags:['古典'], desc:'げた', season:'S3' },
+
+  // 道具
+  { word:'屏風絵', chars:['屏','風','絵'], rarity:'★14', tags:['古典','美'], desc:'びょうぶえ', season:'S3' },
+  { word:'扇子', chars:['扇','子'], rarity:'★12', tags:['古典','美'], desc:'せんす', season:'S3' },
+  { word:'香炉', chars:['香','炉'], rarity:'★14', tags:['古典','美'], desc:'こうろ', season:'S3' },
+  { word:'灯籠', chars:['灯','籠'], rarity:'★14', tags:['古典','美'], desc:'とうろう', season:'S3' },
+  { word:'提灯', chars:['提','灯'], rarity:'★13', tags:['古典','美'], desc:'ちょうちん', season:'S3' },
+
+  // 食器
+  { word:'箸置', chars:['箸','置'], rarity:'★13', tags:[], desc:'はしおき', season:'S3' },
+  { word:'徳利', chars:['徳','利'], rarity:'★14', tags:['古典'], desc:'とっくり', season:'S3' },
+  { word:'盃酒', chars:['盃','酒'], rarity:'★14', tags:['古典'], desc:'さかずき', season:'S3' },
+
+  // 建物
+  { word:'本堂', chars:['本','堂'], rarity:'★12', tags:['仏教','古典'], desc:'メインホール', season:'S3' },
+  { word:'山門', chars:['山','門'], rarity:'★13', tags:['仏教','古典'], desc:'寺の門', season:'S3' },
+  { word:'回廊', chars:['回','廊'], rarity:'★13', tags:['古典'], desc:'コリドー', season:'S3' },
+  { word:'参道', chars:['参','道'], rarity:'★12', tags:['古典'], desc:'神社参道', season:'S3' },
+  { word:'鳥居', chars:['鳥','居'], rarity:'★12', tags:['古典','神字'], desc:'とりい', season:'S3' },
+
+  // 古典神道
+  { word:'神主', chars:['神','主'], rarity:'★12', tags:['神字','古典'], desc:'神官', season:'S3' },
+  { word:'巫女', chars:['巫','女'], rarity:'★14', tags:['神字','古典'], desc:'みこ', season:'S3' },
+  { word:'神楽', chars:['神','楽'], rarity:'★13', tags:['神字','古典','美'], desc:'かぐら', season:'S3' },
+
+  // 動物（追加）
+  { word:'霊獣', chars:['霊','獣'], rarity:'★13', tags:['神字','古典'], desc:'霊的な獣', season:'S3' },
+  { word:'神馬', chars:['神','馬'], rarity:'★13', tags:['神字','古典'], desc:'しんめ', season:'S3' },
+];
+for (const r of _YOJI_S3_FESTIVAL) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
