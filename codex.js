@@ -4051,6 +4051,77 @@ const _YOJI_S4_TIME = [
 ];
 for (const r of _YOJI_S4_TIME) YOJI_RECIPES.push(r);
 
+// v8p ── 二字熟語 +50（哲学・存在・概念）
+const _YOJI_S3_PHILOSO = [
+  // 存在
+  { word:'実存', chars:['実','存'], rarity:'★13', tags:['哲学'], desc:'エグジスタンス', season:'S3' },
+  { word:'本質', chars:['本','質'], rarity:'★10', tags:['哲学'], desc:'エッセンス', season:'S3' },
+  { word:'本性', chars:['本','性'], rarity:'★12', tags:['哲学','禅'], desc:'ネイチャー', season:'S3' },
+  { word:'本来', chars:['本','来'], rarity:'★8',  tags:['哲学','禅'], desc:'オリジナル', season:'S3' },
+  { word:'本源', chars:['本','源'], rarity:'★13', tags:['哲学'], desc:'オリジン', season:'S3' },
+  { word:'源泉', chars:['源','泉'], rarity:'★12', tags:['哲学'], desc:'ソース', season:'S3' },
+  { word:'根本', chars:['根','本'], rarity:'★8',  tags:['哲学'], desc:'ファンダメンタル', season:'S3' },
+  { word:'根源', chars:['根','源'], rarity:'★10', tags:['哲学'], desc:'ルート', season:'S3' },
+
+  // 究極
+  { word:'絶対', chars:['絶','対'], rarity:'★8',  tags:['哲学'], desc:'アブソリュート', season:'S3' },
+  { word:'相対', chars:['相','対'], rarity:'★8',  tags:['哲学'], desc:'リラティブ', season:'S3' },
+  { word:'究極', chars:['究','極'], rarity:'★12', tags:['哲学'], desc:'アルティメット', season:'S3' },
+  { word:'頂点', chars:['頂','点'], rarity:'★10', tags:[], desc:'ピーク', season:'S3' },
+  { word:'極致', chars:['極','致'], rarity:'★13', tags:['哲学'], desc:'極み', season:'S3' },
+
+  // 概念
+  { word:'概念', chars:['概','念'], rarity:'★12', tags:['哲学'], desc:'コンセプト', season:'S3' },
+  { word:'観念', chars:['観','念'], rarity:'★12', tags:['哲学'], desc:'アイデア', season:'S3' },
+  { word:'理念', chars:['理','念'], rarity:'★10', tags:['哲学'], desc:'プリンシプル', season:'S3' },
+  { word:'信念', chars:['信','念'], rarity:'★10', tags:['哲学','七徳'], desc:'ビリーフ', season:'S3' },
+  { word:'観点', chars:['観','点'], rarity:'★10', tags:[], desc:'パースペクティブ', season:'S3' },
+  { word:'視点', chars:['視','点'], rarity:'★10', tags:[], desc:'ビューポイント', season:'S3' },
+
+  // 真理
+  { word:'真理', chars:['真','理'], rarity:'★8',  tags:['哲学'], desc:'トゥルース', season:'S3' },
+  { word:'真実', chars:['真','実'], rarity:'★8',  tags:['哲学'], desc:'リアル', season:'S3' },
+  { word:'実相', chars:['実','相'], rarity:'★13', tags:['仏教','哲学'], desc:'実相', season:'S3' },
+  { word:'実在', chars:['実','在'], rarity:'★8',  tags:['哲学'], desc:'リアリティ', season:'S3' },
+  { word:'虚偽', chars:['虚','偽'], rarity:'★13', tags:['哲学'], desc:'ホロウ', season:'S3' },
+  { word:'虚像', chars:['虚','像'], rarity:'★13', tags:['哲学'], desc:'バーチャル像', season:'S3' },
+
+  // 因果
+  { word:'因果', chars:['因','果'], rarity:'★10', tags:['仏教','哲学'], desc:'コーズ＆エフェクト', season:'S3' },
+  { word:'原因', chars:['原','因'], rarity:'★8',  tags:[], desc:'コーズ', season:'S3' },
+  { word:'結果', chars:['結','果'], rarity:'★8',  tags:[], desc:'リザルト', season:'S3' },
+  { word:'因縁', chars:['因','縁'], rarity:'★12', tags:['仏教'], desc:'カルマ', season:'S3' },
+  { word:'業縁', chars:['業','縁'], rarity:'★14', tags:['仏教'], desc:'業の縁', season:'S3' },
+
+  // 抽象（自然）
+  { word:'天命', chars:['天','命'], rarity:'★10', tags:['哲学','古典'], desc:'デスティニー', season:'S3' },
+  { word:'宿命', chars:['宿','命'], rarity:'★12', tags:['哲学'], desc:'フェイト', season:'S3' },
+  { word:'宿運', chars:['宿','運'], rarity:'★13', tags:['哲学'], desc:'宿命運', season:'S3' },
+  { word:'運勢', chars:['運','勢'], rarity:'★10', tags:[], desc:'ラック', season:'S3' },
+  { word:'命運', chars:['命','運'], rarity:'★10', tags:['哲学'], desc:'デスティニー', season:'S3' },
+
+  // 価値
+  { word:'価値', chars:['価','値'], rarity:'★8',  tags:['哲学'], desc:'バリュー', season:'S3' },
+  { word:'意味', chars:['意','味'], rarity:'★8',  tags:['哲学'], desc:'ミーニング', season:'S3' },
+  { word:'目的', chars:['目','的'], rarity:'★8',  tags:[], desc:'パーパス', season:'S3' },
+  { word:'目標', chars:['目','標'], rarity:'★8',  tags:[], desc:'ゴール', season:'S3' },
+  { word:'指針', chars:['指','針'], rarity:'★10', tags:[], desc:'ガイドライン', season:'S3' },
+
+  // 方法・手段
+  { word:'手段', chars:['手','段'], rarity:'★8',  tags:[], desc:'ミーン', season:'S3' },
+  { word:'方法', chars:['方','法'], rarity:'★7',  tags:[], desc:'メソッド', season:'S3' },
+  { word:'方策', chars:['方','策'], rarity:'★12', tags:[], desc:'メジャー', season:'S3' },
+  { word:'戦略', chars:['戦','略'], rarity:'★10', tags:['武','ビジネス'], desc:'ストラテジー', season:'S3' },
+  { word:'戦術', chars:['戦','術'], rarity:'★13', tags:['武'], desc:'タクティクス', season:'S3' },
+
+  // 反対概念
+  { word:'対立', chars:['対','立'], rarity:'★10', tags:[], desc:'オポジット', season:'S3' },
+  { word:'矛盾', chars:['矛','盾'], rarity:'★12', tags:['哲学'], desc:'コントラディクション', season:'S3' },
+  { word:'統合', chars:['統','合'], rarity:'★10', tags:[], desc:'インテグレーション', season:'S3' },
+  { word:'融合', chars:['融','合'], rarity:'★12', tags:[], desc:'フュージョン', season:'S3' },
+];
+for (const r of _YOJI_S3_PHILOSO) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
