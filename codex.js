@@ -1121,6 +1121,79 @@ const _YOJI_S4_EXPAND = [
 ];
 for (const r of _YOJI_S4_EXPAND) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7b（2026-05-17）── 四字熟語 さらに 50+ 個（ビジネス・哲学・ゲーム）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S4_EXPAND2 = [
+  // ビジネス・戦略
+  { word:'付加価値', chars:['付','加','価','値'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'独自の価値を加える', season:'S4' },
+  { word:'創意工夫', chars:['創','意','工','夫'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'新しいアイデアと工夫', season:'S4' },
+  { word:'試行錯誤', chars:['試','行','錯','誤'], rarity:'★12', tags:['四字熟語','ビジネス','学'], desc:'失敗しながら正解を探す', season:'S4' },
+  { word:'切磋琢磨', chars:['切','磋','琢','磨'], rarity:'★14', tags:['四字熟語','ビジネス','学'], desc:'互いに高め合う', season:'S4' },
+  { word:'長所短所', chars:['長','所','短','所'], rarity:'★11', tags:['四字熟語','ビジネス'], desc:'強みと弱み', season:'S4' },
+  { word:'機会均等', chars:['機','会','均','等'], rarity:'★12', tags:['四字熟語','ビジネス'], desc:'公平な機会', season:'S4' },
+  { word:'臨機応変', chars:['臨','機','応','変'], rarity:'★13', tags:['四字熟語','ビジネス','学'], desc:'状況に応じて変える', season:'S4' },
+  { word:'弱肉強食', chars:['弱','肉','強','食'], rarity:'★12', tags:['四字熟語','ビジネス','自然'], desc:'競争社会の摂理', season:'S4' },
+  { word:'共存共栄', chars:['共','存','共','栄'], rarity:'★12', tags:['四字熟語','ビジネス','七徳'], desc:'共に栄える', season:'S4' },
+
+  // 哲学・思想
+  { word:'天地創造', chars:['天','地','創','造'], rarity:'★14', tags:['四字熟語','哲学','神字'], desc:'世界の始まり', season:'S4' },
+  { word:'万物流転', chars:['万','物','流','転'], rarity:'★14', tags:['四字熟語','哲学','仏教'], desc:'全ては変わり続ける', season:'S4' },
+  { word:'天人合一', chars:['天','人','合','一'], rarity:'★15', tags:['四字熟語','哲学','古典'], desc:'天と人は一体', season:'S4' },
+  { word:'内省独学', chars:['内','省','独','学'], rarity:'★13', tags:['四字熟語','哲学','学'], desc:'自分を見つめ独りで学ぶ', season:'S4' },
+  { word:'清貧自足', chars:['清','貧','自','足'], rarity:'★14', tags:['四字熟語','哲学','禅'], desc:'清らかな貧しさに満ち足りる', season:'S4' },
+  { word:'無為自然', chars:['無','為','自','然'], rarity:'★14', tags:['四字熟語','哲学','禅'], desc:'作為せず自然のままに', season:'S4' },
+  { word:'知行合一', chars:['知','行','合','一'], rarity:'★14', tags:['四字熟語','哲学','儒教'], desc:'知ることと行うことは一つ', season:'S4' },
+  { word:'格物致知', chars:['格','物','致','知'], rarity:'★15', tags:['四字熟語','哲学','儒教'], desc:'物を究めて知を致す', season:'S4' },
+
+  // ゲーム・ファンタジー
+  { word:'天上天下', chars:['天','上','天','下'], rarity:'★13', tags:['四字熟語','仏教'], desc:'天の上にも下にも', season:'S4' },
+  { word:'唯我独尊', chars:['唯','我','独','尊'], rarity:'★14', tags:['四字熟語','仏教'], desc:'自分一人が尊い', season:'S4' },
+  { word:'乾坤一擲', chars:['乾','坤','一','擲'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'運命を賭けた一度の勝負', season:'S4' },
+  { word:'全力投球', chars:['全','力','投','球'], rarity:'★11', tags:['四字熟語','武'], desc:'全てを賭ける', season:'S4' },
+  { word:'天下無敵', chars:['天','下','無','敵'], rarity:'★13', tags:['四字熟語','武'], desc:'敵がいない強さ', season:'S4' },
+  { word:'破天荒', chars:['破','天','荒'], rarity:'★13', tags:['四字熟語','武'], desc:'今までにない大胆さ', season:'S4' },
+  { word:'王道楽土', chars:['王','道','楽','土'], rarity:'★14', tags:['四字熟語','古典'], desc:'王の治める理想郷', season:'S4' },
+  { word:'武運長久', chars:['武','運','長','久'], rarity:'★13', tags:['四字熟語','武'], desc:'武の運が長く続く', season:'S4' },
+
+  // 感情・状態（追加）
+  { word:'唇歯輔車', chars:['唇','歯','輔','車'], rarity:'★15', tags:['四字熟語','古典'], desc:'運命を共にする', season:'S4' },
+  { word:'落花流水', chars:['落','花','流','水'], rarity:'★13', tags:['四字熟語','自然','美'], desc:'散る花と流れる水', season:'S4' },
+  { word:'胡蝶之夢', chars:['胡','蝶','之','夢'], rarity:'★15', tags:['四字熟語','哲学','古典'], desc:'夢か現か分からない', season:'S4' },
+  { word:'邯鄲之夢', chars:['邯','鄲','之','夢'], rarity:'★16', tags:['四字熟語','哲学','古典'], desc:'人生は儚い夢', season:'S4' },
+  { word:'桃源郷', chars:['桃','源','郷'], rarity:'★14', tags:['四字熟語','古典'], desc:'理想の世界', season:'S4' },
+  { word:'別世界', chars:['別','世','界'], rarity:'★11', tags:['四字熟語'], desc:'違う世界', season:'S4' },
+  { word:'別天地', chars:['別','天','地'], rarity:'★12', tags:['四字熟語'], desc:'別世界の風景', season:'S4' },
+  { word:'桃花源', chars:['桃','花','源'], rarity:'★14', tags:['四字熟語','古典','美'], desc:'桃源郷の別名', season:'S4' },
+
+  // 時間・時の流れ
+  { word:'光陰矢如', chars:['光','陰','矢','如'], rarity:'★14', tags:['四字熟語','時','古典'], desc:'時の流れは矢のよう', season:'S4' },
+  { word:'歳月不待', chars:['歳','月','不','待'], rarity:'★14', tags:['四字熟語','時'], desc:'時は人を待たない', season:'S4' },
+  { word:'時々刻々', chars:['時','時','刻','刻'], rarity:'★12', tags:['四字熟語','時'], desc:'時間が刻一刻と', season:'S4' },
+  { word:'日進月歩', chars:['日','進','月','歩'], rarity:'★11', tags:['四字熟語','時'], desc:'日々進歩する', season:'S4' },
+  { word:'千載一遇', chars:['千','載','一','遇'], rarity:'★14', tags:['四字熟語','時'], desc:'千年に一度の好機', season:'S4' },
+
+  // 努力・成長
+  { word:'石上開花', chars:['石','上','開','花'], rarity:'★14', tags:['四字熟語','武'], desc:'忍耐の末に花開く', season:'S4' },
+  { word:'鶏口牛後', chars:['鶏','口','牛','後'], rarity:'★15', tags:['四字熟語','古典','武'], desc:'大組織の末より小組織の長', season:'S4' },
+  { word:'大器晩成', chars:['大','器','晩','成'], rarity:'★12', tags:['四字熟語','武','古典'], desc:'大物はゆっくり育つ', season:'S4' },
+  { word:'画竜点睛', chars:['画','竜','点','睛'], rarity:'★15', tags:['四字熟語','古典'], desc:'最後の仕上げ', season:'S4' },
+  { word:'登竜門', chars:['登','竜','門'], rarity:'★13', tags:['四字熟語','古典'], desc:'出世の関門', season:'S4' },
+
+  // 数字＋自然
+  { word:'三位一体', chars:['三','位','一','体'], rarity:'★13', tags:['四字熟語','哲学'], desc:'三つで一つ', season:'S4' },
+  { word:'四海兄弟', chars:['四','海','兄','弟'], rarity:'★13', tags:['四字熟語','古典','七徳'], desc:'世界中の人は兄弟', season:'S4' },
+  { word:'五穀豊穣', chars:['五','穀','豊','穣'], rarity:'★13', tags:['四字熟語','自然','神字'], desc:'豊作', season:'S4' },
+  { word:'六根清浄', chars:['六','根','清','浄'], rarity:'★14', tags:['四字熟語','仏教'], desc:'六感を清める', season:'S4' },
+  { word:'八面六臂', chars:['八','面','六','臂'], rarity:'★14', tags:['四字熟語','武'], desc:'多方面で活躍', season:'S4' },
+  { word:'九死一生', chars:['九','死','一','生'], rarity:'★13', tags:['四字熟語','武'], desc:'危ない所を生き延びる', season:'S4' },
+
+  // 感情・色（追加）
+  { word:'紅葉狩り', chars:['紅','葉','狩','り'], rarity:'★12', tags:['四字熟語','自然','美'], desc:'秋の風物詩', season:'S4' },
+  { word:'桜散歩', chars:['桜','散','歩'], rarity:'★11', tags:['四字熟語','自然','美'], desc:'春の散策', season:'S4' },
+];
+for (const r of _YOJI_S4_EXPAND2) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
