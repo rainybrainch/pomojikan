@@ -2840,6 +2840,69 @@ const _YOJI_S4_WISDOM = [
 ];
 for (const r of _YOJI_S4_WISDOM) YOJI_RECIPES.push(r);
 
+// v7x ── 二字熟語 +50（人体・職業・道具）
+const _YOJI_S3_HUMAN = [
+  // 人体
+  { word:'頭脳', chars:['頭','脳'], rarity:'★12', tags:[], desc:'ブレイン', season:'S3' },
+  { word:'心臓', chars:['心','臓'], rarity:'★12', tags:[], desc:'ハート', season:'S3' },
+  { word:'肝臓', chars:['肝','臓'], rarity:'★12', tags:[], desc:'リバー', season:'S3' },
+  { word:'肺臓', chars:['肺','臓'], rarity:'★12', tags:[], desc:'ラング', season:'S3' },
+  { word:'腎臓', chars:['腎','臓'], rarity:'★13', tags:[], desc:'キドニー', season:'S3' },
+  { word:'血液', chars:['血','液'], rarity:'★8',  tags:[], desc:'ブラッド', season:'S3' },
+  { word:'神経', chars:['神','経'], rarity:'★8',  tags:[], desc:'ニューロン', season:'S3' },
+  { word:'筋肉', chars:['筋','肉'], rarity:'★8',  tags:[], desc:'マッスル', season:'S3' },
+  { word:'骨格', chars:['骨','格'], rarity:'★12', tags:[], desc:'スケルトン', season:'S3' },
+  { word:'皮膚', chars:['皮','膚'], rarity:'★12', tags:[], desc:'スキン', season:'S3' },
+
+  // 職業
+  { word:'医師', chars:['医','師'], rarity:'★8',  tags:['人'], desc:'ドクター', season:'S3' },
+  { word:'教師', chars:['教','師'], rarity:'★7',  tags:['人','学'], desc:'ティーチャー', season:'S3' },
+  { word:'技師', chars:['技','師'], rarity:'★8',  tags:['人','科学'], desc:'エンジニア', season:'S3' },
+  { word:'弁護士', chars:['弁','護','士'], rarity:'★13', tags:['人'], desc:'ロイヤー', season:'S3' },
+  { word:'警察官', chars:['警','察','官'], rarity:'★12', tags:['人'], desc:'ポリス', season:'S3' },
+  { word:'看護師', chars:['看','護','師'], rarity:'★13', tags:['人'], desc:'ナース', season:'S3' },
+  { word:'消防士', chars:['消','防','士'], rarity:'★12', tags:['人'], desc:'ファイアファイター', season:'S3' },
+  { word:'料理人', chars:['料','理','人'], rarity:'★12', tags:['人'], desc:'シェフ', season:'S3' },
+  { word:'画家', chars:['画','家'], rarity:'★8',  tags:['人','美'], desc:'ペインター', season:'S3' },
+  { word:'音楽家', chars:['音','楽','家'], rarity:'★12', tags:['人','美'], desc:'ミュージシャン', season:'S3' },
+  { word:'小説家', chars:['小','説','家'], rarity:'★12', tags:['人','学','美'], desc:'ノベリスト', season:'S3' },
+
+  // 道具・乗物
+  { word:'自動車', chars:['自','動','車'], rarity:'★7',  tags:[], desc:'カー', season:'S3' },
+  { word:'電車', chars:['電','車'], rarity:'★6',  tags:[], desc:'トレイン', season:'S3' },
+  { word:'飛行機', chars:['飛','行','機'], rarity:'★8',  tags:[], desc:'プレーン', season:'S3' },
+  { word:'船舶', chars:['船','舶'], rarity:'★12', tags:[], desc:'シップ', season:'S3' },
+  { word:'戦艦', chars:['戦','艦'], rarity:'★13', tags:['武'], desc:'戦艦', season:'S3' },
+  { word:'戦闘機', chars:['戦','闘','機'], rarity:'★13', tags:['武'], desc:'ファイター', season:'S3' },
+  { word:'宇宙船', chars:['宇','宙','船'], rarity:'★13', tags:['天体','未来'], desc:'スペースシップ', season:'S3' },
+
+  // IT
+  { word:'携帯', chars:['携','帯'], rarity:'★12', tags:[], desc:'モバイル', season:'S3' },
+  { word:'画面', chars:['画','面'], rarity:'★7',  tags:[], desc:'スクリーン', season:'S3' },
+  { word:'端末', chars:['端','末'], rarity:'★13', tags:['科学','未来'], desc:'ターミナル', season:'S3' },
+  { word:'通信', chars:['通','信'], rarity:'★8',  tags:[], desc:'コミュニケーション', season:'S3' },
+  { word:'情報', chars:['情','報'], rarity:'★8',  tags:[], desc:'インフォメーション', season:'S3' },
+  { word:'信号', chars:['信','号'], rarity:'★8',  tags:[], desc:'シグナル', season:'S3' },
+  { word:'回線', chars:['回','線'], rarity:'★12', tags:[], desc:'ライン', season:'S3' },
+
+  // 物・物体
+  { word:'物体', chars:['物','体'], rarity:'★8',  tags:[], desc:'オブジェクト', season:'S3' },
+  { word:'実体', chars:['実','体'], rarity:'★8',  tags:['哲学'], desc:'サブスタンス', season:'S3' },
+  { word:'物質', chars:['物','質'], rarity:'★8',  tags:['科学'], desc:'マター', season:'S3' },
+  { word:'材料', chars:['材','料'], rarity:'★7',  tags:[], desc:'マテリアル', season:'S3' },
+  { word:'素材', chars:['素','材'], rarity:'★8',  tags:[], desc:'マテリアル', season:'S3' },
+  { word:'材質', chars:['材','質'], rarity:'★12', tags:[], desc:'マテリアルクオリティ', season:'S3' },
+
+  // 数・量
+  { word:'数量', chars:['数','量'], rarity:'★8',  tags:['数'], desc:'クォンティティ', season:'S3' },
+  { word:'容量', chars:['容','量'], rarity:'★10', tags:['数'], desc:'キャパシティ', season:'S3' },
+  { word:'重量', chars:['重','量'], rarity:'★10', tags:['数'], desc:'ウェイト', season:'S3' },
+  { word:'比率', chars:['比','率'], rarity:'★10', tags:['数'], desc:'レシオ', season:'S3' },
+  { word:'割合', chars:['割','合'], rarity:'★10', tags:['数'], desc:'パーセンテージ', season:'S3' },
+  { word:'倍率', chars:['倍','率'], rarity:'★10', tags:['数'], desc:'ファクター', season:'S3' },
+];
+for (const r of _YOJI_S3_HUMAN) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
