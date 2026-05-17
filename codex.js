@@ -1847,6 +1847,106 @@ const _YOJI_LONG = [
 ];
 for (const r of _YOJI_LONG) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7j（2026-05-17）── 二字熟語 +80（日常語彙の充実）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S3_DAILY = [
+  // 体・健康
+  { word:'体力', chars:['体','力'], rarity:'★7',  tags:['武'], desc:'体の力', season:'S3' },
+  { word:'気力', chars:['気','力'], rarity:'★7',  tags:['武'], desc:'気の力', season:'S3' },
+  { word:'集中', chars:['集','中'], rarity:'★8',  tags:['禅'], desc:'集まる', season:'S3' },
+  { word:'呼吸', chars:['呼','吸'], rarity:'★12', tags:['禅'], desc:'息', season:'S3' },
+  { word:'睡眠', chars:['睡','眠'], rarity:'★12', tags:[], desc:'眠り', season:'S3' },
+  { word:'入浴', chars:['入','浴'], rarity:'★8',  tags:[], desc:'お風呂', season:'S3' },
+  { word:'食事', chars:['食','事'], rarity:'★7',  tags:[], desc:'食べる', season:'S3' },
+
+  // 仕事・日常
+  { word:'仕事', chars:['仕','事'], rarity:'★8',  tags:['ビジネス'], desc:'仕事', season:'S3' },
+  { word:'会議', chars:['会','議'], rarity:'★8',  tags:['ビジネス'], desc:'ミーティング', season:'S3' },
+  { word:'契約', chars:['契','約'], rarity:'★8',  tags:['ビジネス'], desc:'コントラクト', season:'S3' },
+  { word:'計画', chars:['計','画'], rarity:'★8',  tags:['ビジネス'], desc:'プラン', season:'S3' },
+  { word:'実行', chars:['実','行'], rarity:'★8',  tags:['武'], desc:'実施', season:'S3' },
+  { word:'準備', chars:['準','備'], rarity:'★10', tags:[], desc:'用意', season:'S3' },
+  { word:'完成', chars:['完','成'], rarity:'★8',  tags:[], desc:'完了', season:'S3' },
+  { word:'失敗', chars:['失','敗'], rarity:'★8',  tags:[], desc:'うまくいかない', season:'S3' },
+  { word:'成功', chars:['成','功'], rarity:'★8',  tags:[], desc:'うまくいく', season:'S3' },
+
+  // 感情（追加）
+  { word:'感動', chars:['感','動'], rarity:'★8',  tags:['感情'], desc:'心が動く', season:'S3' },
+  { word:'感謝', chars:['感','謝'], rarity:'★8',  tags:['感情','七徳'], desc:'ありがたい', season:'S3' },
+  { word:'幸福', chars:['幸','福'], rarity:'★8',  tags:['感情'], desc:'しあわせ', season:'S3' },
+  { word:'不安', chars:['不','安'], rarity:'★8',  tags:['感情'], desc:'心配', season:'S3' },
+  { word:'心配', chars:['心','配'], rarity:'★8',  tags:['感情'], desc:'気になる', season:'S3' },
+  { word:'希望', chars:['希','望'], rarity:'★8',  tags:['感情'], desc:'望み', season:'S3' },
+  { word:'絶望', chars:['絶','望'], rarity:'★12', tags:['感情'], desc:'希望が断たれる', season:'S3' },
+  { word:'喜怒', chars:['喜','怒'], rarity:'★8',  tags:['感情'], desc:'喜びと怒り', season:'S3' },
+  { word:'哀楽', chars:['哀','楽'], rarity:'★12', tags:['感情'], desc:'哀しみと楽しみ', season:'S3' },
+
+  // 人間関係
+  { word:'親友', chars:['親','友'], rarity:'★7',  tags:['感情'], desc:'親しい友', season:'S3' },
+  { word:'恋人', chars:['恋','人'], rarity:'★11', tags:['感情'], desc:'愛する人', season:'S3' },
+  { word:'夫妻', chars:['夫','妻'], rarity:'★8',  tags:[], desc:'カップル', season:'S3' },
+  { word:'兄弟', chars:['兄','弟'], rarity:'★6',  tags:['人'], desc:'きょうだい', season:'S3' },
+  { word:'姉妹', chars:['姉','妹'], rarity:'★6',  tags:['人'], desc:'しまい', season:'S3' },
+  { word:'親子', chars:['親','子'], rarity:'★6',  tags:['人','七徳'], desc:'おやこ', season:'S3' },
+  { word:'家族', chars:['家','族'], rarity:'★8',  tags:['人'], desc:'ファミリー', season:'S3' },
+  { word:'同僚', chars:['同','僚'], rarity:'★13', tags:['ビジネス'], desc:'仕事仲間', season:'S3' },
+  { word:'上司', chars:['上','司'], rarity:'★10', tags:['ビジネス'], desc:'上の役職', season:'S3' },
+
+  // 思考・行動
+  { word:'発想', chars:['発','想'], rarity:'★8',  tags:['思想'], desc:'アイデア', season:'S3' },
+  { word:'想像', chars:['想','像'], rarity:'★8',  tags:['思想'], desc:'イマジネーション', season:'S3' },
+  { word:'記憶', chars:['記','憶'], rarity:'★12', tags:[], desc:'メモリ', season:'S3' },
+  { word:'忘却', chars:['忘','却'], rarity:'★12', tags:[], desc:'忘れる', season:'S3' },
+  { word:'理解', chars:['理','解'], rarity:'★8',  tags:['学'], desc:'分かる', season:'S3' },
+  { word:'判断', chars:['判','断'], rarity:'★10', tags:[], desc:'決める', season:'S3' },
+  { word:'決断', chars:['決','断'], rarity:'★10', tags:['武'], desc:'決める強さ', season:'S3' },
+  { word:'選択', chars:['選','択'], rarity:'★10', tags:[], desc:'えらぶ', season:'S3' },
+
+  // 状態
+  { word:'平穏', chars:['平','穏'], rarity:'★12', tags:['禅'], desc:'おだやか', season:'S3' },
+  { word:'静寂', chars:['静','寂'], rarity:'★12', tags:['禅'], desc:'しずか', season:'S3' },
+  { word:'安静', chars:['安','静'], rarity:'★8',  tags:['禅'], desc:'落ち着き', season:'S3' },
+  { word:'急速', chars:['急','速'], rarity:'★7',  tags:[], desc:'速い', season:'S3' },
+  { word:'緩慢', chars:['緩','慢'], rarity:'★13', tags:[], desc:'ゆっくり', season:'S3' },
+  { word:'軽快', chars:['軽','快'], rarity:'★8',  tags:[], desc:'軽やか', season:'S3' },
+  { word:'重厚', chars:['重','厚'], rarity:'★8',  tags:[], desc:'重み', season:'S3' },
+
+  // 物・道具
+  { word:'機械', chars:['機','械'], rarity:'★8',  tags:[], desc:'マシン', season:'S3' },
+  { word:'道具', chars:['道','具'], rarity:'★6',  tags:[], desc:'ツール', season:'S3' },
+  { word:'武器', chars:['武','器'], rarity:'★8',  tags:['武'], desc:'戦の道具', season:'S3' },
+  { word:'宝物', chars:['宝','物'], rarity:'★8',  tags:[], desc:'たから', season:'S3' },
+  { word:'貨幣', chars:['貨','幣'], rarity:'★12', tags:['ビジネス'], desc:'お金', season:'S3' },
+  { word:'金銭', chars:['金','銭'], rarity:'★10', tags:['ビジネス'], desc:'お金', season:'S3' },
+
+  // 自然（追加）
+  { word:'草花', chars:['草','花'], rarity:'★6',  tags:['自然','植物'], desc:'植物', season:'S3' },
+  { word:'樹木', chars:['樹','木'], rarity:'★10', tags:['自然','植物'], desc:'き', season:'S3' },
+  { word:'果実', chars:['果','実'], rarity:'★8',  tags:['自然'], desc:'くだもの', season:'S3' },
+  { word:'種子', chars:['種','子'], rarity:'★8',  tags:['自然'], desc:'たね', season:'S3' },
+  { word:'根源', chars:['根','源'], rarity:'★10', tags:['哲学'], desc:'おおもと', season:'S3' },
+
+  // 抽象（二字）
+  { word:'真理', chars:['真','理'], rarity:'★8',  tags:['哲学'], desc:'まこと', season:'S3' },
+  { word:'美徳', chars:['美','徳'], rarity:'★8',  tags:['七徳','美'], desc:'よい徳', season:'S3' },
+  { word:'善悪', chars:['善','悪'], rarity:'★8',  tags:['哲学','七徳'], desc:'よしあし', season:'S3' },
+  { word:'是非', chars:['是','非'], rarity:'★13', tags:['哲学'], desc:'正誤', season:'S3' },
+  { word:'有無', chars:['有','無'], rarity:'★8',  tags:['哲学','禅'], desc:'あるなし', season:'S3' },
+  { word:'生死', chars:['生','死'], rarity:'★8',  tags:['哲学'], desc:'いきしに', season:'S3' },
+  { word:'明暗', chars:['明','暗'], rarity:'★7',  tags:['哲学'], desc:'光と闇', season:'S3' },
+  { word:'光闇', chars:['光','闇'], rarity:'★13', tags:['哲学'], desc:'光と闇', season:'S3' },
+  { word:'昼夜', chars:['昼','夜'], rarity:'★7',  tags:['時'], desc:'ひるよる', season:'S3' },
+
+  // 単純動作
+  { word:'歩行', chars:['歩','行'], rarity:'★7',  tags:[], desc:'歩く', season:'S3' },
+  { word:'走行', chars:['走','行'], rarity:'★7',  tags:[], desc:'走る', season:'S3' },
+  { word:'飛行', chars:['飛','行'], rarity:'★8',  tags:[], desc:'飛ぶ', season:'S3' },
+  { word:'潜水', chars:['潜','水'], rarity:'★13', tags:[], desc:'もぐる', season:'S3' },
+  { word:'登山', chars:['登','山'], rarity:'★8',  tags:[], desc:'山登り', season:'S3' },
+];
+for (const r of _YOJI_S3_DAILY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
