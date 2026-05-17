@@ -7296,6 +7296,87 @@ const _YOJI_S3_OLD = [
 ];
 for (const r of _YOJI_S3_OLD) YOJI_RECIPES.push(r);
 
+// v10j ── 四字熟語 +50（人体・身体・五感）
+const _YOJI_S4_BODY = [
+  { word:'五体満足', chars:['五','体','満','足'], rarity:'★13', tags:['四字熟語','古典'], desc:'五体満足', season:'S4' },
+  { word:'頭脳明晰', chars:['頭','脳','明','晰'], rarity:'★13', tags:['四字熟語','学'], desc:'頭脳明晰', season:'S4' },
+  { word:'眉目秀麗', chars:['眉','目','秀','麗'], rarity:'★14', tags:['四字熟語','美','古典'], desc:'眉目秀麗', season:'S4' },
+  { word:'容姿端麗', chars:['容','姿','端','麗'], rarity:'★13', tags:['四字熟語','美'], desc:'容姿端麗', season:'S4' },
+  { word:'七転八起', chars:['七','転','八','起'], rarity:'★11', tags:['四字熟語'], desc:'再起', season:'S4' },
+  { word:'手前味噌', chars:['手','前','味','噌'], rarity:'★15', tags:['四字熟語','古典'], desc:'てまえみそ', season:'S4' },
+  { word:'手取足取', chars:['手','取','足','取'], rarity:'★13', tags:['四字熟語'], desc:'手取り足取り', season:'S4' },
+
+  // 顔
+  { word:'笑顔満面', chars:['笑','顔','満','面'], rarity:'★12', tags:['四字熟語','感情'], desc:'笑顔', season:'S4' },
+  { word:'泣顔涙顔', chars:['泣','顔','涙','顔'], rarity:'★12', tags:['四字熟語','感情'], desc:'泣き顔', season:'S4' },
+  { word:'怒顔憤顔', chars:['怒','顔','憤','顔'], rarity:'★13', tags:['四字熟語','感情'], desc:'怒り顔', season:'S4' },
+  { word:'表情変化', chars:['表','情','変','化'], rarity:'★12', tags:['四字熟語','感情'], desc:'表情変化', season:'S4' },
+
+  // 目
+  { word:'目力強烈', chars:['目','力','強','烈'], rarity:'★13', tags:['四字熟語'], desc:'目力', season:'S4' },
+  { word:'目視確認', chars:['目','視','確','認'], rarity:'★12', tags:['四字熟語'], desc:'目視', season:'S4' },
+  { word:'視線交差', chars:['視','線','交','差'], rarity:'★13', tags:['四字熟語','感情'], desc:'視線交差', season:'S4' },
+
+  // 耳
+  { word:'耳目集中', chars:['耳','目','集','中'], rarity:'★13', tags:['四字熟語'], desc:'注目', season:'S4' },
+  { word:'聴覚優秀', chars:['聴','覚','優','秀'], rarity:'★13', tags:['四字熟語'], desc:'良い耳', season:'S4' },
+
+  // 口
+  { word:'口頭発表', chars:['口','頭','発','表'], rarity:'★12', tags:['四字熟語'], desc:'口頭発表', season:'S4' },
+  { word:'口頭試問', chars:['口','頭','試','問'], rarity:'★13', tags:['四字熟語'], desc:'口頭試問', season:'S4' },
+  { word:'巧言令色', chars:['巧','言','令','色'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'巧言令色', season:'S4' },
+
+  // 手
+  { word:'手先器用', chars:['手','先','器','用'], rarity:'★12', tags:['四字熟語'], desc:'器用', season:'S4' },
+  { word:'手作業', chars:['手','作','業'], rarity:'★11', tags:['四字熟語','美'], desc:'手作業', season:'S4' },
+  { word:'手仕事', chars:['手','仕','事'], rarity:'★11', tags:['四字熟語','美'], desc:'手仕事', season:'S4' },
+
+  // 足
+  { word:'足軽歩兵', chars:['足','軽','歩','兵'], rarity:'★14', tags:['四字熟語','古典','武'], desc:'足軽', season:'S4' },
+  { word:'徒歩旅行', chars:['徒','歩','旅','行'], rarity:'★12', tags:['四字熟語'], desc:'徒歩旅', season:'S4' },
+  { word:'歩道路面', chars:['歩','道','路','面'], rarity:'★12', tags:['四字熟語'], desc:'歩道', season:'S4' },
+
+  // 心
+  { word:'心臓鼓動', chars:['心','臓','鼓','動'], rarity:'★13', tags:['四字熟語'], desc:'ハートビート', season:'S4' },
+  { word:'心拍数', chars:['心','拍','数'], rarity:'★12', tags:['四字熟語'], desc:'ハートレート', season:'S4' },
+  { word:'血液循環', chars:['血','液','循','環'], rarity:'★13', tags:['四字熟語','科学'], desc:'血液循環', season:'S4' },
+
+  // 内臓
+  { word:'肝臓肺臓', chars:['肝','臓','肺','臓'], rarity:'★14', tags:['四字熟語'], desc:'肝肺', season:'S4' },
+  { word:'胃腸障害', chars:['胃','腸','障','害'], rarity:'★13', tags:['四字熟語'], desc:'胃腸', season:'S4' },
+  { word:'肝胆相照', chars:['肝','胆','相','照'], rarity:'★14', tags:['四字熟語','感情','古典'], desc:'肝胆', season:'S4' },
+
+  // 筋肉
+  { word:'筋肉鍛錬', chars:['筋','肉','鍛','錬'], rarity:'★13', tags:['四字熟語','武'], desc:'筋トレ', season:'S4' },
+  { word:'筋骨隆々', chars:['筋','骨','隆','々'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'筋骨隆々', season:'S4' },
+  { word:'骨格構造', chars:['骨','格','構','造'], rarity:'★13', tags:['四字熟語','科学'], desc:'スケルトン', season:'S4' },
+
+  // 髪
+  { word:'白髪白衣', chars:['白','髪','白','衣'], rarity:'★14', tags:['四字熟語','古典'], desc:'白髪', season:'S4' },
+  { word:'黒髪美人', chars:['黒','髪','美','人'], rarity:'★12', tags:['四字熟語','美'], desc:'黒髪', season:'S4' },
+
+  // 食欲・本能
+  { word:'食欲旺盛', chars:['食','欲','旺','盛'], rarity:'★11', tags:['四字熟語'], desc:'食欲', season:'S4' },
+  { word:'欲求充足', chars:['欲','求','充','足'], rarity:'★13', tags:['四字熟語','感情'], desc:'欲求', season:'S4' },
+  { word:'本能行動', chars:['本','能','行','動'], rarity:'★13', tags:['四字熟語','哲学'], desc:'本能', season:'S4' },
+
+  // 呼吸
+  { word:'呼吸深呼', chars:['呼','吸','深','呼'], rarity:'★12', tags:['四字熟語','禅'], desc:'深呼吸', season:'S4' },
+  { word:'息呼吸法', chars:['息','呼','吸','法'], rarity:'★12', tags:['四字熟語','禅'], desc:'呼吸法', season:'S4' },
+  { word:'呼吸瞑想', chars:['呼','吸','瞑','想'], rarity:'★14', tags:['四字熟語','禅'], desc:'ブレスメディテーション', season:'S4' },
+
+  // 睡眠
+  { word:'熟睡安眠', chars:['熟','睡','安','眠'], rarity:'★13', tags:['四字熟語'], desc:'安眠', season:'S4' },
+  { word:'徹夜不眠', chars:['徹','夜','不','眠'], rarity:'★13', tags:['四字熟語'], desc:'徹夜', season:'S4' },
+  { word:'夢見熟睡', chars:['夢','見','熟','睡'], rarity:'★13', tags:['四字熟語'], desc:'夢見', season:'S4' },
+
+  // 感覚
+  { word:'五感繊細', chars:['五','感','繊','細'], rarity:'★13', tags:['四字熟語'], desc:'五感', season:'S4' },
+  { word:'感覚鋭敏', chars:['感','覚','鋭','敏'], rarity:'★13', tags:['四字熟語'], desc:'シャープ', season:'S4' },
+  { word:'感覚麻痺', chars:['感','覚','麻','痺'], rarity:'★13', tags:['四字熟語'], desc:'麻痺', season:'S4' },
+];
+for (const r of _YOJI_S4_BODY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
