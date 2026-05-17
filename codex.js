@@ -2042,6 +2042,88 @@ const _YOJI_S4_EXPAND6 = [
 ];
 for (const r of _YOJI_S4_EXPAND6) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7l（2026-05-17）── 二字熟語 +60（抽象・哲学・文学）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S3_ABSTRACT = [
+  // 抽象概念
+  { word:'本質', chars:['本','質'], rarity:'★10', tags:['哲学'], desc:'エッセンス', season:'S3' },
+  { word:'現象', chars:['現','象'], rarity:'★10', tags:['哲学'], desc:'フェノメノン', season:'S3' },
+  { word:'存在', chars:['存','在'], rarity:'★8',  tags:['哲学'], desc:'いる', season:'S3' },
+  { word:'実在', chars:['実','在'], rarity:'★8',  tags:['哲学'], desc:'リアル', season:'S3' },
+  { word:'虚無', chars:['虚','無'], rarity:'★13', tags:['哲学','禅'], desc:'空っぽ', season:'S3' },
+  { word:'無限', chars:['無','限'], rarity:'★10', tags:['哲学'], desc:'インフィニティ', season:'S3' },
+  { word:'有限', chars:['有','限'], rarity:'★10', tags:['哲学'], desc:'リミット', season:'S3' },
+  { word:'空虚', chars:['空','虚'], rarity:'★13', tags:['哲学','禅'], desc:'むなしい', season:'S3' },
+  { word:'充実', chars:['充','実'], rarity:'★12', tags:['感情'], desc:'みちる', season:'S3' },
+  { word:'空白', chars:['空','白'], rarity:'★8',  tags:['美','禅'], desc:'ブランク', season:'S3' },
+
+  // 文学・物語
+  { word:'物語', chars:['物','語'], rarity:'★8',  tags:['学','美'], desc:'ストーリー', season:'S3' },
+  { word:'小説', chars:['小','説'], rarity:'★8',  tags:['学','美'], desc:'ノベル', season:'S3' },
+  { word:'詩集', chars:['詩','集'], rarity:'★12', tags:['学','美'], desc:'ポエム集', season:'S3' },
+  { word:'歌集', chars:['歌','集'], rarity:'★8',  tags:['学','美'], desc:'短歌集', season:'S3' },
+  { word:'随筆', chars:['随','筆'], rarity:'★12', tags:['学','美'], desc:'エッセイ', season:'S3' },
+  { word:'戯曲', chars:['戯','曲'], rarity:'★13', tags:['学','美'], desc:'シナリオ', season:'S3' },
+  { word:'神話', chars:['神','話'], rarity:'★8',  tags:['神字','古典'], desc:'ミソロジー', season:'S3' },
+  { word:'伝説', chars:['伝','説'], rarity:'★10', tags:['古典'], desc:'レジェンド', season:'S3' },
+  { word:'伝記', chars:['伝','記'], rarity:'★8',  tags:['学'], desc:'バイオグラフィ', season:'S3' },
+
+  // 哲学・思想（二字）
+  { word:'禅定', chars:['禅','定'], rarity:'★13', tags:['禅','仏教'], desc:'禅の境地', season:'S3' },
+  { word:'悟道', chars:['悟','道'], rarity:'★13', tags:['禅','仏教'], desc:'悟りの道', season:'S3' },
+  { word:'解脱', chars:['解','脱'], rarity:'★13', tags:['仏教'], desc:'解放', season:'S3' },
+  { word:'涅槃', chars:['涅','槃'], rarity:'★16', tags:['仏教','神字'], desc:'ニルヴァーナ', season:'S3' },
+  { word:'菩提', chars:['菩','提'], rarity:'★16', tags:['仏教','神字'], desc:'悟り', season:'S3' },
+  { word:'般若', chars:['般','若'], rarity:'★16', tags:['仏教','神字'], desc:'智慧', season:'S3' },
+  { word:'念誦', chars:['念','誦'], rarity:'★15', tags:['仏教'], desc:'お経を唱える', season:'S3' },
+  { word:'帰依', chars:['帰','依'], rarity:'★14', tags:['仏教'], desc:'仏に身を寄せる', season:'S3' },
+
+  // 美（二字）
+  { word:'優雅', chars:['優','雅'], rarity:'★13', tags:['美'], desc:'エレガント', season:'S3' },
+  { word:'華麗', chars:['華','麗'], rarity:'★13', tags:['美'], desc:'ゴージャス', season:'S3' },
+  { word:'絢爛', chars:['絢','爛'], rarity:'★15', tags:['美'], desc:'まばゆい', season:'S3' },
+  { word:'清楚', chars:['清','楚'], rarity:'★13', tags:['美','古典'], desc:'清く可憐', season:'S3' },
+  { word:'清純', chars:['清','純'], rarity:'★12', tags:['美'], desc:'けがれなき', season:'S3' },
+  { word:'侘寂', chars:['侘','寂'], rarity:'★15', tags:['美','禅','古典'], desc:'わびさび', season:'S3' },
+  { word:'幽玄', chars:['幽','玄'], rarity:'★15', tags:['美','古典'], desc:'奥深い美', season:'S3' },
+  { word:'雅趣', chars:['雅','趣'], rarity:'★14', tags:['美','古典'], desc:'雅な趣き', season:'S3' },
+
+  // 武・道（二字）
+  { word:'武芸', chars:['武','芸'], rarity:'★13', tags:['武'], desc:'武術', season:'S3' },
+  { word:'武術', chars:['武','術'], rarity:'★8',  tags:['武'], desc:'戦の技', season:'S3' },
+  { word:'剣術', chars:['剣','術'], rarity:'★13', tags:['武'], desc:'剣の技', season:'S3' },
+  { word:'剣豪', chars:['剣','豪'], rarity:'★14', tags:['武'], desc:'剣の達人', season:'S3' },
+  { word:'武道', chars:['武','道'], rarity:'★10', tags:['武','道'], desc:'武の道', season:'S3' },
+  { word:'極意', chars:['極','意'], rarity:'★13', tags:['武','禅'], desc:'奥義', season:'S3' },
+  { word:'達人', chars:['達','人'], rarity:'★10', tags:['武','学'], desc:'マスター', season:'S3' },
+  { word:'修練', chars:['修','練'], rarity:'★13', tags:['武','禅'], desc:'訓練', season:'S3' },
+  { word:'鍛錬', chars:['鍛','錬'], rarity:'★13', tags:['武'], desc:'鍛える', season:'S3' },
+
+  // 神道・古代
+  { word:'神祇', chars:['神','祇'], rarity:'★15', tags:['神字','古典'], desc:'天と地の神', season:'S3' },
+  { word:'神宮', chars:['神','宮'], rarity:'★12', tags:['神字'], desc:'伊勢神宮', season:'S3' },
+  { word:'神話', chars:['神','話'], rarity:'★8',  tags:['神字','古典'], desc:'ミソロジー', season:'S3' },
+  { word:'祈祷', chars:['祈','祷'], rarity:'★15', tags:['古典'], desc:'いのり', season:'S3' },
+  { word:'参拝', chars:['参','拝'], rarity:'★12', tags:[], desc:'神社参り', season:'S3' },
+  { word:'御朱印', chars:['御','朱','印'], rarity:'★13', tags:[], desc:'寺社の印', season:'S3' },
+
+  // 自然（追加）
+  { word:'白雪', chars:['白','雪'], rarity:'★8',  tags:['自然','美'], desc:'純白の雪', season:'S3' },
+  { word:'紅葉', chars:['紅','葉'], rarity:'★10', tags:['自然','美'], desc:'もみじ', season:'S3' },
+  { word:'桜花', chars:['桜','花'], rarity:'★10', tags:['自然','美'], desc:'さくら', season:'S3' },
+  { word:'蓮華', chars:['蓮','華'], rarity:'★14', tags:['仏教','植物'], desc:'はす', season:'S3' },
+  { word:'紫陽花', chars:['紫','陽','花'], rarity:'★13', tags:['自然','美'], desc:'あじさい', season:'S3' },
+
+  // 抽象・状態
+  { word:'極致', chars:['極','致'], rarity:'★13', tags:['哲学'], desc:'極み', season:'S3' },
+  { word:'極限', chars:['極','限'], rarity:'★12', tags:['哲学'], desc:'リミット', season:'S3' },
+  { word:'極致美', chars:['極','致','美'], rarity:'★14', tags:['美','哲学'], desc:'最高の美', season:'S3' },
+  { word:'絶頂', chars:['絶','頂'], rarity:'★13', tags:[], desc:'クライマックス', season:'S3' },
+  { word:'頂点', chars:['頂','点'], rarity:'★10', tags:[], desc:'トップ', season:'S3' },
+];
+for (const r of _YOJI_S3_ABSTRACT) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
