@@ -1287,6 +1287,12 @@ let _obStep = 1;
 const _obMaxStep = 3;
 function openOnboarding() {
   _obStep = 1;
+  // 実装の実数を Step1 に注入（ハードコード撤去・データ拡張に追従）
+  const charCount = (window.KANJI_CODEX || []).length;
+  const yojiCount = (window.YOJI_RECIPES || []).length;
+  const perkCount = Object.keys(PERKS || {}).length;
+  const obc = $('#ob-counts');
+  if (obc) obc.textContent = `${charCount}字 ・ ${yojiCount}熟語 ・ ${perkCount}特性 ・ 無限 Lv`;
   showOnboardingStep();
   $('#onboarding-modal').classList.add('show');
 }
