@@ -5650,6 +5650,74 @@ const _YOJI_S4_VIEW = [
 ];
 for (const r of _YOJI_S4_VIEW) YOJI_RECIPES.push(r);
 
+// v9m ── 二字熟語 +50（数学・科学・哲学概念）
+const _YOJI_S3_SCI = [
+  // 数学
+  { word:'数字', chars:['数','字'], rarity:'★6',  tags:['数'], desc:'ナンバー', season:'S3' },
+  { word:'素数', chars:['素','数'], rarity:'★12', tags:['数','科学'], desc:'プライム', season:'S3' },
+  { word:'整数', chars:['整','数'], rarity:'★10', tags:['数'], desc:'インテジャー', season:'S3' },
+  { word:'分数', chars:['分','数'], rarity:'★10', tags:['数'], desc:'フラクション', season:'S3' },
+  { word:'小数', chars:['小','数'], rarity:'★10', tags:['数'], desc:'デシマル', season:'S3' },
+  { word:'関数', chars:['関','数'], rarity:'★8',  tags:['数','科学'], desc:'ファンクション', season:'S3' },
+  { word:'公式', chars:['公','式'], rarity:'★10', tags:['数','科学'], desc:'フォーミュラ', season:'S3' },
+  { word:'定理', chars:['定','理'], rarity:'★12', tags:['数','学'], desc:'セオレム', season:'S3' },
+  { word:'証明', chars:['証','明'], rarity:'★8',  tags:['科学'], desc:'プルーフ', season:'S3' },
+
+  // 化学
+  { word:'元素', chars:['元','素'], rarity:'★8',  tags:['科学'], desc:'エレメント', season:'S3' },
+  { word:'酸素', chars:['酸','素'], rarity:'★12', tags:['科学'], desc:'オキシジェン', season:'S3' },
+  { word:'水素', chars:['水','素'], rarity:'★12', tags:['科学'], desc:'ハイドロジェン', season:'S3' },
+  { word:'炭素', chars:['炭','素'], rarity:'★12', tags:['科学'], desc:'カーボン', season:'S3' },
+  { word:'窒素', chars:['窒','素'], rarity:'★13', tags:['科学'], desc:'ナイトロジェン', season:'S3' },
+  { word:'酸性', chars:['酸','性'], rarity:'★12', tags:['科学'], desc:'アシッド', season:'S3' },
+  { word:'塩基', chars:['塩','基'], rarity:'★13', tags:['科学'], desc:'アルカリ', season:'S3' },
+
+  // 物理
+  { word:'引力', chars:['引','力'], rarity:'★8',  tags:['科学','RAINY'], desc:'グラビティ', season:'S3' },
+  { word:'磁石', chars:['磁','石'], rarity:'★12', tags:['科学'], desc:'マグネット', season:'S3' },
+  { word:'電流', chars:['電','流'], rarity:'★10', tags:['科学'], desc:'カレント', season:'S3' },
+  { word:'電圧', chars:['電','圧'], rarity:'★13', tags:['科学'], desc:'ボルテージ', season:'S3' },
+  { word:'抵抗', chars:['抵','抗'], rarity:'★12', tags:['科学'], desc:'レジスタンス', season:'S3' },
+  { word:'波動', chars:['波','動'], rarity:'★10', tags:['科学'], desc:'ウェーブ', season:'S3' },
+  { word:'波長', chars:['波','長'], rarity:'★12', tags:['科学'], desc:'ウェーブレングス', season:'S3' },
+  { word:'周波', chars:['周','波'], rarity:'★12', tags:['科学'], desc:'フリクェンシー', season:'S3' },
+
+  // 生物
+  { word:'生物', chars:['生','物'], rarity:'★8',  tags:['自然','科学'], desc:'バイオ', season:'S3' },
+  { word:'遺伝', chars:['遺','伝'], rarity:'★10', tags:['科学'], desc:'ジェネティック', season:'S3' },
+  { word:'遺伝子', chars:['遺','伝','子'], rarity:'★12', tags:['科学'], desc:'ジーン', season:'S3' },
+  { word:'進化', chars:['進','化'], rarity:'★8',  tags:['科学'], desc:'エボリューション', season:'S3' },
+  { word:'種類', chars:['種','類'], rarity:'★8',  tags:['科学'], desc:'スピーシーズ', season:'S3' },
+
+  // 哲学
+  { word:'認識', chars:['認','識'], rarity:'★8',  tags:['哲学'], desc:'パーセプション', season:'S3' },
+  { word:'存在', chars:['存','在'], rarity:'★8',  tags:['哲学'], desc:'エグジスタンス', season:'S3' },
+  { word:'本質', chars:['本','質'], rarity:'★10', tags:['哲学'], desc:'エッセンス', season:'S3' },
+  { word:'実在', chars:['実','在'], rarity:'★8',  tags:['哲学'], desc:'リアリティ', season:'S3' },
+  { word:'観念', chars:['観','念'], rarity:'★12', tags:['哲学'], desc:'アイデア', season:'S3' },
+  { word:'概念', chars:['概','念'], rarity:'★12', tags:['哲学'], desc:'コンセプト', season:'S3' },
+
+  // 倫理
+  { word:'倫理', chars:['倫','理'], rarity:'★12', tags:['哲学'], desc:'エシックス', season:'S3' },
+  { word:'道徳', chars:['道','徳'], rarity:'★10', tags:['七徳','哲学'], desc:'モラル', season:'S3' },
+  { word:'良心', chars:['良','心'], rarity:'★10', tags:['七徳','哲学'], desc:'コンシエンス', season:'S3' },
+  { word:'正義', chars:['正','義'], rarity:'★10', tags:['七徳','法'], desc:'ジャスティス', season:'S3' },
+  { word:'公正', chars:['公','正'], rarity:'★10', tags:['七徳'], desc:'フェアネス', season:'S3' },
+
+  // 美学
+  { word:'美意', chars:['美','意'], rarity:'★12', tags:['美','哲学'], desc:'美意識', season:'S3' },
+  { word:'様式', chars:['様','式'], rarity:'★10', tags:['美'], desc:'スタイル', season:'S3' },
+  { word:'形式', chars:['形','式'], rarity:'★8',  tags:[], desc:'フォーマット', season:'S3' },
+  { word:'構造', chars:['構','造'], rarity:'★10', tags:[], desc:'ストラクチャ', season:'S3' },
+
+  // 科学方法
+  { word:'実験', chars:['実','験'], rarity:'★8',  tags:['科学'], desc:'実証', season:'S3' },
+  { word:'観察', chars:['観','察'], rarity:'★8',  tags:['科学'], desc:'オブザーブ', season:'S3' },
+  { word:'実証', chars:['実','証'], rarity:'★12', tags:['科学'], desc:'エビデンス', season:'S3' },
+  { word:'反証', chars:['反','証'], rarity:'★13', tags:['科学','哲学'], desc:'カウンター', season:'S3' },
+];
+for (const r of _YOJI_S3_SCI) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
