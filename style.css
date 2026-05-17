@@ -1619,6 +1619,123 @@ body.stream-mode .party-bar{
     inset 0 3px 4px rgba(255,250,230,.55),
     0 4px 10px rgba(0,0,0,.28) !important;
 }
+
+/* ────── Lv バンド進化エフェクト（落下中も持続）────── */
+/* Lv 10+ 駆け出し：薄いパルス */
+.pomoji.party-member.lvband-novice{
+  animation:partyLvPulseSlow 3.2s ease-in-out infinite;
+}
+@keyframes partyLvPulseSlow{
+  0%, 100%{ box-shadow:
+    0 0 0 1px rgba(135,206,235,.35),
+    0 0 18px rgba(135,206,235,.45),
+    inset 0 -4px 8px rgba(120,90,40,.32),
+    inset 0 3px 4px rgba(255,250,230,.55),
+    0 4px 10px rgba(0,0,0,.28); }
+  50%    { box-shadow:
+    0 0 0 1px rgba(135,206,235,.55),
+    0 0 28px rgba(135,206,235,.65),
+    inset 0 -4px 8px rgba(120,90,40,.32),
+    inset 0 3px 4px rgba(255,250,230,.55),
+    0 4px 10px rgba(0,0,0,.28); }
+}
+
+/* Lv 30+ 達人：金色オーラリング */
+.pomoji.party-member.lvband-adept::after{
+  content:'';
+  position:absolute; inset:-6px;
+  border-radius:50%;
+  border:2px solid rgba(240,212,138,.45);
+  animation:partyAuraRing 2.2s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes partyAuraRing{
+  0%, 100%{ opacity:.4; transform:scale(1); }
+  50%    { opacity:.85; transform:scale(1.12); }
+}
+
+/* Lv 100+ 達人：二重リング＋微回転 */
+.pomoji.party-member.lvband-master::after{
+  content:'';
+  position:absolute; inset:-8px;
+  border-radius:50%;
+  border:2px solid rgba(255,200,80,.65);
+  box-shadow:0 0 18px rgba(255,200,80,.5);
+  animation:partyMasterRing 2.6s ease-in-out infinite;
+  pointer-events:none;
+}
+.pomoji.party-member.lvband-master::before{
+  content:'';
+  position:absolute; inset:-14px;
+  border-radius:50%;
+  border:1px dashed rgba(255,200,80,.35);
+  animation:partySpinSlow 8s linear infinite;
+  pointer-events:none;
+}
+@keyframes partyMasterRing{
+  0%, 100%{ opacity:.5; transform:scale(1); }
+  50%    { opacity:1;  transform:scale(1.18); }
+}
+@keyframes partySpinSlow{
+  from{ transform:rotate(0deg); }
+  to  { transform:rotate(360deg); }
+}
+
+/* Lv 300+ 宇宙：星屑グラデオーラ */
+.pomoji.party-member.lvband-cosmic{
+  filter:drop-shadow(0 0 24px #b9a0ff) drop-shadow(0 0 8px #fff5d0) !important;
+}
+.pomoji.party-member.lvband-cosmic::after{
+  content:'';
+  position:absolute; inset:-12px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg, #b9a0ff, #f0d48a, #ffb6f1, #87ceeb, #b9a0ff);
+  opacity:.28;
+  animation:partySpinSlow 5s linear infinite;
+  pointer-events:none;
+  z-index:-1;
+}
+.pomoji.party-member.lvband-cosmic::before{
+  content:'';
+  position:absolute; inset:-4px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.7);
+  box-shadow:0 0 28px rgba(185,160,255,.7);
+  animation:partyMasterRing 2s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* Lv 1000+ 神格：虹色オーラ＋強い発光 */
+.pomoji.party-member.lvband-divine{
+  filter:drop-shadow(0 0 32px #fff) drop-shadow(0 0 12px #ffd86b) !important;
+}
+.pomoji.party-member.lvband-divine::after{
+  content:'';
+  position:absolute; inset:-18px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg,
+    #ff6b9d, #ffd86b, #6bff9d, #6bd0ff, #c66bff, #ff6b9d);
+  opacity:.4;
+  animation:partySpinSlow 3s linear infinite;
+  filter:blur(2px);
+  pointer-events:none;
+  z-index:-1;
+}
+.pomoji.party-member.lvband-divine::before{
+  content:'';
+  position:absolute; inset:-6px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.85);
+  box-shadow:
+    0 0 40px rgba(255,255,255,.8),
+    0 0 80px rgba(255,200,80,.5);
+  animation:partyDivinePulse 1.6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes partyDivinePulse{
+  0%, 100%{ opacity:.7; transform:scale(1); }
+  50%    { opacity:1;   transform:scale(1.25); }
+}
 /* 消えない字をタップしたときの軽い跳ね */
 .pomoji.persistent-bump{
   animation:persistentBump .4s cubic-bezier(.22,1.6,.36,1);
