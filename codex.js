@@ -1530,6 +1530,118 @@ const _YOJI_S4_EXPAND5 = [
 ];
 for (const r of _YOJI_S4_EXPAND5) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v7f（2026-05-17）── 二字熟語・三字熟語 大量追加（S3 熟語）
+// ═══════════════════════════════════════════════════════════════
+const _YOJI_S3_EXPAND = [
+  // 自然・天体（二字）
+  { word:'太陽', chars:['太','陽'], rarity:'★8',  tags:['天体','自然'], desc:'昼の光', season:'S3' },
+  { word:'月光', chars:['月','光'], rarity:'★7',  tags:['天体','自然'], desc:'月明かり', season:'S3' },
+  { word:'星空', chars:['星','空'], rarity:'★8',  tags:['天体','自然'], desc:'夜の空', season:'S3' },
+  { word:'青空', chars:['青','空'], rarity:'★7',  tags:['自然','色'], desc:'青い空', season:'S3' },
+  { word:'雨水', chars:['雨','水'], rarity:'★6',  tags:['自然','天候'], desc:'空の水', season:'S3' },
+  { word:'風雨', chars:['風','雨'], rarity:'★7',  tags:['天候','自然'], desc:'風と雨', season:'S3' },
+  { word:'雷雨', chars:['雷','雨'], rarity:'★12', tags:['天候','自然'], desc:'雷を伴う雨', season:'S3' },
+  { word:'雪原', chars:['雪','原'], rarity:'★7',  tags:['自然','美'], desc:'雪の原', season:'S3' },
+  { word:'氷河', chars:['氷','河'], rarity:'★12', tags:['自然'], desc:'凍った川', season:'S3' },
+  { word:'海流', chars:['海','流'], rarity:'★8',  tags:['自然','水'], desc:'海の流れ', season:'S3' },
+  { word:'山頂', chars:['山','頂'], rarity:'★11', tags:['自然'], desc:'山の頂上', season:'S3' },
+  { word:'森林', chars:['森','林'], rarity:'★7',  tags:['自然','植物'], desc:'木々の森', season:'S3' },
+
+  // 生活・場所（二字）
+  { word:'家庭', chars:['家','庭'], rarity:'★8',  tags:['場所','人'], desc:'住まい', season:'S3' },
+  { word:'公園', chars:['公','園'], rarity:'★7',  tags:['場所'], desc:'みんなの庭', season:'S3' },
+  { word:'町並', chars:['町','並'], rarity:'★9',  tags:['場所'], desc:'街の景観', season:'S3' },
+  { word:'駅前', chars:['駅','前'], rarity:'★8',  tags:['場所'], desc:'駅の前', season:'S3' },
+  { word:'病院', chars:['病','院'], rarity:'★8',  tags:['場所'], desc:'病気を診る所', season:'S3' },
+  { word:'神社', chars:['神','社'], rarity:'★8',  tags:['宗教','場所'], desc:'神を祀る', season:'S3' },
+  { word:'寺院', chars:['寺','院'], rarity:'★8',  tags:['仏教','場所'], desc:'仏のお堂', season:'S3' },
+  { word:'城下', chars:['城','下'], rarity:'★12', tags:['場所','古典'], desc:'城のふもと', season:'S3' },
+
+  // 心・感情（二字）
+  { word:'喜び', chars:['喜','び'], rarity:'★7',  tags:['感情'], desc:'嬉しさ', season:'S3' },
+  { word:'怒り', chars:['怒','り'], rarity:'★8',  tags:['感情'], desc:'いかり', season:'S3' },
+  { word:'悲哀', chars:['悲','哀'], rarity:'★12', tags:['感情'], desc:'悲しみ', season:'S3' },
+  { word:'歓喜', chars:['歓','喜'], rarity:'★12', tags:['感情'], desc:'喜び', season:'S3' },
+  { word:'憂愁', chars:['憂','愁'], rarity:'★15', tags:['感情','古典'], desc:'憂い', season:'S3' },
+  { word:'憧憬', chars:['憧','憬'], rarity:'★13', tags:['感情'], desc:'あこがれ', season:'S3' },
+  { word:'孤独', chars:['孤','独'], rarity:'★12', tags:['感情'], desc:'ひとり', season:'S3' },
+  { word:'安心', chars:['安','心'], rarity:'★8',  tags:['感情'], desc:'落ち着く', season:'S3' },
+  { word:'勇気', chars:['勇','気'], rarity:'★8',  tags:['感情','武'], desc:'立ち向かう心', season:'S3' },
+  { word:'恐怖', chars:['恐','怖'], rarity:'★12', tags:['感情'], desc:'こわさ', season:'S3' },
+
+  // 学問・知識（二字）
+  { word:'数学', chars:['数','学'], rarity:'★8',  tags:['学','数'], desc:'数の学', season:'S3' },
+  { word:'科学', chars:['科','学'], rarity:'★8',  tags:['学','科学'], desc:'真理探究', season:'S3' },
+  { word:'文学', chars:['文','学'], rarity:'★8',  tags:['学'], desc:'言葉の芸術', season:'S3' },
+  { word:'歴史', chars:['歴','史'], rarity:'★10', tags:['学'], desc:'過去の記録', season:'S3' },
+  { word:'地理', chars:['地','理'], rarity:'★8',  tags:['学'], desc:'地球の学', season:'S3' },
+  { word:'物理', chars:['物','理'], rarity:'★11', tags:['学','科学'], desc:'物の理', season:'S3' },
+  { word:'化学', chars:['化','学'], rarity:'★10', tags:['学','科学'], desc:'物質の学', season:'S3' },
+  { word:'医学', chars:['医','学'], rarity:'★8',  tags:['学'], desc:'医療の学', season:'S3' },
+  { word:'法律', chars:['法','律'], rarity:'★10', tags:['学','法'], desc:'社会の規則', season:'S3' },
+  { word:'経済', chars:['経','済'], rarity:'★10', tags:['学'], desc:'金の流れ', season:'S3' },
+
+  // 行為・動作（二字）
+  { word:'読書', chars:['読','書'], rarity:'★8',  tags:['学'], desc:'本を読む', season:'S3' },
+  { word:'勉強', chars:['勉','強'], rarity:'★8',  tags:['学'], desc:'学ぶ', season:'S3' },
+  { word:'運動', chars:['運','動'], rarity:'★8',  tags:['武'], desc:'体を動かす', season:'S3' },
+  { word:'休息', chars:['休','息'], rarity:'★8',  tags:['禅'], desc:'休む', season:'S3' },
+  { word:'瞑想', chars:['瞑','想'], rarity:'★13', tags:['禅','仏教'], desc:'心を静める', season:'S3' },
+  { word:'観察', chars:['観','察'], rarity:'★8',  tags:['学'], desc:'よく見る', season:'S3' },
+  { word:'発見', chars:['発','見'], rarity:'★8',  tags:['学'], desc:'みつける', season:'S3' },
+  { word:'創作', chars:['創','作'], rarity:'★11', tags:['思想'], desc:'生み出す', season:'S3' },
+  { word:'制作', chars:['制','作'], rarity:'★10', tags:['思想'], desc:'作り出す', season:'S3' },
+
+  // 美・芸術（二字）
+  { word:'絵画', chars:['絵','画'], rarity:'★7',  tags:['美'], desc:'絵', season:'S3' },
+  { word:'音楽', chars:['音','楽'], rarity:'★7',  tags:['美'], desc:'音の芸', season:'S3' },
+  { word:'詩歌', chars:['詩','歌'], rarity:'★12', tags:['美','学'], desc:'詩と歌', season:'S3' },
+  { word:'文章', chars:['文','章'], rarity:'★8',  tags:['学','美'], desc:'文', season:'S3' },
+  { word:'書道', chars:['書','道'], rarity:'★11', tags:['美','道'], desc:'文字の道', season:'S3' },
+  { word:'茶道', chars:['茶','道'], rarity:'★11', tags:['道','禅'], desc:'茶の道', season:'S3' },
+  { word:'華道', chars:['華','道'], rarity:'★13', tags:['道','美'], desc:'花の道', season:'S3' },
+  { word:'演劇', chars:['演','劇'], rarity:'★11', tags:['美'], desc:'劇', season:'S3' },
+  { word:'映画', chars:['映','画'], rarity:'★8',  tags:['美'], desc:'動く絵', season:'S3' },
+  { word:'写真', chars:['写','真'], rarity:'★8',  tags:['美'], desc:'記録', season:'S3' },
+
+  // 時間・季節（二字）
+  { word:'時間', chars:['時','間'], rarity:'★8',  tags:['時'], desc:'流れる時', season:'S3' },
+  { word:'瞬間', chars:['瞬','間'], rarity:'★11', tags:['時'], desc:'一瞬', season:'S3' },
+  { word:'未来', chars:['未','来'], rarity:'★8',  tags:['時'], desc:'これから', season:'S3' },
+  { word:'過去', chars:['過','去'], rarity:'★8',  tags:['時'], desc:'過ぎ去った', season:'S3' },
+  { word:'現在', chars:['現','在'], rarity:'★8',  tags:['時'], desc:'いま', season:'S3' },
+  { word:'今日', chars:['今','日'], rarity:'★6',  tags:['時'], desc:'きょう', season:'S3' },
+  { word:'昨日', chars:['昨','日'], rarity:'★8',  tags:['時'], desc:'きのう', season:'S3' },
+  { word:'明日', chars:['明','日'], rarity:'★7',  tags:['時'], desc:'あす', season:'S3' },
+  { word:'明朝', chars:['明','朝'], rarity:'★7',  tags:['時'], desc:'あす朝', season:'S3' },
+  { word:'夕暮', chars:['夕','暮'], rarity:'★11', tags:['時','美'], desc:'たそがれ', season:'S3' },
+
+  // 三字熟語
+  { word:'人間性', chars:['人','間','性'], rarity:'★10', tags:['哲学'], desc:'人らしさ', season:'S3' },
+  { word:'独創性', chars:['独','創','性'], rarity:'★12', tags:['思想'], desc:'オリジナリティ', season:'S3' },
+  { word:'創造性', chars:['創','造','性'], rarity:'★11', tags:['思想'], desc:'クリエイティビティ', season:'S3' },
+  { word:'積極性', chars:['積','極','性'], rarity:'★11', tags:['武'], desc:'前向きさ', season:'S3' },
+  { word:'柔軟性', chars:['柔','軟','性'], rarity:'★12', tags:['禅'], desc:'しなやかさ', season:'S3' },
+  { word:'多様性', chars:['多','様','性'], rarity:'★12', tags:['哲学'], desc:'いろいろ', season:'S3' },
+  { word:'専門性', chars:['専','門','性'], rarity:'★12', tags:['学'], desc:'専門家らしさ', season:'S3' },
+  { word:'生命体', chars:['生','命','体'], rarity:'★11', tags:['科学'], desc:'いきもの', season:'S3' },
+  { word:'宇宙論', chars:['宇','宙','論'], rarity:'★13', tags:['哲学','天体'], desc:'コスモロジー', season:'S3' },
+  { word:'方法論', chars:['方','法','論'], rarity:'★11', tags:['学'], desc:'やり方の理論', season:'S3' },
+  { word:'認識論', chars:['認','識','論'], rarity:'★14', tags:['哲学'], desc:'知ることの哲学', season:'S3' },
+  { word:'存在論', chars:['存','在','論'], rarity:'★14', tags:['哲学'], desc:'存在の哲学', season:'S3' },
+  { word:'倫理学', chars:['倫','理','学'], rarity:'★13', tags:['哲学','学'], desc:'モラル', season:'S3' },
+  { word:'美学論', chars:['美','学','論'], rarity:'★14', tags:['美','哲学'], desc:'美の哲学', season:'S3' },
+
+  // 心境
+  { word:'平常心', chars:['平','常','心'], rarity:'★11', tags:['禅'], desc:'普段の心', season:'S3' },
+  { word:'無心', chars:['無','心'], rarity:'★11', tags:['禅'], desc:'心を空にする', season:'S3' },
+  { word:'初心', chars:['初','心'], rarity:'★8',  tags:['武','禅'], desc:'最初の気持ち', season:'S3' },
+  { word:'本心', chars:['本','心'], rarity:'★8',  tags:['感情'], desc:'真の気持ち', season:'S3' },
+  { word:'本気', chars:['本','気'], rarity:'★7',  tags:['武'], desc:'真剣', season:'S3' },
+];
+for (const r of _YOJI_S3_EXPAND) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
