@@ -6498,6 +6498,78 @@ const _YOJI_S4_META = [
 ];
 for (const r of _YOJI_S4_META) YOJI_RECIPES.push(r);
 
+// v9y ── 二字熟語 +50（学問分野）
+const _YOJI_S3_ACADEMY = [
+  { word:'天文学', chars:['天','文','学'], rarity:'★13', tags:['学','天体'], desc:'アストロノミ', season:'S3' },
+  { word:'宇宙学', chars:['宇','宙','学'], rarity:'★13', tags:['学','天体'], desc:'コスモロジ', season:'S3' },
+  { word:'地学', chars:['地','学'], rarity:'★12', tags:['学'], desc:'地球科学', season:'S3' },
+  { word:'地質学', chars:['地','質','学'], rarity:'★13', tags:['学','科学'], desc:'ジオロジー', season:'S3' },
+  { word:'気象学', chars:['気','象','学'], rarity:'★13', tags:['学','自然'], desc:'メテオロロジ', season:'S3' },
+  { word:'海洋学', chars:['海','洋','学'], rarity:'★13', tags:['学','自然'], desc:'オーシャノロジ', season:'S3' },
+  { word:'植物学', chars:['植','物','学'], rarity:'★12', tags:['学','自然'], desc:'ボタニ', season:'S3' },
+  { word:'動物学', chars:['動','物','学'], rarity:'★12', tags:['学','自然'], desc:'ズーロジ', season:'S3' },
+  { word:'生物学', chars:['生','物','学'], rarity:'★12', tags:['学','科学'], desc:'バイオロジ', season:'S3' },
+  { word:'生態学', chars:['生','態','学'], rarity:'★13', tags:['学','自然','科学'], desc:'エコロジ', season:'S3' },
+
+  // 人文
+  { word:'歴史学', chars:['歴','史','学'], rarity:'★12', tags:['学'], desc:'ヒストリ', season:'S3' },
+  { word:'考古学', chars:['考','古','学'], rarity:'★13', tags:['学','古典'], desc:'アーケオロジ', season:'S3' },
+  { word:'民俗学', chars:['民','俗','学'], rarity:'★13', tags:['学'], desc:'フォルクロア', season:'S3' },
+  { word:'人類学', chars:['人','類','学'], rarity:'★13', tags:['学'], desc:'アンソロポロジ', season:'S3' },
+  { word:'考証学', chars:['考','証','学'], rarity:'★15', tags:['学','古典'], desc:'考証学', season:'S3' },
+
+  // 言語
+  { word:'文学史', chars:['文','学','史'], rarity:'★13', tags:['学'], desc:'文学史', season:'S3' },
+  { word:'語源学', chars:['語','源','学'], rarity:'★15', tags:['学','古典'], desc:'エチモロジ', season:'S3' },
+
+  // 経済
+  { word:'経営学', chars:['経','営','学'], rarity:'★12', tags:['学','ビジネス'], desc:'ビジネス', season:'S3' },
+  { word:'会計学', chars:['会','計','学'], rarity:'★13', tags:['学','ビジネス'], desc:'アカウンティング', season:'S3' },
+  { word:'統計学', chars:['統','計','学'], rarity:'★13', tags:['学','数','科学'], desc:'スタッツ', season:'S3' },
+  { word:'計量学', chars:['計','量','学'], rarity:'★14', tags:['学','数'], desc:'エコノメトリクス', season:'S3' },
+  { word:'金融学', chars:['金','融','学'], rarity:'★13', tags:['学','ビジネス'], desc:'ファイナンス', season:'S3' },
+
+  // 工学
+  { word:'工学', chars:['工','学'], rarity:'★12', tags:['学','科学'], desc:'エンジニアリング', season:'S3' },
+  { word:'機械学', chars:['機','械','学'], rarity:'★13', tags:['学','科学'], desc:'メカニクス', season:'S3' },
+  { word:'電気学', chars:['電','気','学'], rarity:'★13', tags:['学','科学'], desc:'エレクトリクス', season:'S3' },
+  { word:'電子学', chars:['電','子','学'], rarity:'★13', tags:['学','科学'], desc:'エレクトロニクス', season:'S3' },
+  { word:'情報学', chars:['情','報','学'], rarity:'★13', tags:['学','科学'], desc:'インフォマティクス', season:'S3' },
+  { word:'計算学', chars:['計','算','学'], rarity:'★13', tags:['学','数'], desc:'カリキュラス', season:'S3' },
+
+  // 自然科学
+  { word:'物理学', chars:['物','理','学'], rarity:'★13', tags:['学','科学'], desc:'フィジクス', season:'S3' },
+  { word:'化学反', chars:['化','学','反'], rarity:'★13', tags:['学','科学'], desc:'化学反応', season:'S3' },
+  { word:'生化学', chars:['生','化','学'], rarity:'★14', tags:['学','科学'], desc:'バイオケミ', season:'S3' },
+  { word:'数学', chars:['数','学'], rarity:'★8',  tags:['学','数'], desc:'マセマティクス', season:'S3' },
+  { word:'幾何学', chars:['幾','何','学'], rarity:'★14', tags:['学','数'], desc:'ジオメトリ', season:'S3' },
+  { word:'代数学', chars:['代','数','学'], rarity:'★13', tags:['学','数'], desc:'アルジェブラ', season:'S3' },
+
+  // 医学
+  { word:'医学', chars:['医','学'], rarity:'★8',  tags:['学'], desc:'メディシン', season:'S3' },
+  { word:'解剖学', chars:['解','剖','学'], rarity:'★13', tags:['学','科学'], desc:'アナトミ', season:'S3' },
+  { word:'生理学', chars:['生','理','学'], rarity:'★13', tags:['学','科学'], desc:'フィジオロジ', season:'S3' },
+  { word:'薬学', chars:['薬','学'], rarity:'★12', tags:['学'], desc:'ファーマシ', season:'S3' },
+  { word:'看護学', chars:['看','護','学'], rarity:'★13', tags:['学'], desc:'ナーシング', season:'S3' },
+
+  // 心理
+  { word:'心理', chars:['心','理'], rarity:'★8',  tags:['学','感情'], desc:'サイコロジ', season:'S3' },
+  { word:'認知学', chars:['認','知','学'], rarity:'★14', tags:['学','哲学'], desc:'コグニティブ', season:'S3' },
+  { word:'行動学', chars:['行','動','学'], rarity:'★13', tags:['学'], desc:'ビヘイビア', season:'S3' },
+  { word:'発達学', chars:['発','達','学'], rarity:'★13', tags:['学'], desc:'デベロップメンタル', season:'S3' },
+
+  // 法
+  { word:'法学', chars:['法','学'], rarity:'★12', tags:['学'], desc:'ロー', season:'S3' },
+  { word:'憲法学', chars:['憲','法','学'], rarity:'★13', tags:['学'], desc:'コンスティテューショナル', season:'S3' },
+  { word:'民法学', chars:['民','法','学'], rarity:'★13', tags:['学'], desc:'シビル', season:'S3' },
+  { word:'刑法学', chars:['刑','法','学'], rarity:'★13', tags:['学'], desc:'クリミナル', season:'S3' },
+
+  // 政治
+  { word:'政治学', chars:['政','治','学'], rarity:'★13', tags:['学'], desc:'ポリティクス', season:'S3' },
+  { word:'国際学', chars:['国','際','学'], rarity:'★13', tags:['学'], desc:'インターナショナル', season:'S3' },
+];
+for (const r of _YOJI_S3_ACADEMY) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
