@@ -3165,6 +3165,80 @@ const _YOJI_S3_ERA = [
 ];
 for (const r of _YOJI_S3_ERA) YOJI_RECIPES.push(r);
 
+// v8c ── 四字熟語 +50（教育・人格形成・社会）
+const _YOJI_S4_EDU = [
+  // 教育
+  { word:'教養豊富', chars:['教','養','豊','富'], rarity:'★12', tags:['四字熟語','学'], desc:'カルチャー', season:'S4' },
+  { word:'学識経験', chars:['学','識','経','験'], rarity:'★13', tags:['四字熟語','学'], desc:'知識と経験', season:'S4' },
+  { word:'読書三昧', chars:['読','書','三','昧'], rarity:'★13', tags:['四字熟語','学','禅'], desc:'読書漬け', season:'S4' },
+  { word:'読書百遍', chars:['読','書','百','遍'], rarity:'★13', tags:['四字熟語','学','古典'], desc:'何度も読む', season:'S4' },
+  { word:'勉学一筋', chars:['勉','学','一','筋'], rarity:'★12', tags:['四字熟語','学'], desc:'勉強一筋', season:'S4' },
+  { word:'熟練者気', chars:['熟','練','者','気'], rarity:'★13', tags:['四字熟語'], desc:'プロ', season:'S4' },
+  { word:'修行修練', chars:['修','行','修','練'], rarity:'★13', tags:['四字熟語','武','禅'], desc:'修行する', season:'S4' },
+
+  // 人格形成
+  { word:'人格陶冶', chars:['人','格','陶','冶'], rarity:'★15', tags:['四字熟語','古典','学'], desc:'人格を磨く', season:'S4' },
+  { word:'品性向上', chars:['品','性','向','上'], rarity:'★13', tags:['四字熟語','七徳'], desc:'人柄を高める', season:'S4' },
+  { word:'徳行積み', chars:['徳','行','積','み'], rarity:'★13', tags:['四字熟語','七徳'], desc:'徳を積む', season:'S4' },
+  { word:'修身斉家', chars:['修','身','斉','家'], rarity:'★15', tags:['四字熟語','儒教','古典'], desc:'修身・斉家・治国・平天下', season:'S4' },
+  { word:'人徳円満', chars:['人','徳','円','満'], rarity:'★13', tags:['四字熟語','七徳'], desc:'人徳が円満', season:'S4' },
+  { word:'徳望高邁', chars:['徳','望','高','邁'], rarity:'★15', tags:['四字熟語','七徳','古典'], desc:'徳と志が高い', season:'S4' },
+
+  // 社会・人間
+  { word:'社会奉仕', chars:['社','会','奉','仕'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ボランティア', season:'S4' },
+  { word:'相互扶助', chars:['相','互','扶','助'], rarity:'★13', tags:['四字熟語','七徳'], desc:'お互い助け合う', season:'S4' },
+  { word:'共栄共存', chars:['共','栄','共','存'], rarity:'★12', tags:['四字熟語','七徳'], desc:'共に栄える', season:'S4' },
+  { word:'万人平等', chars:['万','人','平','等'], rarity:'★12', tags:['四字熟語','七徳'], desc:'みな平等', season:'S4' },
+  { word:'公共善行', chars:['公','共','善','行'], rarity:'★13', tags:['四字熟語','七徳'], desc:'公共のため', season:'S4' },
+  { word:'人間平等', chars:['人','間','平','等'], rarity:'★12', tags:['四字熟語','七徳'], desc:'ヒューマン平等', season:'S4' },
+
+  // 才能・天賦
+  { word:'天賦才能', chars:['天','賦','才','能'], rarity:'★14', tags:['四字熟語'], desc:'生まれつきの才', season:'S4' },
+  { word:'神童才気', chars:['神','童','才','気'], rarity:'★14', tags:['四字熟語','神字'], desc:'神童', season:'S4' },
+  { word:'奇才異能', chars:['奇','才','異','能'], rarity:'★14', tags:['四字熟語'], desc:'特殊な才能', season:'S4' },
+  { word:'才知絶倫', chars:['才','知','絶','倫'], rarity:'★14', tags:['四字熟語','古典'], desc:'並外れた知性', season:'S4' },
+  { word:'多芸多才', chars:['多','芸','多','才'], rarity:'★13', tags:['四字熟語'], desc:'多才', season:'S4' },
+
+  // 経験・熟成
+  { word:'経験豊富', chars:['経','験','豊','富'], rarity:'★12', tags:['四字熟語'], desc:'ベテラン', season:'S4' },
+  { word:'熟練熟達', chars:['熟','練','熟','達'], rarity:'★13', tags:['四字熟語'], desc:'達人', season:'S4' },
+  { word:'手練手管', chars:['手','練','手','管'], rarity:'★15', tags:['四字熟語','古典'], desc:'巧みな技', season:'S4' },
+  { word:'老成円熟', chars:['老','成','円','熟'], rarity:'★14', tags:['四字熟語'], desc:'熟達した', season:'S4' },
+
+  // 名声
+  { word:'名声轟轟', chars:['名','声','轟','轟'], rarity:'★13', tags:['四字熟語'], desc:'名声響く', season:'S4' },
+  { word:'有名無実', chars:['有','名','無','実'], rarity:'★12', tags:['四字熟語'], desc:'名前だけ', season:'S4' },
+  { word:'名実相伴', chars:['名','実','相','伴'], rarity:'★13', tags:['四字熟語'], desc:'名と実が伴う', season:'S4' },
+  { word:'立身揚名', chars:['立','身','揚','名'], rarity:'★14', tags:['四字熟語','武','古典'], desc:'出世し名を上げる', season:'S4' },
+
+  // 努力の結果
+  { word:'石上開花', chars:['石','上','開','花'], rarity:'★14', tags:['四字熟語','武'], desc:'忍耐の末の花', season:'S4' },
+  { word:'長期計画', chars:['長','期','計','画'], rarity:'★12', tags:['四字熟語','ビジネス','時'], desc:'ロングタームプラン', season:'S4' },
+  { word:'短期計画', chars:['短','期','計','画'], rarity:'★12', tags:['四字熟語','ビジネス','時'], desc:'ショートターム', season:'S4' },
+  { word:'計画通り', chars:['計','画','通','り'], rarity:'★11', tags:['四字熟語'], desc:'順調', season:'S4' },
+
+  // 判断・決断
+  { word:'冷静沈着', chars:['冷','静','沈','着'], rarity:'★13', tags:['四字熟語','禅'], desc:'クールヘッド', season:'S4' },
+  { word:'明鏡止水', chars:['明','鏡','止','水'], rarity:'★14', tags:['四字熟語','禅','美'], desc:'澄み切った心', season:'S4' },
+  { word:'判断力強', chars:['判','断','力','強'], rarity:'★12', tags:['四字熟語'], desc:'判断力', season:'S4' },
+  { word:'決断果敢', chars:['決','断','果','敢'], rarity:'★13', tags:['四字熟語','武'], desc:'決断力強い', season:'S4' },
+
+  // 努力
+  { word:'臥薪嘗胆', chars:['臥','薪','嘗','胆'], rarity:'★15', tags:['四字熟語','武','古典'], desc:'復讐の志', season:'S4' },
+  { word:'刻苦努力', chars:['刻','苦','努','力'], rarity:'★13', tags:['四字熟語','武'], desc:'苦労して努力', season:'S4' },
+  { word:'切磋琢磨', chars:['切','磋','琢','磨'], rarity:'★14', tags:['四字熟語','武','学'], desc:'互いに磨く', season:'S4' },
+
+  // 関係
+  { word:'親密友好', chars:['親','密','友','好'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'親しい関係', season:'S4' },
+  { word:'信頼関係', chars:['信','頼','関','係'], rarity:'★12', tags:['四字熟語','感情','七徳'], desc:'トラスト', season:'S4' },
+  { word:'相互信頼', chars:['相','互','信','頼'], rarity:'★13', tags:['四字熟語','感情','七徳'], desc:'お互い信じ合う', season:'S4' },
+
+  // 静寂・落ち着き
+  { word:'静寂無音', chars:['静','寂','無','音'], rarity:'★13', tags:['四字熟語','禅'], desc:'完全な静寂', season:'S4' },
+  { word:'沈黙無言', chars:['沈','黙','無','言'], rarity:'★13', tags:['四字熟語','禅'], desc:'黙る', season:'S4' },
+];
+for (const r of _YOJI_S4_EDU) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
