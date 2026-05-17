@@ -423,6 +423,26 @@ function buildKanjiCodex(){
   addStr(KANJI_KOTEN_EXPAND_STR,  '★15', 'S2', ['漢字','古典','古字']);  // v7h 補完
   addStr(KANJI_JUDAN_STR,  '★16', 'S2', ['漢字','神字','七徳七大罪']);
   addStr(KANJI_JUDAN_EXPAND_STR, '★16', 'S2', ['漢字','神字','極']);  // v7n 補完
+
+  // v10n（2026-05-18）── Unicode CJK 統合漢字 一括追加（未登録分のみ・約 2万字）
+  // 既存★1-★15 の重要漢字は保持。未登録の Unicode 漢字は出現頻度低めの想定で
+  // コードポイント帯ごとに ★13-★15 を自動振り分け（漢字使用統計参考）
+  const _addUnicodeRange = (startCP, endCP, rarity, season, tags) => {
+    for (let cp = startCP; cp <= endCP; cp++) {
+      const c = String.fromCodePoint(cp);
+      if (seen.has(c)) continue;
+      seen.add(c);
+      all.push({ id:'u_'+cp.toString(16), c, rarity, season, yomi:'', tags: tags ? [...tags] : [] });
+    }
+  };
+  // CJK 統合漢字 基本面（U+4E00〜U+9FFF）── 20,992 字
+  // ★13: U+4E00-U+5FFF（よく使われる帯）── 約 4,608 字
+  _addUnicodeRange(0x4E00, 0x5FFF, '★13', 'S2', ['漢字','常用','拡張']);
+  // ★14: U+6000-U+7FFF（中頻度）── 約 8,192 字
+  _addUnicodeRange(0x6000, 0x7FFF, '★14', 'S2', ['漢字','人名','拡張']);
+  // ★15: U+8000-U+9FFF（低頻度・古典）── 約 8,192 字
+  _addUnicodeRange(0x8000, 0x9FFF, '★15', 'S2', ['漢字','古典','拡張']);
+
   return all;
 }
 
