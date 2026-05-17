@@ -4083,10 +4083,45 @@ function init() {
     setTimeout(() => openPartyPicker(), 600);
   }
 
-  // SW registration
+  // SW registration ── 新バージョン検出時に更新トースト
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      // 既存 SW が controlling の場合、updatefound で新バージョン検出
+      if (reg.waiting) {
+        notifyUpdateAvailable(reg);
+      }
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            notifyUpdateAvailable(reg);
+          }
+        });
+      });
+      // 既に新しいのが立ち上がってる場合のリロード処理
+      let _reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (_reloading) return;
+        _reloading = true;
+        setTimeout(() => location.reload(), 300);
+      });
+    }).catch(()=>{});
   }
+}
+
+function notifyUpdateAvailable(reg) {
+  toast('🆕 新バージョンあり ・ タップで更新', '★14');
+  // toast 上のクリックで更新適用（toast 自体は pointer-events:none なので body level）
+  setTimeout(() => {
+    const handler = () => {
+      reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+      document.removeEventListener('click', handler);
+    };
+    document.addEventListener('click', handler);
+    // 30 秒後タイムアウト
+    setTimeout(() => document.removeEventListener('click', handler), 30000);
+  }, 100);
 }
 
 if (document.readyState === 'loading') {
