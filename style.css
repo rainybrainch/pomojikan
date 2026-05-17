@@ -2453,6 +2453,29 @@ body[data-mode="rest"] #tank{
   font-size:.7rem; color:var(--ink-mute);
   font-family:'JetBrains Mono', monospace;
 }
+/* パーティカード hover ヒント（PC・タッチでも長押しで表示）*/
+@media (hover: hover){
+  .party-card:not(.hero):not(.empty-slot):hover::after{
+    content:'⇒ ダブルタップで主人公';
+    position:absolute;
+    bottom:-22px; left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.85);
+    color:var(--gold);
+    padding:3px 8px;
+    border-radius:4px;
+    font-size:.62rem;
+    white-space:nowrap;
+    pointer-events:none;
+    z-index:100;
+    animation:fadeIn .2s ease-out;
+  }
+}
+@keyframes fadeIn{
+  from{ opacity:0; }
+  to  { opacity:1; }
+}
+
 /* タグフィルタ pill 行 */
 .codex-tag-row{
   display:flex; flex-wrap:wrap; gap:4px;
