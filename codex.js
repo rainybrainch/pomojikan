@@ -6350,6 +6350,79 @@ const _YOJI_S4_RARE = [
 ];
 for (const r of _YOJI_S4_RARE) YOJI_RECIPES.push(r);
 
+// v9w ── 二字熟語 +50（味・料理・食材）
+const _YOJI_S3_TASTE = [
+  { word:'美味', chars:['美','味'], rarity:'★8',  tags:['美'], desc:'デリシャス', season:'S3' },
+  { word:'珍味', chars:['珍','味'], rarity:'★13', tags:['美'], desc:'レアテイスト', season:'S3' },
+  { word:'絶品', chars:['絶','品'], rarity:'★13', tags:['美'], desc:'絶品', season:'S3' },
+  { word:'絶妙', chars:['絶','妙'], rarity:'★13', tags:['美'], desc:'エクセレント', season:'S3' },
+  { word:'極上', chars:['極','上'], rarity:'★12', tags:['美'], desc:'プレミアム', season:'S3' },
+  { word:'絶品料', chars:['絶','品','料'], rarity:'★12', tags:['美'], desc:'絶品料理', season:'S3' },
+
+  // 食事の種類
+  { word:'和食', chars:['和','食'], rarity:'★8',  tags:[], desc:'和食', season:'S3' },
+  { word:'洋食', chars:['洋','食'], rarity:'★8',  tags:[], desc:'洋食', season:'S3' },
+  { word:'中華', chars:['中','華'], rarity:'★8',  tags:[], desc:'チャイニーズ', season:'S3' },
+  { word:'韓国料', chars:['韓','国','料'], rarity:'★13', tags:[], desc:'韓国料理', season:'S3' },
+  { word:'伊太利', chars:['伊','太','利'], rarity:'★15', tags:['古典'], desc:'イタリア', season:'S3' },
+  { word:'仏蘭西', chars:['仏','蘭','西'], rarity:'★15', tags:['古典'], desc:'フランス', season:'S3' },
+
+  // 米
+  { word:'白米', chars:['白','米'], rarity:'★8',  tags:[], desc:'白米', season:'S3' },
+  { word:'玄米', chars:['玄','米'], rarity:'★12', tags:[], desc:'玄米', season:'S3' },
+  { word:'雑穀米', chars:['雑','穀','米'], rarity:'★13', tags:[], desc:'雑穀米', season:'S3' },
+  { word:'米飯', chars:['米','飯'], rarity:'★8',  tags:[], desc:'ライス', season:'S3' },
+  { word:'御飯', chars:['御','飯'], rarity:'★8',  tags:[], desc:'ライス', season:'S3' },
+
+  // 麺
+  { word:'蕎麦', chars:['蕎','麦'], rarity:'★15', tags:['古典'], desc:'そば', season:'S3' },
+  { word:'饂飩', chars:['饂','飩'], rarity:'★16', tags:['古典'], desc:'うどん', season:'S3' },
+  { word:'素麺', chars:['素','麺'], rarity:'★13', tags:[], desc:'そうめん', season:'S3' },
+  { word:'拉麺', chars:['拉','麺'], rarity:'★15', tags:[], desc:'ラーメン', season:'S3' },
+
+  // 汁物
+  { word:'味噌汁', chars:['味','噌','汁'], rarity:'★12', tags:[], desc:'みそ汁', season:'S3' },
+  { word:'澄まし', chars:['澄','ま','し'], rarity:'★13', tags:[], desc:'すまし汁', season:'S3' },
+  { word:'お吸物', chars:['お','吸','物'], rarity:'★12', tags:[], desc:'お吸物', season:'S3' },
+
+  // 漬物
+  { word:'漬物', chars:['漬','物'], rarity:'★12', tags:[], desc:'漬物', season:'S3' },
+  { word:'梅干', chars:['梅','干'], rarity:'★8',  tags:[], desc:'うめぼし', season:'S3' },
+  { word:'糠漬', chars:['糠','漬'], rarity:'★15', tags:['古典'], desc:'ぬか漬け', season:'S3' },
+  { word:'浅漬け', chars:['浅','漬','け'], rarity:'★12', tags:[], desc:'浅漬け', season:'S3' },
+
+  // デザート
+  { word:'和菓子', chars:['和','菓','子'], rarity:'★12', tags:['美'], desc:'わがし', season:'S3' },
+  { word:'洋菓子', chars:['洋','菓','子'], rarity:'★12', tags:['美'], desc:'ようがし', season:'S3' },
+  { word:'氷菓', chars:['氷','菓'], rarity:'★13', tags:[], desc:'アイス', season:'S3' },
+  { word:'氷雪菓', chars:['氷','雪','菓'], rarity:'★13', tags:[], desc:'シャーベット', season:'S3' },
+
+  // パン
+  { word:'食パン', chars:['食','パ','ン'], rarity:'★8',  tags:[], desc:'パン', season:'S3' },
+  { word:'菓子パ', chars:['菓','子','パ'], rarity:'★8',  tags:[], desc:'菓子パン', season:'S3' },
+
+  // 飲み物
+  { word:'清涼水', chars:['清','涼','水'], rarity:'★12', tags:[], desc:'清涼飲料', season:'S3' },
+  { word:'冷茶', chars:['冷','茶'], rarity:'★8',  tags:[], desc:'冷茶', season:'S3' },
+  { word:'熱燗', chars:['熱','燗'], rarity:'★15', tags:['古典'], desc:'あつかん', season:'S3' },
+  { word:'冷酒', chars:['冷','酒'], rarity:'★12', tags:[], desc:'冷酒', season:'S3' },
+  { word:'麦酒', chars:['麦','酒'], rarity:'★13', tags:['古典'], desc:'ビール', season:'S3' },
+  { word:'葡萄酒', chars:['葡','萄','酒'], rarity:'★15', tags:['古典'], desc:'ワイン', season:'S3' },
+
+  // 香辛料
+  { word:'香辛料', chars:['香','辛','料'], rarity:'★13', tags:[], desc:'スパイス', season:'S3' },
+  { word:'山葵', chars:['山','葵'], rarity:'★15', tags:['古典'], desc:'わさび', season:'S3' },
+  { word:'生姜', chars:['生','姜'], rarity:'★13', tags:[], desc:'ジンジャー', season:'S3' },
+  { word:'唐辛子', chars:['唐','辛','子'], rarity:'★13', tags:[], desc:'チリペッパー', season:'S3' },
+
+  // 調理器具
+  { word:'包丁', chars:['包','丁'], rarity:'★12', tags:[], desc:'キッチンナイフ', season:'S3' },
+  { word:'俎板', chars:['俎','板'], rarity:'★16', tags:['古典'], desc:'まないた', season:'S3' },
+  { word:'鍋釜', chars:['鍋','釜'], rarity:'★13', tags:[], desc:'なべかま', season:'S3' },
+  { word:'食器棚', chars:['食','器','棚'], rarity:'★12', tags:[], desc:'食器棚', season:'S3' },
+];
+for (const r of _YOJI_S3_TASTE) YOJI_RECIPES.push(r);
+
 const CHAR_TO_WORDS = {};
 for (const r of YOJI_RECIPES){
   for (const c of r.chars){
