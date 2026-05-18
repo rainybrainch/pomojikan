@@ -441,11 +441,42 @@ function checkMilestones() {
   }
   if (newlyAchieved.length > 0) {
     saveState();
-    for (const m of newlyAchieved) {
-      toast(`🏆 達成「${m.label}」 ── ${m.desc}`, '★16');
-      try { playSFX('milestone'); } catch(_) {}
-    }
+    // 複数同時達成時は順に演出（350ms 間隔）
+    newlyAchieved.forEach((m, i) => {
+      setTimeout(() => {
+        try { spawnMilestoneCelebration(m); } catch(_) {}
+        toast(`🏆 達成「${m.label}」 ── ${m.desc}`, '★16');
+        try { playSFX('milestone'); } catch(_) {}
+        try { setTimeout(() => playSFX('discover'), 200); } catch(_) {}
+      }, i * 350);
+    });
   }
+}
+
+// 🏆 マイルストーン達成フルスクリーン演出（v10n / 2026-05-18）
+function spawnMilestoneCelebration(m) {
+  $$('.milestone-celebration').forEach(n => n.remove());
+  const overlay = el('div', { class:'milestone-celebration' },
+    el('div', { class:'mc-arc' }),
+    el('div', { class:'mc-trophy' }, '🏆'),
+    el('div', { class:'mc-label' }, '達成'),
+    el('div', { class:'mc-title' }, m.label),
+    el('div', { class:'mc-desc' }, m.desc),
+  );
+  document.body.appendChild(overlay);
+  // 金粒シャワー（32 粒）
+  for (let i = 0; i < 32; i++) {
+    const p = el('div', { class:'mc-particle', style:{
+      left: (Math.random() * 100) + '%',
+      animationDelay: (Math.random() * 0.5) + 's',
+      animationDuration: (1.8 + Math.random() * 1.6) + 's',
+      background: ['#fff5b0', '#ffd866', '#f0c44a', '#ffe9a0'][i % 4],
+    } });
+    overlay.appendChild(p);
+  }
+  // タップで早送り
+  overlay.addEventListener('click', () => overlay.remove(), { once:true });
+  setTimeout(() => overlay.remove(), 3600);
 }
 
 let STATE = JSON.parse(JSON.stringify(DEFAULT_STATE));
