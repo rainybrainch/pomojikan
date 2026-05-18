@@ -4188,6 +4188,56 @@ function openStats() {
     el('span', {}, '多')
   ));
 
+  // 🌏 文字種別 達成率サマリー（v10n / 2026-05-18）── 17系統を一覧
+  const scriptZone = $('#stats-scripts') || (() => {
+    const z = el('div', { class:'stats-scripts-zone', id:'stats-scripts' });
+    heatZone.parentElement?.insertBefore(z, heatZone.nextSibling);
+    return z;
+  })();
+  scriptZone.innerHTML = '';
+  scriptZone.appendChild(el('h3', { class:'stats-section-title' }, '🌏 文字種別 達成率'));
+  const scriptDefs = [
+    { key:'hiragana',   label:'ひらがな',        icon:'あ' },
+    { key:'katakana',   label:'カタカナ',        icon:'ア' },
+    { key:'kanji',      label:'漢字',            icon:'漢' },
+    { key:'hangul',     label:'ハングル',        icon:'한' },
+    { key:'greek',      label:'ギリシャ',        icon:'Ω' },
+    { key:'cyrillic',   label:'キリル',          icon:'Я' },
+    { key:'arabic',     label:'アラビア',        icon:'ع' },
+    { key:'hebrew',     label:'ヘブライ',        icon:'א' },
+    { key:'devanagari', label:'デーヴァナーガリー', icon:'अ' },
+    { key:'thai',       label:'タイ',            icon:'ก' },
+    { key:'tibetan',    label:'チベット',        icon:'ཀ' },
+    { key:'georgian',   label:'ジョージア',      icon:'ა' },
+    { key:'ethiopic',   label:'エチオピア',      icon:'አ' },
+    { key:'canadian',   label:'カナダ先住民',    icon:'ᐃ' },
+    { key:'runic',      label:'ルーン',          icon:'ᚠ' },
+    { key:'ancient',    label:'古代文字',        icon:'𓂀' },
+  ];
+  const codexAll = window.KANJI_CODEX || [];
+  const scriptGrid = el('div', { class:'script-grid' });
+  for (const sd of scriptDefs) {
+    let total = 0, found = 0;
+    for (const k of codexAll) {
+      if (matchesScript(k.char || k.c, sd.key)) {
+        total++;
+        if ((STATE.collection[k.char||k.c] || 0) > 0) found++;
+      }
+    }
+    if (total === 0) continue;
+    const pct = total > 0 ? Math.round(found / total * 100) : 0;
+    scriptGrid.appendChild(el('div', { class:`script-cell ${found > 0 ? 'started' : ''}${pct === 100 ? ' complete' : ''}` },
+      el('div', { class:'script-icon' }, sd.icon),
+      el('div', { class:'script-name' }, sd.label),
+      el('div', { class:'script-count' }, `${found.toLocaleString()} / ${total.toLocaleString()}`),
+      el('div', { class:'script-bar' },
+        el('div', { class:'script-bar-fill', style:{ width: pct + '%' } })
+      ),
+      el('div', { class:'script-pct' }, pct + '%')
+    ));
+  }
+  scriptZone.appendChild(scriptGrid);
+
   // 最近解放した熟語 ── 達成感の振り返り（最新 6 個）
   const recentZone = $('#stats-recent-yoji') || (() => {
     const z = el('div', { class:'stats-recent-zone', id:'stats-recent-yoji' });

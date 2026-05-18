@@ -3591,6 +3591,91 @@ body[data-mode="rest"] #tank{
   aspect-ratio:auto;
 }
 
+/* ════════════════════ 🌏 文字種別 達成率サマリー（v10n） ════════════════════ */
+.stats-scripts-zone{
+  margin-top:18px;
+  padding:14px;
+  background:rgba(135,206,235,.03);
+  border:1px dashed rgba(135,206,235,.18);
+  border-radius:8px;
+}
+.script-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+  gap:6px;
+  margin-top:6px;
+}
+.script-cell{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  grid-template-areas:'icon name pct' 'icon count count' 'bar bar bar';
+  gap:2px 8px;
+  padding:8px 10px;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;
+  transition:all .2s;
+}
+.script-cell.started{
+  background:rgba(135,206,235,.06);
+  border-color:rgba(135,206,235,.25);
+}
+.script-cell.complete{
+  background:linear-gradient(180deg, rgba(255,200,80,.12) 0%, rgba(255,170,40,.04) 100%);
+  border:1px solid rgba(255,200,80,.6);
+  box-shadow:0 0 10px rgba(255,200,80,.2) inset;
+}
+.script-icon{
+  grid-area:icon;
+  font-size:1.6rem;
+  font-family:'Noto Serif JP', serif;
+  align-self:center;
+  color:var(--ink);
+}
+.script-cell.complete .script-icon{
+  color:var(--gold);
+  text-shadow:0 0 6px rgba(255,200,80,.6);
+}
+.script-name{
+  grid-area:name;
+  font-size:.75rem;
+  font-weight:700;
+  color:var(--ink);
+  align-self:center;
+}
+.script-count{
+  grid-area:count;
+  font-size:.68rem;
+  color:var(--ink-mute);
+  font-family:'JetBrains Mono', monospace;
+}
+.script-pct{
+  grid-area:pct;
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--gold);
+  align-self:center;
+  font-family:'JetBrains Mono', monospace;
+}
+.script-bar{
+  grid-area:bar;
+  height:3px;
+  background:rgba(255,255,255,.05);
+  border-radius:2px;
+  overflow:hidden;
+  margin-top:4px;
+}
+.script-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg, rgba(135,206,235,.6), rgba(240,212,138,.8));
+  border-radius:2px;
+  transition:width .6s cubic-bezier(.22,1,.36,1);
+}
+.script-cell.complete .script-bar-fill{
+  background:linear-gradient(90deg, gold, #fff5b0);
+  box-shadow:0 0 6px rgba(255,200,80,.6);
+}
+
 /* ════════════════════ 統計：最近解放した熟語 ════════════════════ */
 .stats-recent-zone{
   margin-top:18px;
