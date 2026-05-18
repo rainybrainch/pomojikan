@@ -383,6 +383,8 @@ const DEFAULT_STATE = {
   milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
+  dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
+  lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
 
 // 長期達成マイルストーン（何十年遊べる目標）
@@ -1298,6 +1300,7 @@ function checkComboPickup() {
       const wasNew = !STATE.discoveredYoji || !STATE.discoveredYoji[r.word];
       if (!STATE.discoveredYoji) STATE.discoveredYoji = {};
       STATE.discoveredYoji[r.word] = Date.now();
+      if (wasNew) bumpDailyLog('newYoji', 1);
       saveState();
       spawnComboBurst(r);
       // 全く初の解放（過去にも一度も発動経験なし）なら盛大なセレモニー
@@ -1470,6 +1473,7 @@ function awardExpToParty(c, exp, opts={}) {
   const m = STATE.party.members[idx];
   m.exp += actualExp;
   STATE.stats.totalExp = (STATE.stats.totalExp || 0) + actualExp;
+  bumpDailyLog('exp', actualExp);
   if (idx !== STATE.party.hero && STATE.party.members[STATE.party.hero]?.perks?.includes('guardian')) {
     const heroBonus = Math.floor(actualExp * 0.2);
     if (heroBonus > 0) {
@@ -2134,8 +2138,96 @@ function spawnPomoji(opts={}) {
     toast(`新！ ${char}`, rarity);
     playSFX('discover');
     grantDiscoveryBonus(rarity, char);
+    bumpDailyLog('newChars', 1);
   }
   return obj;
+}
+
+// v10n 日別実績ロガー ── 「今日の送り状」表示用
+function bumpDailyLog(field, amount) {
+  const key = new Date().toISOString().slice(0, 10);
+  if (!STATE.dailyLog) STATE.dailyLog = {};
+  if (!STATE.dailyLog[key]) STATE.dailyLog[key] = { newChars: 0, newYoji: 0, exp: 0 };
+  STATE.dailyLog[key][field] = (STATE.dailyLog[key][field] || 0) + amount;
+  // 30 日分のみ保持（容量制御）
+  const keys = Object.keys(STATE.dailyLog).sort();
+  if (keys.length > 40) {
+    keys.slice(0, keys.length - 30).forEach(k => delete STATE.dailyLog[k]);
+  }
+}
+
+// 🌙 昨日の送り状 ── 朝の再起動で見られる、寝る前への鼓舞
+function showDailyReportIfNew() {
+  const today = new Date().toISOString().slice(0, 10);
+  // 既に今日の起動で表示済ならスキップ
+  if (STATE.lastShownDailyReport === today) return;
+  // 昨日の日付
+  const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const log = (STATE.dailyLog || {})[yest];
+  const cycles = (STATE.dailyCycles || {})[yest] || 0;
+  // 何の活動もなければスキップ（休んだ日に通知しない）
+  if (!log && cycles === 0) {
+    STATE.lastShownDailyReport = today;
+    saveState();
+    return;
+  }
+  const newChars = log?.newChars || 0;
+  const newYoji  = log?.newYoji  || 0;
+  const exp      = log?.exp      || 0;
+  // 起動 60 サイクル未満では出さない（初心者を脅かさない）
+  if ((STATE.stats?.totalCycles || 0) < 60) {
+    STATE.lastShownDailyReport = today;
+    saveState();
+    return;
+  }
+  $$('.daily-report-overlay').forEach(n => n.remove());
+  const dateLabel = (() => {
+    const d = new Date(yest + 'T12:00:00');
+    return `${d.getMonth()+1}月${d.getDate()}日`;
+  })();
+  const overlay = el('div', { class:'daily-report-overlay', onclick: (e) => {
+    if (e.target === overlay) overlay.remove();
+  } },
+    el('div', { class:'daily-report-card' },
+      el('button', { class:'dr-close', onclick: () => overlay.remove() }, '×'),
+      el('div', { class:'dr-moon' }, '🌙'),
+      el('h2', { class:'dr-title' }, `${dateLabel} の送り状`),
+      el('div', { class:'dr-grid' },
+        el('div', { class:'dr-cell' },
+          el('div', { class:'dr-icon' }, '🎯'),
+          el('div', { class:'dr-num' }, cycles.toLocaleString()),
+          el('div', { class:'dr-label' }, 'サイクル')
+        ),
+        el('div', { class:'dr-cell' },
+          el('div', { class:'dr-icon' }, '🌏'),
+          el('div', { class:'dr-num' }, newChars.toLocaleString()),
+          el('div', { class:'dr-label' }, '新発見字')
+        ),
+        el('div', { class:'dr-cell' },
+          el('div', { class:'dr-icon' }, '✨'),
+          el('div', { class:'dr-num' }, newYoji.toLocaleString()),
+          el('div', { class:'dr-label' }, '新解放熟語')
+        ),
+        el('div', { class:'dr-cell' },
+          el('div', { class:'dr-icon' }, '⚡'),
+          el('div', { class:'dr-num' }, exp >= 10000 ? Math.round(exp/1000) + 'k' : exp.toLocaleString()),
+          el('div', { class:'dr-label' }, '獲得 EXP')
+        )
+      ),
+      el('p', { class:'dr-msg' }, _dailyReportMessage(cycles, newChars, newYoji)),
+      el('button', { class:'btn-primary dr-btn', onclick: () => overlay.remove() }, 'おはよう')
+    )
+  );
+  document.body.appendChild(overlay);
+  STATE.lastShownDailyReport = today;
+  saveState();
+}
+function _dailyReportMessage(cyc, ch, yj) {
+  if (cyc >= 10) return '昨日はよく走りました ── 今日も降る字と一緒に';
+  if (yj >= 3)   return '熟語が花開いた一日 ── 今日も新しい結びを';
+  if (ch >= 20)  return '世界の文字が広がる旅 ── 今日も新たな出会いを';
+  if (cyc >= 3)  return '昨日も淡々と積みました ── 継続は力なり';
+  return '昨日のひと粒 ── 今日もここに集まりましょう';
 }
 
 // 新発見ボーナス：字種を集める動機を作る（v40 俳句構想の前倒し）
@@ -4701,6 +4793,9 @@ function init() {
     setTimeout(() => openOnboarding(), 500);
   } else if (!isPartyChosen()) {
     setTimeout(() => openPartyPicker(), 600);
+  } else {
+    // 「昨日の送り状」表示（朝の再起動で見られる、寝る前の鼓舞）
+    setTimeout(() => showDailyReportIfNew(), 1200);
   }
 
   // SW registration ── 新バージョン検出時に更新トースト

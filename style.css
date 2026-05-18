@@ -3402,6 +3402,98 @@ body[data-mode="rest"] #tank{
     hsl(calc(var(--i, 0) * 30deg), 80%, 70%), white);
 }
 
+/* ════════════════════ 🌙 昨日の送り状（v10n） ════════════════════ */
+.daily-report-overlay{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse at center,
+    rgba(20,30,60,.7) 0%, rgba(7,17,28,.95) 70%, rgba(0,0,0,.98) 100%);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  z-index:9050;
+  font-family:'Noto Serif JP', serif;
+  animation:tucFadeIn .4s ease-out;
+}
+.daily-report-card{
+  position:relative;
+  width:min(420px, 90vw);
+  padding:32px 28px 24px;
+  background:linear-gradient(180deg, rgba(30,40,70,.98) 0%, rgba(15,20,40,.98) 100%);
+  border:2px solid rgba(135,206,235,.5);
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7), 0 0 40px rgba(135,206,235,.3);
+  text-align:center;
+  animation:drCardIn .6s cubic-bezier(.22,1.4,.36,1);
+}
+@keyframes drCardIn{
+  0%   { opacity:0; transform:scale(.7) translateY(20px); }
+  100% { opacity:1; transform:scale(1) translateY(0); }
+}
+.dr-close{
+  position:absolute; top:10px; right:14px;
+  background:none; border:none; color:var(--ink-mute);
+  font-size:1.6rem; cursor:pointer;
+  width:32px; height:32px;
+  border-radius:50%;
+  transition:all .15s;
+}
+.dr-close:hover{ background:rgba(255,255,255,.08); color:var(--ink); }
+.dr-moon{
+  font-size:3.5rem;
+  filter:drop-shadow(0 0 16px rgba(180,210,255,.6));
+  animation:drMoonFloat 4s ease-in-out infinite;
+}
+@keyframes drMoonFloat{
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-4px); }
+}
+.dr-title{
+  font-size:1.5rem; font-weight:900;
+  color:#cfe6ff;
+  margin:8px 0 18px;
+  letter-spacing:.1em;
+}
+.dr-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:8px 0 18px;
+}
+.dr-cell{
+  padding:12px 8px;
+  background:rgba(135,206,235,.06);
+  border:1px solid rgba(135,206,235,.2);
+  border-radius:8px;
+  transition:transform .2s;
+}
+.dr-cell:hover{ transform:translateY(-2px); }
+.dr-icon{ font-size:1.5rem; margin-bottom:2px; }
+.dr-num{
+  font-size:1.8rem; font-weight:900;
+  color:var(--gold);
+  font-family:'JetBrains Mono', monospace;
+  line-height:1.2;
+  text-shadow:0 0 8px rgba(240,212,138,.4);
+}
+.dr-label{
+  font-size:.7rem; color:var(--ink-mute);
+  letter-spacing:.05em;
+  margin-top:2px;
+}
+.dr-msg{
+  font-size:.85rem; color:#cfe6ff;
+  font-style:italic;
+  letter-spacing:.05em;
+  line-height:1.6;
+  margin:12px 0 18px;
+}
+.dr-btn{
+  width:100%;
+  padding:12px;
+  font-size:.95rem; font-weight:700;
+  letter-spacing:.15em;
+}
+
 /* ════════════════════ 🏆 マイルストーン達成セレモニー（v10n） ════════════════════ */
 .milestone-celebration{
   position:fixed; inset:0;
