@@ -7878,6 +7878,228 @@ for (const r of _YOJI_CITIES)           YOJI_RECIPES.push(r);
 for (const r of _YOJI_KOJI)             YOJI_RECIPES.push(r);
 for (const r of _YOJI_NATURE)           YOJI_RECIPES.push(r);
 
+// ─── Cycle 156: 人名／歴史／作品／学問（2026-05-18）───
+const _YOJI_HISTORY = [
+  // 日本史
+  { word:'徳川', chars:['徳','川'], rarity:'★8', season:'S3', tags:['人名','日本史','江戸'] },
+  { word:'織田', chars:['織','田'], rarity:'★9', season:'S3', tags:['人名','日本史','戦国'] },
+  { word:'豊臣', chars:['豊','臣'], rarity:'★10', season:'S3', tags:['人名','日本史','戦国'] },
+  { word:'武田', chars:['武','田'], rarity:'★6', season:'S3', tags:['人名','日本史','戦国'] },
+  { word:'上杉', chars:['上','杉'], rarity:'★6', season:'S3', tags:['人名','日本史','戦国'] },
+  { word:'伊達', chars:['伊','達'], rarity:'★8', season:'S3', tags:['人名','日本史','戦国'] },
+  { word:'源氏', chars:['源','氏'], rarity:'★7', season:'S3', tags:['人名','日本史','平安','文学'] },
+  { word:'平家', chars:['平','家'], rarity:'★4', season:'S3', tags:['人名','日本史','平安','文学'] },
+  { word:'藤原', chars:['藤','原'], rarity:'★11', season:'S3', tags:['人名','日本史','平安'] },
+  { word:'坂本', chars:['坂','本'], rarity:'★7', season:'S3', tags:['人名','日本史','幕末'], desc:'坂本龍馬' },
+  { word:'西郷', chars:['西','郷'], rarity:'★8', season:'S3', tags:['人名','日本史','幕末'] },
+  // 中国史
+  { word:'孔子', chars:['孔','子'], rarity:'★10', season:'S3', tags:['人名','中国史','思想家','儒教'] },
+  { word:'老子', chars:['老','子'], rarity:'★8', season:'S3', tags:['人名','中国史','思想家','道教'] },
+  { word:'孟子', chars:['孟','子'], rarity:'★8', season:'S3', tags:['人名','中国史','思想家','儒教'] },
+  { word:'荘子', chars:['荘','子'], rarity:'★11', season:'S3', tags:['人名','中国史','思想家','道教'] },
+  { word:'墨子', chars:['墨','子'], rarity:'★10', season:'S3', tags:['人名','中国史','思想家'] },
+  { word:'孫子', chars:['孫','子'], rarity:'★8', season:'S3', tags:['人名','中国史','兵法'] },
+  { word:'始皇', chars:['始','皇'], rarity:'★10', season:'S3', tags:['人名','中国史','秦'], desc:'秦の始皇帝' },
+  { word:'劉備', chars:['劉','備'], rarity:'★11', season:'S3', tags:['人名','中国史','三国志'] },
+  { word:'曹操', chars:['曹','操'], rarity:'★13', season:'S3', tags:['人名','中国史','三国志'] },
+  { word:'関羽', chars:['関','羽'], rarity:'★10', season:'S3', tags:['人名','中国史','三国志'] },
+  { word:'諸葛', chars:['諸','葛'], rarity:'★13', season:'S3', tags:['人名','中国史','三国志'], desc:'諸葛亮孔明' },
+  // 古典作品
+  { word:'論語', chars:['論','語'], rarity:'★8', season:'S3', tags:['作品名','古典','儒教'] },
+  { word:'万葉', chars:['万','葉'], rarity:'★7', season:'S3', tags:['作品名','日本','古典'], desc:'万葉集' },
+  { word:'古事', chars:['古','事'], rarity:'★6', season:'S3', tags:['作品名','日本','古典'], desc:'古事記' },
+  { word:'日記', chars:['日','記'], rarity:'★4', season:'S3', tags:['作品名','文学'] },
+  { word:'枕草', chars:['枕','草'], rarity:'★8', season:'S3', tags:['作品名','日本','古典'], desc:'枕草子' },
+  { word:'徒然', chars:['徒','然'], rarity:'★11', season:'S3', tags:['作品名','日本','古典'], desc:'徒然草' },
+  { word:'方丈', chars:['方','丈'], rarity:'★10', season:'S3', tags:['作品名','日本','古典'], desc:'方丈記' },
+  // 学問
+  { word:'数学', chars:['数','学'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'物理', chars:['物','理'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'化学', chars:['化','学'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'生物', chars:['生','物'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'地学', chars:['地','学'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'歴史', chars:['歴','史'], rarity:'★8', season:'S3', tags:['学問'] },
+  { word:'地理', chars:['地','理'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'哲学', chars:['哲','学'], rarity:'★8', season:'S3', tags:['学問','思想'] },
+  { word:'倫理', chars:['倫','理'], rarity:'★8', season:'S3', tags:['学問','思想'] },
+  { word:'医学', chars:['医','学'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'法学', chars:['法','学'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'経済', chars:['経','済'], rarity:'★8', season:'S3', tags:['学問'] },
+  { word:'文学', chars:['文','学'], rarity:'★4', season:'S3', tags:['学問'] },
+  { word:'芸術', chars:['芸','術'], rarity:'★8', season:'S3', tags:['学問'] },
+  { word:'音楽', chars:['音','楽'], rarity:'★4', season:'S3', tags:['学問','芸術'] },
+];
+for (const r of _YOJI_HISTORY) YOJI_RECIPES.push(r);
+
+// ─── Cycle 157: 日常語彙（身体／食／道具／職業／時／色／数）───
+const _YOJI_DAILY = [
+  // 身体
+  { word:'頭脳', chars:['頭','脳'], rarity:'★6', season:'S3', tags:['身体'] },
+  { word:'心臓', chars:['心','臓'], rarity:'★10', season:'S3', tags:['身体'] },
+  { word:'血液', chars:['血','液'], rarity:'★7', season:'S3', tags:['身体'] },
+  { word:'骨格', chars:['骨','格'], rarity:'★8', season:'S3', tags:['身体'] },
+  { word:'筋肉', chars:['筋','肉'], rarity:'★7', season:'S3', tags:['身体'] },
+  { word:'皮膚', chars:['皮','膚'], rarity:'★8', season:'S3', tags:['身体'] },
+  { word:'呼吸', chars:['呼','吸'], rarity:'★8', season:'S3', tags:['身体'] },
+  { word:'手足', chars:['手','足'], rarity:'★4', season:'S3', tags:['身体'] },
+  { word:'眉目', chars:['眉','目'], rarity:'★8', season:'S3', tags:['身体','雅語'] },
+  { word:'口唇', chars:['口','唇'], rarity:'★11', season:'S3', tags:['身体'] },
+  // 食
+  { word:'食事', chars:['食','事'], rarity:'★4', season:'S3', tags:['食','日常'] },
+  { word:'米飯', chars:['米','飯'], rarity:'★6', season:'S3', tags:['食','主食'] },
+  { word:'麺類', chars:['麺','類'], rarity:'★11', season:'S3', tags:['食'] },
+  { word:'茶葉', chars:['茶','葉'], rarity:'★6', season:'S3', tags:['食','飲料'] },
+  { word:'酒杯', chars:['酒','杯'], rarity:'★7', season:'S3', tags:['食','飲料','雅語'] },
+  { word:'砂糖', chars:['砂','糖'], rarity:'★7', season:'S3', tags:['食','調味料'] },
+  { word:'塩分', chars:['塩','分'], rarity:'★6', season:'S3', tags:['食','調味料'] },
+  // 道具
+  { word:'刀剣', chars:['刀','剣'], rarity:'★9', season:'S3', tags:['道具','武器'] },
+  { word:'弓矢', chars:['弓','矢'], rarity:'★4', season:'S3', tags:['道具','武器'] },
+  { word:'鏡像', chars:['鏡','像'], rarity:'★8', season:'S3', tags:['道具','哲学'] },
+  { word:'機械', chars:['機','械'], rarity:'★8', season:'S3', tags:['道具'] },
+  { word:'装置', chars:['装','置'], rarity:'★8', season:'S3', tags:['道具'] },
+  { word:'電池', chars:['電','池'], rarity:'★6', season:'S3', tags:['道具','現代'] },
+  // 職業
+  { word:'医師', chars:['医','師'], rarity:'★4', season:'S3', tags:['職業'] },
+  { word:'教師', chars:['教','師'], rarity:'★4', season:'S3', tags:['職業'] },
+  { word:'技師', chars:['技','師'], rarity:'★6', season:'S3', tags:['職業'] },
+  { word:'画家', chars:['画','家'], rarity:'★4', season:'S3', tags:['職業','芸術'] },
+  { word:'詩人', chars:['詩','人'], rarity:'★8', season:'S3', tags:['職業','文学'] },
+  { word:'武士', chars:['武','士'], rarity:'★4', season:'S3', tags:['職業','歴史'] },
+  { word:'忍者', chars:['忍','者'], rarity:'★6', season:'S3', tags:['職業','歴史'] },
+  { word:'僧侶', chars:['僧','侶'], rarity:'★11', season:'S3', tags:['職業','宗教'] },
+  // 時間
+  { word:'瞬間', chars:['瞬','間'], rarity:'★8', season:'S3', tags:['時間','哲学'] },
+  { word:'永遠', chars:['永','遠'], rarity:'★7', season:'S3', tags:['時間','哲学'] },
+  { word:'刹那', chars:['刹','那'], rarity:'★13', season:'S3', tags:['時間','仏教','雅語'] },
+  { word:'劫初', chars:['劫','初'], rarity:'★14', season:'S3', tags:['時間','仏教','雅語'] },
+  { word:'未来', chars:['未','来'], rarity:'★4', season:'S3', tags:['時間'] },
+  { word:'過去', chars:['過','去'], rarity:'★6', season:'S3', tags:['時間'] },
+  { word:'現在', chars:['現','在'], rarity:'★6', season:'S3', tags:['時間'] },
+  { word:'昨日', chars:['昨','日'], rarity:'★4', season:'S3', tags:['時間','日常'] },
+  { word:'今日', chars:['今','日'], rarity:'★4', season:'S3', tags:['時間','日常'] },
+  { word:'明日', chars:['明','日'], rarity:'★4', season:'S3', tags:['時間','日常'] },
+  // 色
+  { word:'紅蓮', chars:['紅','蓮'], rarity:'★11', season:'S3', tags:['色','雅語'] },
+  { word:'藍色', chars:['藍','色'], rarity:'★8', season:'S3', tags:['色'] },
+  { word:'瑠璃', chars:['瑠','璃'], rarity:'★13', season:'S3', tags:['色','宝石','雅語'] },
+  { word:'琥珀', chars:['琥','珀'], rarity:'★13', season:'S3', tags:['色','宝石','雅語'] },
+  { word:'翡翠', chars:['翡','翠'], rarity:'★13', season:'S3', tags:['色','宝石','雅語'] },
+  { word:'真紅', chars:['真','紅'], rarity:'★7', season:'S3', tags:['色'] },
+  { word:'純白', chars:['純','白'], rarity:'★6', season:'S3', tags:['色'] },
+  { word:'漆黒', chars:['漆','黒'], rarity:'★8', season:'S3', tags:['色'] },
+  // 数
+  { word:'無限', chars:['無','限'], rarity:'★8', season:'S3', tags:['数','哲学'] },
+  { word:'万物', chars:['万','物'], rarity:'★7', season:'S3', tags:['数','哲学'] },
+  { word:'千万', chars:['千','万'], rarity:'★4', season:'S3', tags:['数'] },
+  { word:'億兆', chars:['億','兆'], rarity:'★8', season:'S3', tags:['数'] },
+  { word:'零度', chars:['零','度'], rarity:'★6', season:'S3', tags:['数'] },
+];
+for (const r of _YOJI_DAILY) YOJI_RECIPES.push(r);
+
+// ─── Cycle 158: 概念語彙（方向／感情／状態／関係）───
+const _YOJI_CONCEPTS = [
+  // 方向・空間
+  { word:'東西', chars:['東','西'], rarity:'★4', season:'S3', tags:['方向'] },
+  { word:'南北', chars:['南','北'], rarity:'★4', season:'S3', tags:['方向'] },
+  { word:'上下', chars:['上','下'], rarity:'★4', season:'S3', tags:['方向'] },
+  { word:'左右', chars:['左','右'], rarity:'★4', season:'S3', tags:['方向'] },
+  { word:'前後', chars:['前','後'], rarity:'★4', season:'S3', tags:['方向'] },
+  { word:'内外', chars:['内','外'], rarity:'★4', season:'S3', tags:['方向'] },
+  // 感情
+  { word:'喜怒', chars:['喜','怒'], rarity:'★6', season:'S3', tags:['感情','哲学'] },
+  { word:'哀楽', chars:['哀','楽'], rarity:'★7', season:'S3', tags:['感情','哲学'] },
+  { word:'愛憎', chars:['愛','憎'], rarity:'★8', season:'S3', tags:['感情'] },
+  { word:'恐怖', chars:['恐','怖'], rarity:'★7', season:'S3', tags:['感情'] },
+  { word:'歓喜', chars:['歓','喜'], rarity:'★8', season:'S3', tags:['感情'] },
+  { word:'憂愁', chars:['憂','愁'], rarity:'★13', season:'S3', tags:['感情','雅語'] },
+  { word:'感動', chars:['感','動'], rarity:'★6', season:'S3', tags:['感情'] },
+  { word:'感謝', chars:['感','謝'], rarity:'★7', season:'S3', tags:['感情'] },
+  { word:'憧憬', chars:['憧','憬'], rarity:'★13', season:'S3', tags:['感情','雅語'] },
+  { word:'孤独', chars:['孤','独'], rarity:'★10', season:'S3', tags:['感情'] },
+  // 状態
+  { word:'平和', chars:['平','和'], rarity:'★4', season:'S3', tags:['状態'] },
+  { word:'戦争', chars:['戦','争'], rarity:'★7', season:'S3', tags:['状態'] },
+  { word:'静寂', chars:['静','寂'], rarity:'★8', season:'S3', tags:['状態','雅語'] },
+  { word:'混沌', chars:['混','沌'], rarity:'★13', season:'S3', tags:['状態','哲学'] },
+  { word:'秩序', chars:['秩','序'], rarity:'★8', season:'S3', tags:['状態'] },
+  { word:'調和', chars:['調','和'], rarity:'★8', season:'S3', tags:['状態'] },
+  { word:'均衡', chars:['均','衡'], rarity:'★13', season:'S3', tags:['状態'] },
+  { word:'安寧', chars:['安','寧'], rarity:'★11', season:'S3', tags:['状態','雅語'] },
+  // 関係
+  { word:'家族', chars:['家','族'], rarity:'★4', season:'S3', tags:['関係'] },
+  { word:'親子', chars:['親','子'], rarity:'★4', season:'S3', tags:['関係'] },
+  { word:'兄弟', chars:['兄','弟'], rarity:'★4', season:'S3', tags:['関係'] },
+  { word:'夫婦', chars:['夫','婦'], rarity:'★7', season:'S3', tags:['関係'] },
+  { word:'友情', chars:['友','情'], rarity:'★6', season:'S3', tags:['関係'] },
+  { word:'絆愛', chars:['絆','愛'], rarity:'★8', season:'S3', tags:['関係'] },
+  { word:'縁起', chars:['縁','起'], rarity:'★8', season:'S3', tags:['関係','仏教'] },
+  // 数学
+  { word:'幾何', chars:['幾','何'], rarity:'★11', season:'S3', tags:['学問','数学'] },
+  { word:'代数', chars:['代','数'], rarity:'★8', season:'S3', tags:['学問','数学'] },
+  { word:'解析', chars:['解','析'], rarity:'★8', season:'S3', tags:['学問','数学'] },
+  { word:'統計', chars:['統','計'], rarity:'★8', season:'S3', tags:['学問','数学'] },
+  // 物理
+  { word:'重力', chars:['重','力'], rarity:'★6', season:'S3', tags:['学問','物理'] },
+  { word:'引力', chars:['引','力'], rarity:'★6', season:'S3', tags:['学問','物理'] },
+  { word:'電磁', chars:['電','磁'], rarity:'★8', season:'S3', tags:['学問','物理'] },
+  { word:'量子', chars:['量','子'], rarity:'★8', season:'S3', tags:['学問','物理'] },
+];
+for (const r of _YOJI_CONCEPTS) YOJI_RECIPES.push(r);
+
+// ─── Cycle 159: 思想／宗教用語 ───
+const _YOJI_THOUGHT = [
+  // 仏教
+  { word:'仏教', chars:['仏','教'], rarity:'★6', season:'S3', tags:['宗教','仏教'] },
+  { word:'禅宗', chars:['禅','宗'], rarity:'★11', season:'S3', tags:['宗教','仏教'] },
+  { word:'菩薩', chars:['菩','薩'], rarity:'★14', season:'S3', tags:['宗教','仏教'] },
+  { word:'如来', chars:['如','来'], rarity:'★10', season:'S3', tags:['宗教','仏教'] },
+  { word:'涅槃', chars:['涅','槃'], rarity:'★15', season:'S3', tags:['宗教','仏教','古典'] },
+  { word:'解脱', chars:['解','脱'], rarity:'★11', season:'S3', tags:['宗教','仏教'] },
+  { word:'悟道', chars:['悟','道'], rarity:'★8', season:'S3', tags:['宗教','仏教'] },
+  { word:'業報', chars:['業','報'], rarity:'★8', season:'S3', tags:['宗教','仏教'] },
+  { word:'輪廻', chars:['輪','廻'], rarity:'★14', season:'S3', tags:['宗教','仏教'] },
+  // 神道
+  { word:'神道', chars:['神','道'], rarity:'★6', season:'S3', tags:['宗教','神道'] },
+  { word:'神社', chars:['神','社'], rarity:'★4', season:'S3', tags:['宗教','神道'] },
+  { word:'鳥居', chars:['鳥','居'], rarity:'★4', season:'S3', tags:['宗教','神道'] },
+  { word:'御札', chars:['御','札'], rarity:'★7', season:'S3', tags:['宗教','神道'] },
+  { word:'巫女', chars:['巫','女'], rarity:'★13', season:'S3', tags:['宗教','神道'] },
+  // 儒教・道教
+  { word:'儒教', chars:['儒','教'], rarity:'★10', season:'S3', tags:['宗教','儒教'] },
+  { word:'道教', chars:['道','教'], rarity:'★6', season:'S3', tags:['宗教','道教'] },
+  { word:'陰陽', chars:['陰','陽'], rarity:'★8', season:'S3', tags:['宗教','道教','哲学'] },
+  { word:'五行', chars:['五','行'], rarity:'★4', season:'S3', tags:['宗教','道教','哲学'] },
+  { word:'太極', chars:['太','極'], rarity:'★11', season:'S3', tags:['宗教','道教','哲学'] },
+  // キリスト教・イスラム他
+  { word:'聖書', chars:['聖','書'], rarity:'★8', season:'S3', tags:['宗教','キリスト教'] },
+  { word:'十字', chars:['十','字'], rarity:'★4', season:'S3', tags:['宗教','キリスト教'] },
+  { word:'天使', chars:['天','使'], rarity:'★7', season:'S3', tags:['宗教','キリスト教'] },
+  { word:'悪魔', chars:['悪','魔'], rarity:'★8', season:'S3', tags:['宗教'] },
+  { word:'天国', chars:['天','国'], rarity:'★4', season:'S3', tags:['宗教'] },
+  { word:'地獄', chars:['地','獄'], rarity:'★8', season:'S3', tags:['宗教'] },
+  // 哲学概念
+  { word:'真理', chars:['真','理'], rarity:'★7', season:'S3', tags:['哲学'] },
+  { word:'真善', chars:['真','善'], rarity:'★8', season:'S3', tags:['哲学'], desc:'真善美' },
+  { word:'美徳', chars:['美','徳'], rarity:'★7', season:'S3', tags:['哲学'] },
+  { word:'自由', chars:['自','由'], rarity:'★4', season:'S3', tags:['哲学','現代'] },
+  { word:'平等', chars:['平','等'], rarity:'★6', season:'S3', tags:['哲学','現代'] },
+  { word:'博愛', chars:['博','愛'], rarity:'★8', season:'S3', tags:['哲学','現代'] },
+  { word:'正義', chars:['正','義'], rarity:'★7', season:'S3', tags:['哲学'] },
+  { word:'存在', chars:['存','在'], rarity:'★8', season:'S3', tags:['哲学'] },
+  { word:'実存', chars:['実','存'], rarity:'★8', season:'S3', tags:['哲学'] },
+  { word:'認識', chars:['認','識'], rarity:'★8', season:'S3', tags:['哲学'] },
+  { word:'観念', chars:['観','念'], rarity:'★8', season:'S3', tags:['哲学'] },
+  { word:'本質', chars:['本','質'], rarity:'★7', season:'S3', tags:['哲学'] },
+  // 雅語・抽象
+  { word:'幽玄', chars:['幽','玄'], rarity:'★14', season:'S3', tags:['美意識','雅語','日本'] },
+  { word:'侘寂', chars:['侘','寂'], rarity:'★15', season:'S3', tags:['美意識','雅語','日本'] },
+  { word:'物哀', chars:['物','哀'], rarity:'★13', season:'S3', tags:['美意識','雅語','日本'], desc:'もののあはれ' },
+  { word:'風雅', chars:['風','雅'], rarity:'★8', season:'S3', tags:['美意識','雅語'] },
+  { word:'清流', chars:['清','流'], rarity:'★6', season:'S3', tags:['美意識','自然'] },
+];
+for (const r of _YOJI_THOUGHT) YOJI_RECIPES.push(r);
+
 // 重複熟語を削除（同じ word は後勝ち：新しい情報が優先）
 (function dedupeYoji(){
   const seenWords = new Set();
