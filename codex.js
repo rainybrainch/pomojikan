@@ -8144,7 +8144,7 @@ for (const r of YOJI_RECIPES) {
   for (const r of YOJI_RECIPES){ byRYoji[r.rarity] = (byRYoji[r.rarity]||0) + 1; }
   const bySeason = {};
   for (const r of YOJI_RECIPES){ bySeason[r.season || 'S?'] = (bySeason[r.season || 'S?']||0) + 1; }
-  console.log('%c☔ codex.js v18 ── 文字種ベース16段階レアリティ', 'color:#f0d48a;font-weight:900;');
+  console.log('%c☔ codex.js v19 ── 完成形 v10n ・ 一冊の辞典として育つ', 'color:#f0d48a;font-weight:900;font-size:1.1em;');
   console.log(`  字: ${KANJI_CODEX.length} 字`, byR);
   console.log(`  熟語: ${YOJI_RECIPES.length} 個`, byRYoji);
   console.log(`  シーズン別: `, bySeason);
