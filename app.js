@@ -382,6 +382,7 @@ const DEFAULT_STATE = {
   dailyCycles: {},                // v7b ─ 日別サイクル数 { '2026-05-17': 5 }
   milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
+  lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
 };
 
 // 長期達成マイルストーン（何十年遊べる目標）
@@ -583,6 +584,37 @@ function generateTransferCode() {
   } catch (e) { return ''; }
 }
 
+// 🛟 バックアップ状態表示 ── stats モーダル open 時に更新
+function updateBackupStatus() {
+  const actions = $('.uiz-actions');
+  if (!actions) return;
+  // 既存ステータス削除
+  $$('.uiz-backup-status').forEach(n => n.remove());
+  const totalCycles = STATE.stats?.totalCycles || 0;
+  // <100 サイクル：まだ警告しない
+  if (totalCycles < 100) return;
+  const last = STATE.lastBackupAt;
+  let text, cls;
+  if (!last) {
+    text = '⚠ 一度もバックアップしていません ── 進捗が大きい今こそ「💾 JSON バックアップ」を';
+    cls = 'danger';
+  } else {
+    const days = Math.floor((Date.now() - last) / 86400000);
+    if (days < 7) {
+      text = `✅ 最終バックアップ：${days} 日前 ── 安心の安全網`;
+      cls = 'ok';
+    } else if (days < 30) {
+      text = `⏰ 最終バックアップ：${days} 日前 ── そろそろ更新を`;
+      cls = 'warn';
+    } else {
+      text = `⚠ 最終バックアップ：${days} 日前 ── 進捗保護のため更新推奨`;
+      cls = 'danger';
+    }
+  }
+  const status = el('div', { class: `uiz-backup-status ${cls}` }, text);
+  actions.parentElement?.insertBefore(status, actions.nextSibling);
+}
+
 // JSON バックアップ ── 全 STATE をダウンロード
 function exportStateJSON() {
   try {
@@ -600,6 +632,9 @@ function exportStateJSON() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    // v10n：最終バックアップ日時を記録（何十年遊ぶための安全網）
+    STATE.lastBackupAt = Date.now();
+    saveState();
     toast('💾 バックアップを保存', '★14');
   } catch (e) {
     toast('バックアップ失敗', '★1');
@@ -4042,6 +4077,8 @@ function updateProgressPill() {
 function openStats() {
   const idEl = $('#user-id-display');
   if (idEl) idEl.textContent = STATE.userId || '— (まだプレイ前)';
+  // 🛟 v10n 最終バックアップ警告 ── 何十年遊ぶための安全網
+  updateBackupStatus();
   const list = $('#stats-list');
   const discovered = Object.keys(STATE.collection || {}).length;
   const totalKanji = (window.KANJI_CODEX || []).length;

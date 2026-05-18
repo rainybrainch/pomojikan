@@ -826,6 +826,37 @@ body[data-mode="rest"] .timer-text{
   display:flex;gap:8px;margin-top:10px;
 }
 .uiz-btn{ flex:1; padding:9px; font-size:.78rem; }
+.uiz-actions{ flex-wrap:wrap; }
+/* 🛟 バックアップ警告 ── 何十年遊ぶ安全網 */
+.uiz-backup-status{
+  margin-top:8px;
+  padding:8px 12px;
+  border-radius:6px;
+  font-size:.78rem;
+  font-weight:600;
+  line-height:1.5;
+  text-align:center;
+}
+.uiz-backup-status.ok{
+  background:rgba(120,200,120,.08);
+  border:1px solid rgba(120,200,120,.35);
+  color:#a8e0a8;
+}
+.uiz-backup-status.warn{
+  background:rgba(240,200,100,.08);
+  border:1px solid rgba(240,200,100,.5);
+  color:#f0c860;
+}
+.uiz-backup-status.danger{
+  background:rgba(255,120,120,.1);
+  border:1px solid rgba(255,120,120,.5);
+  color:#ff9090;
+  animation:bksPulse 2.5s ease-in-out infinite;
+}
+@keyframes bksPulse{
+  0%,100% { box-shadow:0 0 0 rgba(255,120,120,0); }
+  50%     { box-shadow:0 0 12px rgba(255,120,120,.3); }
+}
 
 /* 引継ぎコードポップ */
 .code-popup{
