@@ -7679,6 +7679,205 @@ for (const r of YOJI_RECIPES){
 // 新 v2 レシピを結合
 for (const r of _YOJI_NEW_V2) YOJI_RECIPES.push(r);
 
+// ═══════════════════════════════════════════════════════════════
+// v10n 完成形スプリント（2026-05-18）── 国名 / 地名 / 故事成語 / 自然 一括追加
+// ═══════════════════════════════════════════════════════════════
+
+// 国名（中国漢字表記・歴史用字）── アジア
+const _YOJI_COUNTRIES_ASIA = [
+  { word:'日本', chars:['日','本'], rarity:'★3', season:'S3', tags:['国名','アジア','東洋'],   desc:'昇る陽の本' },
+  { word:'中国', chars:['中','国'], rarity:'★4', season:'S3', tags:['国名','アジア'],         desc:'中華の地' },
+  { word:'韓国', chars:['韓','国'], rarity:'★8', season:'S3', tags:['国名','アジア'],         desc:'朝鮮半島南' },
+  { word:'朝鮮', chars:['朝','鮮'], rarity:'★8', season:'S3', tags:['国名','アジア'] },
+  { word:'台湾', chars:['台','湾'], rarity:'★8', season:'S3', tags:['国名','アジア','島嶼'] },
+  { word:'印度', chars:['印','度'], rarity:'★8', season:'S3', tags:['国名','アジア'],         desc:'インド' },
+  { word:'越南', chars:['越','南'], rarity:'★9', season:'S3', tags:['国名','アジア'],         desc:'ベトナム' },
+  { word:'泰国', chars:['泰','国'], rarity:'★9', season:'S3', tags:['国名','アジア'],         desc:'タイ' },
+  { word:'蒙古', chars:['蒙','古'], rarity:'★10', season:'S3', tags:['国名','アジア'],        desc:'モンゴル' },
+  { word:'伊朗', chars:['伊','朗'], rarity:'★11', season:'S3', tags:['国名','アジア'],        desc:'イラン' },
+  { word:'伊拉', chars:['伊','拉'], rarity:'★11', season:'S3', tags:['国名','アジア'],        desc:'イラク' },
+];
+
+// 国名 ── ヨーロッパ
+const _YOJI_COUNTRIES_EU = [
+  { word:'英国', chars:['英','国'], rarity:'★5', season:'S3', tags:['国名','欧州'],   desc:'イギリス' },
+  { word:'仏国', chars:['仏','国'], rarity:'★6', season:'S3', tags:['国名','欧州'],   desc:'フランス' },
+  { word:'独国', chars:['独','国'], rarity:'★6', season:'S3', tags:['国名','欧州'],   desc:'ドイツ' },
+  { word:'伊国', chars:['伊','国'], rarity:'★7', season:'S3', tags:['国名','欧州'],   desc:'イタリア' },
+  { word:'西国', chars:['西','国'], rarity:'★7', season:'S3', tags:['国名','欧州'],   desc:'スペイン' },
+  { word:'葡国', chars:['葡','国'], rarity:'★11', season:'S3', tags:['国名','欧州'],  desc:'ポルトガル' },
+  { word:'蘭国', chars:['蘭','国'], rarity:'★9', season:'S3', tags:['国名','欧州'],   desc:'オランダ' },
+  { word:'瑞典', chars:['瑞','典'], rarity:'★11', season:'S3', tags:['国名','欧州'],  desc:'スウェーデン' },
+  { word:'露国', chars:['露','国'], rarity:'★7', season:'S3', tags:['国名','欧州','大陸'], desc:'ロシア' },
+  { word:'希臘', chars:['希','臘'], rarity:'★14', season:'S3', tags:['国名','欧州','古典'], desc:'ギリシャ' },
+  { word:'土耳', chars:['土','耳'], rarity:'★8', season:'S3', tags:['国名','欧州','中東'],  desc:'トルコ' },
+];
+
+// 国名 ── アメリカ / アフリカ / 大洋州
+const _YOJI_COUNTRIES_OTHERS = [
+  { word:'米国', chars:['米','国'], rarity:'★5', season:'S3', tags:['国名','アメリカ'],     desc:'合衆国' },
+  { word:'加国', chars:['加','国'], rarity:'★7', season:'S3', tags:['国名','アメリカ'],     desc:'カナダ' },
+  { word:'墨国', chars:['墨','国'], rarity:'★11', season:'S3', tags:['国名','アメリカ'],    desc:'メキシコ' },
+  { word:'巴西', chars:['巴','西'], rarity:'★11', season:'S3', tags:['国名','アメリカ'],    desc:'ブラジル' },
+  { word:'阿根', chars:['阿','根'], rarity:'★11', season:'S3', tags:['国名','アメリカ'],    desc:'アルゼンチン' },
+  { word:'埃及', chars:['埃','及'], rarity:'★13', season:'S3', tags:['国名','アフリカ','古代'], desc:'エジプト' },
+  { word:'南非', chars:['南','非'], rarity:'★10', season:'S3', tags:['国名','アフリカ'],    desc:'南アフリカ' },
+  { word:'澳州', chars:['澳','州'], rarity:'★12', season:'S3', tags:['国名','大洋州'],      desc:'オーストラリア' },
+  { word:'紐西', chars:['紐','西'], rarity:'★13', season:'S3', tags:['国名','大洋州'],      desc:'ニュージーランド' },
+];
+
+// 都道府県 47（全て・読み補完なし／漢字のみ）
+const _YOJI_PREFECTURES = [
+  { word:'北海', chars:['北','海'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'], desc:'北の大地' },
+  { word:'青森', chars:['青','森'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'岩手', chars:['岩','手'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'宮城', chars:['宮','城'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'秋田', chars:['秋','田'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'山形', chars:['山','形'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'福島', chars:['福','島'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'茨城', chars:['茨','城'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'栃木', chars:['栃','木'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'群馬', chars:['群','馬'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'埼玉', chars:['埼','玉'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'千葉', chars:['千','葉'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'東京', chars:['東','京'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名','首都'], desc:'日本の首都' },
+  { word:'神奈', chars:['神','奈'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'], desc:'神奈川' },
+  { word:'新潟', chars:['新','潟'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'富山', chars:['富','山'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'石川', chars:['石','川'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'福井', chars:['福','井'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'山梨', chars:['山','梨'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'長野', chars:['長','野'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'岐阜', chars:['岐','阜'], rarity:'★11', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'静岡', chars:['静','岡'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'愛知', chars:['愛','知'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'三重', chars:['三','重'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'滋賀', chars:['滋','賀'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'京都', chars:['京','都'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名','古都'], desc:'千年の都' },
+  { word:'大阪', chars:['大','阪'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'兵庫', chars:['兵','庫'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'奈良', chars:['奈','良'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名','古都'] },
+  { word:'和歌', chars:['和','歌'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'], desc:'和歌山' },
+  { word:'鳥取', chars:['鳥','取'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'島根', chars:['島','根'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'岡山', chars:['岡','山'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'広島', chars:['広','島'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'山口', chars:['山','口'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'徳島', chars:['徳','島'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'香川', chars:['香','川'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'愛媛', chars:['愛','媛'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'高知', chars:['高','知'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'福岡', chars:['福','岡'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'佐賀', chars:['佐','賀'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'長崎', chars:['長','崎'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'熊本', chars:['熊','本'], rarity:'★6', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'大分', chars:['大','分'], rarity:'★4', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'宮崎', chars:['宮','崎'], rarity:'★7', season:'S3', tags:['都道府県','日本','地名'] },
+  { word:'鹿児', chars:['鹿','児'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名'], desc:'鹿児島' },
+  { word:'沖縄', chars:['沖','縄'], rarity:'★8', season:'S3', tags:['都道府県','日本','地名','島嶼'] },
+];
+
+// 主要都市・古都・名所
+const _YOJI_CITIES = [
+  { word:'札幌', chars:['札','幌'], rarity:'★11', season:'S3', tags:['都市','日本','地名'] },
+  { word:'仙台', chars:['仙','台'], rarity:'★8', season:'S3', tags:['都市','日本','地名'] },
+  { word:'横浜', chars:['横','浜'], rarity:'★7', season:'S3', tags:['都市','日本','地名'] },
+  { word:'名古', chars:['名','古'], rarity:'★4', season:'S3', tags:['都市','日本','地名'], desc:'名古屋' },
+  { word:'金沢', chars:['金','沢'], rarity:'★4', season:'S3', tags:['都市','日本','地名','古都'] },
+  { word:'神戸', chars:['神','戸'], rarity:'★4', season:'S3', tags:['都市','日本','地名'] },
+  { word:'広島', chars:['広','島'], rarity:'★6', season:'S3', tags:['都市','日本','地名'] },
+  { word:'横須', chars:['横','須'], rarity:'★8', season:'S3', tags:['都市','日本','地名'], desc:'横須賀' },
+  { word:'鎌倉', chars:['鎌','倉'], rarity:'★11', season:'S3', tags:['都市','日本','地名','古都'] },
+  { word:'函館', chars:['函','館'], rarity:'★11', season:'S3', tags:['都市','日本','地名'] },
+  { word:'長崎', chars:['長','崎'], rarity:'★7', season:'S3', tags:['都市','日本','地名'] },
+  // 世界の都市
+  { word:'巴黎', chars:['巴','黎'], rarity:'★13', season:'S3', tags:['都市','世界','首都'], desc:'パリ' },
+  { word:'倫敦', chars:['倫','敦'], rarity:'★12', season:'S3', tags:['都市','世界','首都'], desc:'ロンドン' },
+  { word:'紐約', chars:['紐','約'], rarity:'★13', season:'S3', tags:['都市','世界'],       desc:'ニューヨーク' },
+  { word:'北京', chars:['北','京'], rarity:'★4', season:'S3', tags:['都市','世界','首都'], desc:'中国の首都' },
+  { word:'上海', chars:['上','海'], rarity:'★4', season:'S3', tags:['都市','世界'] },
+  { word:'香港', chars:['香','港'], rarity:'★4', season:'S3', tags:['都市','世界'] },
+  { word:'首爾', chars:['首','爾'], rarity:'★14', season:'S3', tags:['都市','世界','首都'], desc:'ソウル' },
+  { word:'伯林', chars:['伯','林'], rarity:'★12', season:'S3', tags:['都市','世界','首都'], desc:'ベルリン' },
+  { word:'羅馬', chars:['羅','馬'], rarity:'★13', season:'S3', tags:['都市','世界','首都','古典'], desc:'ローマ' },
+  { word:'雅典', chars:['雅','典'], rarity:'★12', season:'S3', tags:['都市','世界','首都','古典'], desc:'アテネ' },
+  { word:'開羅', chars:['開','羅'], rarity:'★13', season:'S3', tags:['都市','世界','首都'], desc:'カイロ' },
+];
+
+// 故事成語・四字熟語拡張（出典付き）
+const _YOJI_KOJI = [
+  { word:'矛盾', chars:['矛','盾'], rarity:'★8', season:'S3', tags:['故事成語','韓非子'], desc:'つじつまの合わぬこと（韓非子）' },
+  { word:'杞憂', chars:['杞','憂'], rarity:'★12', season:'S3', tags:['故事成語','列子'], desc:'取り越し苦労（列子）' },
+  { word:'蛇足', chars:['蛇','足'], rarity:'★8', season:'S3', tags:['故事成語','戦国策'], desc:'余計な付け足し（戦国策）' },
+  { word:'漁夫', chars:['漁','夫'], rarity:'★9', season:'S3', tags:['故事成語','戦国策'], desc:'漁夫の利' },
+  { word:'守株', chars:['守','株'], rarity:'★11', season:'S3', tags:['故事成語','韓非子'], desc:'古習にとらわれる' },
+  { word:'完璧', chars:['完','璧'], rarity:'★9', season:'S3', tags:['故事成語','史記'], desc:'欠点がない（史記）' },
+  { word:'推敲', chars:['推','敲'], rarity:'★13', season:'S3', tags:['故事成語','文芸'], desc:'詩文の文字を練る' },
+  { word:'蛍雪', chars:['蛍','雪'], rarity:'★11', season:'S3', tags:['故事成語'], desc:'蛍雪の功 ── 苦学' },
+  { word:'出藍', chars:['出','藍'], rarity:'★13', season:'S3', tags:['故事成語','荀子'], desc:'弟子が師を超える' },
+  { word:'臥薪', chars:['臥','薪'], rarity:'★14', season:'S3', tags:['故事成語','史記'], desc:'臥薪嘗胆の片割れ' },
+  { word:'嘗胆', chars:['嘗','胆'], rarity:'★14', season:'S3', tags:['故事成語','史記'], desc:'復讐を期して耐える' },
+  { word:'破竹', chars:['破','竹'], rarity:'★10', season:'S3', tags:['故事成語','晋書'], desc:'破竹の勢い' },
+  { word:'画竜', chars:['画','竜'], rarity:'★11', season:'S3', tags:['故事成語'], desc:'画竜点睛 ── 最後の仕上げ' },
+  { word:'白眉', chars:['白','眉'], rarity:'★11', season:'S3', tags:['故事成語','三国志'], desc:'最も優れた者' },
+  { word:'四字熟', chars:['四','字','熟'], rarity:'★8', season:'S4', tags:['四字熟語','メタ'], desc:'四字熟語そのもの' },
+  { word:'七転八起', chars:['七','転','八','起'], rarity:'★9', season:'S4', tags:['四字熟語','故事成語'], desc:'何度倒れても立ち上がる' },
+  { word:'一日千秋', chars:['一','日','千','秋'], rarity:'★10', season:'S4', tags:['四字熟語'], desc:'待ち遠しさ' },
+  { word:'千変万化', chars:['千','変','万','化'], rarity:'★9', season:'S4', tags:['四字熟語'], desc:'変化が多い' },
+  { word:'温故知新', chars:['温','故','知','新'], rarity:'★9', season:'S4', tags:['四字熟語','論語'], desc:'故きを温ね新しきを知る' },
+  { word:'切磋琢磨', chars:['切','磋','琢','磨'], rarity:'★12', season:'S4', tags:['四字熟語','論語'], desc:'互いに磨き合う' },
+  { word:'起死回生', chars:['起','死','回','生'], rarity:'★10', season:'S4', tags:['四字熟語'], desc:'絶望から復活' },
+  { word:'因果応報', chars:['因','果','応','報'], rarity:'★10', season:'S4', tags:['四字熟語','仏教'], desc:'良きも悪しきも返る' },
+  { word:'諸行無常', chars:['諸','行','無','常'], rarity:'★11', season:'S4', tags:['四字熟語','仏教','平家'], desc:'全ては移ろう' },
+  { word:'弱肉強食', chars:['弱','肉','強','食'], rarity:'★10', season:'S4', tags:['四字熟語'], desc:'強者が弱者を制す' },
+  { word:'四面楚歌', chars:['四','面','楚','歌'], rarity:'★13', season:'S4', tags:['四字熟語','故事成語','史記'], desc:'孤立無援' },
+  { word:'朝令暮改', chars:['朝','令','暮','改'], rarity:'★12', season:'S4', tags:['四字熟語'], desc:'方針が定まらない' },
+  { word:'臥薪嘗胆', chars:['臥','薪','嘗','胆'], rarity:'★14', season:'S4', tags:['四字熟語','故事成語','史記'], desc:'復讐を期して耐え抜く' },
+  { word:'呉越同舟', chars:['呉','越','同','舟'], rarity:'★13', season:'S4', tags:['四字熟語','故事成語','孫子'], desc:'敵同士が同じ船' },
+  { word:'画竜点睛', chars:['画','竜','点','睛'], rarity:'★14', season:'S4', tags:['四字熟語','故事成語'], desc:'最後の仕上げで完成' },
+];
+
+// 自然 ── 動植物・天体・気象
+const _YOJI_NATURE = [
+  { word:'桜花', chars:['桜','花'], rarity:'★4', season:'S3', tags:['自然','植物','春'] },
+  { word:'紅葉', chars:['紅','葉'], rarity:'★6', season:'S3', tags:['自然','植物','秋'] },
+  { word:'松柏', chars:['松','柏'], rarity:'★11', season:'S3', tags:['自然','植物','常緑'] },
+  { word:'竹林', chars:['竹','林'], rarity:'★4', season:'S3', tags:['自然','植物'] },
+  { word:'梅花', chars:['梅','花'], rarity:'★6', season:'S3', tags:['自然','植物','春'] },
+  { word:'蓮華', chars:['蓮','華'], rarity:'★11', season:'S3', tags:['自然','植物','仏教'] },
+  { word:'菊花', chars:['菊','花'], rarity:'★7', season:'S3', tags:['自然','植物','秋'] },
+  { word:'藤棚', chars:['藤','棚'], rarity:'★11', season:'S3', tags:['自然','植物','春'] },
+  // 動物
+  { word:'鶴亀', chars:['鶴','亀'], rarity:'★11', season:'S3', tags:['自然','動物','長寿'] },
+  { word:'鳳凰', chars:['鳳','凰'], rarity:'★14', season:'S3', tags:['自然','動物','瑞獣'] },
+  { word:'麒麟', chars:['麒','麟'], rarity:'★14', season:'S3', tags:['自然','動物','瑞獣'] },
+  { word:'白虎', chars:['白','虎'], rarity:'★10', season:'S3', tags:['自然','動物','四神'] },
+  { word:'青龍', chars:['青','龍'], rarity:'★11', season:'S3', tags:['自然','動物','四神'] },
+  { word:'朱雀', chars:['朱','雀'], rarity:'★11', season:'S3', tags:['自然','動物','四神'] },
+  { word:'玄武', chars:['玄','武'], rarity:'★11', season:'S3', tags:['自然','動物','四神'] },
+  // 天体・気象
+  { word:'天文', chars:['天','文'], rarity:'★4', season:'S3', tags:['天体','学問'] },
+  { word:'星座', chars:['星','座'], rarity:'★8', season:'S3', tags:['天体'] },
+  { word:'彗星', chars:['彗','星'], rarity:'★13', season:'S3', tags:['天体'] },
+  { word:'極光', chars:['極','光'], rarity:'★8', season:'S3', tags:['天体','気象'], desc:'オーロラ' },
+  { word:'雷雲', chars:['雷','雲'], rarity:'★6', season:'S3', tags:['気象'] },
+  { word:'霧氷', chars:['霧','氷'], rarity:'★8', season:'S3', tags:['気象','冬'] },
+  { word:'霜降', chars:['霜','降'], rarity:'★8', season:'S3', tags:['気象','秋'] },
+  { word:'秋霖', chars:['秋','霖'], rarity:'★14', season:'S3', tags:['気象','秋','雅語'] },
+  { word:'時雨', chars:['時','雨'], rarity:'★6', season:'S3', tags:['気象','秋','雅語'] },
+  { word:'夕立', chars:['夕','立'], rarity:'★4', season:'S3', tags:['気象','夏'] },
+  { word:'虹彩', chars:['虹','彩'], rarity:'★11', season:'S3', tags:['気象'] },
+];
+
+// 一括 push
+for (const r of _YOJI_COUNTRIES_ASIA)   YOJI_RECIPES.push(r);
+for (const r of _YOJI_COUNTRIES_EU)     YOJI_RECIPES.push(r);
+for (const r of _YOJI_COUNTRIES_OTHERS) YOJI_RECIPES.push(r);
+for (const r of _YOJI_PREFECTURES)      YOJI_RECIPES.push(r);
+for (const r of _YOJI_CITIES)           YOJI_RECIPES.push(r);
+for (const r of _YOJI_KOJI)             YOJI_RECIPES.push(r);
+for (const r of _YOJI_NATURE)           YOJI_RECIPES.push(r);
+
 // 重複熟語を削除（同じ word は後勝ち：新しい情報が優先）
 (function dedupeYoji(){
   const seenWords = new Set();
