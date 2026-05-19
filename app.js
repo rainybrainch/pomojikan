@@ -405,6 +405,7 @@ const DEFAULT_STATE = {
   partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
   lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
   hudEnabled: true,               // v10n10 ─ プレイ中 HUD 表示 ON/OFF
+  themePref: 'auto',              // v10n19 ─ 'auto' / 'spring' / 'summer' / 'autumn' / 'winter' / 'dark' / 'light'
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
@@ -462,6 +463,7 @@ function checkMilestones() {
   if (!Array.isArray(STATE.partyPresets)) STATE.partyPresets = [];
   if (typeof STATE.lastSeenVersion !== 'string') STATE.lastSeenVersion = '';
   if (typeof STATE.hudEnabled !== 'boolean') STATE.hudEnabled = true;
+  if (typeof STATE.themePref !== 'string') STATE.themePref = 'auto';
   // v10n15: 堅牢化 ── 旧 state 構造の破損対策
   try {
     if (STATE.party && STATE.party.members) {
@@ -1515,6 +1517,89 @@ function applyComboTagEffects(r, acc) {
   }
 }
 
+// v10n19: 季節判定（北半球・気象基準）
+function currentSeasonAuto() {
+  const m = new Date().getMonth() + 1;
+  if (m >= 3 && m <= 5)  return 'spring';
+  if (m >= 6 && m <= 8)  return 'summer';
+  if (m >= 9 && m <= 11) return 'autumn';
+  return 'winter';
+}
+function applyTheme() {
+  const pref = STATE.themePref || 'auto';
+  let season = '';
+  let theme = 'dark';
+  if (pref === 'auto')        season = currentSeasonAuto();
+  else if (pref === 'light')  theme  = 'light';
+  else if (pref === 'dark')   theme  = 'dark';
+  else                        season = pref;  // spring/summer/autumn/winter
+  document.body.dataset.season = season || '';
+  document.body.dataset.theme  = theme;
+}
+const THEME_LABELS = {
+  auto:'🍃 自動（季節）', spring:'🌸 春', summer:'🌊 夏',
+  autumn:'🍁 秋', winter:'❄ 冬', dark:'🌑 ダーク', light:'☀ ライト',
+};
+function openThemePicker() {
+  let modal = $('#theme-modal');
+  if (!modal) {
+    modal = el('div', { class:'modal', id:'theme-modal', role:'dialog' },
+      el('div', { class:'modal-card', style:{ maxWidth:'380px' } },
+        el('div', { class:'modal-head' },
+          el('div', { class:'modal-title' }, '🎨 テーマ'),
+          el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
+        ),
+        el('div', { id:'theme-list', style:{ padding:'12px 16px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' } }),
+      ),
+    );
+    document.body.appendChild(modal);
+  }
+  const list = $('#theme-list');
+  list.innerHTML = '';
+  Object.entries(THEME_LABELS).forEach(([key, lbl]) => {
+    const active = (STATE.themePref || 'auto') === key;
+    list.appendChild(el('button', {
+      style:{
+        padding:'12px 10px', minHeight:'56px',
+        background: active ? 'linear-gradient(135deg, rgba(240,212,138,.25), rgba(240,212,138,.08))' : 'rgba(255,255,255,.04)',
+        border: '1px solid ' + (active ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.12)'),
+        borderRadius:'8px',
+        color: active ? '#ffe9a0' : 'var(--ink)',
+        fontWeight: active ? 700 : 400,
+        cursor:'pointer',
+      },
+      onclick: () => {
+        STATE.themePref = key;
+        saveState();
+        applyTheme();
+        openThemePicker();  // 再描画で active 反映
+        toast(`🎨 ${lbl}`);
+      },
+    }, lbl));
+  });
+  modal.classList.add('show');
+}
+
+// v10n19: コンボタグから一時 aura クラスを body に
+const COMBO_AURA_TAGS = {
+  '自然':'nature', '植物':'nature', '動物':'nature', '花':'nature',
+  '武':'fire', '火':'fire', '七大罪':'fire', '戦':'fire',
+  '水':'water', '雨':'water', '海':'water', '川':'water',
+  '禅':'zen', '仏教':'zen', '神字':'zen', '瞑想':'zen',
+};
+function flashComboAura(r) {
+  if (!r || !r.tags) return;
+  for (const t of r.tags) {
+    const cls = COMBO_AURA_TAGS[t];
+    if (cls) {
+      const full = 'combo-aura-' + cls;
+      document.body.classList.add(full);
+      setTimeout(() => document.body.classList.remove(full), 3000);
+      return;  // 1 つだけ
+    }
+  }
+}
+
 // v10n13: パッシブ ── 常時発動（弱いが累積する）
 // パーティ編成と独立、コレクション／継続マイルストーン由来
 const _passiveCount = {
@@ -1555,6 +1640,11 @@ const PASSIVES = [
   { id:'p_seven_sin',  name:'七大罪の連動', desc:'七大罪タグ 7 種：粒 +1 / 重力 -3%', icon:'☷', cond:s=>_countCharsByTag(s,'七大罪')>=7, eff:{dropCountAdd:1, gravityMul:0.97} },
   // リーダー Lv（自パーティ依存だが恒久的）
   { id:'p_hero_100',   name:'楷書師の杖',   desc:'リーダー Lv.100：ストック +3%', icon:'🖋', cond:s=>_passiveCount.hero(s)>=100, eff:{stockExpMul:1.03} },
+  // v10n19: 季節パッシブ（今の月で発動・自動）
+  { id:'p_season_spring', name:'🌸 春の祝福', desc:'3-5 月：融合範囲 +4% / EXP +2%', icon:'🌸', cond:()=>{const m=new Date().getMonth()+1;return m>=3&&m<=5;}, eff:{mergeRadiusMul:1.04, expMul:1.02} },
+  { id:'p_season_summer', name:'🌊 夏の活力', desc:'6-8 月：粒+1 / EXP +3%',          icon:'🌊', cond:()=>{const m=new Date().getMonth()+1;return m>=6&&m<=8;}, eff:{dropCountAdd:1, expMul:1.03} },
+  { id:'p_season_autumn', name:'🍁 秋の収穫', desc:'9-11 月：ストック +5% / 進化加速 +3%', icon:'🍁', cond:()=>{const m=new Date().getMonth()+1;return m>=9&&m<=11;}, eff:{stockExpMul:1.05, evoBoost:0.03} },
+  { id:'p_season_winter', name:'❄ 冬の沈潜', desc:'12-2 月：重力 -5% / 進化加速 +4%', icon:'❄', cond:()=>{const m=new Date().getMonth()+1;return m===12||m<=2;}, eff:{gravityMul:0.95, evoBoost:0.04} },
 ];
 
 function getActivePassives() {
@@ -1644,6 +1734,7 @@ function checkComboPickup() {
       if (wasNew) bumpDailyLog('newYoji', 1);
       saveState();
       spawnComboBurst(r);
+      try { flashComboAura(r); } catch(_) {}
       // 全く初の解放（過去にも一度も発動経験なし）なら盛大なセレモニー
       if (wasNew && !r.special) {
         spawnYojiUnlockCelebration(r);
@@ -6009,6 +6100,7 @@ function bindEvents() {
   menuClick('#m-data',       openDataManager);
   menuClick('#m-hud',        toggleHUD);
   menuClick('#m-pip',        toggleTimerPiP);
+  menuClick('#m-theme',      openThemePicker);
   menuClick('#m-writings',   openWritings);
   menuClick('#m-timer',      openTimerSettings);
   // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／🗂 プリセットで全カバー済
@@ -6276,6 +6368,8 @@ function init() {
   physicsStep();
   // v10n7: タイマー縁ドラッグで時間設定
   try { setupTimerRingDrag(); } catch(_) {}
+  // v10n19: テーマ適用
+  try { applyTheme(); } catch(_) {}
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
   window.addEventListener('pagehide', () => {
     try { if (_pipWindow) _pipWindow.close(); } catch(_) {}
