@@ -241,7 +241,7 @@ body[data-mode="rest"] .bubble-bg{ opacity:.65; }
   color:var(--accent-2);
   font-size:.95rem;
   flex:0 0 auto;
-  margin-left:8px;
+  margin-left:0;
 }
 .header-spacer{ flex:1; }
 
@@ -4124,7 +4124,7 @@ body[data-mode="idle"] .timer-zone::after {
 .play-hud {
   position: fixed;
   top: 56px;
-  right: 8px;
+  left: 8px;
   z-index: 5;
   padding: 6px 10px;
   background: rgba(10,16,26,.55);

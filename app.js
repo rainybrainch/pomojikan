@@ -5598,14 +5598,7 @@ function bindEvents() {
   menuClick('#m-hud',        toggleHUD);
   menuClick('#m-writings',   openWritings);
   menuClick('#m-timer',      openTimerSettings);
-  menuClick('#m-edit-party', () => {
-    if (confirm('パーティを再編成しますか？（現在のメンバーはリセット）')) {
-      STATE.party = null;
-      saveState();
-      renderParty();
-      openPartyPicker();
-    }
-  });
+  // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／🗂 プリセットで全カバー済
   menuClick('#m-sleep', openSleep);
   // スリープ：オーバーレイのどこでもタップで起きる
   const sleepOv = $('#sleep-overlay');
