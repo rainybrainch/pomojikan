@@ -4041,3 +4041,25 @@ body[data-mode="idle"] .timer-zone::after {
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* ════════════════════ v10n8: 図鑑強化 ════════════════════ */
+.cs-progress {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  font-size: .58rem;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(135,206,235,.18);
+  color: #cfe6ff;
+  border-radius: 3px;
+  border: 1px solid rgba(135,206,235,.3);
+}
+.codex-tab.tier-locked .cs-progress,
+.codex-season.tier-locked .cs-progress { display: none; }
+/* お気に入り字グリッドのマーク（後で詳細ポップでも見える） */
+.cd-fav-btn:hover, .ydp-fav-btn:hover {
+  background: rgba(240,212,138,.30) !important;
+}
+.ydp-assemble-btn:hover {
+  filter: brightness(1.1);
+}

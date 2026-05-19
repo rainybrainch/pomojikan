@@ -390,6 +390,7 @@ const DEFAULT_STATE = {
   milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
+  favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（⭐）字／熟語
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
@@ -441,6 +442,9 @@ const MILESTONES = [
 // 達成チェック（completePhase, addStock 等から定期的に呼ぶ）
 function checkMilestones() {
   if (!STATE.milestones) STATE.milestones = {};
+  if (!STATE.favorites) STATE.favorites = { chars: {}, yoji: {} };
+  if (!STATE.favorites.chars) STATE.favorites.chars = {};
+  if (!STATE.favorites.yoji)  STATE.favorites.yoji  = {};
   let newlyAchieved = [];
   for (const m of MILESTONES) {
     if (STATE.milestones[m.id]) continue;
@@ -4025,7 +4029,7 @@ function applyPreset(idx) {
 // ═══════════════════════════════════════════════════════════════
 // 図鑑
 // ═══════════════════════════════════════════════════════════════
-let codexFilter = { tier: 'all', season: 'all', script: 'all', onlySeen: false, query: '' };
+let codexFilter = { tier: 'all', season: 'all', script: 'all', onlySeen: false, onlyFavorite: false, query: '' };
 
 // 文字種判定 ── Unicode 範囲ベース（41,890 字を瞬時に絞り込み）
 const SCRIPT_RANGES = {
@@ -4077,6 +4081,137 @@ function openCodex() {
     }, `(${total.toLocaleString()})`));
   }
   renderCodex();
+}
+
+// v10n8: お気に入り（⭐）── 字／熟語
+function toggleFavoriteChar(c) {
+  if (!STATE.favorites) STATE.favorites = { chars:{}, yoji:{} };
+  if (STATE.favorites.chars[c]) {
+    delete STATE.favorites.chars[c];
+    toast(`☆ ${c} のお気に入り解除`);
+  } else {
+    STATE.favorites.chars[c] = Date.now();
+    toast(`⭐ ${c} をお気に入りに`);
+  }
+  saveState();
+}
+function toggleFavoriteYoji(w) {
+  if (!STATE.favorites) STATE.favorites = { chars:{}, yoji:{} };
+  if (STATE.favorites.yoji[w]) {
+    delete STATE.favorites.yoji[w];
+    toast(`☆ ${w} のお気に入り解除`);
+  } else {
+    STATE.favorites.yoji[w] = Date.now();
+    toast(`⭐ ${w} をお気に入りに`);
+  }
+  saveState();
+}
+function isFavoriteChar(c) { return !!(STATE.favorites?.chars?.[c]); }
+function isFavoriteYoji(w) { return !!(STATE.favorites?.yoji?.[w]); }
+
+// v10n8: コンボ効果プレビュー ── 単独発動時の効果数値を返す
+function previewComboEffect(r) {
+  if (!r) return null;
+  // 一時的に getComboBonus と同じロジックを 1 件だけで走らせる
+  const acc = { expMul:1.0, evoBoost:0, gravityMul:1.0, mergeRadiusMul:1.0, dropCountAdd:0, stockExpMul:1.0 };
+  const lvMul = (typeof leaderLvMul === 'function') ? leaderLvMul() : 1.0;
+  if (r.special && r.effect) {
+    const e = r.effect;
+    if (e.expMul)         acc.expMul        *= e.expMul * lvMul;
+    if (e.evoBoost)       acc.evoBoost      += e.evoBoost * lvMul;
+    if (e.gravityMul)     acc.gravityMul    *= e.gravityMul;
+    if (e.mergeRadiusMul) acc.mergeRadiusMul*= e.mergeRadiusMul;
+    if (e.dropCountAdd)   acc.dropCountAdd  += e.dropCountAdd;
+    if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul * lvMul;
+  } else {
+    const u = UNIQUE_COMBO_EFFECTS[r.word];
+    if (u) {
+      if (u.expMul)         acc.expMul        *= u.expMul * lvMul;
+      if (u.evoBoost)       acc.evoBoost      += u.evoBoost * lvMul;
+      if (u.gravityMul)     acc.gravityMul    *= u.gravityMul;
+      if (u.mergeRadiusMul) acc.mergeRadiusMul*= u.mergeRadiusMul;
+      if (u.dropCountAdd)   acc.dropCountAdd  += u.dropCountAdd;
+      if (u.stockExpMul)    acc.stockExpMul   *= u.stockExpMul * lvMul;
+    } else {
+      const n = r.chars.length;
+      const rarMul = COMBO_RARITY_MUL[r.rarity] || 1.0;
+      const difMul = comboDifficulty(r);
+      const baseExp = n <= 2 ? 0.10 : n === 3 ? 0.30 : n === 4 ? 0.60 : 1.0;
+      acc.expMul *= 1 + baseExp * rarMul * difMul * lvMul;
+      if (n === 4) acc.evoBoost += 0.10 * rarMul * lvMul;
+      if (n >= 5)  acc.evoBoost += 0.20 * rarMul * lvMul;
+      acc._lastWeight = (n / 2) * rarMul * difMul * lvMul;
+      applyComboTagEffects(r, acc);
+      delete acc._lastWeight;
+    }
+  }
+  if (typeof clampCombo === 'function') clampCombo(acc);
+  return acc;
+}
+function formatComboEffect(eff) {
+  if (!eff) return '';
+  const lines = [];
+  if (eff.expMul && eff.expMul > 1.01)        lines.push(`EXP ×${eff.expMul.toFixed(2)}`);
+  if (eff.evoBoost && eff.evoBoost > 0.005)   lines.push(`進化加速 +${(eff.evoBoost*100).toFixed(0)}%`);
+  if (eff.gravityMul && eff.gravityMul < 0.99) lines.push(`重力 ×${eff.gravityMul.toFixed(2)}`);
+  if (eff.mergeRadiusMul && eff.mergeRadiusMul > 1.01) lines.push(`融合範囲 ×${eff.mergeRadiusMul.toFixed(2)}`);
+  if (eff.dropCountAdd && eff.dropCountAdd > 0) lines.push(`粒 +${eff.dropCountAdd}`);
+  if (eff.stockExpMul && eff.stockExpMul > 1.01) lines.push(`ストック ×${eff.stockExpMul.toFixed(2)}`);
+  return lines.length ? lines.join(' / ') : '効果は発動時の状況による';
+}
+
+// v10n8: ワンタップ編成 ── 熟語の構成字でパーティを組む
+// 構成字が手元（発見済）にすべてあれば実行可能、なければ「あと N 字」表示
+function assemblePartyFromYoji(r) {
+  if (!r || !r.chars || r.chars.length === 0) return { ok:false, reason:'構成字なし' };
+  if (r.chars.length > 4) return { ok:false, reason:'5字以上の熟語はパーティ枠超過' };
+  const codex = window.KANJI_CODEX || [];
+  const missing = [];
+  const found = [];
+  for (const c of r.chars) {
+    if (!((STATE.collection||{})[c] > 0)) { missing.push(c); continue; }
+    const k = codex.find(x => (x.char || x.c) === c);
+    if (!k) { missing.push(c); continue; }
+    found.push({ char:c, rarity:k.rarity });
+  }
+  if (missing.length > 0) return { ok:false, reason:`あと ${missing.length} 字（${missing.join('・')}）未発見`, missing };
+  // 既存パーティを置き換え（確認）
+  const heroChar = found[0].char;
+  if (STATE.party && STATE.party.members?.length) {
+    if (!confirm(`「${r.word}」発動のため現パーティを置き換えますか？\nリーダー: ${heroChar} / 仲間: ${found.slice(1).map(f=>f.char).join('・') || 'なし'}`)) {
+      return { ok:false, reason:'キャンセル' };
+    }
+  }
+  invalidateAggCache();
+  const members = found.map((f, i) => {
+    const perks = pickInherentPerks(f.char, f.rarity);
+    if (i === 0 && !perks.includes('guardian')) perks.push('guardian');
+    return { char:f.char, rarity:f.rarity, level:1, exp:0, perks };
+  });
+  STATE.party = { hero: 0, members };
+  saveState();
+  renderParty();
+  updateProgressPill();
+  try { playSFX('unlock'); } catch(_) {}
+  toast(`✨「${r.word}」コンボ編成完了`, r.rarity);
+  return { ok:true };
+}
+
+// v10n8: シーズン／タグ進捗計算
+function computeSeasonProgress(season) {
+  const codex = window.KANJI_CODEX || [];
+  const recipes = window.YOJI_RECIPES || [];
+  if (season === 'S1' || season === 'S2') {
+    const items = codex.filter(k => (k.season || 'S1') === season);
+    const found = items.filter(k => ((STATE.collection||{})[k.char || k.c] || 0) > 0).length;
+    return { found, total: items.length };
+  }
+  if (['S3','S4','S5','S6','S7'].includes(season)) {
+    const items = recipes.filter(r => r.season === season);
+    const found = items.filter(r => isYojiDiscovered ? isYojiDiscovered(r) : !!STATE.discoveredYoji?.[r.word]).length;
+    return { found, total: items.length };
+  }
+  return { found: 0, total: 0 };
 }
 
 // ランダム熟語表示 ── サプライズ発見モチベ
@@ -4132,7 +4267,16 @@ function applyCodexSeasonBadges() {
     const n = counts[s];
     if (n == null) return;
     if (!btn.dataset.origLabel) btn.dataset.origLabel = btn.textContent;
-    btn.innerHTML = btn.dataset.origLabel + ` <span class="cs-badge">${n}</span>`;
+    // v10n8: 進捗率バッジ
+    let progressHtml = '';
+    if (['S1','S2','S3','S4','S5','S6','S7'].includes(s)) {
+      const p = computeSeasonProgress(s);
+      if (p.total > 0) {
+        const pct = Math.round(p.found / p.total * 100);
+        progressHtml = ` <span class="cs-progress" title="${p.found} / ${p.total}（${pct}%）">${pct}%</span>`;
+      }
+    }
+    btn.innerHTML = btn.dataset.origLabel + ` <span class="cs-badge">${n}</span>${progressHtml}`;
   });
 }
 
@@ -4209,6 +4353,15 @@ function showYojiDetail(r) {
       border:'1px solid rgba(240,212,138,.45)', borderRadius:'6px',
       fontSize:'.78rem', color:'#f0e0a8', lineHeight:1.35,
     } }, '✦ 固有効果 ── ' + (UNIQUE_COMBO_EFFECTS[r.word].story || '物語のある効果')) : null,
+    // v10n8: コンボ効果プレビュー（数値）
+    found ? el('div', { class:'ydp-preview', style:{
+      margin:'6px 0', padding:'6px 8px',
+      background:'rgba(135,206,235,.10)', border:'1px solid rgba(135,206,235,.30)',
+      borderRadius:'6px', fontSize:'.72rem', color:'#cfe6ff', lineHeight:1.4,
+    } },
+      el('div', { style:{ fontWeight:700, marginBottom:'2px', color:'#87ceeb' } }, '⚡ 発動時の効果（現在のリーダー Lv 基準）'),
+      el('div', {}, formatComboEffect(previewComboEffect(r)))
+    ) : null,
     el('div', { class:'ydp-chars-label' }, '構成字'),
     el('div', { class:'ydp-chars' }, ...charRow),
     tags ? el('div', { class:'ydp-tags' }, tags) : null,
@@ -4218,6 +4371,41 @@ function showYojiDetail(r) {
         : found
           ? '✓ 解放済 ・ パーティに揃えるとコンボ発動'
           : '構成字を集めると解放できます'
+    ),
+    // v10n8: アクション行 ── ⭐ お気に入り ＋ ワンタップ編成
+    el('div', { style:{ display:'flex', gap:'6px', marginTop:'10px', flexWrap:'wrap' } },
+      el('button', {
+        class:'ydp-fav-btn',
+        style:{
+          padding:'6px 10px', borderRadius:'6px', fontSize:'.8rem', cursor:'pointer',
+          background: isFavoriteYoji(r.word) ? 'rgba(240,212,138,.25)' : 'rgba(255,255,255,.06)',
+          border: '1px solid ' + (isFavoriteYoji(r.word) ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.15)'),
+          color: isFavoriteYoji(r.word) ? '#f0d48a' : 'var(--ink-mute)',
+        },
+        onclick: (e) => {
+          e.stopPropagation();
+          toggleFavoriteYoji(r.word);
+          pop.remove();
+          showYojiDetail(r);
+        },
+      }, isFavoriteYoji(r.word) ? '⭐ お気に入り' : '☆ お気に入り'),
+      (r.chars && r.chars.length <= 4 && found) ? el('button', {
+        class:'ydp-assemble-btn',
+        style:{
+          padding:'6px 10px', borderRadius:'6px', fontSize:'.8rem', cursor:'pointer', fontWeight:700,
+          background: allInParty ? 'rgba(255,255,255,.08)' : 'linear-gradient(135deg,#f0d48a,#d4a84a)',
+          border: '1px solid rgba(240,212,138,.55)',
+          color: allInParty ? 'var(--ink-mute)' : '#1a1208',
+          flex: '1 1 auto', minWidth:'140px',
+        },
+        onclick: (e) => {
+          e.stopPropagation();
+          if (allInParty) { toast('既に発動中'); return; }
+          const res = assemblePartyFromYoji(r);
+          if (res.ok) { pop.remove(); }
+          else if (res.reason) { toast('⚠ ' + res.reason); }
+        },
+      }, allInParty ? '✓ 発動中' : '✨ このコンボで編成') : null,
     ),
   );
   document.body.appendChild(pop);
@@ -4272,6 +4460,21 @@ function showCharDetail(c, rarity) {
   if (isAlreadyHero) {
     actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'8px', textAlign:'center', color:'var(--gold)', fontWeight:700 } }, '★ 現在のリーダーです'));
   }
+  // v10n8: ⭐ お気に入りボタン
+  actionBtns.push(el('button', {
+    class:'cd-fav-btn',
+    style:{
+      padding:'6px 10px', borderRadius:'6px', fontSize:'.78rem', cursor:'pointer',
+      background: isFavoriteChar(c) ? 'rgba(240,212,138,.22)' : 'rgba(255,255,255,.05)',
+      border: '1px solid ' + (isFavoriteChar(c) ? 'rgba(240,212,138,.55)' : 'rgba(255,255,255,.12)'),
+      color: isFavoriteChar(c) ? '#f0d48a' : 'var(--ink-mute)',
+    },
+    onclick: () => {
+      toggleFavoriteChar(c);
+      $$('.char-detail-pop').forEach(e => e.remove());
+      showCharDetail(c, rarity);
+    },
+  }, isFavoriteChar(c) ? '⭐ お気に入り' : '☆ お気に入りに追加'));
   const recruitBtn = actionBtns.length > 0
     ? el('div', { class:'cd-actions', style:{ display:'flex', flexDirection:'column', gap:'6px', margin:'8px 0' } }, ...actionBtns)
     : null;
@@ -4407,6 +4610,10 @@ function renderCodex() {
     if (codexFilter.onlySeen) {
       recipes = recipes.filter(r => isYojiDiscovered(r));
     }
+    // v10n8: 「⭐ お気に入りのみ」フィルタ
+    if (codexFilter.onlyFavorite) {
+      recipes = recipes.filter(r => isFavoriteYoji(r.word));
+    }
     // ソート：レア度（高→低）→ 字数（多→少）
     recipes.sort((a, b) => {
       const ra = RARITY_TIERS.indexOf(a.rarity);
@@ -4522,9 +4729,10 @@ function renderCodex() {
     const tierAll = window._tierCache.byTier[tier] || [];
     const tierKanji = tierAll.filter(k => seasonMatch(k) && scriptMatch(k) && matchQuery(k));
     const visible = tierKanji.filter(k => {
-      if (!codexFilter.onlySeen) return true;
       const c = k.char || k.c;
-      return (STATE.collection[c] || 0) > 0;
+      if (codexFilter.onlySeen && !((STATE.collection[c] || 0) > 0)) return false;
+      if (codexFilter.onlyFavorite && !isFavoriteChar(c)) return false;
+      return true;
     });
     if (!visible.length) return;
     // 未解放の上位ティアは「???」でマスク（達成名・帯名すら隠して解放欲を煽る）
@@ -5093,6 +5301,11 @@ function bindEvents() {
   }));
   $('#codex-only-seen').addEventListener('change', (e) => {
     codexFilter.onlySeen = e.target.checked;
+    renderCodex();
+  });
+  const favCheck = $('#codex-only-favorite');
+  if (favCheck) favCheck.addEventListener('change', (e) => {
+    codexFilter.onlyFavorite = e.target.checked;
     renderCodex();
   });
   const shuffleBtn = $('#codex-shuffle');
