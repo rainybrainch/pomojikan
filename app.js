@@ -345,6 +345,13 @@ function aggregatePartyPerks() {
 
 // EXP 関数
 const expForLevel = (lv) => Math.floor(10 * Math.pow(lv, 1.6));
+// v10n5: 集約 evoDiscount を反映した実効必要 EXP（コンボ／特性の「進化加速」が届く）
+// agg はキャッシュ済（physicsStep で 10F 毎更新・invalidateAggCache でリセット）
+function effectiveExpForLevel(lv) {
+  const disc = (typeof _aggCache !== 'undefined' && _aggCache && _aggCache.evoDiscount)
+    ? Math.min(0.95, _aggCache.evoDiscount) : 0;
+  return Math.max(1, Math.floor(expForLevel(lv) * (1 - disc)));
+}
 const evolutionStage = (lv) => {
   // 0=未進化、1〜10=各書体段階。無限 Lv 対応（10000+ は全て stage 10）
   for (let i = EVO_STAGE_LV.length - 1; i >= 0; i--) {
@@ -1710,16 +1717,16 @@ function awardExpToParty(c, exp, opts={}) {
       const hero = STATE.party.members[STATE.party.hero];
       hero.exp += heroBonus;
       let s = 0;
-      while (hero.exp >= expForLevel(hero.level + 1) && s++ < 500) {
-        hero.exp -= expForLevel(hero.level + 1);
+      while (hero.exp >= effectiveExpForLevel(hero.level + 1) && s++ < 500) {
+        hero.exp -= effectiveExpForLevel(hero.level + 1);
         hero.level += 1;
         onLevelUp(hero, STATE.party.hero);
       }
     }
   }
   let s2 = 0;
-  while (m.exp >= expForLevel(m.level + 1) && s2++ < 500) {
-    m.exp -= expForLevel(m.level + 1);
+  while (m.exp >= effectiveExpForLevel(m.level + 1) && s2++ < 500) {
+    m.exp -= effectiveExpForLevel(m.level + 1);
     m.level += 1;
     onLevelUp(m, idx);
   }
@@ -1733,7 +1740,7 @@ function updatePartyXpUI() {
   STATE.party.members.forEach((m, idx) => {
     const card = document.querySelector(`.party-card[data-idx="${idx}"]`);
     if (!card) return;
-    const needExp = expForLevel(m.level + 1);
+    const needExp = effectiveExpForLevel(m.level + 1);
     const pct = Math.min(100, (m.exp / needExp) * 100);
     const fill = card.querySelector('.pc-fill');
     if (fill) fill.style.width = pct + '%';
@@ -2483,8 +2490,8 @@ function grantDiscoveryBonus(rarity, char) {
     const m = STATE.party.members[i];
     m.exp = (m.exp || 0) + perMember;
     let s = 0;
-    while (m.exp >= expForLevel(m.level + 1) && s++ < 500) {
-      m.exp -= expForLevel(m.level + 1);
+    while (m.exp >= effectiveExpForLevel(m.level + 1) && s++ < 500) {
+      m.exp -= effectiveExpForLevel(m.level + 1);
       m.level += 1;
       onLevelUp(m, i);
     }
@@ -2904,8 +2911,8 @@ function addStock(char) {
       const m = STATE.party.members[i];
       m.exp = (m.exp || 0) + expPerStock;
       let s = 0;
-      while (m.exp >= expForLevel(m.level + 1) && s++ < 500) {
-        m.exp -= expForLevel(m.level + 1);
+      while (m.exp >= effectiveExpForLevel(m.level + 1) && s++ < 500) {
+        m.exp -= effectiveExpForLevel(m.level + 1);
         m.level += 1;
         onLevelUp(m, i);
       }
@@ -2987,8 +2994,8 @@ function _orphanExp(exp) {
   hero.exp += Math.floor(exp / 4);
   STATE.stats.totalExp = (STATE.stats.totalExp || 0) + Math.floor(exp / 4);
   let s = 0;
-  while (hero.exp >= expForLevel(hero.level + 1) && s++ < 500) {
-    hero.exp -= expForLevel(hero.level + 1);
+  while (hero.exp >= effectiveExpForLevel(hero.level + 1) && s++ < 500) {
+    hero.exp -= effectiveExpForLevel(hero.level + 1);
     hero.level += 1;
     onLevelUp(hero, STATE.party.hero);
   }
@@ -3168,7 +3175,7 @@ function renderParty() {
     const isHero = (idx === STATE.party.hero);
     const stage = evolutionStage(m.level);
     const styleClass = EVO_STYLE[stage] || 'kai';
-    const needExp = expForLevel(m.level + 1);
+    const needExp = effectiveExpForLevel(m.level + 1);
     const tierIdx = RARITY_TIERS.indexOf(m.rarity);
     const perkLabels = (m.perks || []).map(pid => PERKS[pid]?.name).filter(Boolean).join('・');
     const card = el('div', {
@@ -3519,7 +3526,7 @@ function renderPCLeftPanel(){
     STATE.party.members.forEach((m, idx) => {
       const isHero = idx === (STATE.party.hero || 0);
       const tierIdx = RARITY_TIERS.indexOf(m.rarity);
-      const needExp = expForLevel(m.level + 1);
+      const needExp = effectiveExpForLevel(m.level + 1);
       const perkLabels = (m.perks || []).map(pid => PERKS[pid]?.name).filter(Boolean).join(' / ');
       const row = el('div', {
         class:`pc-party-row rarity-${tierIdx + 1}`,
