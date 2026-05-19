@@ -1226,6 +1226,220 @@ const COMBO_RARITY_MUL = {
   '★16':4.0,
 };
 
+// v10n4: 作成難易度 ── 構成字の平均レア × 字数 で「組み難さ」を計る
+// 字数が多く・構成字がレアであるほど高難度＝報酬厚く
+function comboDifficulty(r) {
+  if (!r || !r.chars || !r.chars.length) return 1.0;
+  const codex = window.KANJI_CODEX || [];
+  let raritySum = 0, n = 0;
+  for (const c of r.chars) {
+    const k = codex.find(x => (x.char || x.c) === c);
+    if (k && k.rarity) {
+      const idx = RARITY_TIERS.indexOf(k.rarity);
+      raritySum += (idx >= 0 ? idx + 1 : 1);
+      n++;
+    }
+  }
+  const avgRar = n > 0 ? raritySum / n : 1;
+  // 字数 2→1.0 / 3→1.3 / 4→1.7 / 5+→2.0+
+  const lenMul = r.chars.length <= 2 ? 1.0
+              : r.chars.length === 3 ? 1.3
+              : r.chars.length === 4 ? 1.7
+              : 2.0 + (r.chars.length - 5) * 0.15;
+  // 平均レアの対数寄与（★1=0 / ★5=+0.7 / ★10=+1.0 / ★16=+1.23）
+  const rarMul = 1 + Math.log10(avgRar + 1) * 0.5;
+  return lenMul * rarMul;
+}
+
+// リーダー Lv による効果スケーリング（無限育成への接続）
+// Lv 1=1.0 / Lv 100=+0.20 / Lv 1,000=+0.40 / Lv 10,000=+0.60 / Lv 1,000,000=+1.0
+function leaderLvMul() {
+  const lv = partyHeroLevel ? partyHeroLevel() : 1;
+  return 1 + Math.log10(1 + Math.max(0, lv) / 10) * 0.20;
+}
+
+// v10n4: 固有効果コンボ ── 象徴的な熟語に「物語のある効果」を付与
+// 固有効果がある熟語は通常タグ効果をスキップ（二重防止・暴走防止）
+const UNIQUE_COMBO_EFFECTS = {
+  // 四季・時の物語
+  '春夏秋冬': { expMul:1.8, evoBoost:0.15, mergeRadiusMul:1.3, story:'一年を一巡 ── 四季すべてが力に' },
+  '朝三暮四': { dropCountAdd:2, gravityMul:0.85, story:'朝夕の駆け引き ── 粒が増え時が緩む' },
+  '日進月歩': { expMul:1.6, evoBoost:0.20, story:'絶え間ない歩み ── 経験と進化が同時に' },
+  // 仏教・無常
+  '諸行無常': { gravityMul:0.6, evoBoost:0.25, expMul:1.4, story:'すべては流れる ── 重力が解け進化が進む' },
+  '色即是空': { stockExpMul:1.8, mergeRadiusMul:1.4, story:'形あるは空 ── ストックが深まり融合が広がる' },
+  '因果応報': { expMul:2.0, evoBoost:0.20, story:'因が果を呼ぶ ── 積んだものが返る' },
+  // 学び・成長
+  '温故知新': { expMul:1.5, stockExpMul:1.5, story:'古きを温め新しきを知る ── 蓄積が活きる' },
+  '切磋琢磨': { expMul:1.7, mergeRadiusMul:1.5, story:'磨き合う ── 字どうしが響き合う' },
+  '一期一会': { expMul:2.0, dropCountAdd:3, story:'この一瞬の出会い ── 粒の一つ一つが重い' },
+  // 不屈・武
+  '不撓不屈': { gravityMul:0.7, expMul:1.4, evoBoost:0.10, story:'折れない ── 重力に逆らって育つ' },
+  '起死回生': { expMul:2.4, evoBoost:0.15, dropCountAdd:2, story:'死から生へ ── 流れを反転させる極大の力' },
+  '大器晩成': { expMul:1.4, evoBoost:0.30, stockExpMul:1.5, story:'器は遅れて成る ── 進化に深い加速' },
+  '百花繚乱': { dropCountAdd:4, mergeRadiusMul:1.4, expMul:1.5, story:'花咲き乱れる ── 字が一斉に降り組み合う' },
+  '風林火山': { gravityMul:0.5, expMul:1.7, dropCountAdd:2, story:'疾く 静かに 侵し 動かず ── 四相が同時に' },
+  '質実剛健': { expMul:1.6, evoBoost:0.10, stockExpMul:1.3, story:'飾らず 強い ── 安定した底上げ' },
+  '平常心': { gravityMul:0.75, expMul:1.3, mergeRadiusMul:1.2, story:'波立たぬ心 ── 静かに全てが整う' },
+  '電光石火': { gravityMul:0.4, dropCountAdd:5, story:'稲妻のごとく ── 粒が降り注ぎ落下も速まる（重力増）' },
+  // 自然・天体
+  '花鳥風月': { expMul:1.6, mergeRadiusMul:1.5, evoBoost:0.10, story:'自然の四象 ── 静かに広がる育成' },
+  '森羅万象': { expMul:2.2, stockExpMul:1.5, evoBoost:0.20, story:'万物の全 ── 全効果が底上げ' },
+};
+
+// v10n5: 全コンボ固有効果生成器 ── タグ駆動でプロファイル決定（手書き UNIQUE 優先）
+// 各熟語に「物語ある効果」を保証する。決定論的＝同じ熟語は常に同じ効果
+const TAG_PROFILES = {
+  // [exp, drop, grav, merge, stock, evo] 合計 ≈ 1.0
+  '七徳':    { w:{exp:0.55, evo:0.25, stock:0.20}, story:'徳の力 ── 内に蓄えた善が外に滲む' },
+  '徳':      { w:{exp:0.55, evo:0.25, stock:0.20}, story:'徳の力 ── 内に蓄えた善が外に滲む' },
+  '善':      { w:{exp:0.55, evo:0.25, stock:0.20}, story:'善が積もる ── 静かな EXP の堆積' },
+  '七大罪':  { w:{drop:0.50, exp:0.35, grav:0.15}, story:'罪の刃 ── 抑えきれぬ衝動が粒となって降る' },
+  '罪':      { w:{drop:0.50, exp:0.35, grav:0.15}, story:'罪が増殖する ── 粒の数が増える' },
+  '武':      { w:{drop:0.40, exp:0.40, grav:0.20}, story:'武の構え ── 一撃が深く重力に切り込む' },
+  '戦':      { w:{drop:0.45, exp:0.35, grav:0.20}, story:'戦場の理 ── 速さと数が同時に' },
+  '仏教':    { w:{grav:0.55, evo:0.30, exp:0.15}, story:'空の境地 ── 形が解けて時が緩む' },
+  '仏':      { w:{grav:0.55, evo:0.30, exp:0.15}, story:'仏の沈黙 ── 重力が静まる' },
+  '禅':      { w:{grav:0.60, evo:0.25, exp:0.15}, story:'禅の一座 ── 落下が瞑想に変わる' },
+  '神字':    { w:{evo:0.50, exp:0.30, merge:0.20}, story:'神の字 ── 進化が一気に進む' },
+  '神':      { w:{evo:0.45, exp:0.35, merge:0.20}, story:'神性の気配 ── 字が次の姿へ' },
+  '宗教':    { w:{grav:0.45, evo:0.35, exp:0.20}, story:'祈りの形 ── 重力と進化が結ぶ' },
+  '瞑想':    { w:{grav:0.60, evo:0.25, stock:0.15}, story:'瞑想の深度 ── 時が遅れ蓄積が深まる' },
+  '自然':    { w:{merge:0.45, drop:0.30, exp:0.25}, story:'自然の息吹 ── 字が大地のように呼応する' },
+  '天体':    { w:{exp:0.40, evo:0.30, merge:0.30}, story:'天体の運行 ── 静かで大きい力' },
+  '植物':    { w:{merge:0.50, drop:0.30, stock:0.20}, story:'植物の繁茂 ── 字が枝のように広がる' },
+  '花':      { w:{merge:0.45, drop:0.30, evo:0.25}, story:'花の開く間合い ── 字が美しく結ぶ' },
+  '動物':    { w:{drop:0.45, exp:0.35, merge:0.20}, story:'動物の躍動 ── 粒が走り回る' },
+  '美':      { w:{merge:0.50, evo:0.30, exp:0.20}, story:'美の調和 ── 字が引かれ合い融合が広がる' },
+  '芸術':    { w:{merge:0.45, evo:0.30, exp:0.25}, story:'芸の表現 ── 字が次の段階へ昇華する' },
+  '文化':    { w:{stock:0.40, exp:0.35, merge:0.25}, story:'文化の堆積 ── 蓄積が表現に変わる' },
+  '時':      { w:{exp:0.40, evo:0.30, grav:0.30}, story:'時の流れ ── 経験と進化が同じ拍で進む' },
+  '季節':    { w:{exp:0.40, merge:0.30, evo:0.30}, story:'季節の巡り ── 字が次の季節に渡る' },
+  '時間':    { w:{exp:0.40, evo:0.30, grav:0.30}, story:'時間の刻み ── 一拍ずつ確実に' },
+  '科学':    { w:{stock:0.50, exp:0.30, evo:0.20}, story:'理の結晶 ── 蓄積が次の式を生む' },
+  '未来':    { w:{stock:0.40, evo:0.35, exp:0.25}, story:'未来の予兆 ── 進化と蓄積が手を組む' },
+  '数学':    { w:{stock:0.45, exp:0.40, evo:0.15}, story:'数の連なり ── 規則が EXP に翻訳される' },
+  '感情':    { w:{exp:0.45, merge:0.30, evo:0.25}, story:'心の波 ── 字に感情が乗り重みを増す' },
+  '心':      { w:{exp:0.45, evo:0.30, merge:0.25}, story:'心の動き ── 字が共鳴する' },
+  '言語':    { w:{stock:0.40, exp:0.35, merge:0.25}, story:'言葉の連鎖 ── 字と字が意味で結ばれる' },
+  '文字':    { w:{stock:0.45, exp:0.30, merge:0.25}, story:'文字の凝縮 ── 字が字を呼ぶ' },
+  '言葉':    { w:{stock:0.40, exp:0.35, merge:0.25}, story:'言葉の力 ── 意味が EXP を増幅する' },
+  '思想':    { w:{exp:0.50, evo:0.30, stock:0.20}, story:'思索の果て ── 深い EXP に変わる' },
+  '哲学':    { w:{exp:0.45, evo:0.35, stock:0.20}, story:'問いの形 ── 進化を促す思索' },
+  '学':      { w:{stock:0.45, exp:0.35, evo:0.20}, story:'学びの積層 ── 知識が育成に乗る' },
+  '人':      { w:{exp:0.40, merge:0.35, evo:0.25}, story:'人の縁 ── 字どうしが手を取る' },
+  '家族':    { w:{merge:0.50, exp:0.30, evo:0.20}, story:'家族の結束 ── 融合が強まる' },
+  '国':      { w:{stock:0.40, exp:0.35, evo:0.25}, story:'国の歴史 ── 蓄積が形になる' },
+  '地名':    { w:{stock:0.40, merge:0.35, exp:0.25}, story:'地の記憶 ── 字に土地の重みが宿る' },
+  '故事':    { w:{exp:0.45, evo:0.30, stock:0.25}, story:'故事の教え ── 過去から EXP が湧く' },
+  '昭和':    { w:{exp:0.45, drop:0.30, merge:0.25}, story:'昭和の活気 ── 粒が勢いよく降る' },
+  '令和':    { w:{drop:0.40, stock:0.30, exp:0.30}, story:'令和の脈動 ── 新しい拍で字が降る' },
+  '色':      { w:{merge:0.50, drop:0.30, exp:0.20}, story:'色の連なり ── 字が彩り合う' },
+  '数':      { w:{stock:0.45, exp:0.35, drop:0.20}, story:'数の整列 ── 規則的に EXP が積む' },
+  '四字熟語':{ w:{exp:0.40, evo:0.25, merge:0.20, stock:0.15}, story:'四字の重み ── 四つの字で世界を切る' },
+};
+
+const STORY_DEFAULT_TEMPLATES = [
+  '{w} ── 重力と引力が静かに整う',
+  '{w} ── 字が呼応し EXP が深まる',
+  '{w} ── 凝縮と発散の均衡',
+  '{w} ── 意味が落下を遅らせる',
+];
+
+// タグから主要プロファイルを決める（最初に一致したものを採用 / なければ default）
+function pickComboProfile(tags) {
+  const profiles = [];
+  for (const t of (tags || [])) {
+    if (TAG_PROFILES[t]) profiles.push(TAG_PROFILES[t]);
+  }
+  if (profiles.length === 0) {
+    return { w:{exp:0.55, evo:0.25, stock:0.20}, story:null };
+  }
+  // 主プロファイル（先頭）＋副（2 番目があれば 30% ブレンド）
+  if (profiles.length === 1) return profiles[0];
+  const a = profiles[0].w, b = profiles[1].w;
+  const blended = {};
+  const keys = ['exp','drop','grav','merge','stock','evo'];
+  for (const k of keys) blended[k] = (a[k]||0) * 0.7 + (b[k]||0) * 0.3;
+  return { w: blended, story: profiles[0].story };
+}
+
+// 決定論的疑似乱数（word ハッシュ）── 同じ熟語は常に同じ微差
+function _wordHash(word) {
+  let h = 0;
+  for (let i = 0; i < word.length; i++) h = ((h << 5) - h + word.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function generateAutoUniqueEffect(r) {
+  if (!r || !r.chars) return null;
+  const n = r.chars.length;
+  const rar = COMBO_RARITY_MUL[r.rarity] || 1.0;
+  const dif = comboDifficulty(r);
+  // 規模係数（既存 baseExp と同等：通常コンボの強さを保つ）
+  const baseScale = (n <= 2 ? 0.10 : n === 3 ? 0.30 : n === 4 ? 0.60 : 1.0) * rar * dif;
+  const prof = pickComboProfile(r.tags);
+  const w = prof.w;
+  // 決定論的微差（±15%・熟語ごとに固有の指紋）
+  const h = _wordHash(r.word || '');
+  const wiggle = 0.85 + ((h % 31) / 31) * 0.30;
+  const s = baseScale * wiggle;
+  // 各効果に分配
+  const effect = {
+    expMul:         1 + s * (w.exp || 0) * 1.4,
+    evoBoost:           s * (w.evo || 0) * 0.30,
+    gravityMul:     w.grav ? Math.max(0.50, 1 - s * (w.grav || 0) * 0.18) : 1.0,
+    mergeRadiusMul: 1 + s * (w.merge || 0) * 0.22,
+    dropCountAdd:   Math.floor(s * (w.drop || 0) * 2.5),
+    stockExpMul:    1 + s * (w.stock || 0) * 0.28,
+    auto: true,
+  };
+  // 物語：プロファイル既定 → なければテンプレ
+  if (prof.story) {
+    effect.story = prof.story;
+  } else {
+    const t = STORY_DEFAULT_TEMPLATES[h % STORY_DEFAULT_TEMPLATES.length];
+    effect.story = t.replace('{w}', r.word);
+  }
+  return effect;
+}
+
+let _autoComboInited = false;
+function initAutoUniqueCombos() {
+  if (_autoComboInited) return;
+  const recipes = window.YOJI_RECIPES || [];
+  if (recipes.length === 0) return;
+  let count = 0;
+  for (const r of recipes) {
+    if (!r || !r.word) continue;
+    if (UNIQUE_COMBO_EFFECTS[r.word]) continue;  // 手書き優先
+    const eff = generateAutoUniqueEffect(r);
+    if (eff) {
+      UNIQUE_COMBO_EFFECTS[r.word] = eff;
+      count++;
+    }
+  }
+  _autoComboInited = true;
+  try { console.log(`[v10n5] auto-unique combos generated: ${count} / total ${Object.keys(UNIQUE_COMBO_EFFECTS).length}`); } catch(_) {}
+}
+
+const COMBO_CLAMP = {
+  expMulMax: 20.0,
+  gravityMulMin: 0.30,
+  mergeRadiusMulMax: 5.0,
+  dropCountAddMax: 20,
+  stockExpMulMax: 10.0,
+  evoBoostMax: 2.0,
+};
+function clampCombo(acc) {
+  acc.expMul         = Math.min(COMBO_CLAMP.expMulMax,         acc.expMul);
+  acc.gravityMul     = Math.max(COMBO_CLAMP.gravityMulMin,     acc.gravityMul);
+  acc.mergeRadiusMul = Math.min(COMBO_CLAMP.mergeRadiusMulMax, acc.mergeRadiusMul);
+  acc.dropCountAdd   = Math.min(COMBO_CLAMP.dropCountAddMax,   acc.dropCountAdd);
+  acc.stockExpMul    = Math.min(COMBO_CLAMP.stockExpMulMax,    acc.stockExpMul);
+  acc.evoBoost       = Math.min(COMBO_CLAMP.evoBoostMax,       acc.evoBoost);
+}
+
 // タグ別の追加効果フック（コンボの「味」を出す）
 function applyComboTagEffects(r, acc) {
   const tags = r.tags || [];
@@ -1249,7 +1463,8 @@ function applyComboTagEffects(r, acc) {
   }
 }
 
-// コンボのボーナス倍率合計（レア × 字数 × タグ）
+// コンボのボーナス倍率合計（レア × 字数 × 難易度 × リーダーLv × タグ／固有効果）
+// v10n4: すべての熟語コンボに難易度＆Lvスケーリング・固有効果コンボ対応
 function getComboBonus() {
   const combos = detectPartyCombos();
   const acc = {
@@ -1257,34 +1472,49 @@ function getComboBonus() {
     gravityMul: 1.0, mergeRadiusMul: 1.0,
     dropCountAdd: 0, stockExpMul: 1.0,
   };
+  const lvMul = leaderLvMul();
   for (const r of combos) {
+    // 🌟 SPECIAL（アプリ名隠しコンボ）：固定値を加算（旧仕様維持・Lv補正のみ）
     if (r.special && r.effect) {
-      // 🌟 SPECIAL：固定値を加算（旧仕様維持）
       const e = r.effect;
-      if (e.expMul)         acc.expMul        *= e.expMul;
-      if (e.evoBoost)       acc.evoBoost      += e.evoBoost;
+      if (e.expMul)         acc.expMul        *= e.expMul * lvMul;
+      if (e.evoBoost)       acc.evoBoost      += e.evoBoost * lvMul;
       if (e.gravityMul)     acc.gravityMul    *= e.gravityMul;
       if (e.mergeRadiusMul) acc.mergeRadiusMul*= e.mergeRadiusMul;
       if (e.dropCountAdd)   acc.dropCountAdd  += e.dropCountAdd;
-      if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul;
+      if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul * lvMul;
       continue;
     }
+    // ✦ 固有効果コンボ（UNIQUE）：物語のある熟語は固有 effect 適用（タグ効果はスキップ）
+    const unique = UNIQUE_COMBO_EFFECTS[r.word];
+    if (unique) {
+      const u = unique;
+      if (u.expMul)         acc.expMul        *= u.expMul * lvMul;
+      if (u.evoBoost)       acc.evoBoost      += u.evoBoost * lvMul;
+      if (u.gravityMul)     acc.gravityMul    *= u.gravityMul;
+      if (u.mergeRadiusMul) acc.mergeRadiusMul*= u.mergeRadiusMul;
+      if (u.dropCountAdd)   acc.dropCountAdd  += u.dropCountAdd;
+      if (u.stockExpMul)    acc.stockExpMul   *= u.stockExpMul * lvMul;
+      continue;
+    }
+    // 通常コンボ：レア × 字数 × 難易度 × Lv × タグ
     const n = r.chars.length;
     const rarMul = COMBO_RARITY_MUL[r.rarity] || 1.0;
-    // 基礎 EXP ボーナス（字数ベース）× レア重み
+    const difMul = comboDifficulty(r);
     let baseExp = 0;
     if (n === 2)      baseExp = 0.10;
     else if (n === 3) baseExp = 0.30;
     else if (n === 4) baseExp = 0.60;
     else              baseExp = 1.0;
-    acc.expMul *= 1 + baseExp * rarMul;
-    if (n === 4) acc.evoBoost += 0.10 * rarMul;
-    if (n >= 5)  acc.evoBoost += 0.20 * rarMul;
-    // タグ追加効果（味付け）
-    acc._lastWeight = (n / 2) * rarMul;
+    acc.expMul *= 1 + baseExp * rarMul * difMul * lvMul;
+    if (n === 4) acc.evoBoost += 0.10 * rarMul * lvMul;
+    if (n >= 5)  acc.evoBoost += 0.20 * rarMul * lvMul;
+    // タグ追加効果（味付け）── 難易度＆Lv反映
+    acc._lastWeight = (n / 2) * rarMul * difMul * lvMul;
     applyComboTagEffects(r, acc);
   }
   delete acc._lastWeight;
+  clampCombo(acc);
   return { combos, ...acc };
 }
 
@@ -1692,7 +1922,7 @@ function renderPickerPool() {
       // Lv1 と現在の簡易効果だけ表示（数式・曲線は隠す）
       const lvBadge = `<span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;background:rgba(135,206,235,.18);border:1px solid rgba(135,206,235,.4);color:#cfe6ff;border-radius:4px;padding:1px 6px;margin-left:4px;">Lv1</span>`;
       status.innerHTML = `
-        主人公候補：<strong style="font-size:1.1rem">${_pickerSelected}</strong>（${k.rarity}）<br>
+        リーダー候補：<strong style="font-size:1.1rem">${_pickerSelected}</strong>（${k.rarity}）<br>
         <strong style="color:var(--gold)">${pName}</strong>${lvBadge} ＋ <strong style="color:#ffb888">守護</strong>${lvBadge}
       `;
       confirmBtn.disabled = false;
@@ -1714,7 +1944,7 @@ function renderPickerPool() {
     $('#party-picker-modal').classList.remove('show');
     renderParty();
     const perkNames = perks.map(p => PERKS[p]?.name).filter(Boolean).join('・');
-    toast(`主人公 ${c} ── ${perkNames}`);
+    toast(`★ リーダー ${c} ── ${perkNames}\n（以降のリーダー変更は図鑑から）`);
   };
 }
 
@@ -2903,7 +3133,7 @@ function updateStreak() {
 function promoteToHero(idx) {
   if (!STATE.party || !STATE.party.members) return;
   if (idx === STATE.party.hero) {
-    toast('既に主人公です');
+    toast('★ 既にリーダーです');
     return;
   }
   const newHero = STATE.party.members[idx];
@@ -2920,7 +3150,7 @@ function promoteToHero(idx) {
   saveState();
   renderParty();
   updateProgressPill();
-  toast(`★ ${newHero.char} が主人公に`, newHero.rarity);
+  toast(`★ ${newHero.char} がリーダーに`, newHero.rarity);
   playSFX('unlock');
 }
 
@@ -2928,7 +3158,7 @@ function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
     bar.classList.add('empty');
-    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">✦ 主人公を選んで始める</button>';
+    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">✦ リーダーを選んで始める</button>';
     $('#party-pick-cta').onclick = () => openPartyPicker();
     return;
   }
@@ -2944,9 +3174,9 @@ function renderParty() {
     const card = el('div', {
       class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}${stage > 0 ? ' evo-' + stage : ''}`,
       dataset: { idx, evo: stage, lv: m.level },
-      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nダブルタップで主人公に`,
+      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nタップで操作（リーダー昇格・解除）`,
       onclick: () => openPartyMemberAction(idx),
-      ondblclick: () => promoteToHero(idx),
+      ondblclick: () => promoteToHero(idx),  // PC 互換維持
     },
       el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage] || '𓂀') : null),
       el('div', { class:'pc-meta' },
@@ -2965,9 +3195,9 @@ function renderParty() {
   for (let i = 0; i < emptySlots; i++) {
     const slot = el('div', {
       class: 'party-card empty-slot',
-      title: '図鑑で発見した字をタップして仲間に加える',
+      title: '図鑑で字をタップ → ★リーダー設定 / ＋仲間追加',
       onclick: () => {
-        toast('図鑑📖 で発見済の字をタップして仲間に加えられます');
+        toast('図鑑📖 で字をタップ → ★リーダーに設定 か ＋仲間に加える');
         openCodex();
       }
     },
@@ -3004,7 +3234,17 @@ function renderComboBar() {
     }
   }
   bar.innerHTML = '';
-  bar.appendChild(el('span', { class:'cb-bar-label' }, '⚡ 発動中'));
+  // v10n3: コンボの効果サマリーを表示（受益者向け可視化）
+  const cb = getComboBonus();
+  const effects = [];
+  if (cb.expMul && cb.expMul > 1.0)        effects.push(`EXP×${cb.expMul.toFixed(2)}`);
+  if (cb.gravityMul && cb.gravityMul !== 1.0) effects.push(`重力×${cb.gravityMul.toFixed(2)}`);
+  if (cb.mergeRadiusMul && cb.mergeRadiusMul !== 1.0) effects.push(`融合範囲×${cb.mergeRadiusMul.toFixed(2)}`);
+  if (cb.dropCountAdd)                     effects.push(`粒+${cb.dropCountAdd}`);
+  if (cb.stockExpMul && cb.stockExpMul > 1.0) effects.push(`ストック×${cb.stockExpMul.toFixed(2)}`);
+  if (cb.evoDiscount)                       effects.push(`進化-${cb.evoDiscount}`);
+  const eff = effects.length ? `（${effects.join(' / ')}）` : '';
+  bar.appendChild(el('span', { class:'cb-bar-label', title:'コンボ詳細を見る' }, '⚡ 発動中' + eff));
   // 最大 4 件表示 ・ クリックで詳細
   combos.slice(0, 4).forEach(r => {
     const rIdx = RARITY_TIERS.indexOf(r.rarity);
@@ -3056,10 +3296,17 @@ function openPartyMemberAction(idx) {
 
   const buttons = [];
   if (isHero) {
-    buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
-      toast('主人公は解除できません（別の字を主人公にしたい時は再編成）');
-    }}, '主人公（解除不可）'));
+    buttons.push(el('div', { class:'mapop-leader-badge', style:{ padding:'8px', textAlign:'center', color:'var(--gold)', fontWeight:700, fontSize:'.85rem' } }, '★ 現在のリーダー'));
   } else {
+    // v10n3: タップで即リーダー昇格（スマホ操作性）
+    buttons.push(el('button', {
+      class:'btn-primary mapop-btn',
+      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700 },
+      onclick: () => {
+        promoteToHero(idx);
+        $$('.member-action-pop').forEach(e => e.remove());
+      },
+    }, '★ この字をリーダーに'));
     buttons.push(el('button', { class:'btn-danger mapop-btn', onclick: () => {
       if (confirm(`${m.char} をパーティから外しますか？\n（Lv. と経験値はリセットされます）`)) {
         invalidateAggCache();
@@ -3074,10 +3321,10 @@ function openPartyMemberAction(idx) {
     }}, '解除する'));
   }
   buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
-    toast('図鑑で発見字をタップして別の字を仲間に追加');
+    toast('図鑑で字をタップ → ★リーダー設定 / ＋仲間追加');
     $$('.member-action-pop').forEach(e => e.remove());
     openCodex();
-  }}, '図鑑から仲間追加'));
+  }}, '図鑑を開く'));
   buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
     $$('.member-action-pop').forEach(e => e.remove());
   }}, '閉じる'));
@@ -3114,7 +3361,42 @@ function recruitToParty(c, rarity) {
   });
   saveState();
   renderParty();
-  toast(`${c} が仲間になった！特性「${PERKS[perk]?.name || '—'}」`);
+  const perkName = PERKS[perks[0]]?.name || '—';
+  toast(`${c} が仲間になった！特性「${perkName}」`);
+  return true;
+}
+
+// ★ リーダー設定 ── 図鑑／編成からの一発切り替え（v10n3）
+// 既にパーティ内 → 昇格 / 空きあり → 加入→昇格 / 枠満 → 旧リーダーと入替（旧リーダーは仲間に降格）
+function setAsLeader(c, rarity) {
+  if (!STATE.party || !STATE.party.members) return false;
+  const idx = partyContainsChar(c);
+  if (idx >= 0) {
+    promoteToHero(idx);
+    return true;
+  }
+  if (STATE.party.members.length < 4) {
+    if (!recruitToParty(c, rarity)) return false;
+    const newIdx = partyContainsChar(c);
+    if (newIdx >= 0) promoteToHero(newIdx);
+    return true;
+  }
+  // 枠満タン → 旧リーダーを置き換え（仲間枠を一つ消費せず swap）
+  const heroIdx = STATE.party.hero || 0;
+  const oldHero = STATE.party.members[heroIdx];
+  if (!confirm(`パーティが満員です。\n旧リーダー ${oldHero.char}（Lv.${oldHero.level}）を外して ${c} をリーダーにしますか？\n（旧リーダーの Lv は失われます）`)) {
+    return false;
+  }
+  invalidateAggCache();
+  const perks = pickInherentPerks(c, rarity);
+  if (!perks.includes('guardian')) perks.push('guardian');
+  STATE.party.members[heroIdx] = { char: c, rarity, level: 1, exp: 0, perks };
+  // hero index はそのまま
+  saveState();
+  renderParty();
+  updateProgressPill();
+  toast(`★ ${c} が新しいリーダーに（${oldHero.char} と入れ替え）`, rarity);
+  playSFX('unlock');
   return true;
 }
 
@@ -3762,6 +4044,13 @@ function showYojiDetail(r) {
     el('div', { class:'ydp-rarity' }, r.rarity),
     el('div', { class:'ydp-word' }, found ? r.word : '？'.repeat(Math.max(2, r.word.length))),
     found && r.desc ? el('div', { class:'ydp-desc' }, r.desc) : null,
+    // v10n4: 固有効果コンボの物語表示
+    found && UNIQUE_COMBO_EFFECTS[r.word] ? el('div', { class:'ydp-unique', style:{
+      margin:'6px 0', padding:'6px 8px',
+      background:'linear-gradient(90deg, rgba(240,212,138,.18), rgba(240,212,138,.06))',
+      border:'1px solid rgba(240,212,138,.45)', borderRadius:'6px',
+      fontSize:'.78rem', color:'#f0e0a8', lineHeight:1.35,
+    } }, '✦ 固有効果 ── ' + (UNIQUE_COMBO_EFFECTS[r.word].story || '物語のある効果')) : null,
     el('div', { class:'ydp-chars-label' }, '構成字'),
     el('div', { class:'ydp-chars' }, ...charRow),
     tags ? el('div', { class:'ydp-tags' }, tags) : null,
@@ -3798,13 +4087,35 @@ function showCharDetail(c, rarity) {
 
   $$('.char-detail-pop').forEach(e => e.remove());
 
-  const canRecruit = STATE.party && STATE.party.members.length < 4 && partyIdx < 0;
-  const recruitBtn = canRecruit
-    ? el('button', { class:'cd-recruit', onclick: () => {
-        recruitToParty(c, rarity);
-        $$('.char-detail-pop').forEach(e => e.remove());
-        renderCodex();
-      } }, '＋ パーティに加える')
+  // v10n3: 図鑑からリーダー設定／パーティ追加を直接できるように
+  const hasParty = STATE.party && STATE.party.members && STATE.party.members.length > 0;
+  const isAlreadyHero = hasParty && partyIdx >= 0 && partyIdx === (STATE.party.hero || 0);
+  const canRecruit = hasParty && STATE.party.members.length < 4 && partyIdx < 0;
+  const actionBtns = [];
+  if (hasParty && !isAlreadyHero) {
+    actionBtns.push(el('button', {
+      class:'cd-recruit cd-leader-btn',
+      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700 },
+      onclick: () => {
+        if (setAsLeader(c, rarity)) {
+          $$('.char-detail-pop').forEach(e => e.remove());
+          renderCodex();
+        }
+      },
+    }, '★ リーダーに設定'));
+  }
+  if (canRecruit) {
+    actionBtns.push(el('button', { class:'cd-recruit', onclick: () => {
+      recruitToParty(c, rarity);
+      $$('.char-detail-pop').forEach(e => e.remove());
+      renderCodex();
+    } }, '＋ 仲間に加える'));
+  }
+  if (isAlreadyHero) {
+    actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'8px', textAlign:'center', color:'var(--gold)', fontWeight:700 } }, '★ 現在のリーダーです'));
+  }
+  const recruitBtn = actionBtns.length > 0
+    ? el('div', { class:'cd-actions', style:{ display:'flex', flexDirection:'column', gap:'6px', margin:'8px 0' } }, ...actionBtns)
     : null;
 
   // 関連熟語をレア順 ・ クリックでテキストコピー
@@ -4380,12 +4691,21 @@ function openStats() {
     .forEach(m => {
       const d = new Date(STATE.milestones[m.id]);
       const dateStr = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
-      badgeGrid.appendChild(el('div', { class:'milestone-cell achieved', title: m.desc },
+      // 達成バッジは tap で当時のセレモニーを再生（v10n2 / 碑として触れる）
+      const cell = el('div', {
+        class:'milestone-cell achieved',
+        title: m.desc + '（タップで再生）',
+        style: { cursor:'pointer' },
+      },
         el('div', { class:'milestone-icon' }, '🏆'),
         el('div', { class:'milestone-label' }, m.label),
         el('div', { class:'milestone-desc' }, m.desc),
-        el('div', { class:'milestone-date' }, dateStr)
-      ));
+        el('div', { class:'milestone-date' }, dateStr + ' ▶')
+      );
+      cell.addEventListener('click', () => {
+        try { spawnMilestoneCelebration(m); playSFX('milestone'); } catch(_) {}
+      });
+      badgeGrid.appendChild(cell);
     });
   // 未達成：「あと少し」順にソート（進捗率の高いものから ── 解放するワクワクを煽る）
   const lockedWithProgress = locked.map(m => {
@@ -4761,6 +5081,8 @@ window.addEventListener('unhandledrejection', (e) => _logRuntimeError('rejection
 // ═══════════════════════════════════════════════════════════════
 function init() {
   loadState();
+  // v10n5: 全 YOJI_RECIPES に固有効果を自動生成（手書き UNIQUE は不変）
+  try { initAutoUniqueCombos(); } catch(_) {}
   // 起動時の既存コンボは _comboPrev に登録（誤発火防止）
   setTimeout(() => {
     try { _comboPrev = new Set(detectPartyCombos().map(r => r.word)); } catch(_) {}
