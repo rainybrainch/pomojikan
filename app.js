@@ -4277,16 +4277,19 @@ function renderCodexFilterSummary() {
   else { s.style.display = ''; s.textContent = '🎯 ' + parts.join(' × '); }
 }
 
-// v10n10: 新機能ツアー（v10n2-9 の累積案内）
-const CURRENT_VERSION = 'v10n10';
+// v10n13: 新機能ツアー（v10n2-13 の累積案内）
+const CURRENT_VERSION = 'v10n13';
 const TOUR_PAGES = [
-  { emoji:'★', title:'リーダー制', body:'「主人公」が「リーダー」に。図鑑で字をタップ → 「★ リーダーに設定」で一発切替。空き枠なら加入＋昇格、満員なら入替。' },
+  { emoji:'★', title:'リーダー制', body:'「主人公」が「リーダー」に。図鑑で字をタップ →「★ リーダーに設定」で一発切替。空き枠なら加入＋昇格、満員なら入替。' },
   { emoji:'⚡', title:'コンボ × 4,546', body:'全 4,546 熟語にそれぞれ固有効果。手書きの 18 個＋タグ駆動の自動生成。物語と数値が熟語詳細で見える。' },
-  { emoji:'✨', title:'ワンタップ編成', body:'図鑑で熟語詳細を開く →「✨ このコンボで編成」で即パーティ組成。構成字が手元にあるかは⭐お気に入りで管理。' },
+  { emoji:'✨', title:'ワンタップ編成', body:'図鑑で熟語詳細を開く →「✨ このコンボで編成」で即パーティ組成。⭐お気に入りで「集めたい熟語」リスト化。' },
   { emoji:'🎰', title:'コインプッシャー物理', body:'画面の両端 12% は穴。字が押されて棚を外れると落下 → 自動 EXP 化。重くならない設計。' },
   { emoji:'⏱', title:'タイマー縁ドラッグ', body:'idle 時に時計の縁をなぞる／タップで分数設定。長押しで休憩時間モード。' },
-  { emoji:'🗂', title:'パーティ プリセット', body:'現効果パネルの 🗂 ボタンで編成を名前付きで保存／一発切替（最大 12 個）。' },
-  { emoji:'👁', title:'HUD と現効果パネル', body:'パーティ下の「⚡ 現効果」で EXP・重力・粒+ 等が一目。画面隅 HUD は次の推薦を薄く表示。' },
+  { emoji:'🗂', title:'パーティ プリセット', body:'現効果パネルの 🗂 ボタンで編成を名前付きで保存／一発切替（最大 12 個）。リーダー昇格はプレビュー付き。' },
+  { emoji:'👁', title:'HUD と現効果パネル', body:'パーティ下の「⚡ 現効果」で EXP・重力・粒+ 等が一目。画面左上 HUD は次の推薦を薄く表示。' },
+  { emoji:'💾', title:'データ管理 & ☰ 右上', body:'メニュー（右上）→「💾 データ管理」で全データ書出／復元。別端末への引継ぎも 3 ステップ。' },
+  { emoji:'📖', title:'図鑑のすっきり', body:'★凡例と 🌏 文字種フィルタを折りたたみ default 閉に。フィルタ状態は「🎯 ○○ × ○○」で 1 行表示。↺ で全解除。' },
+  { emoji:'⚙', title:'パッシブ 16 種', body:'パーティと独立した恒久ブースト。「100 字発見」「30 日連続」「七徳タグ 7 種」等のマイルストーンで自動発動。図鑑「⚙ パッシブ」タブで一覧。' },
 ];
 function openTour(force=false) {
   if (!force && STATE.lastSeenVersion === CURRENT_VERSION) return;
@@ -4555,6 +4558,7 @@ function renderEffectsPanel() {
   const evoFinal      = (agg.evoDiscount || 0) + (combo.evoBoost || 0);
   const lvMul = leaderLvMul();
   const fmt = (n, dig=2) => Number(n).toFixed(dig);
+  const passCount = (agg.activePassives || []).length;
   const items = [
     { lbl:'EXP',      val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hi:expFinal > 1.5 },
     { lbl:'重力',     val:'×' + fmt(gravFinal),     hi:gravFinal < 0.7 },
@@ -4563,6 +4567,7 @@ function renderEffectsPanel() {
     { lbl:'ストック', val:'×' + fmt(stockFinal),    hi:stockFinal > 1.3 },
     { lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%', hi:evoFinal > 0.2 },
     { lbl:'Lv係数',   val:'×' + fmt(lvMul),         hi:lvMul > 1.3 },
+    { lbl:'⚙ パッシブ', val:passCount + '/16',     hi:passCount >= 4 },
   ];
   const collapsed = panel.classList.contains('collapsed');
   panel.innerHTML = '';
