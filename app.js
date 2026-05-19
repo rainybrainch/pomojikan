@@ -4115,6 +4115,8 @@ function matchesScript(ch, scriptKey) {
 }
 function openCodex() {
   $('#codex-modal').classList.add('show');
+  setupCodexCollapsibles();
+  renderCodexFilterSummary();
   applyCodexLegendMask();
   applyCodexTabMask();
   applyCodexSeasonBadges();
@@ -4134,6 +4136,75 @@ function openCodex() {
     }, `(${total.toLocaleString()})`));
   }
   renderCodex();
+}
+
+// v10n12: 凡例・文字種フィルタの折りたたみトグル
+let _codexCollapsiblesSetup = false;
+function setupCodexCollapsibles() {
+  if (_codexCollapsiblesSetup) return;
+  const legend = $('#codex-legend');
+  const scripts = $('#codex-scripts');
+  if (legend && !legend.querySelector('.codex-collapse-toggle')) {
+    const t = el('button', {
+      class:'codex-collapse-toggle',
+      onclick: () => {
+        legend.classList.toggle('collapsed');
+        t.textContent = legend.classList.contains('collapsed') ? '▸ ★凡例（タップで展開）' : '▾ ★凡例';
+      },
+    }, '▸ ★凡例（タップで展開）');
+    legend.insertBefore(t, legend.firstChild);
+  }
+  if (scripts && !scripts.querySelector('.codex-collapse-toggle')) {
+    const t = el('button', {
+      class:'codex-collapse-toggle',
+      onclick: () => {
+        scripts.classList.toggle('collapsed');
+        t.textContent = scripts.classList.contains('collapsed') ? '▸ 🌏 文字種フィルタ' : '▾ 🌏 文字種フィルタ';
+      },
+    }, '▸ 🌏 文字種フィルタ');
+    scripts.insertBefore(t, scripts.firstChild);
+  }
+  const reset = $('#codex-reset-filter');
+  if (reset && !reset._bound) {
+    reset.addEventListener('click', () => {
+      codexFilter.tier = 'all';
+      codexFilter.season = 'all';
+      codexFilter.script = 'all';
+      codexFilter.tag = null;
+      codexFilter.query = '';
+      codexFilter.onlySeen = false;
+      codexFilter.onlyFavorite = false;
+      const q = $('#codex-search'); if (q) q.value = '';
+      const os = $('#codex-only-seen'); if (os) os.checked = false;
+      const of = $('#codex-only-favorite'); if (of) of.checked = false;
+      $$('.codex-tab').forEach(b => b.classList.toggle('active', b.dataset.tier === 'all'));
+      $$('.codex-season').forEach(b => b.classList.toggle('active', b.dataset.season === 'all'));
+      $$('.codex-script').forEach(b => b.classList.toggle('active', b.dataset.script === 'all'));
+      renderCodex();
+      renderCodexFilterSummary();
+      toast('↺ フィルタ全解除');
+    });
+    reset._bound = true;
+  }
+  _codexCollapsiblesSetup = true;
+}
+
+function renderCodexFilterSummary() {
+  const s = $('#codex-filter-summary');
+  if (!s) return;
+  const parts = [];
+  if (codexFilter.season !== 'all') {
+    const labels = { S1:'S1 字種', S2:'S2 漢字', S3:'S3 熟語', S4:'S4 四字熟語', S5:'S5 昭和', S6:'S6 令和', S7:'S7 未来', S8:'S8 世界', PERKS:'✦ 特性' };
+    parts.push(labels[codexFilter.season] || codexFilter.season);
+  }
+  if (codexFilter.tier !== 'all') parts.push('★' + (parseInt(codexFilter.tier) + 1));
+  if (codexFilter.script !== 'all') parts.push('🌏 ' + codexFilter.script);
+  if (codexFilter.tag) parts.push('# ' + codexFilter.tag);
+  if (codexFilter.query) parts.push('🔍 "' + codexFilter.query + '"');
+  if (codexFilter.onlySeen) parts.push('発見済のみ');
+  if (codexFilter.onlyFavorite) parts.push('⭐');
+  if (parts.length === 0) { s.style.display = 'none'; s.textContent = ''; }
+  else { s.style.display = ''; s.textContent = '🎯 ' + parts.join(' × '); }
 }
 
 // v10n10: 新機能ツアー（v10n2-9 の累積案内）
@@ -4895,6 +4966,8 @@ function showCharDetail(c, rarity) {
   $('#codex-modal .modal-card').appendChild(pop);
 }
 function renderCodex() {
+  // v10n12: フィルタサマリーを毎回更新
+  try { renderCodexFilterSummary(); } catch(_) {}
   const grid = $('#codex-grid');
   const scrollY = grid?.scrollTop || 0;  // フィルタ変更時のスクロール位置維持
   grid.innerHTML = '';

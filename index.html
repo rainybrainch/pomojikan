@@ -170,7 +170,7 @@
     <button class="modal-close" id="codex-close" aria-label="閉じる">×</button>
     <h2 class="modal-title">📖 ぽも字図鑑</h2>
     <div class="modal-status" id="codex-summary">発見 0 字</div>
-    <div class="codex-legend">
+    <div class="codex-legend collapsed" id="codex-legend">
       <span class="cl-row rarity-1"><span class="cl-tag">★1</span>ひらがな</span>
       <span class="cl-row rarity-2"><span class="cl-tag">★2</span>カタカナ</span>
       <span class="cl-row rarity-3"><span class="cl-tag">★3</span>数字</span>
@@ -219,7 +219,7 @@
       <button class="codex-tab" data-tier="14">★15</button>
       <button class="codex-tab" data-tier="15">★16</button>
     </div>
-    <div class="codex-scripts" id="codex-scripts">
+    <div class="codex-scripts collapsed" id="codex-scripts">
       <button class="codex-script active" data-script="all">🌏 全文字種</button>
       <button class="codex-script" data-script="hiragana">ひらがな</button>
       <button class="codex-script" data-script="katakana">カタカナ</button>
@@ -247,7 +247,9 @@
         <input type="checkbox" id="codex-only-favorite"> <span>⭐ お気に入り</span>
       </label>
       <button class="btn-secondary codex-shuffle-btn" id="codex-shuffle" title="ランダムに熟語を見る">🎲</button>
+      <button class="btn-secondary codex-reset-btn" id="codex-reset-filter" title="フィルタを全解除">↺</button>
     </div>
+    <div class="codex-filter-summary" id="codex-filter-summary"></div>
     <div class="codex-grid" id="codex-grid"></div>
   </div>
 </div>

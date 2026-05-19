@@ -4163,3 +4163,48 @@ body.stream-mode .play-hud { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .play-hud, .effects-panel { transition: none; }
 }
+
+/* ════════════════════ v10n12: 図鑑見やすさ強化 ════════════════════ */
+/* 凡例・文字種フィルタの折りたたみ */
+.codex-legend.collapsed > *:not(.codex-collapse-toggle),
+.codex-scripts.collapsed > *:not(.codex-collapse-toggle) {
+  display: none !important;
+}
+.codex-collapse-toggle {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: rgba(135,206,235,.08);
+  border: 1px solid rgba(135,206,235,.2);
+  border-radius: 6px;
+  color: #cfe6ff;
+  font-size: .78rem;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.codex-collapse-toggle:hover { background: rgba(135,206,235,.18); }
+
+/* フィルタ状況の 1 行表示 */
+.codex-filter-summary {
+  margin: 4px 0 8px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, rgba(240,212,138,.14), rgba(240,212,138,.04));
+  border: 1px solid rgba(240,212,138,.30);
+  border-radius: 6px;
+  font-size: .78rem;
+  font-weight: 700;
+  color: #f0d48a;
+  display: none;  /* 何も絞ってない時は非表示（renderCodexFilterSummary が制御） */
+}
+
+.codex-reset-btn {
+  min-width: 36px;
+  padding: 4px 8px;
+}
+
+@media (max-width: 480px) {
+  .codex-collapse-toggle { padding: 4px 8px; font-size: .72rem; }
+  .codex-filter-summary { font-size: .72rem; padding: 4px 8px; }
+}
