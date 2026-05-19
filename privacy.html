@@ -17,7 +17,7 @@ hr { border: none; border-top: 1px dashed rgba(107,182,255,0.2); margin: 30px 0;
 </head>
 <body>
 <h1>🌑 ぽもじかん ── プライバシーポリシー</h1>
-<p class="muted">最終更新：2026年5月16日 (v30)</p>
+<p class="muted">最終更新：2026年5月18日 (v10n15)</p>
 
 <h2>1. 収集する情報</h2>
 <p><strong>本アプリは、いかなる個人情報も収集・送信しません。</strong></p>
@@ -37,6 +37,12 @@ hr { border: none; border-top: 1px dashed rgba(107,182,255,0.2); margin: 30px 0;
 
 <h2>3. 通知の利用</h2>
 <p>通知許可を与えた場合、タイマー完了時にローカル通知（Notifications API）を表示します。通知内容は端末内で生成され、外部に送られません。</p>
+
+<h2>3.1 画面スリープ抑制（Wake Lock）</h2>
+<p>作業中／休憩中のみ画面が暗くなるのを抑制します（Screen Wake Lock API）。停止時に自動的に解放されます。データ送信は行いません。</p>
+
+<h2>3.2 ピクチャー・イン・ピクチャー（PiP）</h2>
+<p>メニュー「📺 小窓タイマー」を明示的にタップした時のみ、ブラウザ標準の Document Picture-in-Picture API を使って小窓タイマーを表示します（Chrome / Edge デスクトップ限定）。データ送信は行いません。</p>
 
 <h2>4. 第三者サービス</h2>
 <ul>

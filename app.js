@@ -462,6 +462,28 @@ function checkMilestones() {
   if (!Array.isArray(STATE.partyPresets)) STATE.partyPresets = [];
   if (typeof STATE.lastSeenVersion !== 'string') STATE.lastSeenVersion = '';
   if (typeof STATE.hudEnabled !== 'boolean') STATE.hudEnabled = true;
+  // v10n15: 堅牢化 ── 旧 state 構造の破損対策
+  try {
+    if (STATE.party && STATE.party.members) {
+      for (const m of STATE.party.members) {
+        if (typeof m.level !== 'number' || !isFinite(m.level)) m.level = 1;
+        if (typeof m.exp !== 'number' || !isFinite(m.exp))     m.exp = 0;
+        if (!Array.isArray(m.perks)) m.perks = [];
+      }
+      if (typeof STATE.party.hero !== 'number' || STATE.party.hero < 0 || STATE.party.hero >= STATE.party.members.length) {
+        STATE.party.hero = 0;
+      }
+    }
+    if (!STATE.stats) STATE.stats = { totalCycles:0, totalDrops:0, totalExp:0 };
+    if (typeof STATE.stats.totalCycles !== 'number') STATE.stats.totalCycles = 0;
+    if (typeof STATE.stats.totalDrops  !== 'number') STATE.stats.totalDrops  = 0;
+    if (typeof STATE.stats.totalExp    !== 'number') STATE.stats.totalExp    = 0;
+    if (!STATE.collection) STATE.collection = {};
+    if (!STATE.discoveredYoji) STATE.discoveredYoji = {};
+    if (!STATE.timer) STATE.timer = { workSec: 25*60, restSec: 5*60, presetIdx: 0 };
+    if (typeof STATE.timer.workSec !== 'number' || STATE.timer.workSec < 60) STATE.timer.workSec = 25*60;
+    if (typeof STATE.timer.restSec !== 'number' || STATE.timer.restSec < 60) STATE.timer.restSec = 5*60;
+  } catch(_) {}
   let newlyAchieved = [];
   for (const m of MILESTONES) {
     if (STATE.milestones[m.id]) continue;
