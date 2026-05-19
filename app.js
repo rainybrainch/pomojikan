@@ -2203,6 +2203,8 @@ function startWork() {
   // v10n14: Wake Lock & 通知許可要求
   requestWakeLock();
   ensureNotificationPermission();
+  // v10n18: スタート／作業再開でカッコウ
+  try { playKakkou(); } catch(_) {}
   STATE.phaseEnd = Date.now() + STATE.timer.workSec * 1000;
   document.body.dataset.mode = 'work';
   $('#main-btn').textContent = '⏸ 一時停止';
@@ -2277,6 +2279,8 @@ function startRest() {
   startRisingPomoji();
   refreshAudioByMode();
   tick();
+  // v10n18: 休憩開始でカッコウ
+  try { playKakkou(); } catch(_) {}
 }
 
 function pauseTimer() {
@@ -2342,7 +2346,6 @@ function playKakkou() {
 function completePhase() {
   const prevMode = STATE.mode;
   try { notifyPhaseComplete(prevMode); } catch(_) {}
-  try { playKakkou(); } catch(_) {}
   if (STATE.mode === 'work') {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
