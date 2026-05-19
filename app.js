@@ -391,6 +391,7 @@ const DEFAULT_STATE = {
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
   favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（⭐）字／熟語
+  partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
@@ -445,6 +446,7 @@ function checkMilestones() {
   if (!STATE.favorites) STATE.favorites = { chars: {}, yoji: {} };
   if (!STATE.favorites.chars) STATE.favorites.chars = {};
   if (!STATE.favorites.yoji)  STATE.favorites.yoji  = {};
+  if (!Array.isArray(STATE.partyPresets)) STATE.partyPresets = [];
   let newlyAchieved = [];
   for (const m of MILESTONES) {
     if (STATE.milestones[m.id]) continue;
@@ -3374,6 +3376,8 @@ function renderParty() {
   // コンボ発動チェック（編成変化時）
   checkComboPickup();
   renderComboBar();
+  // v10n9: 現効果パネルを描画
+  try { renderEffectsPanel(); } catch(_) {}
 }
 
 // パーティバー下にコンボ表示帯（発動中の熟語）
@@ -3427,13 +3431,17 @@ function openPartyMemberAction(idx) {
   const m = STATE.party.members[idx];
   if (!m) return;
   const isHero = (idx === STATE.party.hero);
-  // 特性表示 ─ 名前 + Lv + 効果説明（育つ特性のリッチ表示）
+  // 特性表示 ─ 名前 + Lv + 効果説明 + v10n9 進捗バー（あと N で Lv up）
   const perkRows = (m.perks || []).map(pid => {
     const p = PERKS[pid];
     if (!p) return null;
     const lv = perkLv(pid);
-    const pw = perkPower(pid);
     const isRare = p.rare;
+    // 進捗：raw 累計の小数部分が次 Lv までの分子
+    const raw = (STATE.perkLevels && STATE.perkLevels[pid]) || 0;
+    const frac = raw - Math.floor(raw);
+    const pct  = Math.max(0, Math.min(100, frac * 100));
+    const remain = (1 - frac).toFixed(2);
     return el('div', {
       class: 'map-perk-row' + (isRare ? ' rare' : ''),
       style:{
@@ -3441,7 +3449,7 @@ function openPartyMemberAction(idx) {
         background: isRare ? 'rgba(240,212,138,.12)' : 'rgba(255,255,255,.04)',
         border:'1px solid ' + (isRare ? 'rgba(240,212,138,.45)' : 'rgba(255,255,255,.08)'),
         borderRadius:'6px',
-        display:'flex', flexDirection:'column', gap:'2px',
+        display:'flex', flexDirection:'column', gap:'3px',
       }
     },
       el('div', { style:{ display:'flex', justifyContent:'space-between', fontSize:'.85rem', fontWeight:700 } },
@@ -3451,8 +3459,42 @@ function openPartyMemberAction(idx) {
         ),
       ),
       el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', lineHeight:1.3 } }, p.desc || ''),
+      // 進捗バー
+      el('div', { style:{ height:'4px', background:'rgba(0,0,0,.3)', borderRadius:'2px', overflow:'hidden', marginTop:'2px' } },
+        el('div', { style:{ width: pct + '%', height:'100%',
+          background: isRare ? 'linear-gradient(90deg,#f0d48a,#ffe9a0)' : 'linear-gradient(90deg,#87ceeb,#a8e0ff)',
+          transition:'width .3s'
+        } })
+      ),
+      el('div', { style:{ fontSize:'.62rem', color:'var(--ink-mute)', textAlign:'right', fontFamily:'JetBrains Mono, monospace' } },
+        `あと ${remain} で Lv.${lv + 1}`
+      ),
     );
   }).filter(Boolean);
+
+  // v10n9: リーダー昇格プレビュー（仲間枠のみ）
+  let leaderPreview = null;
+  if (!isHero) {
+    const prev = previewLeaderSwap(idx);
+    if (prev) {
+      const arrow = prev.lvDelta > 0 ? '↑' : prev.lvDelta < 0 ? '↓' : '→';
+      const lvColor = prev.lvDelta > 0 ? '#a8e0ff' : prev.lvDelta < 0 ? '#ffb888' : 'var(--ink-mute)';
+      leaderPreview = el('div', {
+        style:{
+          margin:'6px 0', padding:'6px 8px',
+          background:'rgba(135,206,235,.10)',
+          border:'1px solid rgba(135,206,235,.30)',
+          borderRadius:'6px', fontSize:'.72rem', color:'#cfe6ff', lineHeight:1.4,
+        }
+      },
+        el('div', { style:{ fontWeight:700, marginBottom:'2px', color:'#87ceeb' } }, '★ リーダー昇格プレビュー'),
+        el('div', {}, `現: ${prev.current.char} Lv.${prev.current.lv}（${prev.current.rarity}）`),
+        el('div', {}, `候補: ${prev.candidate.char} Lv.${prev.candidate.lv}（${prev.candidate.rarity}）`),
+        el('div', { style:{ color:lvColor } }, `Lv差 ${arrow}${Math.abs(prev.lvDelta)} ・ 落下プール tier がリーダーLv基準で変化`),
+        el('div', { style:{ color:'var(--ink-mute)' } }, `🛡 守護特性は新リーダーに移譲`),
+      );
+    }
+  }
 
   $$('.member-action-pop').forEach(e => e.remove());
 
@@ -3495,11 +3537,12 @@ function openPartyMemberAction(idx) {
     el('div', { class:'map-head' },
       el('div', { class:'map-char' }, m.char),
       el('div', { class:'map-meta' },
-        el('div', { class:'map-name' }, isHero ? '★ 主人公' : 'パーティ字'),
+        el('div', { class:'map-name' }, isHero ? '★ リーダー' : 'パーティ字'),
         el('div', { class:'map-lv' }, `Lv.${m.level}`),
         el('div', { class:'map-perks-rich', style:{ marginTop:'8px' } }, ...perkRows),
       )
     ),
+    leaderPreview,
     el('div', { class:'map-buttons' }, ...buttons)
   );
   document.body.appendChild(pop);
@@ -4081,6 +4124,183 @@ function openCodex() {
     }, `(${total.toLocaleString()})`));
   }
   renderCodex();
+}
+
+// v10n9: パーティプリセット保存／読込
+function savePartyPreset() {
+  if (!isPartyChosen()) { toast('編成してから保存'); return; }
+  if (!Array.isArray(STATE.partyPresets)) STATE.partyPresets = [];
+  const heroChar = STATE.party.members[STATE.party.hero]?.char || '?';
+  const defaultName = `${heroChar}パ`;
+  const name = prompt('プリセット名（最大12文字）', defaultName);
+  if (!name) return;
+  const trimmed = name.trim().slice(0, 12);
+  if (!trimmed) return;
+  const preset = {
+    id: 't_' + Math.random().toString(36).slice(2, 8),
+    name: trimmed,
+    hero: STATE.party.hero,
+    members: JSON.parse(JSON.stringify(STATE.party.members)),
+    savedAt: Date.now(),
+  };
+  STATE.partyPresets.push(preset);
+  if (STATE.partyPresets.length > 12) STATE.partyPresets.shift();
+  saveState();
+  toast(`💾 「${trimmed}」保存`);
+  if ($('#party-presets-modal')?.classList.contains('show')) renderPartyPresetsModal();
+}
+function loadPartyPreset(id) {
+  const p = (STATE.partyPresets || []).find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`「${p.name}」を読込みますか？\n（現パーティは置き換え。プリセット側に保存された Lv が復元される）`)) return;
+  invalidateAggCache();
+  STATE.party = { hero: p.hero || 0, members: JSON.parse(JSON.stringify(p.members)) };
+  saveState();
+  renderParty();
+  updateProgressPill();
+  try { playSFX('unlock'); } catch(_) {}
+  toast(`📂 「${p.name}」読込`);
+  if ($('#party-presets-modal')?.classList.contains('show')) renderPartyPresetsModal();
+}
+function deletePartyPreset(id) {
+  const p = (STATE.partyPresets || []).find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`「${p.name}」削除？`)) return;
+  STATE.partyPresets = STATE.partyPresets.filter(x => x.id !== id);
+  saveState();
+  toast(`🗑 削除`);
+  if ($('#party-presets-modal')?.classList.contains('show')) renderPartyPresetsModal();
+}
+function openPartyPresets() {
+  let modal = $('#party-presets-modal');
+  if (!modal) {
+    modal = el('div', { class:'modal', id:'party-presets-modal', role:'dialog' },
+      el('div', { class:'modal-card', style:{ maxWidth:'520px' } },
+        el('div', { class:'modal-head' },
+          el('div', { class:'modal-title' }, '🗂 パーティ プリセット'),
+          el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
+        ),
+        el('div', { id:'party-presets-list', style:{ padding:'12px 16px', display:'flex', flexDirection:'column', gap:'8px' } }),
+        el('div', { style:{ padding:'8px 16px 16px', display:'flex', gap:'8px' } },
+          el('button', { class:'btn-primary', onclick: savePartyPreset, style:{ flex:1 } }, '💾 現パーティを保存'),
+        ),
+      )
+    );
+    document.body.appendChild(modal);
+  }
+  renderPartyPresetsModal();
+  modal.classList.add('show');
+}
+function renderPartyPresetsModal() {
+  const list = $('#party-presets-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const presets = STATE.partyPresets || [];
+  if (presets.length === 0) {
+    list.appendChild(el('div', { style:{ textAlign:'center', color:'var(--ink-mute)', padding:'16px' } }, '保存済プリセットなし。\n下の「保存」で現編成を残せます'));
+    return;
+  }
+  presets.slice().reverse().forEach(p => {
+    const heroChar = p.members[p.hero || 0]?.char || '?';
+    const memberChars = p.members.map((m,i) => i === (p.hero||0) ? `★${m.char}` : m.char).join('・');
+    const lvSum = p.members.reduce((s,m) => s + (m.level||1), 0);
+    list.appendChild(el('div', {
+      style:{
+        padding:'10px 12px', borderRadius:'8px',
+        background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)',
+        display:'flex', alignItems:'center', gap:'10px',
+      }
+    },
+      el('div', { style:{ flex:1, minWidth:0 } },
+        el('div', { style:{ fontWeight:700, fontSize:'.95rem' } }, p.name),
+        el('div', { style:{ fontSize:'.75rem', color:'var(--ink-mute)' } }, memberChars + ` ・ ΣLv ${lvSum}`),
+      ),
+      el('button', { class:'btn-secondary', style:{ padding:'4px 10px', fontSize:'.78rem' },
+        onclick: () => loadPartyPreset(p.id) }, '📂 読込'),
+      el('button', { class:'btn-danger', style:{ padding:'4px 8px', fontSize:'.78rem' },
+        onclick: () => deletePartyPreset(p.id) }, '🗑'),
+    ));
+  });
+}
+
+// v10n9: 現効果パネル ── party-bar 下に常時表示（折りたたみ可）
+function renderEffectsPanel() {
+  if (!isPartyChosen()) {
+    $('#effects-panel')?.remove();
+    return;
+  }
+  let panel = $('#effects-panel');
+  if (!panel) {
+    panel = el('div', { id:'effects-panel', class:'effects-panel' });
+    const partyBar = $('#party-bar');
+    const after = $('#combo-bar') || partyBar;
+    if (after && after.parentNode) {
+      after.parentNode.insertBefore(panel, after.nextSibling);
+    }
+  }
+  const agg = aggregatePartyPerks();
+  const combo = getComboBonus();
+  // 合算（agg 側の効果は perks 由来・combo は熟語発動由来 ── perks は既に getComboBonus に乗ってないので別管理）
+  const expFinal      = (agg.expMul || 1) * (combo.expMul || 1);
+  const gravFinal     = (agg.gravityMul || 1) * (combo.gravityMul || 1);
+  const mergeFinal    = (agg.mergeRadiusMul || 1) * (combo.mergeRadiusMul || 1);
+  const dropFinal     = (agg.dropCountAdd || 0) + (combo.dropCountAdd || 0);
+  const stockFinal    = (agg.stockExpMul || 1) * (combo.stockExpMul || 1);
+  const evoFinal      = (agg.evoDiscount || 0) + (combo.evoBoost || 0);
+  const lvMul = leaderLvMul();
+  const fmt = (n, dig=2) => Number(n).toFixed(dig);
+  const items = [
+    { lbl:'EXP',      val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hi:expFinal > 1.5 },
+    { lbl:'重力',     val:'×' + fmt(gravFinal),     hi:gravFinal < 0.7 },
+    { lbl:'融合範囲', val:'×' + fmt(mergeFinal),    hi:mergeFinal > 1.2 },
+    { lbl:'粒+',      val:'+' + Math.round(dropFinal), hi:dropFinal >= 3 },
+    { lbl:'ストック', val:'×' + fmt(stockFinal),    hi:stockFinal > 1.3 },
+    { lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%', hi:evoFinal > 0.2 },
+    { lbl:'Lv係数',   val:'×' + fmt(lvMul),         hi:lvMul > 1.3 },
+  ];
+  const collapsed = panel.classList.contains('collapsed');
+  panel.innerHTML = '';
+  const header = el('div', { class:'ep-head' },
+    el('span', { class:'ep-toggle',
+      onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
+    }, collapsed ? '▸' : '▾'),
+    el('span', { class:'ep-title',
+      onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
+    }, '⚡ 現効果'),
+    el('span', { class:'ep-summary',
+      onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
+    }, `EXP×${fmt(expFinal)} ・ 重力×${fmt(gravFinal)}` + (combo.combos?.length ? ` ・ コンボ ${combo.combos.length}` : '')),
+    el('button', { class:'ep-preset-btn', title:'パーティ プリセット',
+      onclick: (e) => { e.stopPropagation(); openPartyPresets(); },
+    }, '🗂'),
+  );
+  panel.appendChild(header);
+  if (!collapsed) {
+    const grid = el('div', { class:'ep-grid' });
+    items.forEach(it => grid.appendChild(
+      el('div', { class:'ep-cell' + (it.hi ? ' hi' : '') },
+        el('span', { class:'ep-lbl' }, it.lbl),
+        el('span', { class:'ep-val' }, it.val),
+      )
+    ));
+    panel.appendChild(grid);
+  }
+}
+
+// v10n9: リーダー昇格プレビュー ── 現リーダー vs 候補
+function previewLeaderSwap(idx) {
+  if (!STATE.party || !STATE.party.members) return null;
+  const cur = STATE.party.members[STATE.party.hero || 0];
+  const cand = STATE.party.members[idx];
+  if (!cur || !cand) return null;
+  return {
+    current: { char: cur.char, lv: cur.level, rarity: cur.rarity },
+    candidate: { char: cand.char, lv: cand.level, rarity: cand.rarity },
+    // 落下プールは leader Lv に依存 ── Lv 差を見せる
+    lvDelta: cand.level - cur.level,
+    // guardian は新リーダーに付け替え
+    guardianMove: true,
+  };
 }
 
 // v10n8: お気に入り（⭐）── 字／熟語
