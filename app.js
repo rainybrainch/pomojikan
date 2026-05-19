@@ -353,6 +353,8 @@ function aggregatePartyPerks() {
     if (pas.stockExpMul && pas.stockExpMul > 1) agg.stockExpMul = (agg.stockExpMul || 1) * pas.stockExpMul;
     agg.activePassives = getActivePassives();
   } catch(_) {}
+  // v1.0.1: パーティタップ一時バフ（30 秒）を合流
+  try { applyTempBuffs(agg); } catch(_) {}
   return agg;
 }
 
@@ -3281,10 +3283,31 @@ function attachDragHandlers(node, obj) {
 }
 
 function dissolvePomoji(p) {
-  // パーティ字（persistent）は消えない ── 軽くハイライトだけ
+  // v1.0.1: パーティ字（persistent）── タップで一時消滅＋大EXP＋タグ別バフ＋20秒後に再スポーン
   if (p.persistent) {
-    p.el.classList.add('persistent-bump');
-    setTimeout(() => p.el.classList.remove('persistent-bump'), 400);
+    const rarity = p.rarity;
+    const rIdx = RARITY_TIERS.indexOf(rarity);
+    const exp = Math.max(5, Math.pow(2, rIdx) * 12);  // 通常の 4 倍
+    awardExpToParty(p.char, exp) || _orphanExp(exp);
+    spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
+    playSFX('pop');
+    // タグ別の時間限定バフ発動（30 秒）
+    triggerPartyBuff(p.char, rarity);
+    // 消滅演出
+    p.el.classList.add('dissolve');
+    const oldChar = p.char;
+    const oldRarity = p.rarity;
+    setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 500);
+    // 20 秒後に同じ字を再スポーン（パーティから消えてなければ）
+    setTimeout(() => {
+      if (!STATE.party || !STATE.party.members.some(m => m.char === oldChar)) return;
+      if (Array.from(livePomoji.values()).some(x => x.char === oldChar && x.persistent)) return;
+      const codex = window.KANJI_CODEX || [];
+      const k = codex.find(c => (c.char || c.c) === oldChar) || { char: oldChar, c: oldChar, rarity: oldRarity };
+      const W = window.innerWidth;
+      const x = Math.random() * (W - SIZE);
+      spawnPomoji({ kanji: k, x, persistent: true });
+    }, 20000);
     return;
   }
   const rarity = p.rarity;
@@ -3296,6 +3319,64 @@ function dissolvePomoji(p) {
   playSFX('pop');
   p.el.classList.add('dissolve');
   setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
+}
+
+// v1.0.1: パーティタップ時の一時バフ（30秒）── タグから決定
+// _tempBuffs: [{ type, until, src }]
+let _tempBuffs = [];
+const PARTY_TAP_BUFFS = {
+  '禅':    { type:'gravity',  mul:0.7,  label:'禅の沈黙：重力 -30%（30秒）',  aura:'zen' },
+  '仏教':  { type:'gravity',  mul:0.7,  label:'仏の余韻：重力 -30%（30秒）',  aura:'zen' },
+  '神字':  { type:'evo',      add:0.20, label:'神の祝福：進化加速 +20%（30秒）', aura:'zen' },
+  '武':    { type:'drop',     add:2,    label:'武の構え：粒 +2（30秒）',       aura:'fire' },
+  '七大罪':{ type:'drop',     add:2,    label:'罪の連動：粒 +2（30秒）',       aura:'fire' },
+  '七徳':  { type:'exp',      mul:1.5,  label:'徳の輝き：EXP ×1.5（30秒）',    aura:'nature' },
+  '思想':  { type:'exp',      mul:1.5,  label:'思索の刃：EXP ×1.5（30秒）',    aura:'zen' },
+  '自然':  { type:'merge',    mul:1.4,  label:'自然の呼応：融合範囲 ×1.4（30秒）', aura:'nature' },
+  '花':    { type:'merge',    mul:1.4,  label:'花の調和：融合範囲 ×1.4（30秒）', aura:'nature' },
+  '水':    { type:'gravity',  mul:0.8,  label:'水の流れ：重力 -20%（30秒）',   aura:'water' },
+  '雨':    { type:'gravity',  mul:0.8,  label:'雨の沈静：重力 -20%（30秒）',   aura:'water' },
+  '時':    { type:'stock',    mul:1.5,  label:'時の堆積：ストック ×1.5（30秒）', aura:'zen' },
+};
+const PARTY_TAP_DURATION = 30000;
+function triggerPartyBuff(c, rarity) {
+  const tags = (typeof getCharTags === 'function') ? (getCharTags(c) || []) : [];
+  let chosen = null;
+  for (const t of tags) {
+    if (PARTY_TAP_BUFFS[t]) { chosen = { tag:t, ...PARTY_TAP_BUFFS[t] }; break; }
+  }
+  if (!chosen) {
+    // 既定：レア度比例の小 EXP バフ
+    const rIdx = RARITY_TIERS.indexOf(rarity);
+    chosen = { tag:'-', type:'exp', mul: 1 + 0.05 * Math.max(1, rIdx), label:`小覚醒：EXP ×${(1 + 0.05 * Math.max(1, rIdx)).toFixed(2)}（30秒）`, aura:null };
+  }
+  const buff = { ...chosen, until: Date.now() + PARTY_TAP_DURATION, src:c };
+  // 同タイプ既存があれば置き換え（重複防止）
+  _tempBuffs = _tempBuffs.filter(b => b.type !== buff.type);
+  _tempBuffs.push(buff);
+  invalidateAggCache();
+  try { toast('✨ ' + buff.label, rarity); } catch(_) {}
+  if (buff.aura) {
+    document.body.classList.add('combo-aura-' + buff.aura);
+    setTimeout(() => document.body.classList.remove('combo-aura-' + buff.aura), 3000);
+  }
+}
+function getActiveTempBuffs() {
+  const now = Date.now();
+  _tempBuffs = _tempBuffs.filter(b => b.until > now);
+  return _tempBuffs;
+}
+function applyTempBuffs(agg) {
+  const buffs = getActiveTempBuffs();
+  for (const b of buffs) {
+    if (b.type === 'exp'     && b.mul) agg.expMul        *= b.mul;
+    if (b.type === 'gravity' && b.mul) agg.gravityMul    *= b.mul;
+    if (b.type === 'merge'   && b.mul) agg.mergeRadiusMul*= b.mul;
+    if (b.type === 'stock'   && b.mul) agg.stockExpMul    = (agg.stockExpMul || 1) * b.mul;
+    if (b.type === 'drop'    && b.add) agg.dropCountAdd  += b.add;
+    if (b.type === 'evo'     && b.add) agg.evoDiscount   += b.add;
+  }
+  agg.activeTempBuffs = buffs;
 }
 
 // 字のストック加算（v4 ─ 育つ特性連動）
@@ -4621,6 +4702,12 @@ function renderHUD() {
     combo.combos?.length ? el('span', { class:'hud-combo' }, ` ・ ${combo.combos.length} コンボ`) : null,
   ));
   if (nextHint) hud.appendChild(el('div', { class:'hud-row hud-hint' }, '💡 ' + nextHint));
+  // v1.0.1: 一時バフ表示（残り秒数）
+  const buffs = getActiveTempBuffs ? getActiveTempBuffs() : [];
+  for (const b of buffs) {
+    const sec = Math.max(0, Math.ceil((b.until - Date.now()) / 1000));
+    hud.appendChild(el('div', { class:'hud-row hud-buff' }, `✨ ${b.src}：${b.label.replace(/（.+?）/, '')}（${sec}s）`));
+  }
 }
 function toggleHUD() {
   STATE.hudEnabled = !STATE.hudEnabled;
