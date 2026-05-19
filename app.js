@@ -378,7 +378,7 @@ const DEFAULT_STATE = {
   version: 'v30',
   party: null,                    // { hero: 0, members: [{char,rarity,level,exp,perks:[]},...] }
   unlockedTier: 0,                // index into RARITY_TIERS
-  timer: { workSec: 25*60, restSec: 5*60, presetIdx: 0, setsTarget: 0, setsDone: 0 },
+  timer: { workSec: 25*60, restSec: 5*60, presetIdx: 0, setsTarget: 3, setsDone: 0 },
   mode: 'idle',                   // idle | work | rest | paused
   phaseStart: 0,                  // ms timestamp
   phaseEnd: 0,                    // ms timestamp
@@ -483,7 +483,7 @@ function checkMilestones() {
     if (!STATE.timer) STATE.timer = { workSec: 25*60, restSec: 5*60, presetIdx: 0 };
     if (typeof STATE.timer.workSec !== 'number' || STATE.timer.workSec < 60) STATE.timer.workSec = 25*60;
     if (typeof STATE.timer.restSec !== 'number' || STATE.timer.restSec < 60) STATE.timer.restSec = 5*60;
-    if (typeof STATE.timer.setsTarget !== 'number') STATE.timer.setsTarget = 0;
+    if (typeof STATE.timer.setsTarget !== 'number') STATE.timer.setsTarget = 3;
     if (typeof STATE.timer.setsDone   !== 'number') STATE.timer.setsDone   = 0;
   } catch(_) {}
   let newlyAchieved = [];
@@ -2374,7 +2374,7 @@ function completePhase() {
   } else if (STATE.mode === 'rest') {
     flashCompletionBurst('🫧 発散 完了');
     stopRisingPomoji();
-    // v10n16: セット数カウント＆目標到達判定
+    // v10n16/17: セット数カウント＆目標到達判定 → 未達なら自動で次の作業へ
     if (!STATE.timer.setsDone) STATE.timer.setsDone = 0;
     STATE.timer.setsDone += 1;
     const target = STATE.timer.setsTarget || 0;
@@ -2383,9 +2383,14 @@ function completePhase() {
       try { playSFX('milestone'); } catch(_) {}
       STATE.timer.setsDone = 0;
       stopTimer();
+    } else if (target > 0) {
+      // 自動で次のサイクルへ（短い間を置く）
+      toast(`セット ${STATE.timer.setsDone} / ${target} ── 次へ`);
+      stopRisingPomoji();
+      setTimeout(() => { if (STATE.mode === 'idle') startWork(); }, 1200);
     } else {
+      // 無制限モード（setsTarget=0）：従来通り休憩終了で停止
       stopTimer();
-      if (target > 0) toast(`セット ${STATE.timer.setsDone} / ${target}`);
     }
     writeSharedRbJikoku();
   }
@@ -5479,7 +5484,12 @@ function updateProgressPill() {
   bandEl.textContent = `${modeLabel} ・ ${tierName}帯 ${achName}`;
   const streak = STATE.streak?.current || 0;
   const streakStr = streak > 0 ? `🔥${streak}日 ・ ` : '';
-  cycEl.textContent = `${streakStr}${STATE.stats.totalCycles || 0} 回完了`;
+  // v10n17: セット進捗（target>0 かつ作業/休憩中）
+  const tgt = STATE.timer?.setsTarget || 0;
+  const done = STATE.timer?.setsDone || 0;
+  const setsStr = (tgt > 0 && (STATE.mode === 'work' || STATE.mode === 'rest'))
+    ? `🔁 ${done + (STATE.mode === 'work' ? 1 : 0)}/${tgt}セット ・ ` : '';
+  cycEl.textContent = `${setsStr}${streakStr}${STATE.stats.totalCycles || 0} 回完了`;
   // リーダー Lv ＋ 次解放までの差分
   const ldrEl = $('#pp-leader');
   if (ldrEl) {
