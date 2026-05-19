@@ -5695,10 +5695,14 @@ function releaseWakeLock() {
 }
 
 // v10n14: Notification ── サイクル完了をブラウザ通知
+// v10n15 fix: セッション内 1 回だけ要求（無駄な呼び出し抑止）
+let _notifAskedThisSession = false;
 function ensureNotificationPermission() {
   if (!('Notification' in window)) return Promise.resolve(false);
   if (Notification.permission === 'granted') return Promise.resolve(true);
   if (Notification.permission === 'denied') return Promise.resolve(false);
+  if (_notifAskedThisSession) return Promise.resolve(false);
+  _notifAskedThisSession = true;
   return Notification.requestPermission().then(r => r === 'granted');
 }
 function notifyPhaseComplete(prevMode) {
@@ -5745,7 +5749,7 @@ async function toggleTimerPiP() {
     `;
     _pipWindow.addEventListener('pagehide', () => {
       _pipWindow = null;
-      cancelAnimationFrame(_pipRaf);
+      clearTimeout(_pipRaf);  // v10n15 fix: setTimeout なので clearTimeout
     });
     syncPiP();
     toast('📺 PiP 開始 ── 他アプリ作業中もタイマーが見える');
@@ -6158,6 +6162,11 @@ function init() {
   physicsStep();
   // v10n7: タイマー縁ドラッグで時間設定
   try { setupTimerRingDrag(); } catch(_) {}
+  // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
+  window.addEventListener('pagehide', () => {
+    try { if (_pipWindow) _pipWindow.close(); } catch(_) {}
+    try { releaseWakeLock(); } catch(_) {}
+  });
 
   // First-launch flow: onboarding → party picker
   if (!STATE.onboardingDone) {
