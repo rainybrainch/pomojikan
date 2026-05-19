@@ -339,6 +339,8 @@ function aggregatePartyPerks() {
   if (combo.mergeRadiusMul && combo.mergeRadiusMul !== 1.0) agg.mergeRadiusMul *= combo.mergeRadiusMul;
   if (combo.dropCountAdd)                                   agg.dropCountAdd += combo.dropCountAdd;
   if (combo.stockExpMul && combo.stockExpMul !== 1.0)       agg.stockExpMul = (agg.stockExpMul || 1.0) * combo.stockExpMul;
+  // v10n20: 武タグコンボの megaBurstAdd を発火率に合流（cap 95%）
+  if (combo.megaBurstAdd) agg.megaBurst = Math.min(0.95, (agg.megaBurst || 0) + combo.megaBurstAdd);
   agg.activeCombos = combo.combos;
   // v10n13: パッシブ ── コレクション／継続由来の恒久弱効果を合流
   try {
@@ -1282,17 +1284,31 @@ const COMBO_RARITY_MUL = {
 
 // v10n4: 作成難易度 ── 構成字の平均レア × 字数 で「組み難さ」を計る
 // 字数が多く・構成字がレアであるほど高難度＝報酬厚く
+// v10n20: char → rarityIdx Map キャッシュ（O(n) lookup を O(1) 化）
+// 起動時 4546 熟語 × 3.5 字 × 41890 codex の線形検索（約 6 億比較）を解消
+let _charRarityCache = null;
+function _buildCharRarityCache() {
+  const codex = window.KANJI_CODEX || [];
+  const m = new Map();
+  for (const k of codex) {
+    const c = k.char || k.c;
+    if (c && k.rarity) {
+      const idx = RARITY_TIERS.indexOf(k.rarity);
+      m.set(c, idx >= 0 ? idx + 1 : 1);
+    }
+  }
+  _charRarityCache = m;
+}
+function _charRarityIdx(c) {
+  if (!_charRarityCache) _buildCharRarityCache();
+  return _charRarityCache.get(c) || 1;
+}
 function comboDifficulty(r) {
   if (!r || !r.chars || !r.chars.length) return 1.0;
-  const codex = window.KANJI_CODEX || [];
   let raritySum = 0, n = 0;
   for (const c of r.chars) {
-    const k = codex.find(x => (x.char || x.c) === c);
-    if (k && k.rarity) {
-      const idx = RARITY_TIERS.indexOf(k.rarity);
-      raritySum += (idx >= 0 ? idx + 1 : 1);
-      n++;
-    }
+    const v = _charRarityIdx(c);
+    if (v) { raritySum += v; n++; }
   }
   const avgRar = n > 0 ? raritySum / n : 1;
   // 字数 2→1.0 / 3→1.3 / 4→1.7 / 5+→2.0+
@@ -1672,6 +1688,7 @@ function getComboBonus() {
     expMul: 1.0, evoBoost: 0,
     gravityMul: 1.0, mergeRadiusMul: 1.0,
     dropCountAdd: 0, stockExpMul: 1.0,
+    megaBurstAdd: 0,
   };
   const lvMul = leaderLvMul();
   for (const r of combos) {
@@ -3558,7 +3575,7 @@ function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
     bar.classList.add('empty');
-    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">✦ リーダーを選んで始める</button>';
+    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">✦ リーダー（最初の一字）を選んで始める</button>';
     $('#party-pick-cta').onclick = () => openPartyPicker();
     return;
   }
@@ -4463,7 +4480,7 @@ function renderCodexFilterSummary() {
 }
 
 // v10n16: 新機能ツアー（5 ページに圧縮）
-const CURRENT_VERSION = 'v10n16';
+const CURRENT_VERSION = 'v1.0.0';
 const TOUR_PAGES = [
   { emoji:'★', title:'リーダー制', body:'「主人公」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。🗂 編成プリセットで名前付き保存（最大12個）。' },
   { emoji:'⚡', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで⚙ パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
@@ -5684,9 +5701,16 @@ function openStats() {
   const tiers = $('#stats-tiers');
   tiers.innerHTML = '';
   const codex = window.KANJI_CODEX || [];
+  // v10n20: ティア別を 1 パスで集計（41890 件 × 16 回 filter を解消）
+  const _tierMap = {};
+  for (const k of codex) {
+    const r = k.rarity || '★1';
+    if (!_tierMap[r]) _tierMap[r] = [];
+    _tierMap[r].push(k);
+  }
   RARITY_TIERS.forEach((tier, i) => {
     const unlocked = i <= STATE.unlockedTier;
-    const tierChars = codex.filter(k => k.rarity === tier);
+    const tierChars = _tierMap[tier] || [];
     const seenN = tierChars.filter(k => (STATE.collection[k.char||k.c]||0) > 0).length;
     const totalN = tierChars.length;
     const pct = totalN > 0 ? Math.round(seenN / totalN * 100) : 0;
