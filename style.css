@@ -4012,3 +4012,32 @@ body[data-mode="work"]::before, body[data-mode="work"]::after,
 body[data-mode="rest"]::before, body[data-mode="rest"]::after {
   background: linear-gradient(to top, rgba(20,30,50,.7), rgba(20,30,50,0));
 }
+
+/* ════════════════════ v10n7: タイマーリングドラッグ調整 ════════════════════ */
+.timer-zone { cursor: pointer; touch-action: none; }
+.timer-zone .progress-svg { transition: filter .15s; }
+.timer-zone:hover .progress-svg { filter: drop-shadow(0 0 8px rgba(135,206,235,.4)); }
+.timer-zone.editing-work .pr-fg { stroke: #87ceeb; filter: drop-shadow(0 0 10px rgba(135,206,235,.6)); }
+.timer-zone.editing-rest .pr-fg { stroke: #c0a8ff; filter: drop-shadow(0 0 10px rgba(192,168,255,.6)); }
+.timer-zone.editing-work .timer-text { color: #87ceeb; }
+.timer-zone.editing-rest .timer-text { color: #c0a8ff; }
+/* idle 時に「縁ドラッグで時間設定」hint をリング下にうっすら */
+body[data-mode="idle"] .timer-zone::after {
+  content: '◖ 縁をなぞって時間設定（長押しで休憩）';
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .65rem;
+  color: rgba(135,206,235,.55);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  animation: ringHintFade 4s ease 1s forwards;
+}
+@keyframes ringHintFade {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

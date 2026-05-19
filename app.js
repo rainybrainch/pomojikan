@@ -1979,6 +1979,114 @@ function updateProgress(pct) {
   $('#progress-fg').style.strokeDashoffset = c * (1 - pct);
 }
 
+// v10n7: タイマーリング縁をドラッグで分数調整（idle 時のみ）
+// 短タップ＝1点指定／ドラッグ＝連続変更／フリック＝高速指定
+// 1本指=作業時間、長押し（500ms）=休憩時間モード切替
+function setupTimerRingDrag() {
+  const zone = document.querySelector('.timer-zone');
+  if (!zone) return;
+  let dragging = false;
+  let editMode = 'work'; // 'work' | 'rest'
+  let longPressTimer = 0;
+  let startedDragging = false;
+
+  function angleFromPoint(clientX, clientY) {
+    const r = zone.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const dx = clientX - cx;
+    const dy = clientY - cy;
+    // 12時方向=0°、時計回りに増加
+    let a = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    if (a < 0) a += 360;
+    return a;
+  }
+  function minutesFromAngle(a) {
+    // 360°=60分、1分刻み（細かい操作も可）
+    let m = Math.round(a / 6);
+    if (m < 1) m = 1;
+    if (m > 60) m = 60;
+    return m;
+  }
+  function applyMinutes(m) {
+    if (editMode === 'work') {
+      STATE.timer.workSec = m * 60;
+    } else {
+      STATE.timer.restSec = m * 60;
+    }
+    STATE.timer.presetIdx = -1;
+    $('#timer-text').textContent = fmtTime(m * 60);
+    // リング進捗を「設定分/60分」で塗る（視覚 feedback）
+    updateProgress(m / 60);
+    // 色味で work/rest を区別
+    zone.classList.toggle('editing-rest', editMode === 'rest');
+    zone.classList.toggle('editing-work', editMode === 'work');
+  }
+  function getPoint(e) {
+    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  }
+  function onDown(e) {
+    if (STATE.mode !== 'idle') return;
+    const target = e.target;
+    // ⚙ ボタンと timer-text 中央タップは除外（既存機能保護）
+    if (target.id === 'btn-timer-settings' || target.closest('#btn-timer-settings')) return;
+    dragging = true;
+    startedDragging = false;
+    editMode = 'work';
+    // 長押し 500ms で休憩時間モード
+    longPressTimer = setTimeout(() => {
+      editMode = 'rest';
+      $('#timer-text').textContent = fmtTime(STATE.timer.restSec);
+      updateProgress(STATE.timer.restSec / 60 / 60);
+      zone.classList.add('editing-rest');
+      try { toast('🌙 休憩時間モード（指を動かして分数設定）'); } catch(_) {}
+    }, 500);
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    startedDragging = true;
+    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = 0; }
+    const pt = getPoint(e);
+    const a = angleFromPoint(pt.x, pt.y);
+    const m = minutesFromAngle(a);
+    applyMinutes(m);
+    e.preventDefault();
+  }
+  function onUp(e) {
+    if (!dragging) return;
+    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = 0; }
+    dragging = false;
+    // 短タップ（移動なし）でも角度反映
+    if (!startedDragging) {
+      const pt = getPoint(e);
+      const a = angleFromPoint(pt.x, pt.y);
+      const m = minutesFromAngle(a);
+      applyMinutes(m);
+    }
+    saveState();
+    const m = Math.floor((editMode === 'work' ? STATE.timer.workSec : STATE.timer.restSec) / 60);
+    try { toast(`⏱ ${editMode === 'work' ? '作業' : '休憩'} ${m} 分`); } catch(_) {}
+    // ring を通常状態に戻す（idle 表示用）
+    setTimeout(() => {
+      zone.classList.remove('editing-work', 'editing-rest');
+      if (STATE.mode === 'idle') {
+        $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+        updateProgress(0);
+      }
+    }, 800);
+  }
+  zone.addEventListener('mousedown', onDown);
+  zone.addEventListener('touchstart', onDown, { passive: false });
+  window.addEventListener('mousemove', onMove, { passive: false });
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+  window.addEventListener('touchcancel', onUp);
+}
+
 function startWork() {
   STATE.mode = 'work';
   STATE.phaseStart = Date.now();
@@ -5159,6 +5267,8 @@ function init() {
   updateAudioButton();
   buildBackgroundLayers();
   physicsStep();
+  // v10n7: タイマー縁ドラッグで時間設定
+  try { setupTimerRingDrag(); } catch(_) {}
 
   // First-launch flow: onboarding → party picker
   if (!STATE.onboardingDone) {
