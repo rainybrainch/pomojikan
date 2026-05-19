@@ -43,21 +43,18 @@
     <button class="menu-close" id="menu-close" aria-label="閉じる">×</button>
     <h3 class="menu-title">メニュー</h3>
     <ul class="menu-list">
-      <li class="menu-section">プレイ</li>
       <li><button class="menu-item" id="m-stats"><span class="mi-emoji">📊</span><span class="mi-label">記録</span></button></li>
-      <li><button class="menu-item" id="m-codex"><span class="mi-emoji">📖</span><span class="mi-label">ぽも字図鑑</span></button></li>
+      <li><button class="menu-item" id="m-codex"><span class="mi-emoji">📖</span><span class="mi-label">図鑑</span></button></li>
       <li><button class="menu-item" id="m-writings"><span class="mi-emoji">📝</span><span class="mi-label">文章を編む</span></button></li>
-      <li><button class="menu-item" id="m-timer"><span class="mi-emoji">⏱</span><span class="mi-label">時間設定</span></button></li>
-      <li><button class="menu-item" id="m-sleep"><span class="mi-emoji">💤</span><span class="mi-label">スリープ</span><span class="mi-state">画面を休める</span></button></li>
-      <li class="menu-section">表示</li>
       <li><button class="menu-item" id="m-theme"><span class="mi-emoji">🎨</span><span class="mi-label">テーマ</span><span class="mi-state" id="m-theme-state">自動</span></button></li>
-      <li><button class="menu-item" id="m-hud"><span class="mi-emoji">👁</span><span class="mi-label">HUD 表示</span><span class="mi-state" id="m-hud-state">オン</span></button></li>
-      <li><button class="menu-item" id="m-pip"><span class="mi-emoji">📺</span><span class="mi-label">小窓タイマー</span><span class="mi-state">他アプリ中も見える</span></button></li>
-      <li><button class="menu-item" id="m-audio"><span class="mi-emoji" id="m-audio-emoji">🔇</span><span class="mi-label">音響</span><span class="mi-state" id="m-audio-state">オフ</span></button></li>
-      <li class="menu-section">情報・データ</li>
-      <li><button class="menu-item" id="m-help"><span class="mi-emoji">❓</span><span class="mi-label">遊び方</span></button></li>
-      <li><button class="menu-item" id="m-tour"><span class="mi-emoji">🎓</span><span class="mi-label">新機能ツアー</span><span class="mi-state">v10n19</span></button></li>
-      <li><button class="menu-item" id="m-data"><span class="mi-emoji">💾</span><span class="mi-label">データ管理</span><span class="mi-state">書出・復元</span></button></li>
+      <li><button class="menu-item" id="m-help"><span class="mi-emoji">❓</span><span class="mi-label">ヘルプ・ツアー</span></button></li>
+      <li><button class="menu-item" id="m-data"><span class="mi-emoji">💾</span><span class="mi-label">データ管理</span></button></li>
+      <li class="menu-toggles">
+        <button class="menu-toggle-btn" id="m-hud"   title="HUD 表示" aria-label="HUD 表示">👁</button>
+        <button class="menu-toggle-btn" id="m-pip"   title="小窓タイマー" aria-label="小窓タイマー">📺</button>
+        <button class="menu-toggle-btn" id="m-audio" title="音響" aria-label="音響"><span id="m-audio-emoji">🔇</span></button>
+        <button class="menu-toggle-btn" id="m-sleep" title="スリープ" aria-label="スリープ">💤</button>
+      </li>
     </ul>
     <div class="menu-foot">v1.0.0 ・ <a href="changelog.html" target="_blank" rel="noopener">変更履歴</a></div>
   </nav>

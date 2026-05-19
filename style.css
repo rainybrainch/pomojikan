@@ -4450,3 +4450,26 @@ html, body {
   padding-top: 3px;
   margin-top: 3px;
 }
+
+/* ════════════════════ v1.0.3: メニュー コンパクト化 ════════════════════ */
+.menu-toggles {
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.menu-toggle-btn {
+  flex: 1;
+  min-height: 44px;
+  font-size: 1.2rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 8px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.menu-toggle-btn:hover { background: rgba(135,206,235,.16); border-color: rgba(135,206,235,.4); }
+.menu-toggle-btn:active { transform: scale(.95); }

@@ -4592,6 +4592,34 @@ function renderCodexFilterSummary() {
   else { s.style.display = ''; s.textContent = '🎯 ' + parts.join(' × '); }
 }
 
+// v1.0.3: ヘルプ＋ツアー統合モーダル
+function openHelpPlusTour() {
+  let modal = $('#helpplus-modal');
+  if (!modal) {
+    modal = el('div', { class:'modal', id:'helpplus-modal', role:'dialog' },
+      el('div', { class:'modal-card', style:{ maxWidth:'380px' } },
+        el('div', { class:'modal-head' },
+          el('div', { class:'modal-title' }, '❓ ヘルプ・ツアー'),
+          el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
+        ),
+        el('div', { style:{ padding:'16px 20px', display:'flex', flexDirection:'column', gap:'10px' } },
+          el('button', { class:'btn-primary', style:{ minHeight:'48px' },
+            onclick: () => { modal.classList.remove('show'); openTour(true); } },
+            '🎓 新機能ツアー（5 ページ）'),
+          el('button', { class:'btn-secondary', style:{ minHeight:'48px' },
+            onclick: () => { modal.classList.remove('show'); $('#help-modal')?.classList.add('show'); } },
+            '📖 操作ガイド'),
+          el('a', { href:'changelog.html', target:'_blank', rel:'noopener',
+            style:{ marginTop:'4px', textAlign:'center', color:'var(--ink-mute)', fontSize:'.78rem' } },
+            '📜 変更履歴'),
+        ),
+      ),
+    );
+    document.body.appendChild(modal);
+  }
+  modal.classList.add('show');
+}
+
 // v10n16: 新機能ツアー（5 ページに圧縮）
 const CURRENT_VERSION = 'v1.0.0';
 const TOUR_PAGES = [
@@ -6238,16 +6266,15 @@ function bindEvents() {
     e.addEventListener('click', () => { closeDrawer(); setTimeout(fn, 60); });
   };
   menuClick('#m-audio',      toggleAudio);
-  menuClick('#m-help',       () => $('#help-modal').classList.add('show'));
+  // v1.0.3: ヘルプ ＋ ツアー 統合（モーダルから両方アクセス）
+  menuClick('#m-help',       openHelpPlusTour);
   menuClick('#m-stats',      openStats);
   menuClick('#m-codex',      openCodex);
-  menuClick('#m-tour',       () => openTour(true));
   menuClick('#m-data',       openDataManager);
   menuClick('#m-hud',        toggleHUD);
   menuClick('#m-pip',        toggleTimerPiP);
   menuClick('#m-theme',      openThemePicker);
   menuClick('#m-writings',   openWritings);
-  menuClick('#m-timer',      openTimerSettings);
   // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／🗂 プリセットで全カバー済
   menuClick('#m-sleep', openSleep);
   // スリープ：オーバーレイのどこでもタップで起きる
