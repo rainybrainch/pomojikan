@@ -2176,6 +2176,9 @@ function startWork() {
   STATE.mode = 'work';
   STATE.phaseStart = Date.now();
   setTimeout(() => { try { renderHUD(); } catch(_) {} }, 50);
+  // v10n14: Wake Lock & 通知許可要求
+  requestWakeLock();
+  ensureNotificationPermission();
   STATE.phaseEnd = Date.now() + STATE.timer.workSec * 1000;
   document.body.dataset.mode = 'work';
   $('#main-btn').textContent = '⏸ 一時停止';
@@ -2289,6 +2292,7 @@ function stopTimer() {
   $('#main-btn').textContent = '▶ 始める';
   $('#main-btn').dataset.state = 'idle';
   $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+  try { releaseWakeLock(); } catch(_) {}
   updateProgress(0);
   saveState();
   updateProgressPill();
@@ -2298,6 +2302,8 @@ function stopTimer() {
 }
 
 function completePhase() {
+  const prevMode = STATE.mode;
+  try { notifyPhaseComplete(prevMode); } catch(_) {}
   if (STATE.mode === 'work') {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
@@ -5673,6 +5679,106 @@ function closeStats() { $('#stats-modal').classList.remove('show'); }
 // ═══════════════════════════════════════════════════════════════
 // バックグラウンド対応（v30c）── タイマーは継続、復帰時に 50% ボーナス
 // ═══════════════════════════════════════════════════════════════
+// v10n14: Wake Lock ── 作業中は画面スリープ抑制
+let _wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      if (_wakeLock) return;
+      _wakeLock = await navigator.wakeLock.request('screen');
+      _wakeLock.addEventListener('release', () => { _wakeLock = null; });
+    }
+  } catch(_) {}
+}
+function releaseWakeLock() {
+  if (_wakeLock) { _wakeLock.release().catch(()=>{}); _wakeLock = null; }
+}
+
+// v10n14: Notification ── サイクル完了をブラウザ通知
+function ensureNotificationPermission() {
+  if (!('Notification' in window)) return Promise.resolve(false);
+  if (Notification.permission === 'granted') return Promise.resolve(true);
+  if (Notification.permission === 'denied') return Promise.resolve(false);
+  return Notification.requestPermission().then(r => r === 'granted');
+}
+function notifyPhaseComplete(prevMode) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    const title = prevMode === 'work' ? '🫧 作業完了 ── 休憩へ' : '🌧 休憩完了 ── 次のサイクルへ';
+    const body  = prevMode === 'work' ? `${Math.floor(STATE.timer.restSec/60)} 分の休憩` : `${Math.floor(STATE.timer.workSec/60)} 分の作業`;
+    new Notification(title, {
+      body, icon: './icon-192.png', tag: 'pomojikan-phase', renotify: true, silent: false,
+    });
+  } catch(_) {}
+}
+
+// v10n14: Picture-in-Picture ── 小窓タイマー（他アプリ作業中でも見える）
+let _pipWindow = null;
+let _pipRaf = 0;
+async function toggleTimerPiP() {
+  if (!('documentPictureInPicture' in window)) {
+    toast('⚠ PiP 非対応：Chrome/Edge デスクトップで利用可');
+    return;
+  }
+  if (_pipWindow) { _pipWindow.close(); _pipWindow = null; return; }
+  try {
+    _pipWindow = await documentPictureInPicture.requestWindow({ width: 260, height: 260 });
+    const doc = _pipWindow.document;
+    doc.body.style.cssText = `
+      margin:0; background:#07111c; color:#cfe6ff;
+      font-family:'Noto Serif JP',serif; overflow:hidden;
+      display:flex; align-items:center; justify-content:center; height:100vh;
+      position:relative;
+    `;
+    doc.body.innerHTML = `
+      <div style="position:relative; width:200px; height:200px;">
+        <svg viewBox="0 0 100 100" width="200" height="200" style="display:block;position:absolute;inset:0;">
+          <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="3"/>
+          <circle id="pip-fg" cx="50" cy="50" r="47" fill="none" stroke="#87ceeb" stroke-width="3"
+            stroke-dasharray="295.31" stroke-dashoffset="0" transform="rotate(-90 50 50)" stroke-linecap="round"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div id="pip-text" style="font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:.04em;">--:--</div>
+          <div id="pip-mode" style="font-size:.78rem;opacity:.7;margin-top:4px;">⏸ 待機</div>
+        </div>
+      </div>
+    `;
+    _pipWindow.addEventListener('pagehide', () => {
+      _pipWindow = null;
+      cancelAnimationFrame(_pipRaf);
+    });
+    syncPiP();
+    toast('📺 PiP 開始 ── 他アプリ作業中もタイマーが見える');
+  } catch(e) {
+    toast('⚠ PiP 起動失敗: ' + (e.message || ''));
+    _pipWindow = null;
+  }
+}
+function syncPiP() {
+  if (!_pipWindow) return;
+  try {
+    const doc = _pipWindow.document;
+    const txt = doc.getElementById('pip-text');
+    const mode = doc.getElementById('pip-mode');
+    const fg = doc.getElementById('pip-fg');
+    if (!txt || !mode || !fg) return;
+    if (STATE.mode === 'work' || STATE.mode === 'rest') {
+      const rem = Math.max(0, STATE.phaseEnd - Date.now());
+      txt.textContent = fmtTime(Math.ceil(rem/1000));
+      const total = STATE.mode === 'work' ? STATE.timer.workSec : STATE.timer.restSec;
+      const pct = 1 - (rem/1000) / total;
+      fg.style.strokeDashoffset = 295.31 * (1 - pct);
+      fg.style.stroke = STATE.mode === 'work' ? '#87ceeb' : '#c0a8ff';
+      mode.textContent = STATE.mode === 'work' ? '🌧 作業中' : '🫧 休憩中';
+    } else {
+      txt.textContent = fmtTime(STATE.timer.workSec);
+      mode.textContent = '⏸ 待機';
+      fg.style.strokeDashoffset = 295.31;
+    }
+  } catch(_) {}
+  _pipRaf = setTimeout(syncPiP, 500);
+}
+
 function handleVisibilityChange() {
   if (document.hidden) {
     if (STATE.mode === 'work' || STATE.mode === 'rest') {
@@ -5702,6 +5808,8 @@ function handleVisibilityChange() {
         startWorkSpawning();
       }
       tick();
+      // v10n14: 復帰時に WakeLock を再取得
+      if (STATE.mode === 'work' || STATE.mode === 'rest') requestWakeLock();
 
       // オフラインボーナス（作業中に隠れていた時間に対して 50%）
       if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS) {
@@ -5782,6 +5890,7 @@ function bindEvents() {
   menuClick('#m-tour',       () => openTour(true));
   menuClick('#m-data',       openDataManager);
   menuClick('#m-hud',        toggleHUD);
+  menuClick('#m-pip',        toggleTimerPiP);
   menuClick('#m-writings',   openWritings);
   menuClick('#m-timer',      openTimerSettings);
   // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／🗂 プリセットで全カバー済
