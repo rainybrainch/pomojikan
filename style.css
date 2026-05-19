@@ -4164,17 +4164,28 @@ body[data-mode="idle"] .timer-zone::after {
 }
 
 /* ════════════════════ v10n9: パーティ強化 ════════════════════ */
+/* v1.0.2: 右上に絶対配置（HUD と並ぶ）*/
 .effects-panel {
-  margin: 6px auto 10px;
-  max-width: 720px;
+  position: fixed;
+  top: 56px;
+  right: 8px;
+  z-index: 6;
+  width: 240px;
+  max-width: calc(100vw - 16px);
   padding: 4px 10px;
-  background: rgba(20,30,50,.45);
-  border: 1px solid rgba(135,206,235,.18);
+  background: rgba(10,16,26,.65);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(135,206,235,.22);
   border-radius: 8px;
-  font-size: .75rem;
+  font-size: .72rem;
   user-select: none;
+  margin: 0;
 }
-.effects-panel.collapsed .ep-grid { display: none; }
+.effects-panel.collapsed .ep-grid,
+.effects-panel.collapsed .ep-groups { display: none; }
+@media (max-width: 480px) {
+  .effects-panel { width: 168px; font-size: .62rem; top: 50px; padding: 3px 6px; }
+}
 .ep-head {
   display: flex; align-items: center; gap: 8px;
   cursor: pointer;

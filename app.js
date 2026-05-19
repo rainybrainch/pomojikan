@@ -3019,7 +3019,18 @@ function physicsStep() {
       p.x += p.vx;
       p.y += p.vy;
       if (p.x < 0 || p.x > W - SIZE) p.vx *= -0.7;
-      // 天井到達 → 自動 EXP 化（育成の本体）
+      // v1.0.2: 上昇中に確率的に EXP 化（画面中段を越えたら毎フレーム小確率）
+      if (!p._awarded && p.y < H * 0.6) {
+        // 上に行くほど確率↑（H*0.6 で 0.3% / H*0.3 で 1.0% / H*0 で 1.7%）
+        const passRatio = 1 - (p.y / (H * 0.6));
+        const burstRate = 0.003 + passRatio * 0.014;
+        if (Math.random() < burstRate) {
+          p._awarded = true;
+          awardRising(p);
+          continue;
+        }
+      }
+      // 天井到達 → 残った字も EXP 化（保険）
       if (p.y < -SIZE) {
         if (!p._awarded) {
           p._awarded = true;
@@ -3319,6 +3330,27 @@ function dissolvePomoji(p) {
   playSFX('pop');
   p.el.classList.add('dissolve');
   setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
+}
+
+// v1.0.2: 効果セルタップで小 EXP 獲得（クールダウン 1.5 秒・グレード比例）
+let _epTapCooldown = {};
+function tapEffectCell(it, e) {
+  const now = Date.now();
+  const key = it.lbl;
+  if (_epTapCooldown[key] && now - _epTapCooldown[key] < 1500) return;
+  _epTapCooldown[key] = now;
+  const base = it.grade === 'strong' ? 50 : it.grade === 'weak' ? 15 : 3;
+  const lv = isPartyChosen() ? partyHeroLevel() : 1;
+  const exp = Math.floor(base * (1 + Math.log10(1 + lv)));
+  if (isPartyChosen() && STATE.party.members[STATE.party.hero]) {
+    const hero = STATE.party.members[STATE.party.hero];
+    awardExpToParty(hero.char, exp) || _orphanExp(exp);
+    try {
+      const r = e?.currentTarget?.getBoundingClientRect();
+      if (r) spawnXpFloat(r.left + r.width/2, r.top + r.height/2, exp, hero.rarity);
+    } catch(_) {}
+  }
+  try { playSFX('pop'); } catch(_) {}
 }
 
 // v1.0.1: パーティタップ時の一時バフ（30秒）── タグから決定
@@ -4895,7 +4927,9 @@ function renderEffectsPanel() {
         el('div', { class:'ep-group-cells' },
           ...groupItems.map(it => el('div', {
             class:'ep-cell ep-' + it.grade,
-            title: `${it.lbl}: ${it.val}`,
+            title: `${it.lbl}: ${it.val} ／ タップで EXP 化`,
+            onclick: (e) => tapEffectCell(it, e),
+            style: { cursor:'pointer' },
           },
             el('span', { class:'ep-lbl' }, it.lbl),
             el('span', { class:'ep-val' }, it.val),
