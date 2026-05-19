@@ -4473,3 +4473,64 @@ html, body {
 }
 .menu-toggle-btn:hover { background: rgba(135,206,235,.16); border-color: rgba(135,206,235,.4); }
 .menu-toggle-btn:active { transform: scale(.95); }
+
+/* ════════════════════ v1.0.4: 効果パネル 1 行レイアウト ════════════════════ */
+.ep-list { display: flex; flex-direction: column; gap: 2px; padding: 4px 0 2px; }
+.ep-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .15s, opacity .15s;
+}
+.ep-row-ic { font-size: 1rem; line-height: 1; text-align: center; }
+.ep-row-lbl { font-size: .72rem; color: var(--ink); }
+.ep-row-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  font-weight: 700;
+}
+.ep-row.ep-none {
+  opacity: .35;
+  background: transparent;
+}
+.ep-row.ep-none .ep-row-val { color: var(--ink-mute); font-weight: 400; }
+.ep-row.ep-weak {
+  background: rgba(135,206,235,.10);
+}
+.ep-row.ep-weak .ep-row-val { color: #cfe6ff; }
+.ep-row.ep-strong {
+  background: linear-gradient(90deg, rgba(240,212,138,.20), rgba(240,212,138,.06));
+  border: 1px solid rgba(240,212,138,.40);
+  padding: 2px 5px;
+  box-shadow: 0 0 6px rgba(240,212,138,.15);
+}
+.ep-row.ep-strong .ep-row-val { color: #ffd86b; }
+.ep-row:hover { background: rgba(135,206,235,.18); }
+.ep-row.ep-strong:hover { background: linear-gradient(90deg, rgba(240,212,138,.32), rgba(240,212,138,.12)); }
+
+.ep-mode { flex: 1; font-size: .7rem; text-align: right; padding-right: 4px; }
+
+.ep-legend {
+  display: flex;
+  gap: 6px;
+  padding: 4px 4px 2px;
+  border-top: 1px dashed rgba(255,255,255,.08);
+  margin-top: 4px;
+  font-size: .58rem;
+  color: var(--ink-mute);
+}
+.ep-leg-strong { color: #ffd86b; }
+.ep-leg-weak { color: #cfe6ff; }
+.ep-leg-none { opacity: .55; }
+.ep-leg-tap { margin-left: auto; }
+
+/* 旧スタイルは併存（折りたたみ判定）── ep-grid 系は使われなくなる */
+@media (max-width: 480px) {
+  .ep-row { padding: 2px 4px; gap: 4px; }
+  .ep-row-lbl { font-size: .66rem; }
+  .ep-row-val { font-size: .72rem; }
+}

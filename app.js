@@ -4903,8 +4903,7 @@ function renderEffectsPanel() {
   const lvMul = leaderLvMul();
   const fmt = (n, dig=2) => Number(n).toFixed(dig);
   const passCount = (agg.activePassives || []).length;
-  // v10n16: 効果一覧見やすく ── 3 グループ（成長／物理／状態）に分けて表示
-  // none: 未効果（×1.00 / +0 等）, weak: 軽い, strong: 強い
+  // v1.0.4: 効果パネル ── アイコン＋ラベル＋値、none は薄く小さく、active は強く
   const grade = (val, weak, strong, inverted=false) => {
     if (inverted) {
       if (val <= strong) return 'strong';
@@ -4917,56 +4916,65 @@ function renderEffectsPanel() {
   };
   const items = [
     // 成長系
-    { lbl:'EXP',      val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), grade: grade(expFinal, 1.10, 1.50), group:'成長' },
-    { lbl:'ストック', val:'×' + fmt(stockFinal),                                       grade: grade(stockFinal, 1.05, 1.30), group:'成長' },
-    { lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%',                       grade: grade(evoFinal, 0.05, 0.20), group:'成長' },
+    { ic:'📈', lbl:'EXP',     val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hint:'貰える経験値の倍率',     grade: grade(expFinal, 1.10, 1.50) },
+    { ic:'📦', lbl:'ストック', val:'×' + fmt(stockFinal),                                       hint:'拾った字からの EXP 倍率', grade: grade(stockFinal, 1.05, 1.30) },
+    { ic:'🌱', lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%',                       hint:'次 Lv 必要 EXP 削減率',   grade: grade(evoFinal, 0.05, 0.20) },
     // 物理系
-    { lbl:'重力',     val:'×' + fmt(gravFinal),                                        grade: grade(gravFinal, 0.95, 0.70, true), group:'物理' },
-    { lbl:'融合範囲', val:'×' + fmt(mergeFinal),                                       grade: grade(mergeFinal, 1.05, 1.20), group:'物理' },
-    { lbl:'粒+',      val:'+' + Math.round(dropFinal),                                 grade: grade(dropFinal, 1, 3), group:'物理' },
+    { ic:'🌧', lbl:'重力',     val:'×' + fmt(gravFinal),                                        hint:'落下速度の倍率（低いほど緩い）', grade: grade(gravFinal, 0.95, 0.70, true) },
+    { ic:'🤝', lbl:'融合範囲', val:'×' + fmt(mergeFinal),                                       hint:'同字どうしが合体する判定半径', grade: grade(mergeFinal, 1.05, 1.20) },
+    { ic:'💧', lbl:'粒数+',    val:'+' + Math.round(dropFinal),                                 hint:'1 回の落下で増える追加粒数', grade: grade(dropFinal, 1, 3) },
     // 状態系
-    { lbl:'Lv係数',   val:'×' + fmt(lvMul),                                            grade: grade(lvMul, 1.10, 1.30), group:'状態' },
-    { lbl:'⚙ パッシブ', val:passCount + '/16',                                        grade: grade(passCount, 2, 5), group:'状態' },
+    { ic:'⭐', lbl:'Lv係数',   val:'×' + fmt(lvMul),                                            hint:'リーダー Lv 由来の全効果倍率', grade: grade(lvMul, 1.10, 1.30) },
+    { ic:'⚙', lbl:'パッシブ',  val:passCount + '/20',                                          hint:'達成済の常時効果数', grade: grade(passCount, 2, 5) },
   ];
+  const activeCount = items.filter(x => x.grade !== 'none').length;
+  const strongCount = items.filter(x => x.grade === 'strong').length;
   const collapsed = panel.classList.contains('collapsed');
   panel.innerHTML = '';
+  // v1.0.4: 簡潔ヘッダ「⚡ 効果 N/8（うち強 M）」
+  const modeLabel = strongCount >= 3 ? '大爆発中' : strongCount >= 1 ? '強化中' : activeCount >= 4 ? '稼働中' : activeCount > 0 ? '静か' : '休眠';
+  const modeColor = strongCount >= 3 ? '#ffd86b' : strongCount >= 1 ? '#ffc070' : activeCount > 0 ? '#cfe6ff' : 'var(--ink-mute)';
   const header = el('div', { class:'ep-head' },
     el('span', { class:'ep-toggle',
       onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
     }, collapsed ? '▸' : '▾'),
     el('span', { class:'ep-title',
       onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
-    }, '⚡ 現効果'),
-    el('span', { class:'ep-summary',
+    }, '⚡ 効果'),
+    el('span', { class:'ep-mode', style:{ color: modeColor, fontWeight:700 },
       onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
-    }, `EXP×${fmt(expFinal)} ・ 重力×${fmt(gravFinal)}` + (combo.combos?.length ? ` ・ コンボ ${combo.combos.length}` : '') + (agg.activePassives?.length ? ` ・ ⚙ ${agg.activePassives.length}` : '')),
+    }, `${activeCount}/8 ・ ${modeLabel}`),
     el('button', { class:'ep-preset-btn', title:'パーティ プリセット',
       onclick: (e) => { e.stopPropagation(); openPartyPresets(); },
     }, '🗂'),
   );
   panel.appendChild(header);
   if (!collapsed) {
-    const groups = ['成長', '物理', '状態'];
-    const wrap = el('div', { class:'ep-groups' });
-    groups.forEach(g => {
-      const groupItems = items.filter(x => x.group === g);
-      const block = el('div', { class:'ep-group' },
-        el('div', { class:'ep-group-label' }, g),
-        el('div', { class:'ep-group-cells' },
-          ...groupItems.map(it => el('div', {
-            class:'ep-cell ep-' + it.grade,
-            title: `${it.lbl}: ${it.val} ／ タップで EXP 化`,
-            onclick: (e) => tapEffectCell(it, e),
-            style: { cursor:'pointer' },
-          },
-            el('span', { class:'ep-lbl' }, it.lbl),
-            el('span', { class:'ep-val' }, it.val),
-          ))
-        ),
-      );
-      wrap.appendChild(block);
+    // v1.0.4: アクティブ優先で並び替え、各効果を 1 行レイアウト（アイコン｜名前｜値）
+    const sorted = [...items].sort((a, b) => {
+      const gr = { strong:0, weak:1, none:2 };
+      return gr[a.grade] - gr[b.grade];
     });
-    panel.appendChild(wrap);
+    const list = el('div', { class:'ep-list' });
+    sorted.forEach(it => list.appendChild(
+      el('div', {
+        class:'ep-row ep-' + it.grade,
+        title: `${it.lbl}：${it.hint}\n現在 ${it.val} ／ タップで小 EXP`,
+        onclick: (e) => tapEffectCell(it, e),
+      },
+        el('span', { class:'ep-row-ic' }, it.ic),
+        el('span', { class:'ep-row-lbl' }, it.lbl),
+        el('span', { class:'ep-row-val' }, it.val),
+      )
+    ));
+    panel.appendChild(list);
+    // 凡例（簡素）
+    panel.appendChild(el('div', { class:'ep-legend' },
+      el('span', { class:'ep-leg-strong' }, '●強'),
+      el('span', { class:'ep-leg-weak' }, '●弱'),
+      el('span', { class:'ep-leg-none' }, '●休'),
+      el('span', { class:'ep-leg-tap' }, '・行タップで小EXP'),
+    ));
   }
 }
 
