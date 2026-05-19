@@ -378,7 +378,7 @@ const DEFAULT_STATE = {
   version: 'v30',
   party: null,                    // { hero: 0, members: [{char,rarity,level,exp,perks:[]},...] }
   unlockedTier: 0,                // index into RARITY_TIERS
-  timer: { workSec: 25*60, restSec: 5*60, presetIdx: 0 },
+  timer: { workSec: 25*60, restSec: 5*60, presetIdx: 0, setsTarget: 0, setsDone: 0 },
   mode: 'idle',                   // idle | work | rest | paused
   phaseStart: 0,                  // ms timestamp
   phaseEnd: 0,                    // ms timestamp
@@ -483,6 +483,8 @@ function checkMilestones() {
     if (!STATE.timer) STATE.timer = { workSec: 25*60, restSec: 5*60, presetIdx: 0 };
     if (typeof STATE.timer.workSec !== 'number' || STATE.timer.workSec < 60) STATE.timer.workSec = 25*60;
     if (typeof STATE.timer.restSec !== 'number' || STATE.timer.restSec < 60) STATE.timer.restSec = 5*60;
+    if (typeof STATE.timer.setsTarget !== 'number') STATE.timer.setsTarget = 0;
+    if (typeof STATE.timer.setsDone   !== 'number') STATE.timer.setsDone   = 0;
   } catch(_) {}
   let newlyAchieved = [];
   for (const m of MILESTONES) {
@@ -2323,9 +2325,24 @@ function stopTimer() {
   stopWorkSpawning();
 }
 
+// v10n16: カッコウ BGM ── タイマー終了で鳴らす（ファイル無くても安全動作）
+let _kakkouAudio = null;
+function playKakkou() {
+  try {
+    if (!_kakkouAudio) {
+      _kakkouAudio = new Audio('./kakkou.mp3');
+      _kakkouAudio.preload = 'auto';
+      _kakkouAudio.volume = 0.7;
+    }
+    _kakkouAudio.currentTime = 0;
+    _kakkouAudio.play().catch(()=>{ /* ファイル無し or 自動再生ブロック等は無視 */ });
+  } catch(_) {}
+}
+
 function completePhase() {
   const prevMode = STATE.mode;
   try { notifyPhaseComplete(prevMode); } catch(_) {}
+  try { playKakkou(); } catch(_) {}
   if (STATE.mode === 'work') {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
@@ -2357,7 +2374,19 @@ function completePhase() {
   } else if (STATE.mode === 'rest') {
     flashCompletionBurst('🫧 発散 完了');
     stopRisingPomoji();
-    stopTimer();
+    // v10n16: セット数カウント＆目標到達判定
+    if (!STATE.timer.setsDone) STATE.timer.setsDone = 0;
+    STATE.timer.setsDone += 1;
+    const target = STATE.timer.setsTarget || 0;
+    if (target > 0 && STATE.timer.setsDone >= target) {
+      flashCompletionBurst(`🏆 目標 ${target} セット 達成！`);
+      try { playSFX('milestone'); } catch(_) {}
+      STATE.timer.setsDone = 0;
+      stopTimer();
+    } else {
+      stopTimer();
+      if (target > 0) toast(`セット ${STATE.timer.setsDone} / ${target}`);
+    }
     writeSharedRbJikoku();
   }
 }
@@ -3796,6 +3825,8 @@ function openTimerSettings() {
   $('#ts-work-sec').value = STATE.timer.workSec % 60;
   $('#ts-rest-min').value = Math.floor(STATE.timer.restSec / 60);
   $('#ts-rest-sec').value = STATE.timer.restSec % 60;
+  const setsEl = $('#ts-sets-target');
+  if (setsEl) setsEl.value = STATE.timer.setsTarget || 0;
   m.classList.add('show');
 }
 function closeTimerSettings() { $('#timer-settings-modal').classList.remove('show'); }
@@ -3811,10 +3842,16 @@ function applyTimerSettings() {
   STATE.timer.workSec = work;
   STATE.timer.restSec = rest;
   STATE.timer.presetIdx = -1;
+  const setsEl = $('#ts-sets-target');
+  const sets = setsEl ? Math.max(0, Math.min(20, parseInt(setsEl.value)||0)) : 0;
+  const prevTarget = STATE.timer.setsTarget || 0;
+  STATE.timer.setsTarget = sets;
+  // セット目標を変更した時は進捗をリセット（混乱防止）
+  if (sets !== prevTarget) STATE.timer.setsDone = 0;
   saveState();
   if (STATE.mode === 'idle') $('#timer-text').textContent = fmtTime(work);
   closeTimerSettings();
-  toast('時間を変更しました');
+  toast(sets > 0 ? `時間を変更（目標 ${sets} セット）` : '時間を変更しました');
 }
 // ═══════════════════════════════════════════════════════════════
 // PC パネル（≥1024px）── 左：パーティ詳細＋累計 / 右：文章ミニ＋所有字＋直近
@@ -4305,19 +4342,14 @@ function renderCodexFilterSummary() {
   else { s.style.display = ''; s.textContent = '🎯 ' + parts.join(' × '); }
 }
 
-// v10n13: 新機能ツアー（v10n2-13 の累積案内）
-const CURRENT_VERSION = 'v10n13';
+// v10n16: 新機能ツアー（5 ページに圧縮）
+const CURRENT_VERSION = 'v10n16';
 const TOUR_PAGES = [
-  { emoji:'★', title:'リーダー制', body:'「主人公」が「リーダー」に。図鑑で字をタップ →「★ リーダーに設定」で一発切替。空き枠なら加入＋昇格、満員なら入替。' },
-  { emoji:'⚡', title:'コンボ × 4,546', body:'全 4,546 熟語にそれぞれ固有効果。手書きの 18 個＋タグ駆動の自動生成。物語と数値が熟語詳細で見える。' },
-  { emoji:'✨', title:'ワンタップ編成', body:'図鑑で熟語詳細を開く →「✨ このコンボで編成」で即パーティ組成。⭐お気に入りで「集めたい熟語」リスト化。' },
-  { emoji:'🎰', title:'コインプッシャー物理', body:'画面の両端 12% は穴。字が押されて棚を外れると落下 → 自動 EXP 化。重くならない設計。' },
-  { emoji:'⏱', title:'タイマー縁ドラッグ', body:'idle 時に時計の縁をなぞる／タップで分数設定。長押しで休憩時間モード。' },
-  { emoji:'🗂', title:'パーティ プリセット', body:'現効果パネルの 🗂 ボタンで編成を名前付きで保存／一発切替（最大 12 個）。リーダー昇格はプレビュー付き。' },
-  { emoji:'👁', title:'HUD と現効果パネル', body:'パーティ下の「⚡ 現効果」で EXP・重力・粒+ 等が一目。画面左上 HUD は次の推薦を薄く表示。' },
-  { emoji:'💾', title:'データ管理 & ☰ 右上', body:'メニュー（右上）→「💾 データ管理」で全データ書出／復元。別端末への引継ぎも 3 ステップ。' },
-  { emoji:'📖', title:'図鑑のすっきり', body:'★凡例と 🌏 文字種フィルタを折りたたみ default 閉に。フィルタ状態は「🎯 ○○ × ○○」で 1 行表示。↺ で全解除。' },
-  { emoji:'⚙', title:'パッシブ 16 種', body:'パーティと独立した恒久ブースト。「100 字発見」「30 日連続」「七徳タグ 7 種」等のマイルストーンで自動発動。図鑑「⚙ パッシブ」タブで一覧。' },
+  { emoji:'★', title:'リーダー制', body:'「主人公」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。🗂 編成プリセットで名前付き保存（最大12個）。' },
+  { emoji:'⚡', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで⚙ パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
+  { emoji:'🎰', title:'物理＆タイマー UI', body:'コインプッシャー型：字が押されて棚から落ちると自動EXP化＝重くならない。タイマー円の縁をなぞって分数設定、長押しで休憩時間。' },
+  { emoji:'👁', title:'現効果パネル & HUD', body:'パーティ下に EXP / 重力 / 融合 / 粒+ / ストック / 進化加速が常時表示。画面左上 HUD で次の推薦コンボも見える。図鑑は折りたたみで見やすく。' },
+  { emoji:'📺', title:'画面外でも動く', body:'メニュー右上 ☰ →「📺 小窓タイマー」で他アプリ作業中も時計が前面に。Wake Lock で画面が暗くならず、🔔 通知でサイクル完了も逃さない。💾 データ管理で別端末引継ぎも。' },
 ];
 function openTour(force=false) {
   if (!force && STATE.lastSeenVersion === CURRENT_VERSION) return;
@@ -4587,15 +4619,30 @@ function renderEffectsPanel() {
   const lvMul = leaderLvMul();
   const fmt = (n, dig=2) => Number(n).toFixed(dig);
   const passCount = (agg.activePassives || []).length;
+  // v10n16: 効果一覧見やすく ── 3 グループ（成長／物理／状態）に分けて表示
+  // none: 未効果（×1.00 / +0 等）, weak: 軽い, strong: 強い
+  const grade = (val, weak, strong, inverted=false) => {
+    if (inverted) {
+      if (val <= strong) return 'strong';
+      if (val <= weak)   return 'weak';
+      return 'none';
+    }
+    if (val >= strong) return 'strong';
+    if (val >= weak)   return 'weak';
+    return 'none';
+  };
   const items = [
-    { lbl:'EXP',      val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hi:expFinal > 1.5 },
-    { lbl:'重力',     val:'×' + fmt(gravFinal),     hi:gravFinal < 0.7 },
-    { lbl:'融合範囲', val:'×' + fmt(mergeFinal),    hi:mergeFinal > 1.2 },
-    { lbl:'粒+',      val:'+' + Math.round(dropFinal), hi:dropFinal >= 3 },
-    { lbl:'ストック', val:'×' + fmt(stockFinal),    hi:stockFinal > 1.3 },
-    { lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%', hi:evoFinal > 0.2 },
-    { lbl:'Lv係数',   val:'×' + fmt(lvMul),         hi:lvMul > 1.3 },
-    { lbl:'⚙ パッシブ', val:passCount + '/16',     hi:passCount >= 4 },
+    // 成長系
+    { lbl:'EXP',      val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), grade: grade(expFinal, 1.10, 1.50), group:'成長' },
+    { lbl:'ストック', val:'×' + fmt(stockFinal),                                       grade: grade(stockFinal, 1.05, 1.30), group:'成長' },
+    { lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%',                       grade: grade(evoFinal, 0.05, 0.20), group:'成長' },
+    // 物理系
+    { lbl:'重力',     val:'×' + fmt(gravFinal),                                        grade: grade(gravFinal, 0.95, 0.70, true), group:'物理' },
+    { lbl:'融合範囲', val:'×' + fmt(mergeFinal),                                       grade: grade(mergeFinal, 1.05, 1.20), group:'物理' },
+    { lbl:'粒+',      val:'+' + Math.round(dropFinal),                                 grade: grade(dropFinal, 1, 3), group:'物理' },
+    // 状態系
+    { lbl:'Lv係数',   val:'×' + fmt(lvMul),                                            grade: grade(lvMul, 1.10, 1.30), group:'状態' },
+    { lbl:'⚙ パッシブ', val:passCount + '/16',                                        grade: grade(passCount, 2, 5), group:'状態' },
   ];
   const collapsed = panel.classList.contains('collapsed');
   panel.innerHTML = '';
@@ -4615,14 +4662,25 @@ function renderEffectsPanel() {
   );
   panel.appendChild(header);
   if (!collapsed) {
-    const grid = el('div', { class:'ep-grid' });
-    items.forEach(it => grid.appendChild(
-      el('div', { class:'ep-cell' + (it.hi ? ' hi' : '') },
-        el('span', { class:'ep-lbl' }, it.lbl),
-        el('span', { class:'ep-val' }, it.val),
-      )
-    ));
-    panel.appendChild(grid);
+    const groups = ['成長', '物理', '状態'];
+    const wrap = el('div', { class:'ep-groups' });
+    groups.forEach(g => {
+      const groupItems = items.filter(x => x.group === g);
+      const block = el('div', { class:'ep-group' },
+        el('div', { class:'ep-group-label' }, g),
+        el('div', { class:'ep-group-cells' },
+          ...groupItems.map(it => el('div', {
+            class:'ep-cell ep-' + it.grade,
+            title: `${it.lbl}: ${it.val}`,
+          },
+            el('span', { class:'ep-lbl' }, it.lbl),
+            el('span', { class:'ep-val' }, it.val),
+          ))
+        ),
+      );
+      wrap.appendChild(block);
+    });
+    panel.appendChild(wrap);
   }
 }
 

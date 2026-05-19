@@ -4208,3 +4208,56 @@ body.stream-mode .play-hud { display: none; }
   .codex-collapse-toggle { padding: 4px 8px; font-size: .72rem; }
   .codex-filter-summary { font-size: .72rem; padding: 4px 8px; }
 }
+
+/* ════════════════════ v10n16: 効果一覧 整理表示 ════════════════════ */
+.ep-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0 4px;
+}
+.ep-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ep-group-label {
+  flex: 0 0 36px;
+  font-size: .62rem;
+  color: var(--ink-mute);
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,.08);
+  padding-right: 6px;
+  letter-spacing: .1em;
+}
+.ep-group-cells {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+/* 段階別配色（未効果は薄く、強効果は金色） */
+.ep-cell.ep-none {
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.04);
+  opacity: .45;
+}
+.ep-cell.ep-none .ep-val { color: var(--ink-mute); font-weight: 400; }
+.ep-cell.ep-weak {
+  background: rgba(135,206,235,.10);
+  border: 1px solid rgba(135,206,235,.25);
+}
+.ep-cell.ep-weak .ep-val { color: #cfe6ff; }
+.ep-cell.ep-strong {
+  background: rgba(240,212,138,.18);
+  border: 1px solid rgba(240,212,138,.50);
+  box-shadow: 0 0 6px rgba(240,212,138,.18);
+}
+.ep-cell.ep-strong .ep-val { color: #ffd86b; font-weight: 800; }
+
+@media (max-width: 480px) {
+  .ep-group-label { flex: 0 0 28px; font-size: .56rem; padding-right: 4px; }
+  .ep-cell { padding: 3px; }
+  .ep-lbl { font-size: .56rem; }
+  .ep-val { font-size: .74rem; }
+}
