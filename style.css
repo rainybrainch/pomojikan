@@ -4119,3 +4119,47 @@ body[data-mode="idle"] .timer-zone::after {
   .effects-panel { font-size: .7rem; }
   .ep-grid { grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); }
 }
+
+/* ════════════════════ v10n10: HUD と a11y 全体強化 ════════════════════ */
+.play-hud {
+  position: fixed;
+  top: 56px;
+  right: 8px;
+  z-index: 5;
+  padding: 6px 10px;
+  background: rgba(10,16,26,.55);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(135,206,235,.18);
+  border-radius: 8px;
+  font-size: .72rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #cfe6ff;
+  pointer-events: none;
+  max-width: 220px;
+  opacity: .82;
+}
+.play-hud .hud-row { line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-hud .hud-leader { color: var(--gold); font-weight: 700; }
+.play-hud .hud-eff    { color: #87ceeb; }
+.play-hud .hud-combo  { color: #ffd86b; }
+.play-hud .hud-hint   { color: var(--ink-mute); font-size: .68rem; }
+body.stream-mode .play-hud { display: none; }
+@media (max-width: 480px) {
+  .play-hud { font-size: .66rem; max-width: 180px; top: 50px; padding: 4px 8px; }
+}
+
+/* a11y：主要ボタンのタップ領域保証 ── 48px 以上 */
+.main-btn, .sub-btn, .menu-item, .modal-close, .timer-cog {
+  min-height: 44px;
+}
+.modal-close { min-width: 44px; }
+/* focus-visible：キーボード操作可視化 */
+.main-btn:focus-visible, .sub-btn:focus-visible, .menu-item:focus-visible,
+.btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-danger:focus-visible {
+  outline: 2px solid #87ceeb;
+  outline-offset: 2px;
+}
+/* reduced motion 配慮 */
+@media (prefers-reduced-motion: reduce) {
+  .play-hud, .effects-panel { transition: none; }
+}

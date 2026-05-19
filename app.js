@@ -392,6 +392,8 @@ const DEFAULT_STATE = {
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
   favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（⭐）字／熟語
   partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
+  lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
+  hudEnabled: true,               // v10n10 ─ プレイ中 HUD 表示 ON/OFF
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
@@ -447,6 +449,8 @@ function checkMilestones() {
   if (!STATE.favorites.chars) STATE.favorites.chars = {};
   if (!STATE.favorites.yoji)  STATE.favorites.yoji  = {};
   if (!Array.isArray(STATE.partyPresets)) STATE.partyPresets = [];
+  if (typeof STATE.lastSeenVersion !== 'string') STATE.lastSeenVersion = '';
+  if (typeof STATE.hudEnabled !== 'boolean') STATE.hudEnabled = true;
   let newlyAchieved = [];
   for (const m of MILESTONES) {
     if (STATE.milestones[m.id]) continue;
@@ -1965,6 +1969,7 @@ function renderPickerPool() {
 // タイマー
 // ═══════════════════════════════════════════════════════════════
 let timerRaf = 0;
+let _hudTickCounter = 0;
 function tick() {
   if (STATE.mode === 'work' || STATE.mode === 'rest') {
     const remaining = Math.max(0, STATE.phaseEnd - Date.now());
@@ -1972,6 +1977,10 @@ function tick() {
     const total = STATE.mode === 'work' ? STATE.timer.workSec : STATE.timer.restSec;
     const pct = 1 - (remaining/1000) / total;
     updateProgress(pct);
+    // v10n10: HUD を 60F に 1 回更新（軽量）
+    if ((++_hudTickCounter % 60) === 0) {
+      try { renderHUD(); } catch(_) {}
+    }
     if (remaining <= 0) {
       completePhase();
       return;
@@ -2096,6 +2105,7 @@ function setupTimerRingDrag() {
 function startWork() {
   STATE.mode = 'work';
   STATE.phaseStart = Date.now();
+  setTimeout(() => { try { renderHUD(); } catch(_) {} }, 50);
   STATE.phaseEnd = Date.now() + STATE.timer.workSec * 1000;
   document.body.dataset.mode = 'work';
   $('#main-btn').textContent = '⏸ 一時停止';
@@ -4126,6 +4136,161 @@ function openCodex() {
   renderCodex();
 }
 
+// v10n10: 新機能ツアー（v10n2-9 の累積案内）
+const CURRENT_VERSION = 'v10n10';
+const TOUR_PAGES = [
+  { emoji:'★', title:'リーダー制', body:'「主人公」が「リーダー」に。図鑑で字をタップ → 「★ リーダーに設定」で一発切替。空き枠なら加入＋昇格、満員なら入替。' },
+  { emoji:'⚡', title:'コンボ × 4,546', body:'全 4,546 熟語にそれぞれ固有効果。手書きの 18 個＋タグ駆動の自動生成。物語と数値が熟語詳細で見える。' },
+  { emoji:'✨', title:'ワンタップ編成', body:'図鑑で熟語詳細を開く →「✨ このコンボで編成」で即パーティ組成。構成字が手元にあるかは⭐お気に入りで管理。' },
+  { emoji:'🎰', title:'コインプッシャー物理', body:'画面の両端 12% は穴。字が押されて棚を外れると落下 → 自動 EXP 化。重くならない設計。' },
+  { emoji:'⏱', title:'タイマー縁ドラッグ', body:'idle 時に時計の縁をなぞる／タップで分数設定。長押しで休憩時間モード。' },
+  { emoji:'🗂', title:'パーティ プリセット', body:'現効果パネルの 🗂 ボタンで編成を名前付きで保存／一発切替（最大 12 個）。' },
+  { emoji:'👁', title:'HUD と現効果パネル', body:'パーティ下の「⚡ 現効果」で EXP・重力・粒+ 等が一目。画面隅 HUD は次の推薦を薄く表示。' },
+];
+function openTour(force=false) {
+  if (!force && STATE.lastSeenVersion === CURRENT_VERSION) return;
+  let modal = $('#tour-modal');
+  if (!modal) {
+    modal = el('div', { class:'modal', id:'tour-modal', role:'dialog' },
+      el('div', { class:'modal-card', style:{ maxWidth:'460px' } },
+        el('div', { class:'modal-head' },
+          el('div', { class:'modal-title' }, '🎓 新機能ツアー'),
+          el('button', { class:'modal-close', onclick: () => { modal.classList.remove('show'); STATE.lastSeenVersion = CURRENT_VERSION; saveState(); } }, '×'),
+        ),
+        el('div', { id:'tour-body', style:{ padding:'16px 20px', minHeight:'200px' } }),
+        el('div', { style:{ padding:'8px 20px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'8px' } },
+          el('button', { class:'btn-secondary', id:'tour-prev', style:{ minWidth:'72px' } }, '◀'),
+          el('div', { id:'tour-dots', style:{ display:'flex', gap:'4px' } }),
+          el('button', { class:'btn-primary', id:'tour-next', style:{ minWidth:'72px' } }, '▶'),
+        ),
+      ),
+    );
+    document.body.appendChild(modal);
+  }
+  let page = 0;
+  function render() {
+    const body = $('#tour-body');
+    const p = TOUR_PAGES[page];
+    body.innerHTML = '';
+    body.appendChild(el('div', { style:{ fontSize:'3rem', textAlign:'center', marginBottom:'8px' } }, p.emoji));
+    body.appendChild(el('div', { style:{ fontSize:'1.3rem', fontWeight:700, textAlign:'center', marginBottom:'10px' } }, p.title));
+    body.appendChild(el('div', { style:{ fontSize:'.88rem', lineHeight:1.55, color:'var(--ink-mute)' } }, p.body));
+    const dots = $('#tour-dots'); dots.innerHTML = '';
+    TOUR_PAGES.forEach((_, i) => dots.appendChild(el('span', {
+      style:{ width:'8px', height:'8px', borderRadius:'50%',
+        background: i === page ? 'var(--gold)' : 'rgba(255,255,255,.2)' }
+    })));
+    $('#tour-prev').disabled = (page === 0);
+    $('#tour-next').textContent = (page === TOUR_PAGES.length - 1) ? '✓ 始める' : '▶';
+  }
+  $('#tour-prev').onclick = () => { if (page > 0) { page--; render(); } };
+  $('#tour-next').onclick = () => {
+    if (page < TOUR_PAGES.length - 1) { page++; render(); }
+    else {
+      modal.classList.remove('show');
+      STATE.lastSeenVersion = CURRENT_VERSION;
+      saveState();
+      toast('🎓 ツアー完了 ── いつでもメニューから再生可');
+    }
+  };
+  page = 0;
+  render();
+  modal.classList.add('show');
+}
+
+// v10n10: データ管理モーダル（既存 export/import を一カ所に）
+function openDataManager() {
+  let modal = $('#data-manager-modal');
+  if (!modal) {
+    modal = el('div', { class:'modal', id:'data-manager-modal', role:'dialog' },
+      el('div', { class:'modal-card', style:{ maxWidth:'480px' } },
+        el('div', { class:'modal-head' },
+          el('div', { class:'modal-title' }, '💾 データ管理'),
+          el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
+        ),
+        el('div', { style:{ padding:'14px 18px', display:'flex', flexDirection:'column', gap:'14px' } },
+          el('div', { id:'dm-status', style:{
+            padding:'8px 10px', borderRadius:'6px',
+            background:'rgba(135,206,235,.08)', fontSize:'.8rem', color:'var(--ink-mute)'
+          } }),
+          el('button', { class:'btn-primary', style:{ padding:'10px', minHeight:'48px' },
+            onclick: () => { exportStateJSON(); setTimeout(renderDataManagerStatus, 200); } },
+            '📤 すべてのデータを書き出す（JSON）'),
+          el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', lineHeight:1.4 } },
+            'ぽもじかん/育成/設定/プリセット/お気に入り を全て JSON 1 ファイルに。Google Drive・iCloud 等に置いて何十年でも残せる'),
+          el('button', { class:'btn-secondary', style:{ padding:'10px', minHeight:'48px' }, onclick: importStateJSON },
+            '📥 書き出した JSON から復元'),
+          el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', lineHeight:1.4 } },
+            '⚠ 現在のデータは上書きされます。心配なら先に書き出してから'),
+          el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:'10px', lineHeight:1.4 } },
+            '💡 別の端末で続きを遊ぶ：1) ここで書き出し  2) 別端末で同じアプリ開く  3) ここから復元'),
+        ),
+      ),
+    );
+    document.body.appendChild(modal);
+  }
+  renderDataManagerStatus();
+  modal.classList.add('show');
+}
+function renderDataManagerStatus() {
+  const s = $('#dm-status'); if (!s) return;
+  const last = STATE.lastBackupAt;
+  if (!last) {
+    s.textContent = '⚠ まだ一度もバックアップされていません';
+    s.style.color = '#ffb888';
+  } else {
+    const days = Math.floor((Date.now() - last) / 86400000);
+    const d = new Date(last);
+    const ds = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+    s.textContent = `✓ 最終バックアップ：${ds}（${days} 日前）`;
+    s.style.color = days > 30 ? '#ffb888' : '#cfe6ff';
+  }
+}
+
+// v10n10: プレイ中 HUD ── 画面右上に「リーダー / 効果 / 推薦」薄く表示
+function renderHUD() {
+  let hud = $('#play-hud');
+  if (!STATE.hudEnabled || !isPartyChosen() || STATE.mode === 'idle') {
+    hud?.remove();
+    return;
+  }
+  if (!hud) {
+    hud = el('div', { id:'play-hud', class:'play-hud' });
+    document.body.appendChild(hud);
+  }
+  const hero = STATE.party.members[STATE.party.hero || 0];
+  const agg = aggregatePartyPerks();
+  const combo = getComboBonus();
+  const expFinal = (agg.expMul || 1) * (combo.expMul || 1);
+  // 次推薦：あと1字でコンボ成立する熟語があれば
+  const partySet = new Set(STATE.party.members.map(m => m.char));
+  let nextHint = '';
+  for (const r of (window.YOJI_RECIPES || [])) {
+    if (!r.chars || r.chars.length < 2 || r.chars.length > 4) continue;
+    const missing = r.chars.filter(c => !partySet.has(c));
+    if (missing.length === 1) {
+      nextHint = `「${missing[0]}」→ ${r.word}`;
+      break;
+    }
+  }
+  hud.innerHTML = '';
+  hud.appendChild(el('div', { class:'hud-row hud-leader' }, `★ ${hero.char} Lv.${hero.level}`));
+  hud.appendChild(el('div', { class:'hud-row hud-eff' },
+    `⚡ EXP×${expFinal >= 100 ? fmtBig(expFinal) : expFinal.toFixed(2)}`,
+    combo.combos?.length ? el('span', { class:'hud-combo' }, ` ・ ${combo.combos.length} コンボ`) : null,
+  ));
+  if (nextHint) hud.appendChild(el('div', { class:'hud-row hud-hint' }, '💡 ' + nextHint));
+}
+function toggleHUD() {
+  STATE.hudEnabled = !STATE.hudEnabled;
+  saveState();
+  const stateEl = $('#m-hud-state');
+  if (stateEl) stateEl.textContent = STATE.hudEnabled ? 'オン' : 'オフ';
+  if (STATE.hudEnabled) renderHUD();
+  else $('#play-hud')?.remove();
+  toast(`👁 HUD ${STATE.hudEnabled ? 'オン' : 'オフ'}`);
+}
+
 // v10n9: パーティプリセット保存／読込
 function savePartyPreset() {
   if (!isPartyChosen()) { toast('編成してから保存'); return; }
@@ -5428,6 +5593,9 @@ function bindEvents() {
   menuClick('#m-help',       () => $('#help-modal').classList.add('show'));
   menuClick('#m-stats',      openStats);
   menuClick('#m-codex',      openCodex);
+  menuClick('#m-tour',       () => openTour(true));
+  menuClick('#m-data',       openDataManager);
+  menuClick('#m-hud',        toggleHUD);
   menuClick('#m-writings',   openWritings);
   menuClick('#m-timer',      openTimerSettings);
   menuClick('#m-edit-party', () => {
@@ -5711,7 +5879,15 @@ function init() {
   } else {
     // 「昨日の送り状」表示（朝の再起動で見られる、寝る前の鼓舞）
     setTimeout(() => showDailyReportIfNew(), 1200);
+    // v10n10: バージョン更新後に 1 回だけ新機能ツアー
+    setTimeout(() => { try { openTour(false); } catch(_) {} }, 1800);
   }
+  // v10n10: HUD 初期描画＋スイッチ状態同期
+  setTimeout(() => {
+    try { renderHUD(); } catch(_) {}
+    const stateEl = $('#m-hud-state');
+    if (stateEl) stateEl.textContent = STATE.hudEnabled ? 'オン' : 'オフ';
+  }, 800);
 
   // SW registration ── 新バージョン検出時に更新トースト
   if ('serviceWorker' in navigator) {
