@@ -157,9 +157,16 @@
         <input type="number" id="ts-rest-min" min="0" max="60" value="5"><span>分</span>
         <input type="number" id="ts-rest-sec" min="0" max="59" value="0"><span>秒</span>
       </div>
-      <div class="ts-row">
+      <div class="ts-row ts-sets-row">
         <label>セット数</label>
-        <input type="number" id="ts-sets-target" min="0" max="20" value="3"><span>回（0=無制限）</span>
+        <div class="ts-sets-quick">
+          <button type="button" class="ts-sets-pill" data-sets="1">1</button>
+          <button type="button" class="ts-sets-pill active" data-sets="3">3</button>
+          <button type="button" class="ts-sets-pill" data-sets="4">4</button>
+          <button type="button" class="ts-sets-pill" data-sets="6">6</button>
+          <button type="button" class="ts-sets-pill" data-sets="0">∞</button>
+          <input type="number" id="ts-sets-target" min="0" max="20" value="3" class="ts-sets-num">
+        </div>
       </div>
     </div>
     <div class="modal-actions">

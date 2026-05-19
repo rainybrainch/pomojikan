@@ -3832,6 +3832,27 @@ function openTimerSettings() {
   $('#ts-rest-sec').value = STATE.timer.restSec % 60;
   const setsEl = $('#ts-sets-target');
   if (setsEl) setsEl.value = STATE.timer.setsTarget || 0;
+  // v10n17: クイックピル active 同期＋クリック反映
+  const cur = STATE.timer.setsTarget || 0;
+  $$('.ts-sets-pill').forEach(p => {
+    p.classList.toggle('active', parseInt(p.dataset.sets) === cur);
+    if (!p._bound) {
+      p.addEventListener('click', () => {
+        const v = parseInt(p.dataset.sets) || 0;
+        if (setsEl) setsEl.value = v;
+        $$('.ts-sets-pill').forEach(x => x.classList.toggle('active', x === p));
+      });
+      p._bound = true;
+    }
+  });
+  // 直接入力時はピルの active をクリア（リテラル一致するものだけ active 残す）
+  if (setsEl && !setsEl._boundSync) {
+    setsEl.addEventListener('input', () => {
+      const v = parseInt(setsEl.value) || 0;
+      $$('.ts-sets-pill').forEach(x => x.classList.toggle('active', parseInt(x.dataset.sets) === v));
+    });
+    setsEl._boundSync = true;
+  }
   m.classList.add('show');
 }
 function closeTimerSettings() { $('#timer-settings-modal').classList.remove('show'); }

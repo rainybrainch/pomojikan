@@ -4261,3 +4261,41 @@ body.stream-mode .play-hud { display: none; }
   .ep-lbl { font-size: .56rem; }
   .ep-val { font-size: .74rem; }
 }
+
+/* ════════════════════ v10n17: タイマー設定 UI 整理 ════════════════════ */
+.ts-sets-row label { align-self: flex-start; margin-top: 8px; }
+.ts-sets-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+}
+.ts-sets-pill {
+  min-width: 40px;
+  min-height: 36px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: .9rem;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.ts-sets-pill:hover { background: rgba(135,206,235,.12); border-color: rgba(135,206,235,.4); }
+.ts-sets-pill.active {
+  background: linear-gradient(135deg, rgba(240,212,138,.28), rgba(240,212,138,.12));
+  border-color: rgba(240,212,138,.6);
+  color: #ffe9a0;
+  font-weight: 700;
+  box-shadow: 0 0 6px rgba(240,212,138,.25);
+}
+.ts-sets-num {
+  width: 56px !important;
+  margin-left: 4px;
+}
+
+/* progress-pill：セット表示を分離・色分け */
+.pp-cycles { white-space: nowrap; }
