@@ -3991,3 +3991,24 @@ body[data-mode="rest"] #tank{
 }
 ::-webkit-scrollbar-thumb:hover{ background:rgba(135,206,235,.6); }
 *{ scrollbar-width:thin; scrollbar-color:rgba(135,206,235,.4) rgba(0,0,0,.12); }
+
+/* ════════════════════ v10n6: コインプッシャー棚マーカー ════════════════════ */
+/* 棚 = 中央 76%（両端 12% は穴）。底に薄い光の帯を引いて視覚化 */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  width: 12vw;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));
+  box-shadow: inset 0 -2px 0 rgba(255,255,255,.04);
+}
+body::before { left: 0;  }
+body::after  { right: 0; }
+/* 棚本体（中央 76% の上端ライン・うっすら） */
+body[data-mode="work"]::before, body[data-mode="work"]::after,
+body[data-mode="rest"]::before, body[data-mode="rest"]::after {
+  background: linear-gradient(to top, rgba(20,30,50,.7), rgba(20,30,50,0));
+}

@@ -2219,6 +2219,21 @@ function awardRising(p) {
   setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 500);
 }
 
+// v10n6: 棚（コインプッシャー床）から落下 → EXP 化
+function awardFallen(p) {
+  if (p._awarded) return;
+  p._awarded = true;
+  const rIdx = RARITY_TIERS.indexOf(p.rarity);
+  const exp = Math.max(1, Math.pow(2, rIdx) * 6);
+  // 落下位置の上方向に XP float を出す（画面内で見える位置）
+  const H = window.innerHeight;
+  spawnXpFloat(p.x + SIZE/2, Math.min(H - 40, Math.max(40, p.y)), exp, p.rarity);
+  awardExpToParty(p.char, exp) || _orphanExp(exp);
+  try { playSFX('pop'); } catch(_) {}
+  p.el?.classList.add('burst');
+  setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 400);
+}
+
 function flashCompletionBurst(msg) {
   const b = $('#complete-burst');
   $('#complete-msg').textContent = msg;
@@ -2590,9 +2605,17 @@ let _aggCache = null;
 let _aggCacheFrame = 0;
 let _physicsFrame = 0;
 function invalidateAggCache() { _aggCache = null; }
+// v10n6: コインプッシャー型 ── 棚は中央 76%、両端 12% は穴
+// 棚から外れた字は下に落ちて EXP 化（累積しない＝重くならない）
+const LEDGE_PAD = 0.12;
+function ledgeBounds(W) {
+  return { left: W * LEDGE_PAD, right: W * (1 - LEDGE_PAD) - SIZE };
+}
+
 function physicsStep() {
   _physicsFrame++;
   const W = window.innerWidth, H = window.innerHeight;
+  const ledge = ledgeBounds(W);
   // perk 適用（10 フレーム毎にしか再計算しない ・ 視覚差は無視できる）
   if (!_aggCache || (_physicsFrame - _aggCacheFrame) >= 10) {
     _aggCache = aggregatePartyPerks();
@@ -2601,15 +2624,24 @@ function physicsStep() {
   const agg = _aggCache;
   for (const p of livePomoji.values()) {
     if (p.dragging) continue;
-    // settled な字は位置固定（穴：他字に押されて動く問題の解消）
+    // settled な字は位置固定 ── ただし persistent でなく棚外なら settle 解除して落とす
     if (p.settled && !p.rising) {
-      // 万一座標がズレていたら元に戻す
-      if (p.settledX != null) { p.x = p.settledX; }
-      if (p.settledY != null) { p.y = p.settledY; }
-      p.vx = 0; p.vy = 0;
-      p.el.style.left = p.x + 'px';
-      p.el.style.top  = p.y + 'px';
-      continue;
+      // v10n6: 棚から押し出されたら再落下開始（コインプッシャー）
+      const onLedge = p.persistent || (p.x >= ledge.left - SIZE * 0.3 && p.x <= ledge.right + SIZE * 0.3);
+      if (!onLedge) {
+        p.settled = false;
+        p.settledX = null;
+        p.settledY = null;
+        p.el.classList.remove('settled');
+        // 横に押された慣性を残してそのまま落下フェーズへ
+      } else {
+        if (p.settledX != null) { p.x = p.settledX; }
+        if (p.settledY != null) { p.y = p.settledY; }
+        p.vx = 0; p.vy = 0;
+        p.el.style.left = p.x + 'px';
+        p.el.style.top  = p.y + 'px';
+        continue;
+      }
     }
     if (p.rising) {
       // 上昇ぽもじ：軽い揺らぎ＋ゆっくり浮上
@@ -2701,38 +2733,49 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // 接線方向 ── 真上から落ちてきた時だけ少し横へ転がる
-          if (Math.abs(nx) > 0.1) {
-            p.vx += nx * 0.4;
+          // v10n6: 接線方向 ── 真上から乗ったらしっかり横へ転がる（コインプッシャー）
+          if (Math.abs(nx) > 0.05) {
+            p.vx += nx * 1.2;
+            // 下の字（otherStatic）にも転がり押し出し力を与える（settled が棚外に滑り出る）
+            if (otherStatic && !other.persistent && other.settled) {
+              other.settledX = (other.settledX || other.x) - nx * 1.5;
+              other.x = other.settledX;
+            }
           }
         }
       }
     }
 
-    // 床への着地（控えめバウンド → 静止）
-    if (p.y > H - SIZE) {
+    // v10n6: コインプッシャー床 ── 棚の上だけ着地、棚外は素通りで下に落ちる
+    const overLedge = (p.x + SIZE/2) >= ledge.left && (p.x + SIZE/2) <= (ledge.right + SIZE);
+    if (overLedge && p.y > H - SIZE) {
+      // 棚の上で着地
       p.y = H - SIZE;
       if (Math.abs(p.vy) > 1.6) {
         p.vy *= -0.22;
         squashEl(p, 'squash');
       } else {
         p.vy = 0;
-        p.vx = 0;
+        // 横慣性は少し残す（自然に転がる）
+        p.vx *= 0.6;
         // 🫧 休憩中に着地した字は即座に泡（rising）化 ── 取り残し防止
         if (STATE.mode === 'rest' && !p.persistent) {
           convertToRising(p);
           continue;
         }
         if (!p.settled && agg.magnet) attractSameChar(p);
-        if (!p.settled) {
+        if (!p.settled && Math.abs(p.vx) < 0.3) {
           p.el.classList.add('settled');
           squashEl(p, 'squash');
+          p.settled = true;
+          p.settledX = p.x;
+          p.settledY = p.y;
         }
-        p.settled = true;
-        // 安定位置を記録（毎フレームここに戻すことで他字に押されても動かない）
-        p.settledX = p.x;
-        p.settledY = p.y;
       }
+    } else if (p.y > H + SIZE * 0.8) {
+      // 棚外 or 棚を抜けた → 画面下まで落下したら EXP 化（コインゲーム）
+      awardFallen(p);
+      continue;
     }
 
     // ── 積み重ね settle：床に届かなくても他字の上で静止したら settle ──
