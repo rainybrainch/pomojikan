@@ -340,6 +340,17 @@ function aggregatePartyPerks() {
   if (combo.dropCountAdd)                                   agg.dropCountAdd += combo.dropCountAdd;
   if (combo.stockExpMul && combo.stockExpMul !== 1.0)       agg.stockExpMul = (agg.stockExpMul || 1.0) * combo.stockExpMul;
   agg.activeCombos = combo.combos;
+  // v10n13: パッシブ ── コレクション／継続由来の恒久弱効果を合流
+  try {
+    const pas = computePassiveBonus();
+    if (pas.expMul && pas.expMul > 1)         agg.expMul *= pas.expMul;
+    if (pas.evoBoost)                          agg.evoDiscount += pas.evoBoost;
+    if (pas.gravityMul && pas.gravityMul < 1)  agg.gravityMul *= pas.gravityMul;
+    if (pas.mergeRadiusMul && pas.mergeRadiusMul > 1) agg.mergeRadiusMul *= pas.mergeRadiusMul;
+    if (pas.dropCountAdd)                      agg.dropCountAdd += pas.dropCountAdd;
+    if (pas.stockExpMul && pas.stockExpMul > 1) agg.stockExpMul = (agg.stockExpMul || 1) * pas.stockExpMul;
+    agg.activePassives = getActivePassives();
+  } catch(_) {}
   return agg;
 }
 
@@ -1478,6 +1489,65 @@ function applyComboTagEffects(r, acc) {
       case '令和':     acc.dropCountAdd += Math.floor(0.5 * w); break;
     }
   }
+}
+
+// v10n13: パッシブ ── 常時発動（弱いが累積する）
+// パーティ編成と独立、コレクション／継続マイルストーン由来
+const _passiveCount = {
+  uniq:    s => Object.keys(s.collection || {}).length,
+  yoji:    s => Object.keys(s.discoveredYoji || {}).length,
+  cycles:  s => s.stats?.totalCycles || 0,
+  streak:  s => s.streak?.longest || 0,
+  hero:    s => s.party?.members?.[s.party?.hero||0]?.level || 0,
+};
+function _countCharsByTag(state, tag) {
+  let n = 0;
+  for (const c of Object.keys(state.collection || {})) {
+    const tags = getCharTags ? getCharTags(c) : [];
+    if (tags.includes(tag)) n++;
+  }
+  return n;
+}
+const PASSIVES = [
+  // 発見数系（コレクション）
+  { id:'p_uniq_10',    name:'初学の灯',    desc:'10 字発見：EXP +1%',         icon:'📚', cond:s=>_passiveCount.uniq(s)>=10,    eff:{expMul:1.01} },
+  { id:'p_uniq_100',   name:'学識',         desc:'100 字発見：EXP +3%',        icon:'📘', cond:s=>_passiveCount.uniq(s)>=100,   eff:{expMul:1.03} },
+  { id:'p_uniq_1000',  name:'博識',         desc:'1,000 字発見：EXP +6% / 融合範囲 +3%', icon:'📚', cond:s=>_passiveCount.uniq(s)>=1000,  eff:{expMul:1.06, mergeRadiusMul:1.03} },
+  { id:'p_uniq_10000', name:'万巻の主',     desc:'10,000 字発見：EXP +12% / ストック +5%', icon:'🏛', cond:s=>_passiveCount.uniq(s)>=10000, eff:{expMul:1.12, stockExpMul:1.05} },
+  // 熟語解放系
+  { id:'p_yoji_100',   name:'語彙の門',     desc:'熟語 100 解放：融合範囲 +5%', icon:'📖', cond:s=>_passiveCount.yoji(s)>=100,   eff:{mergeRadiusMul:1.05} },
+  { id:'p_yoji_1000',  name:'語学者',       desc:'熟語 1,000 解放：EXP +5% / 粒+1', icon:'📜', cond:s=>_passiveCount.yoji(s)>=1000,  eff:{expMul:1.05, dropCountAdd:1} },
+  { id:'p_yoji_4000',  name:'達語',         desc:'熟語 4,000 解放：EXP +10% / 進化加速 +5%', icon:'🪶', cond:s=>_passiveCount.yoji(s)>=4000, eff:{expMul:1.10, evoBoost:0.05} },
+  // 累計サイクル
+  { id:'p_cycle_10',   name:'始まりの拍',   desc:'10 サイクル：ストック +2%',  icon:'⏱', cond:s=>_passiveCount.cycles(s)>=10,  eff:{stockExpMul:1.02} },
+  { id:'p_cycle_100',  name:'継続の力',     desc:'100 サイクル：ストック +5% / 重力 -2%', icon:'🌱', cond:s=>_passiveCount.cycles(s)>=100, eff:{stockExpMul:1.05, gravityMul:0.98} },
+  { id:'p_cycle_1000', name:'熟達',         desc:'1,000 サイクル：EXP +8% / 進化加速 +5%', icon:'🌳', cond:s=>_passiveCount.cycles(s)>=1000, eff:{expMul:1.08, evoBoost:0.05} },
+  // 連続日数
+  { id:'p_streak_7',   name:'一週間の習慣', desc:'連続 7 日：EXP +2%',          icon:'🔥', cond:s=>_passiveCount.streak(s)>=7,   eff:{expMul:1.02} },
+  { id:'p_streak_30',  name:'一か月の継続', desc:'連続 30 日：EXP +5% / 重力 -3%', icon:'🔥', cond:s=>_passiveCount.streak(s)>=30,  eff:{expMul:1.05, gravityMul:0.97} },
+  { id:'p_streak_100', name:'百日の坐',     desc:'連続 100 日：全効果 +5% 相当', icon:'🏔', cond:s=>_passiveCount.streak(s)>=100, eff:{expMul:1.05, stockExpMul:1.05, mergeRadiusMul:1.05} },
+  // タグ収集
+  { id:'p_seven_virt', name:'七徳の祝福',   desc:'七徳タグ 7 種：進化加速 +5%', icon:'✦',  cond:s=>_countCharsByTag(s,'七徳')>=7, eff:{evoBoost:0.05} },
+  { id:'p_seven_sin',  name:'七大罪の連動', desc:'七大罪タグ 7 種：粒 +1 / 重力 -3%', icon:'☷', cond:s=>_countCharsByTag(s,'七大罪')>=7, eff:{dropCountAdd:1, gravityMul:0.97} },
+  // リーダー Lv（自パーティ依存だが恒久的）
+  { id:'p_hero_100',   name:'楷書師の杖',   desc:'リーダー Lv.100：ストック +3%', icon:'🖋', cond:s=>_passiveCount.hero(s)>=100, eff:{stockExpMul:1.03} },
+];
+
+function getActivePassives() {
+  return PASSIVES.filter(p => { try { return p.cond(STATE); } catch(_) { return false; } });
+}
+function computePassiveBonus() {
+  const acc = { expMul:1.0, evoBoost:0, gravityMul:1.0, mergeRadiusMul:1.0, dropCountAdd:0, stockExpMul:1.0 };
+  for (const p of getActivePassives()) {
+    const e = p.eff || {};
+    if (e.expMul)         acc.expMul        *= e.expMul;
+    if (e.evoBoost)       acc.evoBoost      += e.evoBoost;
+    if (e.gravityMul)     acc.gravityMul    *= e.gravityMul;
+    if (e.mergeRadiusMul) acc.mergeRadiusMul*= e.mergeRadiusMul;
+    if (e.dropCountAdd)   acc.dropCountAdd  += e.dropCountAdd;
+    if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul;
+  }
+  return acc;
 }
 
 // コンボのボーナス倍率合計（レア × 字数 × 難易度 × リーダーLv × タグ／固有効果）
@@ -4505,7 +4575,7 @@ function renderEffectsPanel() {
     }, '⚡ 現効果'),
     el('span', { class:'ep-summary',
       onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
-    }, `EXP×${fmt(expFinal)} ・ 重力×${fmt(gravFinal)}` + (combo.combos?.length ? ` ・ コンボ ${combo.combos.length}` : '')),
+    }, `EXP×${fmt(expFinal)} ・ 重力×${fmt(gravFinal)}` + (combo.combos?.length ? ` ・ コンボ ${combo.combos.length}` : '') + (agg.activePassives?.length ? ` ・ ⚙ ${agg.activePassives.length}` : '')),
     el('button', { class:'ep-preset-btn', title:'パーティ プリセット',
       onclick: (e) => { e.stopPropagation(); openPartyPresets(); },
     }, '🗂'),
@@ -4717,6 +4787,7 @@ function applyCodexSeasonBadges() {
     'S6': recipes.filter(r => r.season === 'S6').length,
     'S7': recipes.filter(r => r.season === 'S7').length,
     'PERKS': Object.keys(PERKS || {}).length,
+    'PASSIVES': PASSIVES.length,
   };
   $$('.codex-season').forEach(btn => {
     const s = btn.dataset.season;
@@ -4983,6 +5054,43 @@ function renderCodex() {
     if (STATE.discoveredYoji && STATE.discoveredYoji[r.word]) return true;
     return r.chars.every(c => (STATE.collection[c] || 0) > 0);
   };
+
+  // v10n13: パッシブ図鑑
+  if (codexFilter.season === 'PASSIVES') {
+    const active = new Set(getActivePassives().map(p => p.id));
+    const section = el('div', { class:'codex-section' },
+      el('h3', { class:'codex-section-title' },
+        `⚙ パッシブ ── 常時発動の弱効果（${active.size} / ${PASSIVES.length} 発動中）`
+      )
+    );
+    const list = el('div', { class:'codex-yoji-list' });
+    PASSIVES.forEach(p => {
+      const on = active.has(p.id);
+      const card = el('div', {
+        class: 'codex-yoji-card' + (on ? ' yoji-found' : ' yoji-locked'),
+        style:{
+          padding:'10px 12px', marginBottom:'6px',
+          background: on ? 'linear-gradient(90deg, rgba(135,206,235,.16), rgba(135,206,235,.04))' : 'rgba(255,255,255,.03)',
+          border:'1px solid ' + (on ? 'rgba(135,206,235,.35)' : 'rgba(255,255,255,.08)'),
+          borderRadius:'8px',
+          display:'flex', alignItems:'center', gap:'10px',
+        },
+      },
+        el('div', { style:{ fontSize:'1.6rem', minWidth:'32px', textAlign:'center', opacity: on ? 1 : 0.4 } }, p.icon || '◆'),
+        el('div', { style:{ flex:1, minWidth:0 } },
+          el('div', { style:{ fontWeight:700, fontSize:'.9rem', color: on ? '#cfe6ff' : 'var(--ink-mute)' } },
+            (on ? '✓ ' : '🔒 ') + p.name
+          ),
+          el('div', { style:{ fontSize:'.74rem', color:'var(--ink-mute)', lineHeight:1.4 } }, p.desc),
+        ),
+      );
+      list.appendChild(card);
+    });
+    section.appendChild(list);
+    grid.appendChild(section);
+    grid.scrollTop = scrollY;
+    return;
+  }
 
   // 特性図鑑：全 PERKS をカードで表示
   if (codexFilter.season === 'PERKS') {
