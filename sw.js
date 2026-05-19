@@ -2,7 +2,7 @@
 const CACHE_NAME = 'pomojikan-v10n13-20260518';
 const PRECACHE = [
   './', './index.html', './manifest.json', './icon.svg',
-  './style.css', './app.js', './codex.js'
+  './style.css', './app.js', './codex.js', './kakkou.mp3'
 ];
 
 self.addEventListener('install', (event) => {
