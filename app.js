@@ -361,7 +361,7 @@ function aggregatePartyPerks() {
 // v1.2.2: EXP カーブを急に（あと1で〜が頻発する問題対策）
 // 旧: 10 * lv^1.6 → Lv1→2 で 10 必要（タップ数回で達成）
 // 新: 60 * lv^1.8 → Lv1→2 で 60、Lv10→11 で 3,800、Lv100→101 で 24万
-const expForLevel = (lv) => Math.floor(200 * Math.pow(lv, 2.0));
+const expForLevel = (lv) => Math.floor(100 * Math.pow(lv, 2.5));
 // 進化加速の上限を 95% → 50% に抑制（実効必要 EXP がほぼ 0 にならない）
 function effectiveExpForLevel(lv) {
   const disc = (typeof _aggCache !== 'undefined' && _aggCache && _aggCache.evoDiscount)
