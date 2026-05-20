@@ -361,7 +361,7 @@ function aggregatePartyPerks() {
 // v1.2.2: EXP カーブを急に（あと1で〜が頻発する問題対策）
 // 旧: 10 * lv^1.6 → Lv1→2 で 10 必要（タップ数回で達成）
 // 新: 60 * lv^1.8 → Lv1→2 で 60、Lv10→11 で 3,800、Lv100→101 で 24万
-const expForLevel = (lv) => Math.floor(60 * Math.pow(lv, 1.8));
+const expForLevel = (lv) => Math.floor(200 * Math.pow(lv, 2.0));
 // 進化加速の上限を 95% → 50% に抑制（実効必要 EXP がほぼ 0 にならない）
 function effectiveExpForLevel(lv) {
   const disc = (typeof _aggCache !== 'undefined' && _aggCache && _aggCache.evoDiscount)
@@ -1980,7 +1980,7 @@ function awardExpToParty(c, exp, opts={}) {
       const hero = STATE.party.members[STATE.party.hero];
       hero.exp += heroBonus;
       let s = 0;
-      while (hero.exp >= effectiveExpForLevel(hero.level + 1) && s++ < 500) {
+      if (hero.exp >= effectiveExpForLevel(hero.level + 1)) {
         hero.exp -= effectiveExpForLevel(hero.level + 1);
         hero.level += 1;
         onLevelUp(hero, STATE.party.hero);
@@ -1988,7 +1988,7 @@ function awardExpToParty(c, exp, opts={}) {
     }
   }
   let s2 = 0;
-  while (m.exp >= effectiveExpForLevel(m.level + 1) && s2++ < 500) {
+  if (m.exp >= effectiveExpForLevel(m.level + 1)) {
     m.exp -= effectiveExpForLevel(m.level + 1);
     m.level += 1;
     onLevelUp(m, idx);
@@ -2629,10 +2629,17 @@ function convertToRising(p) {
   p.el.classList.add('rising');
   // タップでも弾ける（即時 EXP 化）
   p.el.onpointerdown = (e) => { e.preventDefault(); awardRising(p); };
+  // v1.2.7: 4 秒後に必ず EXP 化（休憩で全字消化を保証）
+  setTimeout(() => {
+    if (!p._awarded && livePomoji.has(p.id) && p.rising) {
+      p._awarded = true;
+      try { awardRising(p); } catch(_) {}
+    }
+  }, 4000);
 }
 function awardRising(p) {
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(2, rIdx) * 6);
+  const exp = Math.max(1, Math.pow(1.5, rIdx) * 6);
   const tankRect = $('#tank').getBoundingClientRect();
   spawnXpFloat(p.x + SIZE/2, Math.max(20, p.y), exp, p.rarity);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
@@ -2774,7 +2781,7 @@ function awardFallen(p) {
   if (p._awarded) return;
   p._awarded = true;
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(2, rIdx) * 6);
+  const exp = Math.max(1, Math.pow(1.5, rIdx) * 6);
   // 落下位置の上方向に XP float を出す（画面内で見える位置）
   const H = window.innerHeight;
   spawnXpFloat(p.x + SIZE/2, Math.min(H - 40, Math.max(40, p.y)), exp, p.rarity);
@@ -2859,7 +2866,7 @@ function expireAsExp(p) {
   if (!p || p._expiring) return;
   p._expiring = true;
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(2, rIdx) * 2);  // dissolve より控えめ（自然吸収）
+  const exp = Math.max(1, Math.pow(1.5, rIdx) * 2);  // dissolve より控えめ（自然吸収）
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   addStock(p.char);  // ストックに加算
   if (p.el) {
@@ -3037,7 +3044,7 @@ function _dailyReportMessage(cyc, ch, yj) {
 function grantDiscoveryBonus(rarity, char) {
   if (!STATE.party || !STATE.party.members) return;
   const rIdx = RARITY_TIERS.indexOf(rarity);
-  const bonus = 3 + Math.pow(2, rIdx);  // ★1=4 ★3=7 ★5=19 ★10=515
+  const bonus = 3 + Math.pow(1.5, rIdx);  // ★1=4 ★3=7 ★5=19 ★10=515
   // 累計発見数 milestones（10 / 50 / 100 / 300 / 600 / 874）で追加ボーナス
   const uniq = Object.keys(STATE.collection).length;
   let milestoneMul = 1;
@@ -3055,7 +3062,7 @@ function grantDiscoveryBonus(rarity, char) {
     const m = STATE.party.members[i];
     m.exp = (m.exp || 0) + perMember;
     let s = 0;
-    while (m.exp >= effectiveExpForLevel(m.level + 1) && s++ < 500) {
+    if (m.exp >= effectiveExpForLevel(m.level + 1)) {
       m.exp -= effectiveExpForLevel(m.level + 1);
       m.level += 1;
       onLevelUp(m, i);
@@ -3177,6 +3184,25 @@ function physicsStep() {
     if (p.dragging) continue;
     // settled な字は位置固定 ── ただし persistent でなく棚外なら settle 解除して落とす
     if (p.settled && !p.rising) {
+      // v1.2.7: ドラッグ字（ハンマー）が触れたら settle 解除＋蹴り飛ばす
+      if (!p.persistent) {
+        for (const other of livePomoji.values()) {
+          if (other === p || !other.dragging) continue;
+          const ddx = (other.x + SIZE/2) - (p.x + SIZE/2);
+          const ddy = (other.y + SIZE/2) - (p.y + SIZE/2);
+          if (Math.abs(ddx) < SIZE * 0.95 && Math.abs(ddy) < SIZE * 0.95) {
+            p.settled = false;
+            p.settledX = null;
+            p.settledY = null;
+            p.el?.classList.remove('settled');
+            const sign = ddx >= 0 ? -1 : 1;
+            p.vx += sign * 6;
+            p.vy = -1.2;
+            p._stillFrames = 0;
+            break;
+          }
+        }
+      }
       // v1.1.9: 下の支え消失チェック（下の字が消えたら落ち直す）
       let supportLost = false;
       if (!p.persistent && (_physicsFrame % 20) === ((p.id || 0) % 20)) {
@@ -3538,13 +3564,13 @@ function feedPomojiToMember(p, idx, cardEl) {
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
   // 通常タップの 2 倍、同字なら 4 倍
   const same = (member.char === p.char);
-  const baseExp = Math.max(2, Math.pow(2, rIdx) * 3);
+  const baseExp = Math.max(2, Math.pow(1.5, rIdx) * 3);
   const exp = same ? baseExp * 4 : baseExp * 2;
   addStock(p.char);
   // EXP 反映
   member.exp = (member.exp || 0) + exp;
   let s = 0;
-  while (member.exp >= effectiveExpForLevel(member.level + 1) && s++ < 500) {
+  if (member.exp >= effectiveExpForLevel(member.level + 1)) {
     member.exp -= effectiveExpForLevel(member.level + 1);
     member.level += 1;
     onLevelUp(member, idx);
@@ -3592,7 +3618,7 @@ function dissolvePomoji(p) {
   if (p.persistent) {
     const rarity = p.rarity;
     const rIdx = RARITY_TIERS.indexOf(rarity);
-    const exp = Math.max(5, Math.pow(2, rIdx) * 12);  // 通常の 4 倍
+    const exp = Math.max(5, Math.pow(1.5, rIdx) * 12);  // 通常の 4 倍
     awardExpToParty(p.char, exp) || _orphanExp(exp);
     spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
     playSFX('pop');
@@ -3619,7 +3645,7 @@ function dissolvePomoji(p) {
   // v1.0.9: タップ → 即「弾けて EXP」に戻す（rising 経路は休憩時のみ）
   const rarity = p.rarity;
   const rIdx = RARITY_TIERS.indexOf(rarity);
-  const exp = Math.max(1, Math.pow(2, rIdx) * 3);
+  const exp = Math.max(1, Math.pow(1.5, rIdx) * 3);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);
@@ -3733,7 +3759,7 @@ function addStock(char) {
       const m = STATE.party.members[i];
       m.exp = (m.exp || 0) + expPerStock;
       let s = 0;
-      while (m.exp >= effectiveExpForLevel(m.level + 1) && s++ < 500) {
+      if (m.exp >= effectiveExpForLevel(m.level + 1)) {
         m.exp -= effectiveExpForLevel(m.level + 1);
         m.level += 1;
         onLevelUp(m, i);
@@ -3816,7 +3842,7 @@ function _orphanExp(exp) {
   hero.exp += Math.floor(exp / 4);
   STATE.stats.totalExp = (STATE.stats.totalExp || 0) + Math.floor(exp / 4);
   let s = 0;
-  while (hero.exp >= effectiveExpForLevel(hero.level + 1) && s++ < 500) {
+  if (hero.exp >= effectiveExpForLevel(hero.level + 1)) {
     hero.exp -= effectiveExpForLevel(hero.level + 1);
     hero.level += 1;
     onLevelUp(hero, STATE.party.hero);
@@ -3845,7 +3871,7 @@ function mergePomoji(src, target) {
   const newLv = target.mergeLevel || 1;
 
   // EXP は mergeLevel に応じて指数増加：基礎 × 2^(level-1)
-  const exp = Math.max(1, Math.pow(2, rIdx) * 10 * Math.pow(2, newLv - 1));
+  const exp = Math.max(1, Math.pow(1.5, rIdx) * 10 * Math.pow(2, newLv - 1));
   spawnXpFloat(target.x + SIZE/2, target.y, exp, src.rarity);
 
   // タグアフィニティ判定：src と target のタグ重複があれば +50%
