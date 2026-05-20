@@ -3541,13 +3541,38 @@ function attachDragHandlers(node, obj) {
         return;
       }
       // v1.1.7: パーティカードにドロップ → そのメンバーに EXP（餌付け）
+      // v1.3.2: フィールドの persistent ぽもじ（パーティ字）にもドロップで餌付け
+      const prevPE = obj.el.style.pointerEvents;
+      obj.el.style.pointerEvents = 'none';
       const dropEl = document.elementFromPoint(ev.clientX, ev.clientY);
+      obj.el.style.pointerEvents = prevPE;
       const partyCard = dropEl?.closest('.party-card');
       if (partyCard && STATE.party && STATE.party.members) {
         const tidx = parseInt(partyCard.dataset.idx);
         if (!isNaN(tidx) && STATE.party.members[tidx]) {
           feedPomojiToMember(obj, tidx, partyCard);
           return;
+        }
+      }
+      // v1.3.2: フィールドの persistent 字に重なってたら餌付け
+      const dropPomojiEl = dropEl?.closest('.pomoji');
+      if (dropPomojiEl && dropPomojiEl !== obj.el) {
+        for (const q of livePomoji.values()) {
+          if (q.el === dropPomojiEl && q.persistent) {
+            const memIdx = (STATE.party?.members || []).findIndex(m => m.char === q.char);
+            if (memIdx >= 0) {
+              feedPomojiToMember(obj, memIdx, null);
+              // 着地位置を視覚的に q に重ねる演出
+              try {
+                obj.el.style.transition = 'transform .3s ease, opacity .3s';
+                obj.el.style.transform = `translate(${q.x - obj.x}px, ${q.y - obj.y}px) scale(.3)`;
+                obj.el.style.opacity = '0';
+                q.el.classList.add('persistent-bump');
+                setTimeout(() => q.el?.classList.remove('persistent-bump'), 500);
+              } catch(_) {}
+              return;
+            }
+          }
         }
       }
       const target = checkMergeCollision(obj);
