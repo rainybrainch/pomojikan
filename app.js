@@ -5488,6 +5488,145 @@ function formatComboEffect(eff) {
 
 // v10n8: ワンタップ編成 ── 熟語の構成字でパーティを組む
 // 構成字が手元（発見済）にすべてあれば実行可能、なければ「あと N 字」表示
+// v1.2.3: コンボ配置ピッカー ── 4 スロットにドラッグで配置
+function openComboPlacementPicker(r) {
+  if (!r || !r.chars || r.chars.length === 0) return;
+  if (r.chars.length > 4) { toast('5字以上は枠超過'); return; }
+  const codex = window.KANJI_CODEX || [];
+  const missing = [];
+  const chars = [];
+  for (const c of r.chars) {
+    if (!((STATE.collection||{})[c] > 0)) { missing.push(c); continue; }
+    const k = codex.find(x => (x.char || x.c) === c);
+    chars.push({ char:c, rarity: (k && k.rarity) || '★1' });
+  }
+  if (missing.length > 0) {
+    toast(`あと ${missing.length} 字（${missing.join('・')}）未発見`);
+    return;
+  }
+  // モーダル構築（既存あれば消す）
+  $$('#combo-placement-modal').forEach(m => m.remove());
+  const slots = new Array(4).fill(null);
+  // 初期配置：recipe 順
+  chars.forEach((c, i) => { if (i < 4) slots[i] = c; });
+  function render() {
+    list.innerHTML = '';
+    slots.forEach((c, i) => {
+      const cell = el('div', {
+        class: 'cpp-slot' + (i === 0 ? ' cpp-hero' : '') + (c ? ' cpp-filled' : ' cpp-empty'),
+        dataset: { slot: i },
+      },
+        el('div', { class:'cpp-slot-label' }, i === 0 ? '★ リーダー' : `仲間 ${i}`),
+        c ? el('div', { class:'cpp-slot-char rarity-' + (RARITY_TIERS.indexOf(c.rarity)+1) }, c.char) : el('div', { class:'cpp-slot-blank' }, '空'),
+      );
+      list.appendChild(cell);
+    });
+    bench.innerHTML = '';
+    chars.forEach((c) => {
+      const inSlot = slots.some(s => s && s.char === c.char);
+      const chip = el('div', {
+        class: 'cpp-chip rarity-' + (RARITY_TIERS.indexOf(c.rarity)+1) + (inSlot ? ' cpp-chip-used' : ''),
+        dataset: { char: c.char, rarity: c.rarity },
+      }, c.char);
+      bench.appendChild(chip);
+    });
+    setupCppDragDrop();
+  }
+  function setupCppDragDrop() {
+    // chip → slot：tap or drag
+    $$('.cpp-chip').forEach(chip => {
+      chip.onclick = () => {
+        if (chip.classList.contains('cpp-chip-used')) {
+          // 既に配置済 → 取り出し
+          const ch = chip.dataset.char;
+          for (let i = 0; i < 4; i++) if (slots[i] && slots[i].char === ch) slots[i] = null;
+          render();
+          return;
+        }
+        // 空きスロットに入れる
+        const empty = slots.findIndex(s => !s);
+        if (empty < 0) { toast('スロット満員 ── 既存チャーをタップして外す'); return; }
+        slots[empty] = { char: chip.dataset.char, rarity: chip.dataset.rarity };
+        render();
+      };
+    });
+    // slot → slot 入れ替え（横ドラッグ）
+    $$('.cpp-slot').forEach(slot => {
+      let pid = null, sx = 0, sy = 0, moved = false;
+      slot.onpointerdown = (e) => {
+        if (!slots[parseInt(slot.dataset.slot)]) return;
+        pid = e.pointerId;
+        sx = e.clientX; sy = e.clientY; moved = false;
+        try { slot.setPointerCapture(pid); } catch(_) {}
+      };
+      slot.onpointermove = (e) => {
+        if (e.pointerId !== pid) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (Math.abs(dx)+Math.abs(dy) > 8) { moved = true; slot.style.transform = `translate(${dx}px, ${dy*0.3}px)`; slot.style.zIndex = '99'; }
+      };
+      slot.onpointerup = (e) => {
+        if (e.pointerId !== pid) return;
+        slot.style.transform = '';
+        slot.style.zIndex = '';
+        try { slot.releasePointerCapture(pid); } catch(_) {}
+        pid = null;
+        if (!moved) return;
+        const prev = slot.style.pointerEvents;
+        slot.style.pointerEvents = 'none';
+        const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.cpp-slot');
+        slot.style.pointerEvents = prev;
+        if (!target || target === slot) return;
+        const a = parseInt(slot.dataset.slot);
+        const b = parseInt(target.dataset.slot);
+        [slots[a], slots[b]] = [slots[b], slots[a]];
+        render();
+      };
+    });
+  }
+  const modal = el('div', { class:'modal show', id:'combo-placement-modal', role:'dialog' },
+    el('div', { class:'modal-card', style:{ maxWidth:'440px' } },
+      el('div', { class:'modal-head' },
+        el('div', { class:'modal-title' }, `✨ 配置：${r.word}`),
+        el('button', { class:'modal-close', onclick: () => modal.remove() }, '×'),
+      ),
+      el('div', { style:{ padding:'12px 16px' } },
+        el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', marginBottom:'8px' } },
+          '順番もコンボに効く（一致すると ×1.4）。スロットタップ＝チャー出し、チップタップ＝入れ替え、スロット同士ドラッグで交換'),
+        el('div', { class:'cpp-slots', id:'cpp-slots', style:{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'8px', marginBottom:'12px' } }),
+        el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', marginBottom:'4px' } }, 'コンボ字'),
+        el('div', { class:'cpp-bench', id:'cpp-bench', style:{ display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'14px' } }),
+      ),
+      el('div', { style:{ padding:'0 16px 16px', display:'flex', gap:'8px' } },
+        el('button', { class:'btn-secondary', style:{ flex:1 }, onclick: () => modal.remove() }, 'キャンセル'),
+        el('button', { class:'btn-primary', style:{ flex:1, fontWeight:700 }, onclick: () => {
+          const final = slots.filter(s => s);
+          if (final.length === 0) { toast('1 字以上配置して'); return; }
+          if (STATE.party && STATE.party.members?.length) {
+            if (!confirm('現パーティを置き換えますか？')) return;
+          }
+          invalidateAggCache();
+          const members = final.map((f, i) => {
+            const perks = pickInherentPerks(f.char, f.rarity);
+            if (i === 0 && !perks.includes('guardian')) perks.push('guardian');
+            return { char:f.char, rarity:f.rarity, level:1, exp:0, perks };
+          });
+          STATE.party = { hero: 0, members };
+          saveState();
+          renderParty();
+          updateProgressPill();
+          try { playSFX('unlock'); } catch(_) {}
+          toast(`✨ 「${r.word}」配置完了 ── 順番一致でコンボ ×1.4`, r.rarity);
+          modal.remove();
+        } }, '✓ この配置で確定'),
+      ),
+    ),
+  );
+  document.body.appendChild(modal);
+  const list = $('#cpp-slots');
+  const bench = $('#cpp-bench');
+  render();
+}
+
 function assemblePartyFromYoji(r) {
   if (!r || !r.chars || r.chars.length === 0) return { ok:false, reason:'構成字なし' };
   if (r.chars.length > 4) return { ok:false, reason:'5字以上の熟語はパーティ枠超過' };
@@ -5728,9 +5867,9 @@ function showYojiDetail(r) {
         onclick: (e) => {
           e.stopPropagation();
           if (allInParty) { toast('既に発動中'); return; }
-          const res = assemblePartyFromYoji(r);
-          if (res.ok) { pop.remove(); }
-          else if (res.reason) { toast('⚠ ' + res.reason); }
+          // v1.2.3: ピッカーで配置を選んでから確定
+          pop.remove();
+          openComboPlacementPicker(r);
         },
       }, allInParty ? '✓ 発動中' : '✨ このコンボで編成') : null,
     ),

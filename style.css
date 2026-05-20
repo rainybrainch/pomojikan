@@ -4925,3 +4925,38 @@ body.harvest-mode .pomoji {
   30%  { box-shadow: 0 0 24px rgba(255,217,107,.8); transform: scale(1.05); }
   100% { box-shadow: 0 0 0 rgba(255,217,107,0); transform: scale(1); }
 }
+
+/* v1.2.3: コンボ配置ピッカー */
+.cpp-slot {
+  position: relative;
+  min-height: 76px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  border: 1.5px dashed rgba(135,206,235,.35);
+  background: rgba(255,255,255,.03);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: grab;
+  transition: background .15s, border-color .15s;
+  user-select: none;
+}
+.cpp-slot.cpp-hero { border-color: rgba(240,212,138,.7); background: linear-gradient(135deg, rgba(240,212,138,.15), rgba(240,212,138,.04)); }
+.cpp-slot.cpp-filled { border-style: solid; }
+.cpp-slot.cpp-empty { opacity: .55; }
+.cpp-slot:hover { background: rgba(135,206,235,.10); }
+.cpp-slot:active { cursor: grabbing; }
+.cpp-slot-label { font-size: .58rem; color: var(--ink-mute); margin-bottom: 4px; }
+.cpp-hero .cpp-slot-label { color: #ffd86b; font-weight: 700; }
+.cpp-slot-char { font-size: 1.6rem; font-weight: 900; font-family: 'Noto Serif JP', serif; color: #fff5b0; }
+.cpp-slot-blank { color: rgba(255,255,255,.25); font-size: .85rem; }
+.cpp-chip {
+  padding: 6px 10px;
+  font-size: 1.15rem; font-weight: 900;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid var(--r-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Noto Serif JP', serif;
+  transition: transform .12s, opacity .12s;
+}
+.cpp-chip:hover { transform: scale(1.08); background: rgba(135,206,235,.15); }
+.cpp-chip.cpp-chip-used { opacity: .35; text-decoration: line-through; }
