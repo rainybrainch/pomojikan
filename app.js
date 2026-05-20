@@ -4778,7 +4778,12 @@ function openWritings() {
   const hsave = $('#haiku-save');
   if (hsave && !hsave._bound) { hsave.addEventListener('click', saveHaiku); hsave._bound = true; }
   const hclr = $('#haiku-clear');
-  if (hclr && !hclr._bound) { hclr.addEventListener('click', () => { _haikuRows = [[],[],[]]; renderHaiku(); }); hclr._bound = true; }
+  if (hclr && !hclr._bound) { hclr.addEventListener('click', () => {
+    // v1.3.7: データ消失防止 ── 字が入ってる時のみ確認
+    const used = _haikuRows.reduce((s, r) => s + r.length, 0);
+    if (used > 0 && !confirm(`5-7-5 に ${used} 字入っています。クリアしますか？`)) return;
+    _haikuRows = [[],[],[]]; renderHaiku();
+  }); hclr._bound = true; }
   const hund = $('#haiku-undo');
   if (hund && !hund._bound) { hund.addEventListener('click', () => {
     for (let i = 2; i >= 0; i--) if (_haikuRows[i].length > 0) { _haikuRows[i].pop(); break; }
@@ -4862,11 +4867,15 @@ function consumeHaikuStock() {
 function saveHaiku() {
   if (!isHaikuComplete()) { toast('5-7-5 を埋めて'); return; }
   consumeHaikuStock();
+  const chars = _haikuRows.flat().map(it => ({ char: it.char, rarity: it.rarity }));
+  const text = haikuText();
+  const date = new Date().toISOString().slice(0,10);
+  const entry = { text, genre: '🌸 俳句', date, public: true, chars };
   STATE.writings = STATE.writings || [];
-  STATE.writings.push({
-    text: haikuText(), genre: '🌸 俳句', date: new Date().toISOString().slice(0,10), public: true,
-  });
+  STATE.writings.push(entry);
   saveState();
+  // v1.3.7: 俳句も読雨に放流（日記と整合）
+  try { publishToYomu(entry); } catch(_) {}
   toast('🌸 俳句を保存');
   _haikuRows = [[],[],[]];
   renderHaiku();
@@ -7175,13 +7184,18 @@ function bindEvents() {
   const wClose = $('#writings-close');
   if (wClose) wClose.addEventListener('click', closeWritings);
   const wcClear = $('#wc-clear');
-  if (wcClear) wcClear.addEventListener('click', () => { _currentWriting = []; renderWritingsModal(); refreshPCPanels(); });
+  if (wcClear) wcClear.addEventListener('click', () => {
+    if (_currentWriting.length > 0 && !confirm(`日記に ${_currentWriting.length} 字入っています。クリアしますか？`)) return;
+    _currentWriting = []; renderWritingsModal(); refreshPCPanels();
+  });
   const wcUndo = $('#wc-undo');
   if (wcUndo) wcUndo.addEventListener('click', () => { _currentWriting.pop(); renderWritingsModal(); refreshPCPanels(); });
   const wcSave = $('#wc-save');
   if (wcSave) wcSave.addEventListener('click', saveCurrentWriting);
   const wcExport = $('#wc-export');
   if (wcExport) wcExport.addEventListener('click', exportWritingsJSON);
+  const wcExport2 = $('#wc-export-2');
+  if (wcExport2) wcExport2.addEventListener('click', exportWritingsJSON);
 
   // PC 右パネル：文章ミニのアクション
   const pwmClear = $('#pwm-clear');
