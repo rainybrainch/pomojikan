@@ -2998,7 +2998,7 @@ function invalidateAggCache() { _aggCache = null; }
 // v10n6: コインプッシャー型 ── 棚は中央 76%、両端 12% は穴
 // 棚から外れた字は下に落ちて EXP 化（累積しない＝重くならない）
 const LEDGE_PAD = 0.12;
-const LEDGE_THICKNESS = 12;  // v1.1.1: 棚の厚み（CSS と整合）
+const LEDGE_THICKNESS = 28;  // v1.1.2: 棚の厚み（CSS と整合・水盤の縁風）
 function ledgeBounds(W) {
   return { left: W * LEDGE_PAD, right: W * (1 - LEDGE_PAD) - SIZE };
 }

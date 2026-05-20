@@ -1261,7 +1261,7 @@ body[data-mode="rest"] .timer-text{
   inset:0;
   pointer-events:none;       /* デフォルトはクリックスルー */
   overflow:hidden;
-  z-index:2;
+  z-index:50;                /* v1.1.2: 効果パネル(z:6)・HUD(z:5)・棚(z:1) より前面に */
   touch-action:none;
 }
 #play-field .pomoji{
@@ -4643,59 +4643,100 @@ html, body {
 }
 
 /* ════════════════════ v1.1.0: 地面（棚）視覚化＋波紋 ════════════════════ */
-/* v1.1.1: 棚を厚みのある板に＋穴の縁を強調 */
+/* v1.1.2: 土台を本物の「水盤の縁」風に ── 厚み・天面ハイライト・側壁 */
 #ledge-surface {
   position: fixed;
   left: 12vw;
   right: 12vw;
   bottom: 0;
-  height: 12px;
+  height: 28px;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(to bottom,
-    rgba(135,206,235,.40),
-    rgba(80,140,200,.30) 50%,
-    rgba(40,80,140,.55));
-  border-top: 2px solid rgba(180,220,255,.65);
+  background:
+    /* 上面の薄い水膜（ハイライト）*/
+    linear-gradient(to bottom,
+      rgba(200,230,255,.55) 0,
+      rgba(150,200,240,.35) 3px,
+      rgba(60,110,170,.45) 8px,
+      rgba(20,50,100,.55) 50%,
+      rgba(5,20,50,.75) 100%);
+  border-top: 1.5px solid rgba(220,240,255,.85);
+  border-bottom: none;
+  border-radius: 2px 2px 0 0;
   box-shadow:
-    0 -2px 14px rgba(135,206,235,.30),
-    inset 0 -3px 6px rgba(0,0,0,.30);
+    /* 水面の反射 */
+    0 -1px 0 rgba(255,255,255,.35) inset,
+    /* 上方への淡い光（水滴のリフレクション）*/
+    0 -8px 18px rgba(135,206,235,.18),
+    /* 板の奥行き */
+    inset 0 -8px 12px rgba(0,0,0,.35),
+    /* 板の下端ライン（地に着いてる感）*/
+    inset 0 -1px 0 rgba(255,255,255,.10);
 }
-#ledge-surface::before, #ledge-surface::after {
+/* 水面のラインを薄く流す（縦縞ハイライトで磨かれた金属／水盤の質感）*/
+#ledge-surface::before {
   content: '';
   position: absolute;
-  bottom: 0;
-  width: 10px;
-  height: 100%;
-  background: linear-gradient(to right, rgba(0,0,0,.55), transparent);
+  left: 0; right: 0; top: 2px; bottom: 0;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0, transparent 18px,
+      rgba(255,255,255,.04) 18px, rgba(255,255,255,.04) 19px);
   pointer-events: none;
 }
-#ledge-surface::before { left: -10px; }
-#ledge-surface::after  { right: -10px; transform: scaleX(-1); }
+/* 両側の穴の縁（落差を強調する暗い影）*/
+#ledge-surface::after {
+  content: '';
+  position: absolute;
+  left: -14px; right: -14px; top: 0; bottom: 0;
+  background:
+    linear-gradient(to right,
+      rgba(0,0,0,.7) 0,
+      rgba(0,0,0,.4) 6px,
+      transparent 14px,
+      transparent calc(100% - 14px),
+      rgba(0,0,0,.4) calc(100% - 6px),
+      rgba(0,0,0,.7) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
 body[data-mode="work"] #ledge-surface {
-  background: linear-gradient(to bottom,
-    rgba(135,206,235,.0),
-    rgba(135,206,235,.40) 30%,
-    rgba(135,206,235,.70) 70%,
-    rgba(135,206,235,.25));
-  box-shadow: 0 -1px 0 rgba(255,255,255,.15) inset,
-              0 0 18px rgba(135,206,235,.40);
+  background:
+    linear-gradient(to bottom,
+      rgba(200,230,255,.75) 0,
+      rgba(150,200,240,.45) 3px,
+      rgba(70,140,210,.55) 8px,
+      rgba(20,60,120,.65) 50%,
+      rgba(5,20,50,.85) 100%);
+  border-top-color: rgba(220,240,255,.95);
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,.45) inset,
+    0 -10px 24px rgba(135,206,235,.30),
+    inset 0 -8px 12px rgba(0,0,0,.35),
+    inset 0 -1px 0 rgba(255,255,255,.15);
 }
 body[data-mode="rest"] #ledge-surface {
-  background: linear-gradient(to bottom,
-    rgba(192,168,255,.0),
-    rgba(192,168,255,.40) 30%,
-    rgba(192,168,255,.70) 70%,
-    rgba(192,168,255,.25));
-  box-shadow: 0 -1px 0 rgba(255,255,255,.15) inset,
-              0 0 18px rgba(192,168,255,.40);
+  background:
+    linear-gradient(to bottom,
+      rgba(220,210,255,.70) 0,
+      rgba(180,160,240,.45) 3px,
+      rgba(120,90,200,.55) 8px,
+      rgba(60,40,120,.65) 50%,
+      rgba(20,10,50,.85) 100%);
+  border-top-color: rgba(230,220,255,.95);
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,.45) inset,
+    0 -10px 24px rgba(192,168,255,.30),
+    inset 0 -8px 12px rgba(0,0,0,.35),
+    inset 0 -1px 0 rgba(255,255,255,.15);
 }
+/* v1.1.1 旧定義は v1.1.2 で上書き済（削除）*/
 body.stream-mode #ledge-surface { display: none; }
 
 /* v1.1.1: 着地波紋（棚の上面から立ち上がる）*/
 .ripple {
   position: fixed;
-  bottom: 12px;  /* 棚の上面ライン */
+  bottom: 28px;  /* v1.1.2: 棚の上面ライン（厚み 28px に整合）*/
   width: 64px;
   height: 26px;
   margin-left: -32px;
