@@ -3173,8 +3173,30 @@ function physicsStep() {
     if (p.dragging) continue;
     // settled な字は位置固定 ── ただし persistent でなく棚外なら settle 解除して落とす
     if (p.settled && !p.rising) {
+      // v1.1.9: 下の支え消失チェック（下の字が消えたら落ち直す）
+      let supportLost = false;
+      if (!p.persistent && (_physicsFrame % 20) === ((p.id || 0) % 20)) {
+        const floorY = H - SIZE - LEDGE_THICKNESS;
+        if (p.y < floorY - 1) {
+          let supported = false;
+          for (const other of livePomoji.values()) {
+            if (other.id === p.id || other.rising) continue;
+            const odx = Math.abs(p.x - other.x);
+            const ody = other.y - p.y;
+            if (odx < SIZE * 0.85 && ody > 0 && ody < SIZE * 1.1) { supported = true; break; }
+          }
+          supportLost = !supported;
+        }
+      }
+      if (supportLost) {
+        p.settled = false;
+        p.settledX = null;
+        p.settledY = null;
+        p.el.classList.remove('settled');
+        p.vy = 0.4;
+        // 落下フェーズに流す（後続の物理処理へ）
+      } else {
       // v10n6: 棚から押し出されたら再落下開始（コインプッシャー）
-      // v1.1.3: 棚バッファ撤廃 ── 中心が棚外に出たら即座に落とす
       const cx = p.x + SIZE/2;
       const onLedge = p.persistent || (cx >= ledge.left && cx <= ledge.right + SIZE);
       if (!onLedge) {
@@ -3191,6 +3213,7 @@ function physicsStep() {
         p.el.style.top  = p.y + 'px';
         continue;
       }
+      }  // v1.1.9: supportLost else 閉じ
     }
     if (p.rising) {
       // 上昇ぽもじ：軽い揺らぎ＋ゆっくり浮上
@@ -3249,9 +3272,9 @@ function physicsStep() {
       p.vy *= 0.85;  // 静的な台に乗ってる時は重力を切って減衰のみ
     }
     if (p.vy > MAX_FALL_VY) p.vy = MAX_FALL_VY;
-    // v1.0.9: 空気摩擦弱め（転がりが長く持つように）
-    p.vx *= 0.995;
-    if (Math.abs(p.vx) < 0.01) p.vx = 0;
+    // v1.1.9: 摩擦さらに弱め（しっかり転がり続ける）
+    p.vx *= 0.998;
+    if (Math.abs(p.vx) < 0.008) p.vx = 0;
     p.x += p.vx;
     p.y += p.vy;
     // v1.0.9: x 壁反射は棚範囲のみ ── 棚外は反射せず素通りで画面外へ
@@ -3303,12 +3326,12 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // v1.1.3: 接線力強化＋ settledX 累積バグ修正（|| が初回 falsy 扱いで累積しなかった）
+          // v1.1.9: 接線力さらに強化（コインプッシャー感）
           if (Math.abs(nx) > 0.05) {
-            p.vx += nx * 2.2;
+            p.vx += nx * 3.5;
             if (otherStatic && !other.persistent && other.settled) {
               if (other.settledX == null) other.settledX = other.x;
-              other.settledX -= nx * 3.0;  // 押し出し量も増（しっかり転がる）
+              other.settledX -= nx * 4.0;
               other.x = other.settledX;
             }
           }
@@ -6052,8 +6075,8 @@ function renderCodex() {
     window._tierCache = { codexLen: codex.length, byTier };
   }
 
-  // 🚀 v10n 最適化：1 ティアあたり表示上限（"もっと見る" で解放）
-  const CELL_CAP = 800;  // ★13-16 でも 800 字なら 60fps 維持
+  // v1.1.9: 図鑑の重さ大幅軽減 ── CAP 800 → 200（16 tier × 200 = 3200 cells max）
+  const CELL_CAP = 200;
   if (!window._tierExpanded) window._tierExpanded = {};
 
   // DocumentFragment で reflow を 1 回に圧縮
@@ -6097,8 +6120,9 @@ function renderCodex() {
     const renderList = (visible.length > CELL_CAP && !expanded) ? visible.slice(0, CELL_CAP) : visible;
     const truncated = visible.length - renderList.length;
     const tierGrid = el('div', { class:'codex-tier-grid' });
-    // tier 内ループも DocumentFragment 化（最大 800 cells/tier × 16 tier = 12,800 cells max）
     const tierFrag = document.createDocumentFragment();
+    // v1.1.9: イベント委譲で listener 数を 3200 → 1 に削減
+    const charToRarity = {};
     for (const k of renderList) {
       const c = k.char || k.c;
       const seen = STATE.collection[c] || 0;
@@ -6107,15 +6131,23 @@ function renderCodex() {
                   (seen ? ' seen' : '') +
                   (partyIdx >= 0 ? ' in-party' : '') +
                   (tierIdx > STATE.unlockedTier ? ' locked' : '');
-      const cell = el('div', { class: cls, title: seen ? `${c}（${seen}回発見）` : '？' },
-        tierIdx > STATE.unlockedTier && !seen ? '?' : c
-      );
-      if (seen) {
-        cell.addEventListener('click', () => showCharDetail(c, k.rarity));
-      }
+      const cellText = tierIdx > STATE.unlockedTier && !seen ? '?' : c;
+      // 高速化：innerHTML 直接（el() の overhead 回避）
+      const cell = document.createElement('div');
+      cell.className = cls;
+      cell.title = seen ? `${c}（${seen}回発見）` : '？';
+      cell.textContent = cellText;
+      if (seen) cell.dataset.char = c;
+      charToRarity[c] = k.rarity;
       tierFrag.appendChild(cell);
     }
     tierGrid.appendChild(tierFrag);
+    tierGrid.addEventListener('click', (e) => {
+      const cell = e.target.closest('.codex-cell.seen');
+      if (!cell) return;
+      const c = cell.dataset.char;
+      if (c) showCharDetail(c, charToRarity[c]);
+    });
     section.appendChild(tierGrid);
     // 切り捨て分の「もっと見る」ボタン
     if (truncated > 0) {
