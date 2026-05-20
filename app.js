@@ -3423,6 +3423,16 @@ function attachDragHandlers(node, obj) {
         dissolvePomoji(obj);
         return;
       }
+      // v1.1.7: パーティカードにドロップ → そのメンバーに EXP（餌付け）
+      const dropEl = document.elementFromPoint(ev.clientX, ev.clientY);
+      const partyCard = dropEl?.closest('.party-card');
+      if (partyCard && STATE.party && STATE.party.members) {
+        const tidx = parseInt(partyCard.dataset.idx);
+        if (!isNaN(tidx) && STATE.party.members[tidx]) {
+          feedPomojiToMember(obj, tidx, partyCard);
+          return;
+        }
+      }
       const target = checkMergeCollision(obj);
       if (target) mergePomoji(obj, target);
     };
@@ -3432,6 +3442,44 @@ function attachDragHandlers(node, obj) {
   };
 
   node.addEventListener('pointerdown', startDrag);
+}
+
+// v1.1.7: パーティ字に「餌付け」── 落とした字を吸い込ませて EXP
+function feedPomojiToMember(p, idx, cardEl) {
+  if (!STATE.party || !STATE.party.members[idx]) return;
+  const member = STATE.party.members[idx];
+  const rIdx = RARITY_TIERS.indexOf(p.rarity);
+  // 通常タップの 2 倍、同字なら 4 倍
+  const same = (member.char === p.char);
+  const baseExp = Math.max(2, Math.pow(2, rIdx) * 3);
+  const exp = same ? baseExp * 4 : baseExp * 2;
+  addStock(p.char);
+  // EXP 反映
+  member.exp = (member.exp || 0) + exp;
+  let s = 0;
+  while (member.exp >= effectiveExpForLevel(member.level + 1) && s++ < 500) {
+    member.exp -= effectiveExpForLevel(member.level + 1);
+    member.level += 1;
+    onLevelUp(member, idx);
+  }
+  STATE.stats.totalExp = (STATE.stats.totalExp || 0) + exp;
+  invalidateAggCache();
+  saveState();
+  // 視覚：吸い込まれる演出
+  if (cardEl) {
+    const r = cardEl.getBoundingClientRect();
+    const dx = (r.left + r.width/2) - (p.x + SIZE/2);
+    const dy = (r.top + r.height/2) - (p.y + SIZE/2);
+    p.el.style.transition = 'transform .35s cubic-bezier(.4,1.4,.5,1), opacity .35s ease';
+    p.el.style.transform = `translate(${dx}px, ${dy}px) scale(.2)`;
+    p.el.style.opacity = '0';
+    cardEl.classList.add('fed-flash');
+    setTimeout(() => cardEl.classList.remove('fed-flash'), 600);
+    spawnXpFloat(r.left + r.width/2, r.top, exp, p.rarity);
+  }
+  try { playSFX(same ? 'merge' : 'pop'); } catch(_) {}
+  if (same) try { toast(`✦ 同字餌付け：${p.char} → ${member.char} EXP ×4`, p.rarity); } catch(_) {}
+  setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); renderParty(); }, 380);
 }
 
 function dissolvePomoji(p) {
