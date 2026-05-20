@@ -1720,6 +1720,18 @@ const PASSIVES = [
   { id:'p_char_dou',   name:'道の心',     desc:'「道」をパーティに：進化 +3% / 融合 +2%', icon:'🛤', cond:s=>s.party?.members?.some(m=>m.char==='道'), eff:{evoBoost:0.03, mergeRadiusMul:1.02} },
   { id:'p_char_kotoba',name:'言の力',     desc:'「言」をパーティに：ストック +5%',      icon:'💬', cond:s=>s.party?.members?.some(m=>m.char==='言'), eff:{stockExpMul:1.05} },
   { id:'p_char_yume',  name:'夢の彼方',   desc:'「夢」をパーティに：EXP +3% / 進化 +2%', icon:'💭', cond:s=>s.party?.members?.some(m=>m.char==='夢'), eff:{expMul:1.03, evoBoost:0.02} },
+  // v1.3.14: 新次元パッシブ（差別化）
+  // critChance: タップ字に確率で EXP ×3 ／ chainBonus: 連続合体ボーナス ／ lifetimeMul: 字寿命
+  { id:'p_crit_basic',  name:'閃き',         desc:'タップで 5% 確率 EXP ×3',           icon:'⚡', cond:s=>_passiveCount.cycles(s)>=50,   eff:{critChance:0.05} },
+  { id:'p_crit_master', name:'達観',         desc:'タップで 12% 確率 EXP ×3（200サイクル）', icon:'🌀', cond:s=>_passiveCount.cycles(s)>=200, eff:{critChance:0.07} },
+  { id:'p_chain_a',     name:'数珠つなぎ',    desc:'同字 3 連続合体で全効果 +5%（一時的）', icon:'📿', cond:s=>_passiveCount.uniq(s)>=200, eff:{chainBonus:0.05} },
+  { id:'p_chain_b',     name:'紡ぎの極',     desc:'連鎖ボーナス +10%（1000字発見）',     icon:'🧵', cond:s=>_passiveCount.uniq(s)>=1000, eff:{chainBonus:0.10} },
+  { id:'p_life_1',      name:'残響',         desc:'字寿命 +20%（5分→6分）',             icon:'⏳', cond:s=>_passiveCount.yoji(s)>=200, eff:{lifetimeMul:1.20} },
+  { id:'p_life_2',      name:'長息',         desc:'字寿命 +50%（7.5分・継続30日）',    icon:'🪶', cond:s=>_passiveCount.streak(s)>=30, eff:{lifetimeMul:1.50} },
+  { id:'p_rare_focus',  name:'高貴の眼',     desc:'★10 以上字の EXP +25%（4000熟語）',  icon:'👁', cond:s=>_passiveCount.yoji(s)>=4000, eff:{highRarityExpMul:1.25} },
+  { id:'p_low_love',    name:'初心忘れず',   desc:'★1-3 字の EXP +50%（ひらがな愛）',  icon:'🌱', cond:s=>_passiveCount.uniq(s)>=50, eff:{lowRarityExpMul:1.50} },
+  { id:'p_cycle_burst', name:'完成の火花',    desc:'サイクル完了時 ボーナス字 +3',       icon:'🎇', cond:s=>_passiveCount.cycles(s)>=100, eff:{cycleBonusDrop:3} },
+  { id:'p_speed_focus', name:'速読',         desc:'連続日数 7+：字降下速度 +20%（密度UP）', icon:'💨', cond:s=>_passiveCount.streak(s)>=7, eff:{spawnRateMul:1.20} },
 ];
 
 // v1.3.12: 環境ボーナス ── 季節・月・曜日・週など「時間」由来（プレイ実績じゃなく文脈）
