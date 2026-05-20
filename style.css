@@ -4992,3 +4992,10 @@ body.harvest-mode .pomoji {
   .timer-zone { width: 180px !important; height: 180px !important; }
   .play-hud { display: none; }  /* 超小画面では HUD 隠す */
 }
+
+/* v1.3.3: 持続字タップ時の派手なフラッシュ */
+@keyframes persistTapFlash {
+  0%   { opacity: 0; transform: scale(.6); }
+  30%  { opacity: 1; transform: scale(1.4); }
+  100% { opacity: 0; transform: scale(2); }
+}

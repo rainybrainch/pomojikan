@@ -3647,14 +3647,24 @@ function dissolvePomoji(p) {
   if (p.persistent) {
     const rarity = p.rarity;
     const rIdx = RARITY_TIERS.indexOf(rarity);
-    const exp = Math.max(5, Math.pow(1.3, rIdx) * 12);  // 通常の 4 倍
+    const exp = Math.max(5, Math.pow(1.3, rIdx) * 12);
     awardExpToParty(p.char, exp) || _orphanExp(exp);
     spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
     playSFX('pop');
-    // タグ別の時間限定バフ発動（30 秒）
     triggerPartyBuff(p.char, rarity);
-    // 消滅演出
+    // v1.3.3: 派手な金光フラッシュ（タップが効いたことを明示）
+    try {
+      const flash = document.createElement('div');
+      flash.style.cssText = `position:fixed; left:${p.x - 20}px; top:${p.y - 20}px;
+        width:${SIZE + 40}px; height:${SIZE + 40}px;
+        border-radius:50%; pointer-events:none; z-index:9999;
+        background:radial-gradient(circle, rgba(255,217,107,.7) 0%, rgba(255,150,80,.4) 40%, transparent 70%);
+        animation:persistTapFlash .55s ease-out forwards;`;
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 600);
+    } catch(_) {}
     p.el.classList.add('dissolve');
+    p.el.classList.add('burst');  // 二重で burst CSS も走らせる
     const oldChar = p.char;
     const oldRarity = p.rarity;
     try { unsettleAbove(p); } catch(_) {}
