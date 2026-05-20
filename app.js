@@ -1824,11 +1824,12 @@ function spawnComboBurst(recipe) {
   const cb = (typeof previewComboEffect === 'function') ? previewComboEffect(recipe) : null;
   const lines = [];
   if (cb) {
-    if (cb.expMul > 1.01)         lines.push(`📈 EXP ×${cb.expMul.toFixed(2)}`);
-    if (cb.gravityMul < 0.99)     lines.push(`🌧 重力 ×${cb.gravityMul.toFixed(2)}`);
-    if (cb.mergeRadiusMul > 1.01) lines.push(`🤝 融合 ×${cb.mergeRadiusMul.toFixed(2)}`);
-    if (cb.dropCountAdd)          lines.push(`💧 粒 +${cb.dropCountAdd}`);
-    if (cb.stockExpMul > 1.01)    lines.push(`📦 ストック ×${cb.stockExpMul.toFixed(2)}`);
+    // v1.1.4: % 表記
+    if (cb.expMul > 1.01)         lines.push(`📈 EXP +${Math.round((cb.expMul-1)*100)}%`);
+    if (cb.gravityMul < 0.99)     lines.push(`🌧 重力 -${Math.round((1-cb.gravityMul)*100)}%`);
+    if (cb.mergeRadiusMul > 1.01) lines.push(`🤝 融合 +${Math.round((cb.mergeRadiusMul-1)*100)}%`);
+    if (cb.dropCountAdd)          lines.push(`💧 粒 +${cb.dropCountAdd}個`);
+    if (cb.stockExpMul > 1.01)    lines.push(`📦 ストック +${Math.round((cb.stockExpMul-1)*100)}%`);
     if (cb.evoBoost > 0.005)      lines.push(`🌱 進化 +${Math.round(cb.evoBoost*100)}%`);
   }
   const effLine = lines.length ? lines.join(' ・ ') : '';
@@ -3888,11 +3889,13 @@ function renderComboBar() {
   const cb = getComboBonus();
   const allChips = [];
   const addChip = (icon, label, color, weight) => allChips.push({ icon, label, color, weight });
-  if (cb.expMul && cb.expMul > 1.01)         addChip('📈', `EXP ×${cb.expMul.toFixed(2)}`, '#ffd86b', cb.expMul);
-  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('🌧', `重力 ×${cb.gravityMul.toFixed(2)}`, '#a0e0ff', 1/cb.gravityMul);
-  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('🤝', `融合 ×${cb.mergeRadiusMul.toFixed(2)}`, '#c0e0a0', cb.mergeRadiusMul);
-  if (cb.dropCountAdd)                       addChip('💧', `粒 +${cb.dropCountAdd}`, '#9be0ff', 1 + cb.dropCountAdd * 0.2);
-  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('📦', `ストック ×${cb.stockExpMul.toFixed(2)}`, '#d4b6ff', cb.stockExpMul);
+  // v1.1.4: ×表記をやめて +N% / -N% / +N個 に
+  const _pct = (m) => '+' + Math.round((m - 1) * 100) + '%';
+  if (cb.expMul && cb.expMul > 1.01)         addChip('📈', `EXP ${_pct(cb.expMul)}`,   '#ffd86b', cb.expMul);
+  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('🌧', `重力 -${Math.round((1-cb.gravityMul)*100)}%`, '#a0e0ff', 1/cb.gravityMul);
+  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('🤝', `融合 ${_pct(cb.mergeRadiusMul)}`, '#c0e0a0', cb.mergeRadiusMul);
+  if (cb.dropCountAdd)                       addChip('💧', `粒 +${cb.dropCountAdd}個`, '#9be0ff', 1 + cb.dropCountAdd * 0.2);
+  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('📦', `ストック ${_pct(cb.stockExpMul)}`, '#d4b6ff', cb.stockExpMul);
   if (cb.evoBoost && cb.evoBoost > 0.005)    addChip('🌱', `進化 +${Math.round(cb.evoBoost*100)}%`, '#ffe0a0', 1 + cb.evoBoost);
   allChips.sort((a, b) => b.weight - a.weight);
   const effChips = allChips.slice(0, 3);
@@ -5046,18 +5049,33 @@ function renderEffectsPanel() {
   };
   // 矢印：強い=⇡、弱い=↑、休=・、重力は逆（低いほど良いので ⇣/↓ で表す）
   const arrow = (grade, inverted) => grade === 'none' ? '・' : (inverted ? (grade === 'strong' ? '⇣' : '↓') : (grade === 'strong' ? '⇡' : '↑'));
+  // v1.1.4: 倍率を「+%」表記＋日本語の状態語に。重力など逆方向は「緩」「速」で説明
+  const pct = (mul) => {
+    const p = Math.round((mul - 1) * 100);
+    return (p >= 0 ? '+' : '') + p + '%';
+  };
+  const pctInv = (mul) => {  // 重力用：×0.7 → -30%（緩）
+    const p = Math.round((1 - mul) * 100);
+    return '-' + p + '%';
+  };
+  const expLabel = expFinal >= 10
+    ? `×${expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)}`  // 大きすぎる時は ×N 表記
+    : pct(expFinal);
+  const gravLabel = gravFinal < 0.99 ? pctInv(gravFinal) + ' 緩' : gravFinal > 1.01 ? '+' + Math.round((gravFinal-1)*100) + '% 速' : '通常';
+  const mergeLabel = mergeFinal > 1.01 ? pct(mergeFinal) + ' 広' : '通常';
+  const stockLabel = stockFinal > 1.01 ? pct(stockFinal) : '通常';
   const items = [
     // 成長系
-    { ic:'📈', lbl:'EXP',     val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hint:'貰える経験値の倍率',     grade: grade(expFinal, 1.10, 1.50), inv:false },
-    { ic:'📦', lbl:'ストック', val:'×' + fmt(stockFinal),                                       hint:'拾った字からの EXP 倍率', grade: grade(stockFinal, 1.05, 1.30), inv:false },
-    { ic:'🌱', lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%',                       hint:'次 Lv 必要 EXP 削減率',   grade: grade(evoFinal, 0.05, 0.20), inv:false },
+    { ic:'📈', lbl:'EXP',     val:expLabel,                                hint:'もらえる経験値の増分',         grade: grade(expFinal, 1.10, 1.50), inv:false },
+    { ic:'📦', lbl:'ストック', val:stockLabel,                              hint:'拾った字から入る EXP の増分',    grade: grade(stockFinal, 1.05, 1.30), inv:false },
+    { ic:'🌱', lbl:'進化加速', val:'+' + Math.round(evoFinal * 100) + '%', hint:'次 Lv 必要 EXP を削る率',       grade: grade(evoFinal, 0.05, 0.20), inv:false },
     // 物理系
-    { ic:'🌧', lbl:'重力',     val:'×' + fmt(gravFinal),                                        hint:'落下速度の倍率（低いほど緩い）', grade: grade(gravFinal, 0.95, 0.70, true), inv:true },
-    { ic:'🤝', lbl:'融合範囲', val:'×' + fmt(mergeFinal),                                       hint:'同字どうしが合体する判定半径', grade: grade(mergeFinal, 1.05, 1.20), inv:false },
-    { ic:'💧', lbl:'粒数+',    val:'+' + Math.round(dropFinal),                                 hint:'1 回の落下で増える追加粒数', grade: grade(dropFinal, 1, 3), inv:false },
+    { ic:'🌧', lbl:'重力',     val:gravLabel,                              hint:'字の落下スピード（緩いほど捕まえやすい）', grade: grade(gravFinal, 0.95, 0.70, true), inv:true },
+    { ic:'🤝', lbl:'融合範囲', val:mergeLabel,                             hint:'同字が合体する判定半径',         grade: grade(mergeFinal, 1.05, 1.20), inv:false },
+    { ic:'💧', lbl:'粒数',     val:dropFinal > 0 ? '+' + Math.round(dropFinal) + '個' : '通常', hint:'1 回の落下で追加される粒数', grade: grade(dropFinal, 1, 3), inv:false },
     // 状態系
-    { ic:'⭐', lbl:'Lv係数',   val:'×' + fmt(lvMul),                                            hint:'リーダー Lv 由来の全効果倍率', grade: grade(lvMul, 1.10, 1.30), inv:false },
-    { ic:'⚙', lbl:'パッシブ',  val:passCount + '/20',                                          hint:'達成済の常時効果数', grade: grade(passCount, 2, 5), inv:false },
+    { ic:'⭐', lbl:'リーダーLv', val:pct(lvMul),                            hint:'リーダー Lv 由来の全効果ブースト', grade: grade(lvMul, 1.10, 1.30), inv:false },
+    { ic:'⚙', lbl:'パッシブ',   val:passCount + '/20 解放',                hint:'達成済の常時効果数（コレクション・継続由来）', grade: grade(passCount, 2, 5), inv:false },
   ];
   for (const it of items) it.arr = arrow(it.grade, it.inv);
   const activeCount = items.filter(x => x.grade !== 'none').length;
