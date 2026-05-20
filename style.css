@@ -4999,3 +4999,25 @@ body.harvest-mode .pomoji {
   30%  { opacity: 1; transform: scale(1.4); }
   100% { opacity: 0; transform: scale(2); }
 }
+
+/* v1.3.4: 日記＆俳句 タブ */
+.wr-tabs { display: flex; gap: 4px; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.wr-tab {
+  padding: 8px 14px; min-height: 40px;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--ink-mute); font-size: .88rem; font-weight: 700;
+  border-bottom: 2px solid transparent;
+}
+.wr-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.wr-tab:hover { color: var(--ink); }
+.wr-pane { padding: 0 16px 16px; }
+
+.haiku-rows { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.haiku-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08); border-radius: 8px; min-height: 50px;
+}
+.haiku-tag { font-size: .68rem; color: var(--ink-mute); min-width: 56px; }
+.haiku-slots { flex: 1; display: flex; gap: 4px; flex-wrap: wrap; }
+.haiku-count { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--ink-mute); }

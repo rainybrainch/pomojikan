@@ -4725,10 +4725,168 @@ function refreshPCPanels(){
 // ═══════════════════════════════════════════════════════════════
 let _currentWriting = [];  // { char, rarity }
 
+// v1.3.4: 日記＆俳句タブ
+let _writingsTab = 'diary';
+let _haikuRows = [[], [], []];  // 5/7/5 行ごと
+function switchWritingsTab(name) {
+  _writingsTab = name;
+  $$('.wr-tab').forEach(t => t.classList.toggle('active', t.dataset.wrTab === name));
+  $$('.wr-pane').forEach(p => p.style.display = p.dataset.wrPane === name ? '' : 'none');
+  if (name === 'diary')   renderWritingsModal();
+  if (name === 'haiku')   renderHaiku();
+  if (name === 'history') renderWritingsHistory();
+}
 function openWritings() {
   if (!STATE.writings) STATE.writings = [];
-  renderWritingsModal();
+  // 日付表示
+  const dEl = $('#diary-date');
+  if (dEl) {
+    const d = new Date();
+    dEl.textContent = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+  }
+  // タブバインド（1 回だけ）
+  $$('.wr-tab').forEach(t => {
+    if (!t._bound) { t.addEventListener('click', () => switchWritingsTab(t.dataset.wrTab)); t._bound = true; }
+  });
+  // 俳句ボタン
+  const hsave = $('#haiku-save');
+  if (hsave && !hsave._bound) { hsave.addEventListener('click', saveHaiku); hsave._bound = true; }
+  const hclr = $('#haiku-clear');
+  if (hclr && !hclr._bound) { hclr.addEventListener('click', () => { _haikuRows = [[],[],[]]; renderHaiku(); }); hclr._bound = true; }
+  const hund = $('#haiku-undo');
+  if (hund && !hund._bound) { hund.addEventListener('click', () => {
+    for (let i = 2; i >= 0; i--) if (_haikuRows[i].length > 0) { _haikuRows[i].pop(); break; }
+    renderHaiku();
+  }); hund._bound = true; }
+  const hshr = $('#haiku-share');
+  if (hshr && !hshr._bound) { hshr.addEventListener('click', shareHaiku); hshr._bound = true; }
+  switchWritingsTab('diary');
   $('#writings-modal').classList.add('show');
+}
+
+const HAIKU_CAP = [5, 7, 5];
+function renderHaiku() {
+  for (let i = 0; i < 3; i++) {
+    const row = $('#haiku-row-' + (i+1));
+    const cnt = $('#haiku-count-' + (i+1));
+    if (!row || !cnt) continue;
+    row.innerHTML = '';
+    _haikuRows[i].forEach((it, j) => {
+      const rIdx = RARITY_TIERS.indexOf(it.rarity);
+      row.appendChild(el('span', {
+        class:`wc-slot rarity-${rIdx + 1}`,
+        onclick: () => { _haikuRows[i].splice(j, 1); renderHaiku(); },
+      }, it.char));
+    });
+    cnt.textContent = _haikuRows[i].length + '/' + HAIKU_CAP[i];
+    cnt.style.color = _haikuRows[i].length === HAIKU_CAP[i] ? '#ffd86b' : 'var(--ink-mute)';
+  }
+  // プール
+  const pool = $('#haiku-pool');
+  if (!pool) return;
+  pool.innerHTML = '';
+  const codex = window.KANJI_CODEX || [];
+  if (!STATE.stock) STATE.stock = {};
+  const tempUsed = {};
+  for (const row of _haikuRows) for (const it of row) tempUsed[it.char] = (tempUsed[it.char] || 0) + 1;
+  const owned = codex.filter(k => {
+    const c = k.char || k.c;
+    return ((STATE.stock[c]||0) - (tempUsed[c]||0)) > 0;
+  }).sort((a,b) => RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity));
+  if (owned.length === 0) {
+    pool.appendChild(el('div', { class:'wc-empty' }, '所有字なし ── タイマーで集めよう'));
+    return;
+  }
+  owned.forEach(k => {
+    const c = k.char || k.c;
+    const rIdx = RARITY_TIERS.indexOf(k.rarity);
+    const remain = (STATE.stock[c]||0) - (tempUsed[c]||0);
+    pool.appendChild(el('div', {
+      class:`wp-cell rarity-${rIdx + 1}`,
+      title:`${c}（残 ${remain}）`,
+      onclick: () => {
+        // 上から順に詰める
+        for (let i = 0; i < 3; i++) {
+          if (_haikuRows[i].length < HAIKU_CAP[i]) {
+            _haikuRows[i].push({ char:c, rarity:k.rarity });
+            renderHaiku();
+            return;
+          }
+        }
+        toast('5-7-5 すべて埋まってます');
+      },
+    }, c, el('span', { class:'wp-count' }, remain)));
+  });
+}
+function isHaikuComplete() {
+  return _haikuRows[0].length === 5 && _haikuRows[1].length === 7 && _haikuRows[2].length === 5;
+}
+function haikuText() {
+  return _haikuRows.map(r => r.map(x => x.char).join('')).join(' ／ ');
+}
+function consumeHaikuStock() {
+  if (!STATE.stock) STATE.stock = {};
+  for (const row of _haikuRows) for (const it of row) {
+    STATE.stock[it.char] = Math.max(0, (STATE.stock[it.char] || 0) - 1);
+  }
+}
+function saveHaiku() {
+  if (!isHaikuComplete()) { toast('5-7-5 を埋めて'); return; }
+  consumeHaikuStock();
+  STATE.writings = STATE.writings || [];
+  STATE.writings.push({
+    text: haikuText(), genre: '🌸 俳句', date: new Date().toISOString().slice(0,10), public: true,
+  });
+  saveState();
+  toast('🌸 俳句を保存');
+  _haikuRows = [[],[],[]];
+  renderHaiku();
+}
+async function shareHaiku() {
+  if (!isHaikuComplete()) { toast('5-7-5 を埋めて'); return; }
+  const text = haikuText();
+  const url = 'https://rainybrainch.github.io/pomojikan/';
+  const full = `🌸 ぽもじかんで詠んだ俳句\n\n${text}\n\n#ぽもじかん #俳句\n${url}`;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: 'ぽもじかんの俳句', text: full });
+    } else {
+      await navigator.clipboard.writeText(full);
+      toast('📋 クリップボードにコピー');
+    }
+  } catch(e) {
+    try { await navigator.clipboard.writeText(full); toast('📋 コピー'); } catch(_) {}
+  }
+}
+function renderWritingsHistory() {
+  const hist = $('#wh-list');
+  if (!hist) return;
+  hist.innerHTML = '';
+  const writings = (STATE.writings || []).slice().reverse();
+  if (writings.length === 0) {
+    hist.appendChild(el('div', { class:'wc-empty' }, 'まだ何も保存していない'));
+    return;
+  }
+  writings.forEach((w, i) => {
+    const idx = (STATE.writings.length - 1) - i;
+    hist.appendChild(el('div', { class:'wh-item' },
+      el('div', { class:'wh-text' }, w.text),
+      el('div', { class:'wh-meta' },
+        el('span', {}, w.genre || '─'),
+        el('span', {}, w.date || ''),
+        w.public ? el('span', { style:{ color:'#ffd86b' } }, '🌸 公開可') : el('span', { style:{ color:'var(--ink-mute)' } }, '🔒 非公開'),
+      ),
+      el('button', {
+        class:'wh-del', title:'削除',
+        onclick: () => {
+          if (!confirm('削除？')) return;
+          STATE.writings.splice(idx, 1);
+          saveState();
+          renderWritingsHistory();
+        }
+      }, '×'),
+    ));
+  });
 }
 function closeWritings() { $('#writings-modal').classList.remove('show'); }
 

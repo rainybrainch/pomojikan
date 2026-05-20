@@ -274,31 +274,60 @@
 <div class="modal" id="writings-modal" role="dialog" aria-modal="true">
   <div class="modal-card modal-card-wide">
     <button class="modal-close" id="writings-close" aria-label="閉じる">×</button>
-    <h2 class="modal-title">📝 文章を編む</h2>
-    <p class="modal-desc">
-      集めた字を選んで並べる。字数で <strong>俳句／短歌／漢詩</strong> 等が自動判定されます。<br>
-      <small>このモードはプロトタイプ（v0.1）── 将来はパーティ＝文章として育てられる予定。</small>
-    </p>
+    <h2 class="modal-title">📓 日記＆俳句</h2>
+    <div class="wr-tabs">
+      <button class="wr-tab active" data-wr-tab="diary">📓 日記</button>
+      <button class="wr-tab" data-wr-tab="haiku">🌸 俳句</button>
+      <button class="wr-tab" data-wr-tab="history">📜 履歴</button>
+    </div>
 
-    <div class="writings-current">
-      <div class="wc-label">編集中の文章 <span id="wc-genre" class="wc-genre">─</span></div>
-      <div class="wc-slots" id="wc-slots"></div>
-      <div class="wc-actions">
-        <button class="btn-secondary" id="wc-clear">クリア</button>
-        <button class="btn-secondary" id="wc-undo">← 取消</button>
-        <button class="btn-primary"   id="wc-save">📜 保存</button>
-        <button class="btn-secondary" id="wc-export">📥 JSON 出力</button>
+    <!-- 日記タブ -->
+    <div class="wr-pane wr-pane-diary" data-wr-pane="diary">
+      <p class="modal-desc" style="margin:8px 0">
+        集めた字を使って、その日の日記を編む。<strong>非公開・端末内のみ</strong>。
+      </p>
+      <div class="writings-current">
+        <div class="wc-label">📅 <span id="diary-date"></span> ・ <span id="wc-genre" class="wc-genre">─</span></div>
+        <div class="wc-slots" id="wc-slots"></div>
+        <div class="wc-actions">
+          <button class="btn-secondary" id="wc-clear">クリア</button>
+          <button class="btn-secondary" id="wc-undo">← 取消</button>
+          <button class="btn-primary"   id="wc-save">📜 日記に保存</button>
+        </div>
+      </div>
+      <div class="writings-pool">
+        <div class="wp-label">所有している字（タップで追加）</div>
+        <div class="wp-grid" id="wp-grid"></div>
       </div>
     </div>
 
-    <div class="writings-pool">
-      <div class="wp-label">発見済の字（タップで追加）</div>
-      <div class="wp-grid" id="wp-grid"></div>
+    <!-- 俳句タブ -->
+    <div class="wr-pane wr-pane-haiku" data-wr-pane="haiku" style="display:none">
+      <p class="modal-desc" style="margin:8px 0">
+        <strong>5・7・5</strong> の三行詩。完成したら <strong>📤 シェア</strong> で公開可。
+      </p>
+      <div class="haiku-rows">
+        <div class="haiku-row"><span class="haiku-tag">上の句 5</span><div class="haiku-slots" id="haiku-row-1"></div><span class="haiku-count" id="haiku-count-1">0/5</span></div>
+        <div class="haiku-row"><span class="haiku-tag">中の句 7</span><div class="haiku-slots" id="haiku-row-2"></div><span class="haiku-count" id="haiku-count-2">0/7</span></div>
+        <div class="haiku-row"><span class="haiku-tag">下の句 5</span><div class="haiku-slots" id="haiku-row-3"></div><span class="haiku-count" id="haiku-count-3">0/5</span></div>
+      </div>
+      <div class="wc-actions">
+        <button class="btn-secondary" id="haiku-clear">クリア</button>
+        <button class="btn-secondary" id="haiku-undo">← 取消</button>
+        <button class="btn-primary"   id="haiku-save">📜 保存</button>
+        <button class="btn-primary"   id="haiku-share">📤 シェア</button>
+      </div>
+      <div class="writings-pool">
+        <div class="wp-label">所有している字（タップで上から順に詰める）</div>
+        <div class="wp-grid" id="haiku-pool"></div>
+      </div>
     </div>
 
-    <div class="writings-history">
-      <div class="wh-label">保存した文章</div>
+    <!-- 履歴タブ -->
+    <div class="wr-pane wr-pane-history" data-wr-pane="history" style="display:none">
+      <p class="modal-desc" style="margin:8px 0">保存した日記と俳句</p>
       <div class="wh-list" id="wh-list"></div>
+      <div class="wc-actions"><button class="btn-secondary" id="wc-export">📥 JSON 出力</button></div>
     </div>
   </div>
 </div>
