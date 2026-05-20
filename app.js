@@ -4036,6 +4036,22 @@ function movePartyMember(from, to) {
   saveState();
   renderParty();
   updateProgressPill();
+  // v1.2.5: 画面の persistent も X 座標を並び順に整列
+  try {
+    const W = window.innerWidth;
+    const n = arr.length;
+    arr.forEach((m, i) => {
+      const target = Math.round(((i + 1) / (n + 1)) * W) - SIZE/2;
+      for (const p of livePomoji.values()) {
+        if (p.persistent && p.char === m.char) {
+          p.x = target;
+          if (p.settled) p.settledX = target;
+          if (p.el) p.el.style.left = target + 'px';
+          break;
+        }
+      }
+    });
+  } catch(_) {}
   const newLeader = arr[0]?.char;
   if (to === 0) toast(`★ ${newLeader} がリーダーに ─ 順番一致でコンボ ×1.4`);
   else toast('🔀 並び替え（順番一致でコンボ ×1.4）');
@@ -4152,11 +4168,13 @@ function renderComboBar() {
   const bot = el('div', { class:'cb-bot' });
   combos.slice(0, 6).forEach(r => {
     const rIdx = RARITY_TIERS.indexOf(r.rarity);
+    // v1.2.5: 並び順一致なら ☆×1.4 バッジ
+    const ordered = (typeof comboOrderMatch === 'function') && comboOrderMatch(r);
     bot.appendChild(el('span', {
-      class: `cb-bar-item rarity-${rIdx + 1}${r.special ? ' cb-special' : ''}`,
-      title: r.desc || r.word,
+      class: `cb-bar-item rarity-${rIdx + 1}${r.special ? ' cb-special' : ''}${ordered ? ' cb-ordered' : ''}`,
+      title: (r.desc || r.word) + (ordered ? '\n☆ 並び順一致 ×1.4' : ''),
       onclick: () => showYojiDetail(r),
-    }, r.special ? '🌟' + r.word : r.word));
+    }, (r.special ? '🌟' : '') + r.word + (ordered ? ' ☆' : '')));
   });
   if (combos.length > 6) {
     bot.appendChild(el('span', { class:'cb-bar-more' }, `他 ${combos.length - 6}`));
@@ -4325,17 +4343,16 @@ function setAsLeader(c, rarity) {
     if (newIdx >= 0) promoteToHero(newIdx);
     return true;
   }
-  // 枠満タン → 旧リーダーを置き換え（仲間枠を一つ消費せず swap）
-  const heroIdx = STATE.party.hero || 0;
-  const oldHero = STATE.party.members[heroIdx];
+  // v1.2.5: 枠満タン → 先頭の旧リーダーを外して、先頭に新しい字を置く
+  const oldHero = STATE.party.members[0];
   if (!confirm(`パーティが満員です。\n旧リーダー ${oldHero.char}（Lv.${oldHero.level}）を外して ${c} をリーダーにしますか？\n（旧リーダーの Lv は失われます）`)) {
     return false;
   }
   invalidateAggCache();
   const perks = pickInherentPerks(c, rarity);
   if (!perks.includes('guardian')) perks.push('guardian');
-  STATE.party.members[heroIdx] = { char: c, rarity, level: 1, exp: 0, perks };
-  // hero index はそのまま
+  STATE.party.members[0] = { char: c, rarity, level: 1, exp: 0, perks };
+  STATE.party.hero = 0;
   saveState();
   renderParty();
   updateProgressPill();
