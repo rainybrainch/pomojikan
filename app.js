@@ -3933,28 +3933,26 @@ function updateStreak() {
   }
 }
 
-// 仲間 → 主人公昇格（ダブルタップで切り替え）
+// v1.2.4: リーダーは常に先頭（index 0）── promote = 先頭へ移動
 function promoteToHero(idx) {
   if (!STATE.party || !STATE.party.members) return;
-  if (idx === STATE.party.hero) {
-    toast('★ 既にリーダーです');
-    return;
-  }
+  if (idx === 0) { toast('★ 既にリーダーです（先頭）'); return; }
   const newHero = STATE.party.members[idx];
   if (!newHero) return;
-  const oldHero = STATE.party.members[STATE.party.hero];
-  STATE.party.hero = idx;
-  invalidateAggCache();
-  // 主人公の guardian 特性を新しい hero に付け替え（旧 hero からは外す）
-  if (oldHero && oldHero.perks) {
-    oldHero.perks = oldHero.perks.filter(p => p !== 'guardian');
-  }
+  const oldHero = STATE.party.members[0];
+  // guardian 特性の付け替え
+  if (oldHero && oldHero.perks) oldHero.perks = oldHero.perks.filter(p => p !== 'guardian');
   if (!newHero.perks) newHero.perks = [];
   if (!newHero.perks.includes('guardian')) newHero.perks.push('guardian');
+  // 先頭へ移動
+  const item = STATE.party.members.splice(idx, 1)[0];
+  STATE.party.members.unshift(item);
+  STATE.party.hero = 0;  // 常に 0 固定
+  invalidateAggCache();
   saveState();
   renderParty();
   updateProgressPill();
-  toast(`★ ${newHero.char} がリーダーに`, newHero.rarity);
+  toast(`★ ${newHero.char} がリーダーに（先頭へ）`, newHero.rarity);
   playSFX('unlock');
 }
 
@@ -4017,22 +4015,30 @@ function attachPartyCardReorder(card, idx) {
     document.addEventListener('pointercancel', onUp);
   });
 }
-// v1.1.6: 挿入並び替え ── from を to の位置に差し込む（他は詰めて／開けて再配置）
+// v1.1.6/v1.2.4: 挿入並び替え ── from を to の位置に差し込む。リーダーは常に先頭
 function movePartyMember(from, to) {
   if (!STATE.party || !STATE.party.members) return;
   const arr = STATE.party.members;
   if (from === to || !arr[from] || from < 0 || to < 0 || from >= arr.length || to >= arr.length) return;
   const item = arr.splice(from, 1)[0];
   arr.splice(to, 0, item);
-  // hero index 追従
-  const hero = STATE.party.hero;
-  if (hero === from)               STATE.party.hero = to;
-  else if (from < hero && hero <= to) STATE.party.hero = hero - 1;
-  else if (to <= hero && hero < from) STATE.party.hero = hero + 1;
+  // v1.2.4: 先頭に来た字に guardian を付ける（旧先頭からは外す）
+  STATE.party.hero = 0;
+  arr.forEach((m, i) => {
+    if (!m.perks) m.perks = [];
+    if (i === 0) {
+      if (!m.perks.includes('guardian')) m.perks.push('guardian');
+    } else {
+      m.perks = m.perks.filter(p => p !== 'guardian');
+    }
+  });
   invalidateAggCache();
   saveState();
   renderParty();
-  toast('🔀 並び替え（順番一致でコンボ ×1.4）');
+  updateProgressPill();
+  const newLeader = arr[0]?.char;
+  if (to === 0) toast(`★ ${newLeader} がリーダーに ─ 順番一致でコンボ ×1.4`);
+  else toast('🔀 並び替え（順番一致でコンボ ×1.4）');
 }
 // 旧 swap は互換のため残す
 function swapPartyMembers(a, b) { movePartyMember(a, b); }
@@ -4057,8 +4063,7 @@ function renderParty() {
     const card = el('div', {
       class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}${stage > 0 ? ' evo-' + stage : ''}`,
       dataset: { idx, evo: stage, lv: m.level },
-      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nタップ=操作 / 横ドラッグ=並び替え（順番でコンボ強化）`,
-      ondblclick: () => promoteToHero(idx),
+      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nタップ=操作 / 横ドラッグ=並び替え（先頭がリーダー・順番でコンボ強化）`,
     },
       el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage] || '𓂀') : null),
       el('div', { class:'pc-meta' },
