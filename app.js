@@ -3330,13 +3330,17 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // v1.1.9: 接線力さらに強化（コインプッシャー感）
+          // v1.2.6: 接線力＋ settled 解除 ── 押された字は物理に戻して本当に転がる
           if (Math.abs(nx) > 0.05) {
             p.vx += nx * 3.5;
             if (otherStatic && !other.persistent && other.settled) {
-              if (other.settledX == null) other.settledX = other.x;
-              other.settledX -= nx * 4.0;
-              other.x = other.settledX;
+              // settled を解除 → 通常物理（vx + 重力）で自然に転がる
+              other.settled = false;
+              other.settledX = null;
+              other.settledY = null;
+              other.el?.classList.remove('settled');
+              other.vx -= nx * 3.0;  // 押された方向に勢いを与える
+              other._stillFrames = 0;
             }
           }
         }
@@ -3565,6 +3569,24 @@ function feedPomojiToMember(p, idx, cardEl) {
   setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); renderParty(); }, 380);
 }
 
+// v1.2.6: 消える字の上に乗ってる settled 字を即時解除 → 自然落下
+function unsettleAbove(deadP) {
+  if (!deadP || !livePomoji) return;
+  for (const other of livePomoji.values()) {
+    if (other === deadP) continue;
+    if (other.persistent || other.rising || !other.settled) continue;
+    const dx = Math.abs(other.x - deadP.x);
+    const dy = deadP.y - other.y;
+    if (dx < SIZE * 0.95 && dy > 0 && dy < SIZE * 3.2) {
+      other.settled = false;
+      other.settledX = null;
+      other.settledY = null;
+      other.el?.classList.remove('settled');
+      other.vy = 0.5;
+    }
+  }
+}
+
 function dissolvePomoji(p) {
   // v1.0.1: パーティ字（persistent）── タップで一時消滅＋大EXP＋タグ別バフ＋20秒後に再スポーン
   if (p.persistent) {
@@ -3580,6 +3602,7 @@ function dissolvePomoji(p) {
     p.el.classList.add('dissolve');
     const oldChar = p.char;
     const oldRarity = p.rarity;
+    try { unsettleAbove(p); } catch(_) {}
     setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 500);
     // 20 秒後に同じ字を再スポーン（パーティから消えてなければ）
     setTimeout(() => {
@@ -3601,6 +3624,8 @@ function dissolvePomoji(p) {
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);
   playSFX('pop');
+  // v1.2.6: 上に乗ってる字を即時解除（重力反映）
+  try { unsettleAbove(p); } catch(_) {}
   // 弾け演出：burst クラス（強い拡大+消滅）
   p.el.classList.add('burst');
   setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 400);
