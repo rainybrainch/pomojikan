@@ -3182,6 +3182,18 @@ function physicsStep() {
   const agg = _aggCache;
   for (const p of livePomoji.values()) {
     if (p.dragging) continue;
+    // v1.3.11: 高度限界 ── 画面外（上・横・下遥か）に達した字は即 EXP 化＋削除
+    // 泡は天井で消える。構造的に溜まらない。
+    if (!p._awarded && (p.y < -SIZE * 1.5 || p.x < -SIZE * 2 || p.x > W + SIZE * 2 || p.y > H + SIZE * 3)) {
+      p._awarded = true;
+      try {
+        if (p.rising) awardRising(p);
+        else if (!p.persistent) awardFallen(p);
+      } catch(_) {}
+      try { p.el?.remove(); } catch(_) {}
+      livePomoji.delete(p.id);
+      continue;
+    }
     // settled な字は位置固定 ── ただし persistent でなく棚外なら settle 解除して落とす
     if (p.settled && !p.rising) {
       // v1.2.7: ドラッグ字（ハンマー）が触れたら settle 解除＋蹴り飛ばす
