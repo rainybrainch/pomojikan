@@ -2613,16 +2613,47 @@ function awardRising(p) {
 let _harvestMode = false;
 let _harvestTimer = 0;
 let _harvestPointerId = null;
+let _harvestCount = 0;
 function _harvestBurstAt(x, y) {
   const node = document.elementFromPoint(x, y)?.closest('.pomoji');
   if (!node) return;
   for (const p of livePomoji.values()) {
     if (p.el === node && !p._harvested) {
+      // v1.1.6: persistent は収穫対象外（リーダー保護）
+      if (p.persistent) return;
       p._harvested = true;
-      if (p.dragging) p.dragging = false;  // 進行中ドラッグはキャンセル
+      if (p.dragging) p.dragging = false;
       try { dissolvePomoji(p); } catch(_) {}
+      _harvestCount++;
+      _updateHarvestCounter();
       return;
     }
+  }
+}
+// v1.1.6: 収穫数カウンタ（画面中央上）
+function _showHarvestCounter() {
+  let c = document.getElementById('harvest-counter');
+  if (!c) {
+    c = document.createElement('div');
+    c.id = 'harvest-counter';
+    document.body.appendChild(c);
+  }
+  c.textContent = '🌾 収穫中 ・ 0 個';
+  c.classList.add('show');
+}
+function _updateHarvestCounter() {
+  const c = document.getElementById('harvest-counter');
+  if (c) c.textContent = `🌾 収穫中 ・ ${_harvestCount} 個`;
+}
+function _hideHarvestCounter() {
+  const c = document.getElementById('harvest-counter');
+  if (!c) return;
+  if (_harvestCount > 0) {
+    c.textContent = `✨ ${_harvestCount} 個 収穫！`;
+    c.classList.add('done');
+    setTimeout(() => { c.remove(); }, 1400);
+  } else {
+    c.remove();
   }
 }
 function setupHarvestMode() {
@@ -2631,16 +2662,24 @@ function setupHarvestMode() {
     if (_harvestMode) return;
     const t = e.target.closest && e.target.closest('.pomoji');
     if (!t) return;
-    // パーティ字（persistent）は長押し収穫の起点にしない（誤爆防止）
+    // v1.1.6: パーティカード（.party-card）は対象外、persistent も起点にしない
+    if (e.target.closest('.party-card')) return;
+    // 起点 pomoji が persistent なら長押し収穫を起こさない（誤発火防止）
+    let isPersistent = false;
+    for (const p of livePomoji.values()) {
+      if (p.el === t) { isPersistent = !!p.persistent; break; }
+    }
+    if (isPersistent) return;
     _harvestPointerId = e.pointerId;
+    _harvestCount = 0;
     clearTimeout(_harvestTimer);
     _harvestTimer = setTimeout(() => {
       _harvestMode = true;
       document.body.classList.add('harvest-mode');
       try { navigator.vibrate && navigator.vibrate(40); } catch(_) {}
       try { playSFX('unlock'); } catch(_) {}
-      // 起点ぽもじを最初に弾けさせる
       _harvestBurstAt(e.clientX, e.clientY);
+      _showHarvestCounter();
     }, 350);
   }, true);
   document.addEventListener('pointermove', (e) => {
@@ -2654,6 +2693,7 @@ function setupHarvestMode() {
     if (_harvestMode) {
       _harvestMode = false;
       document.body.classList.remove('harvest-mode');
+      _hideHarvestCounter();
     }
     _harvestPointerId = null;
   };
@@ -3345,6 +3385,8 @@ function attachDragHandlers(node, obj) {
     obj.settledX = null;
     obj.settledY = null;
     obj.el.classList.remove('settled');
+    // v1.1.6: ドラッグ後の再着地でも波紋が出るように flag リセット
+    obj._rippled = false;
     moved = false;
     startX = e.clientX;
     startY = e.clientY;
@@ -3816,14 +3858,14 @@ function attachPartyCardReorder(card, idx) {
     card.classList.remove('reordering');
     card.style.transform = '';
     card.style.zIndex = '';
-    // ドロップ位置にあるカード探す
+    // v1.1.6: 挿入並び替え（swap でなく差し込み）
     const dropX = ev.clientX, dropY = ev.clientY;
     const target = document.elementFromPoint(dropX, dropY);
     const targetCard = target?.closest('.party-card');
     if (targetCard && targetCard !== card) {
       const targetIdx = parseInt(targetCard.dataset.idx);
       if (!isNaN(targetIdx) && STATE.party && STATE.party.members[targetIdx]) {
-        swapPartyMembers(idx, targetIdx);
+        movePartyMember(idx, targetIdx);
         return;
       }
     }
@@ -3840,19 +3882,25 @@ function attachPartyCardReorder(card, idx) {
     document.addEventListener('pointercancel', onUp);
   });
 }
-function swapPartyMembers(a, b) {
+// v1.1.6: 挿入並び替え ── from を to の位置に差し込む（他は詰めて／開けて再配置）
+function movePartyMember(from, to) {
   if (!STATE.party || !STATE.party.members) return;
   const arr = STATE.party.members;
-  if (!arr[a] || !arr[b]) return;
-  [arr[a], arr[b]] = [arr[b], arr[a]];
-  // hero index 更新
-  if (STATE.party.hero === a) STATE.party.hero = b;
-  else if (STATE.party.hero === b) STATE.party.hero = a;
+  if (from === to || !arr[from] || from < 0 || to < 0 || from >= arr.length || to >= arr.length) return;
+  const item = arr.splice(from, 1)[0];
+  arr.splice(to, 0, item);
+  // hero index 追従
+  const hero = STATE.party.hero;
+  if (hero === from)               STATE.party.hero = to;
+  else if (from < hero && hero <= to) STATE.party.hero = hero - 1;
+  else if (to <= hero && hero < from) STATE.party.hero = hero + 1;
   invalidateAggCache();
   saveState();
   renderParty();
-  toast('🔀 並び替え（順番がコンボ強化に効く）');
+  toast('🔀 並び替え（順番一致でコンボ ×1.4）');
 }
+// 旧 swap は互換のため残す
+function swapPartyMembers(a, b) { movePartyMember(a, b); }
 
 function renderParty() {
   const bar = $('#party-bar');
