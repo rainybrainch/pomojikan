@@ -1222,6 +1222,30 @@ function partyAverageLevel() {
 // 🌟 アプリ名隠しコンボ（SPECIAL_COMBOS）── 通常熟語より段違いの効果
 // 「ぽも時間」＝時の凝縮（時間を彫る）
 // 「ぽ文字漢」＝字を集める（収集に特化）
+// v1.1.8: MBTI 16 種コンボ ── 英字 4 字パーティで発動、性格に合わせた効果
+const MBTI_COMBOS = [
+  // 分析家（NT）
+  { word:'INTJ', chars:['I','N','T','J'], rarity:'★14', desc:'建築家 ── 未来を構築',     effect:{ expMul:1.8, evoBoost:0.15 }, special:true },
+  { word:'INTP', chars:['I','N','T','P'], rarity:'★14', desc:'論理学者 ── 探究の深淵',   effect:{ stockExpMul:1.6, expMul:1.4 }, special:true },
+  { word:'ENTJ', chars:['E','N','T','J'], rarity:'★14', desc:'指揮官 ── 戦略の頂',       effect:{ expMul:2.0, dropCountAdd:2 }, special:true },
+  { word:'ENTP', chars:['E','N','T','P'], rarity:'★14', desc:'討論者 ── 閃きの嵐',       effect:{ mergeRadiusMul:1.5, expMul:1.5 }, special:true },
+  // 外交官（NF）
+  { word:'INFJ', chars:['I','N','F','J'], rarity:'★14', desc:'提唱者 ── 静かな信念',     effect:{ gravityMul:0.6, evoBoost:0.20 }, special:true },
+  { word:'INFP', chars:['I','N','F','P'], rarity:'★14', desc:'仲介者 ── 内なる詩',       effect:{ mergeRadiusMul:1.4, expMul:1.3 }, special:true },
+  { word:'ENFJ', chars:['E','N','F','J'], rarity:'★14', desc:'主人公 ── 導く光',         effect:{ expMul:1.7, evoBoost:0.18, mergeRadiusMul:1.2 }, special:true },
+  { word:'ENFP', chars:['E','N','F','P'], rarity:'★14', desc:'運動家 ── 弾ける情熱',     effect:{ dropCountAdd:3, mergeRadiusMul:1.4 }, special:true },
+  // 番人（SJ）
+  { word:'ISTJ', chars:['I','S','T','J'], rarity:'★14', desc:'管理者 ── 着実な堆積',     effect:{ stockExpMul:1.8, expMul:1.3 }, special:true },
+  { word:'ISFJ', chars:['I','S','F','J'], rarity:'★14', desc:'擁護者 ── 守りの温度',     effect:{ gravityMul:0.7, stockExpMul:1.4 }, special:true },
+  { word:'ESTJ', chars:['E','S','T','J'], rarity:'★14', desc:'幹部 ── 規律の力',         effect:{ expMul:1.8, stockExpMul:1.3 }, special:true },
+  { word:'ESFJ', chars:['E','S','F','J'], rarity:'★14', desc:'領事 ── 結ぶ手',           effect:{ mergeRadiusMul:1.6, expMul:1.3 }, special:true },
+  // 探索家（SP）
+  { word:'ISTP', chars:['I','S','T','P'], rarity:'★14', desc:'巨匠 ── 手の知恵',         effect:{ dropCountAdd:2, mergeRadiusMul:1.3 }, special:true },
+  { word:'ISFP', chars:['I','S','F','P'], rarity:'★14', desc:'冒険家 ── 静かな彩り',     effect:{ gravityMul:0.75, mergeRadiusMul:1.3 }, special:true },
+  { word:'ESTP', chars:['E','S','T','P'], rarity:'★14', desc:'起業家 ── 飛び込む者',     effect:{ dropCountAdd:3, expMul:1.5 }, special:true },
+  { word:'ESFP', chars:['E','S','F','P'], rarity:'★14', desc:'エンターテイナー ── 祭の核', effect:{ dropCountAdd:2, mergeRadiusMul:1.4, expMul:1.3 }, special:true },
+];
+
 const SPECIAL_COMBOS = [
   {
     word: 'ぽも時間',
@@ -1250,6 +1274,10 @@ function detectPartyCombos() {
   const recipes = window.YOJI_RECIPES || [];
   const matches = [];
   // 🌟 アプリ名コンボ優先判定（通常熟語より上に）
+  // v1.1.8: MBTI 16 種も SPECIAL 扱いで判定
+  for (const sc of MBTI_COMBOS) {
+    if (sc.chars.every(c => partySet.has(c))) matches.push(sc);
+  }
   for (const sc of SPECIAL_COMBOS) {
     if (sc.chars.every(c => partySet.has(c))) {
       matches.push(sc);
@@ -2656,46 +2684,74 @@ function _hideHarvestCounter() {
     c.remove();
   }
 }
+// v1.1.8: 長押し撤廃 ── スワイプで 2 個目以降のぽもじに触れたら自動で収穫モード
+let _harvestStartEl = null;
+let _harvestSeenEls = null;
+function _harvestBurstEl(node) {
+  if (!node) return false;
+  for (const p of livePomoji.values()) {
+    if (p.el === node && !p._harvested && !p.persistent) {
+      p._harvested = true;
+      if (p.dragging) p.dragging = false;
+      try { dissolvePomoji(p); } catch(_) {}
+      _harvestCount++;
+      _updateHarvestCounter();
+      return true;
+    }
+  }
+  return false;
+}
 function setupHarvestMode() {
-  // capture phase でぽもじの stopPropagation を回避
   document.addEventListener('pointerdown', (e) => {
     if (_harvestMode) return;
     const t = e.target.closest && e.target.closest('.pomoji');
     if (!t) return;
-    // v1.1.6: パーティカード（.party-card）は対象外、persistent も起点にしない
     if (e.target.closest('.party-card')) return;
-    // 起点 pomoji が persistent なら長押し収穫を起こさない（誤発火防止）
+    // 起点 persistent は対象外
     let isPersistent = false;
     for (const p of livePomoji.values()) {
       if (p.el === t) { isPersistent = !!p.persistent; break; }
     }
     if (isPersistent) return;
     _harvestPointerId = e.pointerId;
+    _harvestStartEl = t;
+    _harvestSeenEls = new Set([t]);
     _harvestCount = 0;
-    clearTimeout(_harvestTimer);
-    _harvestTimer = setTimeout(() => {
+    // Shift 即起動オプション（PC キーボード）
+    if (e.shiftKey) {
       _harvestMode = true;
       document.body.classList.add('harvest-mode');
-      try { navigator.vibrate && navigator.vibrate(40); } catch(_) {}
-      try { playSFX('unlock'); } catch(_) {}
-      _harvestBurstAt(e.clientX, e.clientY);
       _showHarvestCounter();
-    }, 350);
+      _harvestBurstEl(t);
+    }
   }, true);
   document.addEventListener('pointermove', (e) => {
-    if (!_harvestMode || e.pointerId !== _harvestPointerId) return;
-    _harvestBurstAt(e.clientX, e.clientY);
+    if (e.pointerId !== _harvestPointerId) return;
+    const t = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.pomoji');
+    if (!t) return;
+    if (_harvestSeenEls.has(t)) return;
+    _harvestSeenEls.add(t);
+    // 2 個目に触れた時点で起動（起点字も同時 burst）
+    if (!_harvestMode) {
+      _harvestMode = true;
+      document.body.classList.add('harvest-mode');
+      try { navigator.vibrate && navigator.vibrate(20); } catch(_) {}
+      try { playSFX('unlock'); } catch(_) {}
+      _showHarvestCounter();
+      _harvestBurstEl(_harvestStartEl);
+    }
+    _harvestBurstEl(t);
   }, true);
   const endHarvest = (e) => {
     if (e.pointerId !== _harvestPointerId && _harvestPointerId !== null) return;
-    clearTimeout(_harvestTimer);
-    _harvestTimer = 0;
     if (_harvestMode) {
       _harvestMode = false;
       document.body.classList.remove('harvest-mode');
       _hideHarvestCounter();
     }
     _harvestPointerId = null;
+    _harvestStartEl = null;
+    _harvestSeenEls = null;
   };
   document.addEventListener('pointerup', endHarvest, true);
   document.addEventListener('pointercancel', endHarvest, true);
