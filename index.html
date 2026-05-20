@@ -289,9 +289,12 @@
       <div class="writings-current">
         <div class="wc-label">📅 <span id="diary-date"></span> ・ <span id="wc-genre" class="wc-genre">─</span></div>
         <div class="wc-slots" id="wc-slots"></div>
+        <textarea id="diary-input" class="wr-input" rows="3" placeholder="ここにタイプ／コピペで入力（不足字があると赤く表示）"></textarea>
+        <div class="wr-input-status" id="diary-input-status"></div>
         <div class="wc-actions">
           <button class="btn-secondary" id="wc-clear">クリア</button>
           <button class="btn-secondary" id="wc-undo">← 取消</button>
+          <button class="btn-secondary" id="diary-import" title="入力欄を取り込む">⬇ 取込</button>
           <button class="btn-primary"   id="wc-save">📜 日記に保存</button>
           <button class="btn-secondary" id="wc-export-2" title="日記＋俳句を JSON 出力">📥</button>
         </div>

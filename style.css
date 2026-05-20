@@ -5065,3 +5065,37 @@ body.harvest-mode .pomoji {
   0%   { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
+
+/* v1.3.15: 日記入力欄 */
+.wr-input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(135,206,235,.3);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: 'Noto Serif JP', serif;
+  font-size: .95rem;
+  resize: vertical;
+  min-height: 60px;
+}
+.wr-input:focus { outline: 2px solid var(--accent); }
+.wr-input-status {
+  margin-top: 6px;
+  font-size: .76rem;
+  color: var(--ink-mute);
+  min-height: 18px;
+}
+.wr-input-status.ok { color: #88c0a8; }
+.wr-input-status.missing { color: #ffb070; }
+.missing-char {
+  display: inline-block;
+  padding: 1px 5px;
+  margin: 0 2px;
+  background: rgba(255,120,80,.18);
+  border: 1px solid rgba(255,120,80,.45);
+  border-radius: 4px;
+  font-weight: 700;
+  color: #ff9070;
+}

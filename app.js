@@ -2926,9 +2926,21 @@ function pickKanjiForDrop() {
   }
   const pool = codex.filter(k => k.rarity === chosenTier);
   if (!pool.length) {
-    // フォールバック：全許可 tier から
     const fallback = codex.filter(k => allowedTiers.includes(k.rarity));
     return fallback.length ? choose(fallback) : null;
+  }
+  // v1.3.15: リーダーのタグと一致する字を 35% の確率で優先抽選
+  if (STATE.party && STATE.party.members && STATE.party.members[0] && Math.random() < 0.35) {
+    try {
+      const leaderTags = getCharTags(STATE.party.members[0].char) || [];
+      if (leaderTags.length > 0) {
+        const tagged = pool.filter(k => {
+          const t = getCharTags(k.char || k.c) || [];
+          return t.some(x => leaderTags.includes(x));
+        });
+        if (tagged.length > 0) return choose(tagged);
+      }
+    } catch(_) {}
   }
   return choose(pool);
 }
@@ -4862,6 +4874,63 @@ function refreshPCPanels(){
 // ═══════════════════════════════════════════════════════════════
 let _currentWriting = [];  // { char, rarity }
 
+// v1.3.15: 日記入力の検証（不足表示）と取込
+function updateDiaryInputStatus() {
+  const input = document.getElementById('diary-input');
+  const status = document.getElementById('diary-input-status');
+  if (!input || !status) return;
+  const text = input.value || '';
+  if (!text) { status.textContent = ''; status.className = 'wr-input-status'; return; }
+  if (!STATE.stock) STATE.stock = {};
+  // 編集中に既に使ってる字 + 入力欄の字を仮消費
+  const tempUsed = {};
+  for (const it of _currentWriting) tempUsed[it.char] = (tempUsed[it.char] || 0) + 1;
+  const missing = {};
+  for (const c of text) {
+    if (c === '\n' || c === ' ' || c === '　') continue;
+    tempUsed[c] = (tempUsed[c] || 0) + 1;
+    const stockN = STATE.stock[c] || 0;
+    if (tempUsed[c] > stockN) missing[c] = (missing[c] || 0) + 1;
+  }
+  const missingChars = Object.keys(missing);
+  if (missingChars.length === 0) {
+    status.textContent = `✓ 全 ${[...text].filter(c=>c.trim()).length} 字 OK`;
+    status.className = 'wr-input-status ok';
+  } else {
+    status.innerHTML = '⚠ 不足: ' + missingChars.map(c => `<span class="missing-char">${c}×${missing[c]}</span>`).join(' ');
+    status.className = 'wr-input-status missing';
+  }
+}
+function importDiaryInput() {
+  const input = document.getElementById('diary-input');
+  if (!input || !input.value) { toast('入力欄が空'); return; }
+  if (!STATE.stock) STATE.stock = {};
+  const text = input.value;
+  const tempUsed = {};
+  for (const it of _currentWriting) tempUsed[it.char] = (tempUsed[it.char] || 0) + 1;
+  const newItems = [];
+  const missing = [];
+  for (const c of text) {
+    if (c === '\n' || c === ' ' || c === '　') continue;
+    tempUsed[c] = (tempUsed[c] || 0) + 1;
+    if (tempUsed[c] > (STATE.stock[c] || 0)) {
+      missing.push(c);
+      continue;
+    }
+    if (!_stockRarityCache) _buildStockRarityCache();
+    newItems.push({ char: c, rarity: _stockRarityCache.get(c) || '★1' });
+  }
+  if (missing.length > 0) {
+    if (!confirm(`不足字 ${missing.length} 個（${[...new Set(missing)].join('')}）はスキップして取り込みますか？`)) return;
+  }
+  if (newItems.length === 0) { toast('取り込める字なし'); return; }
+  _currentWriting.push(...newItems);
+  input.value = '';
+  updateDiaryInputStatus();
+  renderWritingsModal();
+  toast(`⬇ ${newItems.length} 字 取込`);
+}
+
 // v1.3.6: 字のパーティ Lv からエフェクトクラスを決定
 function charLvBand(char) {
   if (!STATE.party || !STATE.party.members) return '';
@@ -4911,6 +4980,17 @@ function openWritings() {
   $$('.wr-tab').forEach(t => {
     if (!t._bound) { t.addEventListener('click', () => switchWritingsTab(t.dataset.wrTab)); t._bound = true; }
   });
+  // v1.3.15: 日記の入力欄
+  const diaryInput = $('#diary-input');
+  const diaryImport = $('#diary-import');
+  if (diaryInput && !diaryInput._bound) {
+    diaryInput.addEventListener('input', updateDiaryInputStatus);
+    diaryInput._bound = true;
+  }
+  if (diaryImport && !diaryImport._bound) {
+    diaryImport.addEventListener('click', importDiaryInput);
+    diaryImport._bound = true;
+  }
   // 俳句ボタン
   const hsave = $('#haiku-save');
   if (hsave && !hsave._bound) { hsave.addEventListener('click', saveHaiku); hsave._bound = true; }
