@@ -5808,12 +5808,27 @@ function renderPartyPresetsModal() {
         el('div', { style:{ fontWeight:700, fontSize:'.95rem' } }, p.name),
         el('div', { style:{ fontSize:'.75rem', color:'var(--ink-mute)' } }, memberChars + ` ・ ΣLv ${lvSum}`),
       ),
+      el('button', { class:'btn-secondary', style:{ padding:'4px 8px', fontSize:'.78rem' },
+        title:'名前変更', onclick: () => renamePartyPreset(p.id) }, '✏'),
       el('button', { class:'btn-secondary', style:{ padding:'4px 10px', fontSize:'.78rem' },
         onclick: () => loadPartyPreset(p.id) }, '📂 読込'),
       el('button', { class:'btn-danger', style:{ padding:'4px 8px', fontSize:'.78rem' },
         onclick: () => deletePartyPreset(p.id) }, '🗑'),
     ));
   });
+}
+// v1.3.16: プリセット名前変更
+function renamePartyPreset(id) {
+  const p = (STATE.partyPresets || []).find(x => x.id === id);
+  if (!p) return;
+  const next = prompt(`新しい名前（最大 16 文字）`, p.name || '');
+  if (next == null) return;
+  const trimmed = next.trim().slice(0, 16);
+  if (!trimmed) return;
+  p.name = trimmed;
+  saveState();
+  toast(`✏ 「${trimmed}」`);
+  renderPartyPresetsModal();
 }
 
 // v10n9: 現効果パネル ── party-bar 下に常時表示（折りたたみ可）
