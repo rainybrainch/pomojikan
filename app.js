@@ -3263,11 +3263,16 @@ function physicsStep() {
           continue;
         }
       }
-      // 天井到達 → 残った字も EXP 化（保険）
+      // v1.3.9: 天井到達 → EXP 化＋即時 DOM 削除（lingering 防止）
       if (p.y < -SIZE) {
         if (!p._awarded) {
           p._awarded = true;
           awardRising(p);
+        }
+        // さらに上に行った字は即削除（待たず）
+        if (p.y < -SIZE * 2.5) {
+          try { p.el?.remove(); } catch(_) {}
+          livePomoji.delete(p.id);
         }
         continue;
       }
@@ -3519,6 +3524,27 @@ function attachDragHandlers(node, obj) {
       obj.y = origY + dy;
       node.style.left = obj.x + 'px';
       node.style.top  = obj.y + 'px';
+      // v1.3.10: ドラッグエリア掃除 ── 重なる他字を即 burst（持続字は対象外）
+      if (moved) {
+        const r2 = (SIZE * 1.1) ** 2;
+        for (const q of livePomoji.values()) {
+          if (q.id === obj.id || q.persistent || q._awarded || q.dragging) continue;
+          const qdx = (obj.x + SIZE/2) - (q.x + SIZE/2);
+          const qdy = (obj.y + SIZE/2) - (q.y + SIZE/2);
+          if (qdx*qdx + qdy*qdy < r2) {
+            q._awarded = true;
+            try {
+              const rIdx = RARITY_TIERS.indexOf(q.rarity);
+              const exp = Math.max(1, Math.pow(1.3, rIdx) * 2);
+              awardExpToParty(q.char, exp) || _orphanExp(exp);
+              addStock(q.char);
+              spawnXpFloat(q.x + SIZE/2, q.y + SIZE/2, exp, q.rarity);
+              q.el?.classList.add('burst');
+              setTimeout(() => { q.el?.remove(); livePomoji.delete(q.id); }, 250);
+            } catch(_) {}
+          }
+        }
+      }
       const target = checkMergeCollision(obj);
       $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
       if (target) target.el.classList.add('merge-glow');
