@@ -4862,3 +4862,19 @@ body[data-mode="rest"] .ripple { border-color: rgba(192,168,255,.65); }
     0 0 0 2px rgba(255,240,160,.4),
     0 0 22px var(--r-glow);
 }
+
+/* v1.1.5: 長押し収穫モードの視覚キュー */
+body.harvest-mode {
+  cursor: crosshair;
+}
+body.harvest-mode #play-field {
+  cursor: crosshair;
+}
+body.harvest-mode .pomoji {
+  cursor: crosshair;
+  animation: harvestGlow .6s ease-in-out infinite;
+}
+@keyframes harvestGlow {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.3) drop-shadow(0 0 8px rgba(255,217,107,.6)); }
+}

@@ -2609,6 +2609,58 @@ function awardRising(p) {
 }
 
 // v10n6: 棚（コインプッシャー床）から落下 → EXP 化
+// v1.1.5: 長押し → スワイプ収穫モード（一気にぽもじを弾けさせる）
+let _harvestMode = false;
+let _harvestTimer = 0;
+let _harvestPointerId = null;
+function _harvestBurstAt(x, y) {
+  const node = document.elementFromPoint(x, y)?.closest('.pomoji');
+  if (!node) return;
+  for (const p of livePomoji.values()) {
+    if (p.el === node && !p._harvested) {
+      p._harvested = true;
+      if (p.dragging) p.dragging = false;  // 進行中ドラッグはキャンセル
+      try { dissolvePomoji(p); } catch(_) {}
+      return;
+    }
+  }
+}
+function setupHarvestMode() {
+  // capture phase でぽもじの stopPropagation を回避
+  document.addEventListener('pointerdown', (e) => {
+    if (_harvestMode) return;
+    const t = e.target.closest && e.target.closest('.pomoji');
+    if (!t) return;
+    // パーティ字（persistent）は長押し収穫の起点にしない（誤爆防止）
+    _harvestPointerId = e.pointerId;
+    clearTimeout(_harvestTimer);
+    _harvestTimer = setTimeout(() => {
+      _harvestMode = true;
+      document.body.classList.add('harvest-mode');
+      try { navigator.vibrate && navigator.vibrate(40); } catch(_) {}
+      try { playSFX('unlock'); } catch(_) {}
+      // 起点ぽもじを最初に弾けさせる
+      _harvestBurstAt(e.clientX, e.clientY);
+    }, 350);
+  }, true);
+  document.addEventListener('pointermove', (e) => {
+    if (!_harvestMode || e.pointerId !== _harvestPointerId) return;
+    _harvestBurstAt(e.clientX, e.clientY);
+  }, true);
+  const endHarvest = (e) => {
+    if (e.pointerId !== _harvestPointerId && _harvestPointerId !== null) return;
+    clearTimeout(_harvestTimer);
+    _harvestTimer = 0;
+    if (_harvestMode) {
+      _harvestMode = false;
+      document.body.classList.remove('harvest-mode');
+    }
+    _harvestPointerId = null;
+  };
+  document.addEventListener('pointerup', endHarvest, true);
+  document.addEventListener('pointercancel', endHarvest, true);
+}
+
 // v1.1.0: 雨の波紋（着地時）
 function spawnRipple(x) {
   const node = document.createElement('div');
@@ -6728,6 +6780,8 @@ function init() {
   physicsStep();
   // v10n7: タイマー縁ドラッグで時間設定
   try { setupTimerRingDrag(); } catch(_) {}
+  // v1.1.5: 長押し→スワイプ収穫モード
+  try { setupHarvestMode(); } catch(_) {}
   // v10n19: テーマ適用
   try { applyTheme(); } catch(_) {}
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
