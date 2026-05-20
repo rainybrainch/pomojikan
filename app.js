@@ -5736,8 +5736,12 @@ function savePartyPreset() {
     members: JSON.parse(JSON.stringify(STATE.party.members)),
     savedAt: Date.now(),
   };
+  // v1.3.17: 12 個満タンなら新規保存不可（自動削除しない）
+  if (STATE.partyPresets.length >= 12) {
+    toast('プリセット上限（12）── 不要な物を 🗑 で外してから');
+    return;
+  }
   STATE.partyPresets.push(preset);
-  if (STATE.partyPresets.length > 12) STATE.partyPresets.shift();
   saveState();
   toast(`💾 「${trimmed}」保存`);
   if ($('#party-presets-modal')?.classList.contains('show')) renderPartyPresetsModal();
