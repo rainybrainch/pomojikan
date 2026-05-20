@@ -4969,3 +4969,26 @@ body.harvest-mode .pomoji {
   font-weight: 800;
   text-shadow: 0 0 6px rgba(255,217,107,.6);
 }
+
+/* ════════════════════ v1.3.1: スマホ UI 最適化 ════════════════════ */
+@media (max-width: 480px) {
+  /* HUD：1 行コンパクト */
+  .play-hud {
+    max-width: 168px;
+    font-size: .6rem;
+    padding: 3px 6px;
+    opacity: .75;
+  }
+  .play-hud .hud-hint { display: none; }  /* 推薦コンボは省略 */
+  .play-hud .hud-buff { font-size: .58rem; }
+  /* モーダル：画面幅いっぱい使う */
+  .modal-card { max-width: calc(100vw - 24px) !important; }
+  /* タイマー円：240→200px に縮小（中央占有を緩める）*/
+  .timer-zone { width: 200px !important; height: 200px !important; }
+  /* combo-bar：縦圧縮 */
+  .combo-bar { padding: 4px 8px; gap: 2px; }
+}
+@media (max-width: 380px) {
+  .timer-zone { width: 180px !important; height: 180px !important; }
+  .play-hud { display: none; }  /* 超小画面では HUD 隠す */
+}

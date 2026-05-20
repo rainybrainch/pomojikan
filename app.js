@@ -5393,6 +5393,11 @@ function renderEffectsPanel() {
   for (const it of items) it.arr = arrow(it.grade, it.inv);
   const activeCount = items.filter(x => x.grade !== 'none').length;
   const strongCount = items.filter(x => x.grade === 'strong').length;
+  // v1.3.1: スマホ（<=480px）では初回 default 折りたたみ
+  if (window.innerWidth <= 480 && !panel.dataset.mobileInit) {
+    panel.classList.add('collapsed');
+    panel.dataset.mobileInit = '1';
+  }
   const collapsed = panel.classList.contains('collapsed');
   panel.innerHTML = '';
   // v1.0.4: 簡潔ヘッダ「⚡ 効果 N/8（うち強 M）」
