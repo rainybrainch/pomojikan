@@ -358,13 +358,14 @@ function aggregatePartyPerks() {
   return agg;
 }
 
-// EXP 関数
-const expForLevel = (lv) => Math.floor(10 * Math.pow(lv, 1.6));
-// v10n5: 集約 evoDiscount を反映した実効必要 EXP（コンボ／特性の「進化加速」が届く）
-// agg はキャッシュ済（physicsStep で 10F 毎更新・invalidateAggCache でリセット）
+// v1.2.2: EXP カーブを急に（あと1で〜が頻発する問題対策）
+// 旧: 10 * lv^1.6 → Lv1→2 で 10 必要（タップ数回で達成）
+// 新: 60 * lv^1.8 → Lv1→2 で 60、Lv10→11 で 3,800、Lv100→101 で 24万
+const expForLevel = (lv) => Math.floor(60 * Math.pow(lv, 1.8));
+// 進化加速の上限を 95% → 50% に抑制（実効必要 EXP がほぼ 0 にならない）
 function effectiveExpForLevel(lv) {
   const disc = (typeof _aggCache !== 'undefined' && _aggCache && _aggCache.evoDiscount)
-    ? Math.min(0.95, _aggCache.evoDiscount) : 0;
+    ? Math.min(0.50, _aggCache.evoDiscount) : 0;
   return Math.max(1, Math.floor(expForLevel(lv) * (1 - disc)));
 }
 const evolutionStage = (lv) => {
