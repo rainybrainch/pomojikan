@@ -4596,3 +4596,37 @@ html, body {
   .cb-chip { font-size: .62rem; padding: 1px 4px; }
   .cb-top-label { font-size: .65rem; }
 }
+
+/* ════════════════════ v1.0.8: 効果認知負荷削減 ════════════════════ */
+.ep-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--ink-mute);
+  font-size: .72rem;
+  line-height: 1.5;
+}
+.ep-inactive-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,.10);
+  border-radius: 5px;
+  color: var(--ink-mute);
+  font-size: .66rem;
+  cursor: pointer;
+  text-align: left;
+}
+.ep-inactive-toggle:hover {
+  background: rgba(135,206,235,.08);
+  color: var(--ink);
+}
+.ep-inactive-list { margin-top: 4px; opacity: .55; }
+.cb-chip-more {
+  font-size: .68rem;
+  padding: 2px 6px;
+  color: var(--ink-mute);
+  border: 1px dashed rgba(255,255,255,.15);
+  border-radius: 4px;
+}

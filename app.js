@@ -3786,22 +3786,25 @@ function renderComboBar() {
     }
   }
   bar.innerHTML = '';
-  // v1.0.6: 2 段構造 ── 上段「効果チップ」／下段「コンボ語」
+  // v1.0.8: 認知負荷削減 ── トップ 3 効果だけ表示、それ以上は「+N」省略
   const cb = getComboBonus();
-  // 上段：効果チップ（数値別・色つき）
-  const effChips = [];
-  const addChip = (icon, label, color) => effChips.push({ icon, label, color });
-  if (cb.expMul && cb.expMul > 1.01)         addChip('📈', `EXP ×${cb.expMul.toFixed(2)}`, '#ffd86b');
-  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('🌧', `重力 ×${cb.gravityMul.toFixed(2)}`, '#a0e0ff');
-  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('🤝', `融合 ×${cb.mergeRadiusMul.toFixed(2)}`, '#c0e0a0');
-  if (cb.dropCountAdd)                       addChip('💧', `粒 +${cb.dropCountAdd}`, '#9be0ff');
-  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('📦', `ストック ×${cb.stockExpMul.toFixed(2)}`, '#d4b6ff');
-  if (cb.evoBoost && cb.evoBoost > 0.005)    addChip('🌱', `進化 +${Math.round(cb.evoBoost*100)}%`, '#ffe0a0');
+  const allChips = [];
+  const addChip = (icon, label, color, weight) => allChips.push({ icon, label, color, weight });
+  if (cb.expMul && cb.expMul > 1.01)         addChip('📈', `EXP ×${cb.expMul.toFixed(2)}`, '#ffd86b', cb.expMul);
+  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('🌧', `重力 ×${cb.gravityMul.toFixed(2)}`, '#a0e0ff', 1/cb.gravityMul);
+  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('🤝', `融合 ×${cb.mergeRadiusMul.toFixed(2)}`, '#c0e0a0', cb.mergeRadiusMul);
+  if (cb.dropCountAdd)                       addChip('💧', `粒 +${cb.dropCountAdd}`, '#9be0ff', 1 + cb.dropCountAdd * 0.2);
+  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('📦', `ストック ×${cb.stockExpMul.toFixed(2)}`, '#d4b6ff', cb.stockExpMul);
+  if (cb.evoBoost && cb.evoBoost > 0.005)    addChip('🌱', `進化 +${Math.round(cb.evoBoost*100)}%`, '#ffe0a0', 1 + cb.evoBoost);
+  allChips.sort((a, b) => b.weight - a.weight);
+  const effChips = allChips.slice(0, 3);
+  const hidden = allChips.length - effChips.length;
   const top = el('div', { class:'cb-top' },
-    el('span', { class:'cb-top-label' }, `⚡ ${combos.length} コンボ`),
+    el('span', { class:'cb-top-label' }, `⚡ ${combos.length}`),
     ...effChips.map(c => el('span', {
       class:'cb-chip', style:{ color: c.color, borderColor: c.color + '55', background: c.color + '15' }
-    }, c.icon + ' ' + c.label))
+    }, c.icon + ' ' + c.label)),
+    hidden > 0 ? el('span', { class:'cb-chip-more', title:'右上の効果パネルで全て確認' }, `+${hidden}`) : null,
   );
   bar.appendChild(top);
   // 下段：コンボ語（最大 6 件）
@@ -4982,32 +4985,60 @@ function renderEffectsPanel() {
   );
   panel.appendChild(header);
   if (!collapsed) {
-    // v1.0.4: アクティブ優先で並び替え、各効果を 1 行レイアウト（アイコン｜名前｜値）
-    const sorted = [...items].sort((a, b) => {
-      const gr = { strong:0, weak:1, none:2 };
+    // v1.0.8: 「効果の種類多すぎ」対策 ── アクティブのみ表示、休眠は折りたたみ
+    const active = items.filter(x => x.grade !== 'none');
+    const inactive = items.filter(x => x.grade === 'none');
+    const sortedActive = active.sort((a, b) => {
+      const gr = { strong:0, weak:1 };
       return gr[a.grade] - gr[b.grade];
     });
     const list = el('div', { class:'ep-list' });
-    sorted.forEach(it => list.appendChild(
-      el('div', {
-        class:'ep-row ep-' + it.grade,
-        title: `${it.lbl}：${it.hint}\n現在 ${it.val} ／ タップで小 EXP`,
-        onclick: (e) => tapEffectCell(it, e),
-      },
-        el('span', { class:'ep-row-ic' }, it.ic),
-        el('span', { class:'ep-row-lbl' }, it.lbl),
-        el('span', { class:'ep-row-arr' }, it.arr),
-        el('span', { class:'ep-row-val' }, it.val),
-      )
-    ));
+    if (sortedActive.length === 0) {
+      list.appendChild(el('div', { class:'ep-empty' }, '効果なし ── パーティとコンボで動かそう'));
+    } else {
+      sortedActive.forEach(it => list.appendChild(
+        el('div', {
+          class:'ep-row ep-' + it.grade,
+          title: `${it.lbl}：${it.hint}\n現在 ${it.val} ／ タップで小 EXP`,
+          onclick: (e) => tapEffectCell(it, e),
+        },
+          el('span', { class:'ep-row-ic' }, it.ic),
+          el('span', { class:'ep-row-lbl' }, it.lbl),
+          el('span', { class:'ep-row-arr' }, it.arr),
+          el('span', { class:'ep-row-val' }, it.val),
+        )
+      ));
+    }
     panel.appendChild(list);
-    // 凡例（簡素）
-    panel.appendChild(el('div', { class:'ep-legend' },
-      el('span', { class:'ep-leg-strong' }, '●強'),
-      el('span', { class:'ep-leg-weak' }, '●弱'),
-      el('span', { class:'ep-leg-none' }, '●休'),
-      el('span', { class:'ep-leg-tap' }, '・行タップで小EXP'),
-    ));
+    // 休眠効果は「+N 休眠」ボタンとして畳む（クリックで展開）
+    if (inactive.length > 0) {
+      const expanded = panel.classList.contains('show-inactive');
+      const toggle = el('button', {
+        class:'ep-inactive-toggle',
+        onclick: (e) => {
+          e.stopPropagation();
+          panel.classList.toggle('show-inactive');
+          renderEffectsPanel();
+        },
+      }, expanded ? '▾ 休眠 ' + inactive.length + ' 個を隠す' : '▸ 休眠 ' + inactive.length + ' 個を見る');
+      panel.appendChild(toggle);
+      if (expanded) {
+        const sub = el('div', { class:'ep-list ep-inactive-list' });
+        inactive.forEach(it => sub.appendChild(
+          el('div', {
+            class:'ep-row ep-none',
+            title: `${it.lbl}：${it.hint}`,
+            onclick: (e) => tapEffectCell(it, e),
+          },
+            el('span', { class:'ep-row-ic' }, it.ic),
+            el('span', { class:'ep-row-lbl' }, it.lbl),
+            el('span', { class:'ep-row-arr' }, it.arr),
+            el('span', { class:'ep-row-val' }, it.val),
+          )
+        ));
+        panel.appendChild(sub);
+      }
+    }
   }
 }
 
