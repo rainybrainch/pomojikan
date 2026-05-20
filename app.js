@@ -1698,6 +1698,28 @@ const PASSIVES = [
   { id:'p_seven_sin',  name:'七大罪の連動', desc:'七大罪タグ 7 種：粒 +1 / 重力 -3%', icon:'☷', cond:s=>_countCharsByTag(s,'七大罪')>=7, eff:{dropCountAdd:1, gravityMul:0.97} },
   // リーダー Lv（自パーティ依存だが恒久的）
   { id:'p_hero_100',   name:'楷書師の杖',   desc:'リーダー Lv.100：ストック +3%', icon:'🖋', cond:s=>_passiveCount.hero(s)>=100, eff:{stockExpMul:1.03} },
+  // v1.3.13: タグ収集パッシブ（10 種）── 文字種の多様性を活かす
+  { id:'p_tag_emo',     name:'感情の機微',   desc:'感情タグ 10 種発見：EXP +3%',            icon:'💗', cond:s=>_countCharsByTag(s,'感情')>=10, eff:{expMul:1.03} },
+  { id:'p_tag_nature',  name:'自然の調和',   desc:'自然タグ 15 種発見：融合 +5%',          icon:'🌿', cond:s=>_countCharsByTag(s,'自然')>=15, eff:{mergeRadiusMul:1.05} },
+  { id:'p_tag_zen',     name:'禅の境地',     desc:'禅タグ 5 種発見：重力 -5%',              icon:'☯', cond:s=>_countCharsByTag(s,'禅')>=5, eff:{gravityMul:0.95} },
+  { id:'p_tag_butsu',   name:'仏の教え',     desc:'仏教タグ 8 種発見：進化 +5%',            icon:'🪷', cond:s=>_countCharsByTag(s,'仏教')>=8, eff:{evoBoost:0.05} },
+  { id:'p_tag_bu',      name:'武の心',       desc:'武タグ 5 種発見：粒 +1',                  icon:'⚔', cond:s=>_countCharsByTag(s,'武')>=5, eff:{dropCountAdd:1} },
+  { id:'p_tag_kami',    name:'神域の門',     desc:'神字タグ 3 種発見：EXP +5% / 進化 +3%',  icon:'⛩', cond:s=>_countCharsByTag(s,'神字')>=3, eff:{expMul:1.05, evoBoost:0.03} },
+  { id:'p_tag_thought', name:'思想の系譜',   desc:'思想タグ 10 種発見：EXP +5%',            icon:'📜', cond:s=>_countCharsByTag(s,'思想')>=10, eff:{expMul:1.05} },
+  { id:'p_tag_tian',    name:'天体の運行',   desc:'天体タグ 8 種発見：ストック +5%',        icon:'🌟', cond:s=>_countCharsByTag(s,'天体')>=8, eff:{stockExpMul:1.05} },
+  { id:'p_tag_kanji',   name:'漢字千',       desc:'漢字 1,000 字発見：EXP +5% / 融合 +3%',  icon:'漢', cond:s=>{let n=0;for(const c of Object.keys(s.collection||{}))if((typeof getCharTags==='function'?getCharTags(c):[]).includes('漢字')||/[一-鿿]/.test(c))n++;return n>=1000;}, eff:{expMul:1.05, mergeRadiusMul:1.03} },
+  { id:'p_tag_world',   name:'世界の文字',   desc:'非日本字 100 種発見：EXP +5%',           icon:'🌏', cond:s=>{let n=0;for(const c of Object.keys(s.collection||{}))if(!/[぀-ゟ゠-ヿ一-鿿]/.test(c))n++;return n>=100;}, eff:{expMul:1.05} },
+  // v1.3.13: 字固有パッシブ（10 種）── 象徴的な字をパーティに持つと発動
+  { id:'p_char_heart', name:'心の灯',     desc:'「心」をパーティに：EXP +3%',           icon:'❤', cond:s=>s.party?.members?.some(m=>m.char==='心'), eff:{expMul:1.03} },
+  { id:'p_char_power', name:'力の柱',     desc:'「力」をパーティに：粒 +1',             icon:'💪', cond:s=>s.party?.members?.some(m=>m.char==='力'), eff:{dropCountAdd:1} },
+  { id:'p_char_light', name:'光の道',     desc:'「光」をパーティに：進化 +3%',          icon:'✨', cond:s=>s.party?.members?.some(m=>m.char==='光'), eff:{evoBoost:0.03} },
+  { id:'p_char_water', name:'水の流',     desc:'「水」をパーティに：重力 -3%',          icon:'💧', cond:s=>s.party?.members?.some(m=>m.char==='水'), eff:{gravityMul:0.97} },
+  { id:'p_char_tree',  name:'木の根',     desc:'「木」をパーティに：ストック +3%',      icon:'🌲', cond:s=>s.party?.members?.some(m=>m.char==='木'), eff:{stockExpMul:1.03} },
+  { id:'p_char_fire',  name:'火の勢',     desc:'「火」をパーティに：粒 +1 / EXP +2%',  icon:'🔥', cond:s=>s.party?.members?.some(m=>m.char==='火'), eff:{dropCountAdd:1, expMul:1.02} },
+  { id:'p_char_kami',  name:'神の名',     desc:'「神」をパーティに：EXP +5%',           icon:'⛩', cond:s=>s.party?.members?.some(m=>m.char==='神'), eff:{expMul:1.05} },
+  { id:'p_char_dou',   name:'道の心',     desc:'「道」をパーティに：進化 +3% / 融合 +2%', icon:'🛤', cond:s=>s.party?.members?.some(m=>m.char==='道'), eff:{evoBoost:0.03, mergeRadiusMul:1.02} },
+  { id:'p_char_kotoba',name:'言の力',     desc:'「言」をパーティに：ストック +5%',      icon:'💬', cond:s=>s.party?.members?.some(m=>m.char==='言'), eff:{stockExpMul:1.05} },
+  { id:'p_char_yume',  name:'夢の彼方',   desc:'「夢」をパーティに：EXP +3% / 進化 +2%', icon:'💭', cond:s=>s.party?.members?.some(m=>m.char==='夢'), eff:{expMul:1.03, evoBoost:0.02} },
 ];
 
 // v1.3.12: 環境ボーナス ── 季節・月・曜日・週など「時間」由来（プレイ実績じゃなく文脈）
@@ -1728,6 +1750,14 @@ const ENV_BONUSES = [
   { id:'e_d_fri', name:'金曜 ・ 結',     desc:'金曜：融合 +3%',           icon:'🤝', cond:()=>new Date().getDay()===5, eff:{mergeRadiusMul:1.03} },
   { id:'e_d_sat', name:'土曜 ・ 蓄',     desc:'土曜：ストック +3%',       icon:'⛰', cond:()=>new Date().getDay()===6, eff:{stockExpMul:1.03} },
   { id:'e_d_sun', name:'日曜 ・ 静',     desc:'日曜：重力 -3% / EXP +2%', icon:'☀', cond:()=>new Date().getDay()===0, eff:{gravityMul:0.97, expMul:1.02} },
+  // 時間帯（6 種）── 朝活・午前・昼・午後・夜・深夜
+  { id:'e_t_morning', name:'朝活 ・ 始の風', desc:'5-9 時：EXP +8% / 進化 +3%（朝活ボーナス）', icon:'🌅', cond:()=>{const h=new Date().getHours();return h>=5&&h<9;}, eff:{expMul:1.08, evoBoost:0.03} },
+  { id:'e_t_am',      name:'午前 ・ 集中',   desc:'9-12 時：EXP +5% / 融合 +2%',                icon:'☀', cond:()=>{const h=new Date().getHours();return h>=9&&h<12;}, eff:{expMul:1.05, mergeRadiusMul:1.02} },
+  { id:'e_t_noon',    name:'昼 ・ 休息',     desc:'12-14 時：重力 -3% / ストック +3%',          icon:'🌞', cond:()=>{const h=new Date().getHours();return h>=12&&h<14;}, eff:{gravityMul:0.97, stockExpMul:1.03} },
+  { id:'e_t_pm',      name:'午後 ・ 持続',   desc:'14-17 時：ストック +5%',                     icon:'🌤', cond:()=>{const h=new Date().getHours();return h>=14&&h<17;}, eff:{stockExpMul:1.05} },
+  { id:'e_t_evening', name:'夕 ・ 結び',     desc:'17-19 時：融合 +5% / EXP +2%',                icon:'🌇', cond:()=>{const h=new Date().getHours();return h>=17&&h<19;}, eff:{mergeRadiusMul:1.05, expMul:1.02} },
+  { id:'e_t_night',   name:'夜 ・ 深耕',     desc:'19-22 時：EXP +5% / 進化 +2%',                icon:'🌙', cond:()=>{const h=new Date().getHours();return h>=19&&h<22;}, eff:{expMul:1.05, evoBoost:0.02} },
+  { id:'e_t_late',    name:'深夜 ・ 静寂',   desc:'22-5 時：重力 -5% / 進化 +4%（深夜の創造）', icon:'🌌', cond:()=>{const h=new Date().getHours();return h>=22||h<5;}, eff:{gravityMul:0.95, evoBoost:0.04} },
   // 週（月内 1-4 週）
   { id:'e_w_1', name:'第1週 ・ 開花',  desc:'月の 1 週目：EXP +3%',       icon:'🌷', cond:()=>Math.ceil(new Date().getDate()/7)===1, eff:{expMul:1.03} },
   { id:'e_w_2', name:'第2週 ・ 充実',  desc:'月の 2 週目：ストック +3%',  icon:'🌳', cond:()=>Math.ceil(new Date().getDate()/7)===2, eff:{stockExpMul:1.03} },
