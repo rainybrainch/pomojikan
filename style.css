@@ -1660,21 +1660,32 @@ body.stream-mode .party-bar{
 
 /* コンボ初発動バースト（中央演出）*/
 .combo-burst{
-  position:absolute;
+  position:fixed;              /* v1.0.7: body 直下・全画面基準 */
   width:300px; padding:18px 24px;
   display:flex; flex-direction:column; align-items:center; gap:6px;
   background:radial-gradient(ellipse at center,
-    rgba(60,40,15,.92) 0%, rgba(30,20,10,.7) 60%, rgba(0,0,0,.4) 100%);
-  border:2px solid rgba(240,212,138,.8);
+    rgba(60,40,15,.94) 0%, rgba(30,20,10,.82) 60%, rgba(0,0,0,.55) 100%);
+  border:2px solid rgba(240,212,138,.9);
   border-radius:18px;
   box-shadow:
-    0 0 60px rgba(255,200,50,.65),
-    0 0 130px rgba(255,200,50,.3),
-    inset 0 0 22px rgba(240,212,138,.25);
+    0 0 60px rgba(255,200,50,.7),
+    0 0 130px rgba(255,200,50,.35),
+    inset 0 0 22px rgba(240,212,138,.3);
   pointer-events:none;
-  z-index:60;
-  animation:comboBurst 2.2s cubic-bezier(.22,1.2,.36,1) forwards;
+  z-index:9999;                /* v1.0.7: 最前面（ヘッダーやパネルより上）*/
+  animation:comboBurst 2.4s cubic-bezier(.22,1.2,.36,1) forwards;
   font-family:'Noto Serif JP', serif;
+}
+.combo-burst .cb-eff{
+  margin-top:4px;
+  font-size:.78rem;
+  color:#fff5b0;
+  font-family:'JetBrains Mono', monospace;
+  background:rgba(0,0,0,.35);
+  padding:4px 8px;
+  border-radius:6px;
+  border:1px solid rgba(240,212,138,.4);
+  text-align:center;
 }
 .combo-burst .cb-label{
   color:var(--gold); font-weight:800;

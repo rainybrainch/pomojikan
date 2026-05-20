@@ -1808,22 +1808,34 @@ function spawnYojiUnlockCelebration(recipe) {
 
 // コンボ発動演出（画面中央バースト）
 function spawnComboBurst(recipe) {
-  const field = $('#play-field');
-  if (!field) return;
+  // v1.0.7: body 直下に最前面で出す（play-field の z-index に埋もれない）
   const W = window.innerWidth, H = window.innerHeight;
   const rIdx = RARITY_TIERS.indexOf(recipe.rarity);
   const isSpecial = !!recipe.special;
   const width = isSpecial ? 360 : 300;
+  // 効果の簡易サマリ（一目で何が起きたか分かる）
+  const cb = (typeof previewComboEffect === 'function') ? previewComboEffect(recipe) : null;
+  const lines = [];
+  if (cb) {
+    if (cb.expMul > 1.01)         lines.push(`📈 EXP ×${cb.expMul.toFixed(2)}`);
+    if (cb.gravityMul < 0.99)     lines.push(`🌧 重力 ×${cb.gravityMul.toFixed(2)}`);
+    if (cb.mergeRadiusMul > 1.01) lines.push(`🤝 融合 ×${cb.mergeRadiusMul.toFixed(2)}`);
+    if (cb.dropCountAdd)          lines.push(`💧 粒 +${cb.dropCountAdd}`);
+    if (cb.stockExpMul > 1.01)    lines.push(`📦 ストック ×${cb.stockExpMul.toFixed(2)}`);
+    if (cb.evoBoost > 0.005)      lines.push(`🌱 進化 +${Math.round(cb.evoBoost*100)}%`);
+  }
+  const effLine = lines.length ? lines.join(' ・ ') : '';
   const node = el('div', {
     class: `combo-burst rarity-${rIdx + 1}${isSpecial ? ' combo-special' : ''}`,
-    style: { left: (W/2 - width/2) + 'px', top: (H/2 - (isSpecial ? 90 : 70)) + 'px' },
+    style: { left: (W/2 - width/2) + 'px', top: (H/2 - (isSpecial ? 110 : 80)) + 'px' },
   },
     el('div', { class:'cb-label' }, isSpecial ? '🌟 隠しコンボ発動' : '⚡ コンボ発動'),
     el('div', { class:'cb-word' }, recipe.word),
     recipe.desc ? el('div', { class:'cb-desc' }, recipe.desc) : null,
+    effLine ? el('div', { class:'cb-eff' }, effLine) : null,
   );
-  field.appendChild(node);
-  setTimeout(() => node.remove(), isSpecial ? 3000 : 2200);
+  document.body.appendChild(node);
+  setTimeout(() => node.remove(), isSpecial ? 3000 : 2400);
 }
 
 // リーダー（主人公）の Lv ── 落下プール tier の判定基準（v3 / 2026-05-16）
