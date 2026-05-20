@@ -2599,10 +2599,10 @@ function burstPartyPersistents(){
 // 「集中で貯めて、休憩で育つ」
 // ═══════════════════════════════════════════════════════════════
 function startRisingPomoji() {
-  // 全ぽもじ（settled も落下中も）を順番に泡化
-  // persistent（パーティ字）は対象外 ── 永続スポーンとして残す
+  // v1.2.0: 全ぽもじ（persistent 含む）を順番に泡化
+  // パーティ字は次の作業開始で spawnPartyPersistents が再スポーンする
   const targets = Array.from(livePomoji.values())
-    .filter(p => !p.dragging && !p.rising && !p.persistent)
+    .filter(p => !p.dragging && !p.rising)
     .sort((a, b) => a.y - b.y); // 上にあるものから（演出順）
   if (targets.length === 0) {
     toast('泡にする字がない（集中で貯めよう）');
@@ -3986,8 +3986,12 @@ function attachPartyCardReorder(card, idx) {
     card.style.transform = '';
     card.style.zIndex = '';
     // v1.1.6: 挿入並び替え（swap でなく差し込み）
+    // v1.2.0: ドラッグ中カードを一時的にクリックスルー化して下のカードを取得
     const dropX = ev.clientX, dropY = ev.clientY;
+    const prevPE = card.style.pointerEvents;
+    card.style.pointerEvents = 'none';
     const target = document.elementFromPoint(dropX, dropY);
+    card.style.pointerEvents = prevPE;
     const targetCard = target?.closest('.party-card');
     if (targetCard && targetCard !== card) {
       const targetIdx = parseInt(targetCard.dataset.idx);
