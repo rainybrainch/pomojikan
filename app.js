@@ -5106,8 +5106,50 @@ let _yomuChannel = null;
 function _ensureYomuChannel() {
   if (!_yomuChannel && 'BroadcastChannel' in window) {
     _yomuChannel = new BroadcastChannel('rainybrain');
+    // v1.3.8: 他アプリ（5本柱）からのイベント受信 → ぽもじボーナス
+    _yomuChannel.addEventListener('message', _onRainybrainMessage);
   }
   return _yomuChannel;
+}
+// v1.3.8: 他アプリから受け取ったイベントをぽもじ降下／EXP に翻訳
+function _onRainybrainMessage(e) {
+  const msg = e?.data;
+  if (!msg || msg.source === 'pomojikan') return;  // 自分発のは無視
+  try {
+    // 読雨の読書セッション完了 → 分数 / 5 個の字を降らせる（最大 10 個）
+    if (msg.event === 'reading_session' || msg.event === 'yomu_session_end') {
+      const min = Math.max(0, Math.round(Number(msg.payload?.minutes) || 0));
+      const drops = Math.min(10, Math.floor(min / 5));
+      if (drops > 0 && STATE.mode === 'work') {
+        for (let i = 0; i < drops; i++) setTimeout(() => spawnPomoji({}), i * 200);
+        try { toast(`📖 読雨から ${drops} 字 降臨（読書 ${min} 分）`); } catch(_) {}
+      }
+    }
+    // マネぼう／服牢365 のタスク完了 → リーダーに小 EXP ボーナス
+    else if (msg.event === 'task_complete' || msg.event === 'manebou_task_done') {
+      if (isPartyChosen()) {
+        const hero = STATE.party.members[STATE.party.hero || 0];
+        const exp = Math.max(10, Math.floor(50 * leaderLvMul()));
+        awardExpToParty(hero.char, exp);
+        try { spawnXpFloat(window.innerWidth/2, 80, exp, hero.rarity); } catch(_) {}
+        try { toast(`✦ 他アプリ達成 EXP +${exp}`); } catch(_) {}
+      }
+    }
+    // 服牢365 の名言登録 → ★レア度ランダムの字を 1 粒
+    else if (msg.event === 'fukurou365_quote_added' || msg.event === 'quote_added') {
+      if (STATE.mode === 'work') setTimeout(() => spawnPomoji({}), 100);
+      try { toast('💬 服牢365 から 1 字 降臨'); } catch(_) {}
+    }
+    // 汎用：external_usage（任意アプリが稼働時間報告）
+    else if (msg.event === 'external_usage') {
+      const min = Math.max(0, Math.round(Number(msg.payload?.minutes) || 0));
+      const drops = Math.min(15, Math.floor(min / 10));
+      if (drops > 0 && STATE.mode === 'work') {
+        for (let i = 0; i < drops; i++) setTimeout(() => spawnPomoji({}), i * 150);
+        try { toast(`⏱ 他アプリから ${drops} 字 降臨（${min} 分）`); } catch(_) {}
+      }
+    }
+  } catch(_) {}
 }
 function _publishYomuEvent(event, payload) {
   try {
@@ -7436,6 +7478,8 @@ function init() {
   try { setupTimerRingDrag(); } catch(_) {}
   // v1.1.5: 長押し→スワイプ収穫モード
   try { setupHarvestMode(); } catch(_) {}
+  // v1.3.8: 他アプリ（5本柱）からのイベント受信を有効化
+  try { _ensureYomuChannel(); } catch(_) {}
   // v10n19: テーマ適用
   try { applyTheme(); } catch(_) {}
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
