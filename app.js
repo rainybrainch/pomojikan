@@ -355,6 +355,17 @@ function aggregatePartyPerks() {
   } catch(_) {}
   // v1.0.1: パーティタップ一時バフ（30 秒）を合流
   try { applyTempBuffs(agg); } catch(_) {}
+  // v1.3.12: 環境ボーナス（季節・月・曜日・週）合流
+  try {
+    const env = computeEnvBonus();
+    if (env.expMul > 1)         agg.expMul        *= env.expMul;
+    if (env.evoBoost)            agg.evoDiscount  += env.evoBoost;
+    if (env.gravityMul < 1)      agg.gravityMul   *= env.gravityMul;
+    if (env.mergeRadiusMul > 1)  agg.mergeRadiusMul *= env.mergeRadiusMul;
+    if (env.dropCountAdd)        agg.dropCountAdd += env.dropCountAdd;
+    if (env.stockExpMul > 1)     agg.stockExpMul   = (agg.stockExpMul || 1) * env.stockExpMul;
+    agg.activeEnv = getActiveEnvBonuses();
+  } catch(_) {}
   return agg;
 }
 
@@ -1687,12 +1698,58 @@ const PASSIVES = [
   { id:'p_seven_sin',  name:'七大罪の連動', desc:'七大罪タグ 7 種：粒 +1 / 重力 -3%', icon:'☷', cond:s=>_countCharsByTag(s,'七大罪')>=7, eff:{dropCountAdd:1, gravityMul:0.97} },
   // リーダー Lv（自パーティ依存だが恒久的）
   { id:'p_hero_100',   name:'楷書師の杖',   desc:'リーダー Lv.100：ストック +3%', icon:'🖋', cond:s=>_passiveCount.hero(s)>=100, eff:{stockExpMul:1.03} },
-  // v10n19: 季節パッシブ（今の月で発動・自動）
-  { id:'p_season_spring', name:'🌸 春の祝福', desc:'3-5 月：融合範囲 +4% / EXP +2%', icon:'🌸', cond:()=>{const m=new Date().getMonth()+1;return m>=3&&m<=5;}, eff:{mergeRadiusMul:1.04, expMul:1.02} },
-  { id:'p_season_summer', name:'🌊 夏の活力', desc:'6-8 月：粒+1 / EXP +3%',          icon:'🌊', cond:()=>{const m=new Date().getMonth()+1;return m>=6&&m<=8;}, eff:{dropCountAdd:1, expMul:1.03} },
-  { id:'p_season_autumn', name:'🍁 秋の収穫', desc:'9-11 月：ストック +5% / 進化加速 +3%', icon:'🍁', cond:()=>{const m=new Date().getMonth()+1;return m>=9&&m<=11;}, eff:{stockExpMul:1.05, evoBoost:0.03} },
-  { id:'p_season_winter', name:'❄ 冬の沈潜', desc:'12-2 月：重力 -5% / 進化加速 +4%', icon:'❄', cond:()=>{const m=new Date().getMonth()+1;return m===12||m<=2;}, eff:{gravityMul:0.95, evoBoost:0.04} },
 ];
+
+// v1.3.12: 環境ボーナス ── 季節・月・曜日・週など「時間」由来（プレイ実績じゃなく文脈）
+const ENV_BONUSES = [
+  // 季節（3-5/6-8/9-11/12-2）
+  { id:'e_season_spring', name:'🌸 春の祝福', desc:'3-5 月：融合 +4% / EXP +2%', icon:'🌸', cond:()=>{const m=new Date().getMonth()+1;return m>=3&&m<=5;}, eff:{mergeRadiusMul:1.04, expMul:1.02} },
+  { id:'e_season_summer', name:'🌊 夏の活力', desc:'6-8 月：粒+1 / EXP +3%',     icon:'🌊', cond:()=>{const m=new Date().getMonth()+1;return m>=6&&m<=8;}, eff:{dropCountAdd:1, expMul:1.03} },
+  { id:'e_season_autumn', name:'🍁 秋の収穫', desc:'9-11 月：ストック +5% / 進化 +3%', icon:'🍁', cond:()=>{const m=new Date().getMonth()+1;return m>=9&&m<=11;}, eff:{stockExpMul:1.05, evoBoost:0.03} },
+  { id:'e_season_winter', name:'❄ 冬の沈潜', desc:'12-2 月：重力 -5% / 進化 +4%', icon:'❄', cond:()=>{const m=new Date().getMonth()+1;return m===12||m<=2;}, eff:{gravityMul:0.95, evoBoost:0.04} },
+  // 月別（和風月名・12 種）
+  { id:'e_m_1',  name:'睦月 ・ 始の和', desc:'1 月：ストック +5%',                 icon:'🎍', cond:()=>new Date().getMonth()===0,  eff:{stockExpMul:1.05} },
+  { id:'e_m_2',  name:'如月 ・ 残寒',    desc:'2 月：重力 -3%',                     icon:'❄', cond:()=>new Date().getMonth()===1,  eff:{gravityMul:0.97} },
+  { id:'e_m_3',  name:'弥生 ・ 桜便り',  desc:'3 月：融合範囲 +5%',                 icon:'🌸', cond:()=>new Date().getMonth()===2,  eff:{mergeRadiusMul:1.05} },
+  { id:'e_m_4',  name:'卯月 ・ 始動',    desc:'4 月：EXP +5%',                       icon:'🌱', cond:()=>new Date().getMonth()===3,  eff:{expMul:1.05} },
+  { id:'e_m_5',  name:'皐月 ・ 風薫',    desc:'5 月：粒 +1',                         icon:'🎏', cond:()=>new Date().getMonth()===4,  eff:{dropCountAdd:1} },
+  { id:'e_m_6',  name:'水無月 ・ 雨季',  desc:'6 月：重力 -5% / 融合 +3%',          icon:'☔', cond:()=>new Date().getMonth()===5,  eff:{gravityMul:0.95, mergeRadiusMul:1.03} },
+  { id:'e_m_7',  name:'文月 ・ 七夕',    desc:'7 月：EXP +5% / 進化 +3%',           icon:'🎋', cond:()=>new Date().getMonth()===6,  eff:{expMul:1.05, evoBoost:0.03} },
+  { id:'e_m_8',  name:'葉月 ・ 盛夏',    desc:'8 月：粒 +2',                         icon:'🌻', cond:()=>new Date().getMonth()===7,  eff:{dropCountAdd:2} },
+  { id:'e_m_9',  name:'長月 ・ 月見',    desc:'9 月：進化 +5%',                     icon:'🌕', cond:()=>new Date().getMonth()===8,  eff:{evoBoost:0.05} },
+  { id:'e_m_10', name:'神無月 ・ 紅葉',  desc:'10 月：ストック +8%',                icon:'🍂', cond:()=>new Date().getMonth()===9,  eff:{stockExpMul:1.08} },
+  { id:'e_m_11', name:'霜月 ・ 静寂',    desc:'11 月：重力 -4% / ストック +3%',     icon:'☁', cond:()=>new Date().getMonth()===10, eff:{gravityMul:0.96, stockExpMul:1.03} },
+  { id:'e_m_12', name:'師走 ・ 結びの月', desc:'12 月：EXP +8%',                     icon:'⛄', cond:()=>new Date().getMonth()===11, eff:{expMul:1.08} },
+  // 曜日（7 種）
+  { id:'e_d_mon', name:'月曜 ・ 始動',   desc:'月曜：EXP +2%',            icon:'🌙', cond:()=>new Date().getDay()===1, eff:{expMul:1.02} },
+  { id:'e_d_tue', name:'火曜 ・ 燃焼',   desc:'火曜：粒 +1',              icon:'🔥', cond:()=>new Date().getDay()===2, eff:{dropCountAdd:1} },
+  { id:'e_d_wed', name:'水曜 ・ 流',     desc:'水曜：重力 -2%',           icon:'💧', cond:()=>new Date().getDay()===3, eff:{gravityMul:0.98} },
+  { id:'e_d_thu', name:'木曜 ・ 育',     desc:'木曜：進化 +2%',           icon:'🌳', cond:()=>new Date().getDay()===4, eff:{evoBoost:0.02} },
+  { id:'e_d_fri', name:'金曜 ・ 結',     desc:'金曜：融合 +3%',           icon:'🤝', cond:()=>new Date().getDay()===5, eff:{mergeRadiusMul:1.03} },
+  { id:'e_d_sat', name:'土曜 ・ 蓄',     desc:'土曜：ストック +3%',       icon:'⛰', cond:()=>new Date().getDay()===6, eff:{stockExpMul:1.03} },
+  { id:'e_d_sun', name:'日曜 ・ 静',     desc:'日曜：重力 -3% / EXP +2%', icon:'☀', cond:()=>new Date().getDay()===0, eff:{gravityMul:0.97, expMul:1.02} },
+  // 週（月内 1-4 週）
+  { id:'e_w_1', name:'第1週 ・ 開花',  desc:'月の 1 週目：EXP +3%',       icon:'🌷', cond:()=>Math.ceil(new Date().getDate()/7)===1, eff:{expMul:1.03} },
+  { id:'e_w_2', name:'第2週 ・ 充実',  desc:'月の 2 週目：ストック +3%',  icon:'🌳', cond:()=>Math.ceil(new Date().getDate()/7)===2, eff:{stockExpMul:1.03} },
+  { id:'e_w_3', name:'第3週 ・ 結実',  desc:'月の 3 週目：進化 +3%',      icon:'🍎', cond:()=>Math.ceil(new Date().getDate()/7)===3, eff:{evoBoost:0.03} },
+  { id:'e_w_4', name:'第4週 ・ 還元',  desc:'月の 4-5 週目：全効果 +1%',  icon:'🍃', cond:()=>Math.ceil(new Date().getDate()/7)>=4, eff:{expMul:1.01, stockExpMul:1.01, mergeRadiusMul:1.01} },
+];
+function getActiveEnvBonuses() {
+  return ENV_BONUSES.filter(b => { try { return b.cond(STATE); } catch(_) { return false; } });
+}
+function computeEnvBonus() {
+  const acc = { expMul:1.0, evoBoost:0, gravityMul:1.0, mergeRadiusMul:1.0, dropCountAdd:0, stockExpMul:1.0 };
+  for (const b of getActiveEnvBonuses()) {
+    const e = b.eff || {};
+    if (e.expMul)         acc.expMul        *= e.expMul;
+    if (e.evoBoost)       acc.evoBoost      += e.evoBoost;
+    if (e.gravityMul)     acc.gravityMul    *= e.gravityMul;
+    if (e.mergeRadiusMul) acc.mergeRadiusMul*= e.mergeRadiusMul;
+    if (e.dropCountAdd)   acc.dropCountAdd  += e.dropCountAdd;
+    if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul;
+  }
+  return acc;
+}
 
 function getActivePassives() {
   return PASSIVES.filter(p => { try { return p.cond(STATE); } catch(_) { return false; } });
@@ -3393,8 +3450,8 @@ function physicsStep() {
     // v10n6: コインプッシャー床 ── 棚の上だけ着地、棚外は素通りで下に落ちる
     const overLedge = (p.x + SIZE/2) >= ledge.left && (p.x + SIZE/2) <= (ledge.right + SIZE);
     if (overLedge && p.y > H - SIZE - LEDGE_THICKNESS) {
-      // v1.1.0: 着地速度に応じて波紋を出す（雨が水面に落ちる演出）
-      if (!p._rippled && p.vy > 1.0) {
+      // v1.3.12: 着地で必ず波紋（速度しきい値撤廃）
+      if (!p._rippled) {
         spawnRipple(p.x + SIZE/2);
         p._rippled = true;
       }
