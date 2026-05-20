@@ -3484,6 +3484,7 @@ function attractSameChar(p) {
 function attachDragHandlers(node, obj) {
   let startX = 0, startY = 0, origX = 0, origY = 0, moved = false, pointerId = null;
   let onMove = null, onUp = null;
+  let startTime = 0;  // v1.3.0: 素早いタップ判定
 
   const startDrag = (e) => {
     if (obj.dragging) return;
@@ -3501,6 +3502,7 @@ function attachDragHandlers(node, obj) {
     // v1.1.6: ドラッグ後の再着地でも波紋が出るように flag リセット
     obj._rippled = false;
     moved = false;
+    startTime = Date.now();
     startX = e.clientX;
     startY = e.clientY;
     origX = obj.x; origY = obj.y;
@@ -3532,7 +3534,9 @@ function attachDragHandlers(node, obj) {
       obj.vy = 0; obj.vx = 0;
       node.classList.remove('dragging');
       $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
-      if (!moved) {
+      // v1.3.0: 素早いタップ（250ms 以内）は moved 判定無視で必ず burst
+      const dt = Date.now() - startTime;
+      if (!moved || dt < 250) {
         dissolvePomoji(obj);
         return;
       }
