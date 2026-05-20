@@ -4725,6 +4725,20 @@ function refreshPCPanels(){
 // ═══════════════════════════════════════════════════════════════
 let _currentWriting = [];  // { char, rarity }
 
+// v1.3.6: 字のパーティ Lv からエフェクトクラスを決定
+function charLvBand(char) {
+  if (!STATE.party || !STATE.party.members) return '';
+  const m = STATE.party.members.find(mb => mb.char === char);
+  if (!m) return '';
+  const lv = m.level || 0;
+  if (lv >= 1000) return 'lvband-divine';
+  if (lv >= 300)  return 'lvband-cosmic';
+  if (lv >= 100)  return 'lvband-master';
+  if (lv >= 30)   return 'lvband-adept';
+  if (lv >= 10)   return 'lvband-novice';
+  return '';
+}
+
 // v1.3.5: 字→レア度 Map キャッシュ（41,890 codex filter を解消）
 let _stockRarityCache = null;
 function _buildStockRarityCache() {
@@ -4785,8 +4799,9 @@ function renderHaiku() {
     row.innerHTML = '';
     _haikuRows[i].forEach((it, j) => {
       const rIdx = RARITY_TIERS.indexOf(it.rarity);
+      const band = charLvBand(it.char);
       row.appendChild(el('span', {
-        class:`wc-slot rarity-${rIdx + 1}`,
+        class:`wc-slot rarity-${rIdx + 1}${band ? ' ' + band : ''}`,
         onclick: () => { _haikuRows[i].splice(j, 1); renderHaiku(); },
       }, it.char));
     });
@@ -4930,8 +4945,9 @@ function renderWritingsModal() {
   } else {
     _currentWriting.forEach((item, idx) => {
       const rIdx = RARITY_TIERS.indexOf(item.rarity);
+      const band = charLvBand(item.char);
       slots.appendChild(el('span', {
-        class: `wc-slot rarity-${rIdx + 1}`,
+        class: `wc-slot rarity-${rIdx + 1}${band ? ' ' + band : ''}`,
         onclick: () => { _currentWriting.splice(idx, 1); renderWritingsModal(); }
       }, item.char));
     });
