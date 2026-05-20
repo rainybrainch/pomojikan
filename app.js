@@ -2545,7 +2545,10 @@ function completePhase() {
       STATE.timer.setsDone = 0;
       stopTimer();
     } else if (target > 0) {
-      // 自動で次のサイクルへ（短い間を置く）
+      // v1.2.1: 自動で次のサイクルへ ── まず idle に落として tick 無限ループを止める
+      STATE.mode = 'idle';
+      document.body.dataset.mode = 'idle';
+      cancelAnimationFrame(timerRaf);
       toast(`セット ${STATE.timer.setsDone} / ${target} ── 次へ`);
       stopRisingPomoji();
       setTimeout(() => { if (STATE.mode === 'idle') startWork(); }, 1200);
