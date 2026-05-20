@@ -2998,6 +2998,7 @@ function invalidateAggCache() { _aggCache = null; }
 // v10n6: コインプッシャー型 ── 棚は中央 76%、両端 12% は穴
 // 棚から外れた字は下に落ちて EXP 化（累積しない＝重くならない）
 const LEDGE_PAD = 0.12;
+const LEDGE_THICKNESS = 12;  // v1.1.1: 棚の厚み（CSS と整合）
 function ledgeBounds(W) {
   return { left: W * LEDGE_PAD, right: W * (1 - LEDGE_PAD) - SIZE };
 }
@@ -3160,14 +3161,14 @@ function physicsStep() {
 
     // v10n6: コインプッシャー床 ── 棚の上だけ着地、棚外は素通りで下に落ちる
     const overLedge = (p.x + SIZE/2) >= ledge.left && (p.x + SIZE/2) <= (ledge.right + SIZE);
-    if (overLedge && p.y > H - SIZE) {
+    if (overLedge && p.y > H - SIZE - LEDGE_THICKNESS) {
       // v1.1.0: 着地速度に応じて波紋を出す（雨が水面に落ちる演出）
       if (!p._rippled && p.vy > 1.0) {
         spawnRipple(p.x + SIZE/2);
         p._rippled = true;
       }
-      // 棚の上で着地
-      p.y = H - SIZE;
+      // 棚の上で着地（厚み分上で止まる）
+      p.y = H - SIZE - LEDGE_THICKNESS;
       if (Math.abs(p.vy) > 1.6) {
         p.vy *= -0.22;
         squashEl(p, 'squash');

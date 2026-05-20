@@ -4643,23 +4643,35 @@ html, body {
 }
 
 /* ════════════════════ v1.1.0: 地面（棚）視覚化＋波紋 ════════════════════ */
+/* v1.1.1: 棚を厚みのある板に＋穴の縁を強調 */
 #ledge-surface {
   position: fixed;
   left: 12vw;
   right: 12vw;
   bottom: 0;
-  height: 4px;
+  height: 12px;
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(to bottom,
-    rgba(135,206,235,.0),
-    rgba(135,206,235,.30) 30%,
-    rgba(135,206,235,.55) 70%,
-    rgba(135,206,235,.20));
-  box-shadow: 0 -1px 0 rgba(255,255,255,.10) inset,
-              0 0 12px rgba(135,206,235,.25);
-  border-top: 1px solid rgba(135,206,235,.4);
+    rgba(135,206,235,.40),
+    rgba(80,140,200,.30) 50%,
+    rgba(40,80,140,.55));
+  border-top: 2px solid rgba(180,220,255,.65);
+  box-shadow:
+    0 -2px 14px rgba(135,206,235,.30),
+    inset 0 -3px 6px rgba(0,0,0,.30);
 }
+#ledge-surface::before, #ledge-surface::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 10px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0,0,0,.55), transparent);
+  pointer-events: none;
+}
+#ledge-surface::before { left: -10px; }
+#ledge-surface::after  { right: -10px; transform: scaleX(-1); }
 body[data-mode="work"] #ledge-surface {
   background: linear-gradient(to bottom,
     rgba(135,206,235,.0),
@@ -4680,20 +4692,20 @@ body[data-mode="rest"] #ledge-surface {
 }
 body.stream-mode #ledge-surface { display: none; }
 
-/* 着地波紋 */
+/* v1.1.1: 着地波紋（棚の上面から立ち上がる）*/
 .ripple {
   position: fixed;
-  bottom: 0;
-  width: 60px;
-  height: 30px;
-  margin-left: -30px;
+  bottom: 12px;  /* 棚の上面ライン */
+  width: 64px;
+  height: 26px;
+  margin-left: -32px;
   pointer-events: none;
-  border: 2px solid rgba(135,206,235,.65);
+  border: 2px solid rgba(135,206,235,.75);
   border-bottom: none;
   border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   opacity: 0;
-  z-index: 1;
-  animation: rippleSpread .8s cubic-bezier(.22,.9,.36,1) forwards;
+  z-index: 2;
+  animation: rippleSpread .9s cubic-bezier(.22,.9,.36,1) forwards;
 }
 body[data-mode="rest"] .ripple { border-color: rgba(192,168,255,.65); }
 @keyframes rippleSpread {
