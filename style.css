@@ -4164,7 +4164,7 @@ body[data-mode="idle"] .timer-zone::after {
 }
 
 /* ════════════════════ v10n9: パーティ強化 ════════════════════ */
-/* v1.0.2: 右上に絶対配置（HUD と並ぶ）*/
+/* v1.0.5: 右上に絶対配置／pointer-events を子要素にだけ通してぽもじタップを奪わない */
 .effects-panel {
   position: fixed;
   top: 56px;
@@ -4180,6 +4180,13 @@ body[data-mode="idle"] .timer-zone::after {
   font-size: .72rem;
   user-select: none;
   margin: 0;
+  pointer-events: none;  /* 背景は透過、子のボタン／行だけ有効に */
+}
+.effects-panel .ep-head,
+.effects-panel .ep-row,
+.effects-panel .ep-preset-btn,
+.effects-panel .ep-legend {
+  pointer-events: auto;
 }
 .effects-panel.collapsed .ep-grid,
 .effects-panel.collapsed .ep-groups { display: none; }

@@ -3321,15 +3321,23 @@ function dissolvePomoji(p) {
     }, 20000);
     return;
   }
-  const rarity = p.rarity;
-  const rIdx = RARITY_TIERS.indexOf(rarity);
-  const exp = Math.max(1, Math.pow(2, rIdx) * 3);
-  awardExpToParty(p.char, exp) || _orphanExp(exp);
-  spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
-  addStock(p.char);  // ストックに加算（文章モードで使える）
+  // v1.0.5: タップ → 泡化（rising）して上昇しながら EXP 化する体験に統一
+  // ストックは加算（文章モードで使える）／EXP は rising 経路から
+  addStock(p.char);
   playSFX('pop');
-  p.el.classList.add('dissolve');
-  setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
+  // 既に rising 状態ならそのまま、そうでなければ rising に変換
+  if (!p.rising) {
+    try { convertToRising(p); } catch(_) {
+      // fallback：従来の即時 dissolve
+      const rarity = p.rarity;
+      const rIdx = RARITY_TIERS.indexOf(rarity);
+      const exp = Math.max(1, Math.pow(2, rIdx) * 3);
+      awardExpToParty(p.char, exp) || _orphanExp(exp);
+      spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
+      p.el.classList.add('dissolve');
+      setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
+    }
+  }
 }
 
 // v1.0.2: 効果セルタップで小 EXP 獲得（クールダウン 1.5 秒・グレード比例）
