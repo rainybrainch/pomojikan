@@ -2639,7 +2639,7 @@ function convertToRising(p) {
 }
 function awardRising(p) {
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(1.5, rIdx) * 6);
+  const exp = Math.max(1, Math.pow(1.3, rIdx) * 6);
   const tankRect = $('#tank').getBoundingClientRect();
   spawnXpFloat(p.x + SIZE/2, Math.max(20, p.y), exp, p.rarity);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
@@ -2781,7 +2781,7 @@ function awardFallen(p) {
   if (p._awarded) return;
   p._awarded = true;
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(1.5, rIdx) * 6);
+  const exp = Math.max(1, Math.pow(1.3, rIdx) * 6);
   // 落下位置の上方向に XP float を出す（画面内で見える位置）
   const H = window.innerHeight;
   spawnXpFloat(p.x + SIZE/2, Math.min(H - 40, Math.max(40, p.y)), exp, p.rarity);
@@ -2866,7 +2866,7 @@ function expireAsExp(p) {
   if (!p || p._expiring) return;
   p._expiring = true;
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(1.5, rIdx) * 2);  // dissolve より控えめ（自然吸収）
+  const exp = Math.max(1, Math.pow(1.3, rIdx) * 2);  // dissolve より控えめ（自然吸収）
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   addStock(p.char);  // ストックに加算
   if (p.el) {
@@ -3044,7 +3044,7 @@ function _dailyReportMessage(cyc, ch, yj) {
 function grantDiscoveryBonus(rarity, char) {
   if (!STATE.party || !STATE.party.members) return;
   const rIdx = RARITY_TIERS.indexOf(rarity);
-  const bonus = 3 + Math.pow(1.5, rIdx);  // ★1=4 ★3=7 ★5=19 ★10=515
+  const bonus = 3 + Math.pow(1.3, rIdx);  // ★1=4 ★3=7 ★5=19 ★10=515
   // 累計発見数 milestones（10 / 50 / 100 / 300 / 600 / 874）で追加ボーナス
   const uniq = Object.keys(STATE.collection).length;
   let milestoneMul = 1;
@@ -3564,7 +3564,7 @@ function feedPomojiToMember(p, idx, cardEl) {
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
   // 通常タップの 2 倍、同字なら 4 倍
   const same = (member.char === p.char);
-  const baseExp = Math.max(2, Math.pow(1.5, rIdx) * 3);
+  const baseExp = Math.max(2, Math.pow(1.3, rIdx) * 3);
   const exp = same ? baseExp * 4 : baseExp * 2;
   addStock(p.char);
   // EXP 反映
@@ -3618,7 +3618,7 @@ function dissolvePomoji(p) {
   if (p.persistent) {
     const rarity = p.rarity;
     const rIdx = RARITY_TIERS.indexOf(rarity);
-    const exp = Math.max(5, Math.pow(1.5, rIdx) * 12);  // 通常の 4 倍
+    const exp = Math.max(5, Math.pow(1.3, rIdx) * 12);  // 通常の 4 倍
     awardExpToParty(p.char, exp) || _orphanExp(exp);
     spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
     playSFX('pop');
@@ -3645,7 +3645,7 @@ function dissolvePomoji(p) {
   // v1.0.9: タップ → 即「弾けて EXP」に戻す（rising 経路は休憩時のみ）
   const rarity = p.rarity;
   const rIdx = RARITY_TIERS.indexOf(rarity);
-  const exp = Math.max(1, Math.pow(1.5, rIdx) * 3);
+  const exp = Math.max(1, Math.pow(1.3, rIdx) * 3);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);
@@ -3754,7 +3754,8 @@ function addStock(char) {
     // 🌟「ぽ文字漢」コンボ成立時は ×1.3
     const agg = aggregatePartyPerks();
     const stockMul = (agg && agg.stockExpMul) ? agg.stockExpMul : 1.0;
-    const expPerStock = Math.max(1, Math.round((rIdx + 1) * stockMul));
+    // v1.2.9: stock EXP を 30% に削減（旧：4 体均等大放出で甘すぎた）
+    const expPerStock = Math.max(1, Math.round((rIdx + 1) * 0.3 * stockMul));
     for (let i = 0; i < STATE.party.members.length; i++) {
       const m = STATE.party.members[i];
       m.exp = (m.exp || 0) + expPerStock;
@@ -3871,7 +3872,7 @@ function mergePomoji(src, target) {
   const newLv = target.mergeLevel || 1;
 
   // EXP は mergeLevel に応じて指数増加：基礎 × 2^(level-1)
-  const exp = Math.max(1, Math.pow(1.5, rIdx) * 10 * Math.pow(2, newLv - 1));
+  const exp = Math.max(1, Math.pow(1.3, rIdx) * 10 * Math.pow(2, newLv - 1));
   spawnXpFloat(target.x + SIZE/2, target.y, exp, src.rarity);
 
   // タグアフィニティ判定：src と target のタグ重複があれば +50%
