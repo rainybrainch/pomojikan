@@ -4541,3 +4541,47 @@ html, body {
   .ep-row-lbl { font-size: .66rem; }
   .ep-row-val { font-size: .72rem; }
 }
+
+/* ════════════════════ v1.0.6: コンボバー 2 段＋効果矢印 ════════════════════ */
+.combo-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 720px;
+  margin: 4px auto;
+  padding: 6px 10px;
+}
+.cb-top { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.cb-bot { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.cb-top-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: #cfe6ff;
+  padding: 2px 6px;
+  background: rgba(135,206,235,.18);
+  border-radius: 4px;
+}
+.cb-chip {
+  font-size: .68rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 6px;
+  border: 1px solid;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* 矢印カラム */
+.ep-row { grid-template-columns: 22px 1fr 14px auto; }
+.ep-row-arr {
+  font-size: .8rem;
+  color: var(--ink-mute);
+  font-family: 'JetBrains Mono', monospace;
+}
+.ep-row.ep-strong .ep-row-arr { color: #ffd86b; font-weight: 900; }
+.ep-row.ep-weak   .ep-row-arr { color: #87ceeb; }
+.ep-row.ep-none   .ep-row-arr { opacity: .4; }
+
+@media (max-width: 480px) {
+  .cb-chip { font-size: .62rem; padding: 1px 4px; }
+  .cb-top-label { font-size: .65rem; }
+}

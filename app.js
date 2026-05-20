@@ -3774,29 +3774,38 @@ function renderComboBar() {
     }
   }
   bar.innerHTML = '';
-  // v10n3: コンボの効果サマリーを表示（受益者向け可視化）
+  // v1.0.6: 2 段構造 ── 上段「効果チップ」／下段「コンボ語」
   const cb = getComboBonus();
-  const effects = [];
-  if (cb.expMul && cb.expMul > 1.0)        effects.push(`EXP×${cb.expMul.toFixed(2)}`);
-  if (cb.gravityMul && cb.gravityMul !== 1.0) effects.push(`重力×${cb.gravityMul.toFixed(2)}`);
-  if (cb.mergeRadiusMul && cb.mergeRadiusMul !== 1.0) effects.push(`融合範囲×${cb.mergeRadiusMul.toFixed(2)}`);
-  if (cb.dropCountAdd)                     effects.push(`粒+${cb.dropCountAdd}`);
-  if (cb.stockExpMul && cb.stockExpMul > 1.0) effects.push(`ストック×${cb.stockExpMul.toFixed(2)}`);
-  if (cb.evoDiscount)                       effects.push(`進化-${cb.evoDiscount}`);
-  const eff = effects.length ? `（${effects.join(' / ')}）` : '';
-  bar.appendChild(el('span', { class:'cb-bar-label', title:'コンボ詳細を見る' }, '⚡ 発動中' + eff));
-  // 最大 4 件表示 ・ クリックで詳細
-  combos.slice(0, 4).forEach(r => {
+  // 上段：効果チップ（数値別・色つき）
+  const effChips = [];
+  const addChip = (icon, label, color) => effChips.push({ icon, label, color });
+  if (cb.expMul && cb.expMul > 1.01)         addChip('📈', `EXP ×${cb.expMul.toFixed(2)}`, '#ffd86b');
+  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('🌧', `重力 ×${cb.gravityMul.toFixed(2)}`, '#a0e0ff');
+  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('🤝', `融合 ×${cb.mergeRadiusMul.toFixed(2)}`, '#c0e0a0');
+  if (cb.dropCountAdd)                       addChip('💧', `粒 +${cb.dropCountAdd}`, '#9be0ff');
+  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('📦', `ストック ×${cb.stockExpMul.toFixed(2)}`, '#d4b6ff');
+  if (cb.evoBoost && cb.evoBoost > 0.005)    addChip('🌱', `進化 +${Math.round(cb.evoBoost*100)}%`, '#ffe0a0');
+  const top = el('div', { class:'cb-top' },
+    el('span', { class:'cb-top-label' }, `⚡ ${combos.length} コンボ`),
+    ...effChips.map(c => el('span', {
+      class:'cb-chip', style:{ color: c.color, borderColor: c.color + '55', background: c.color + '15' }
+    }, c.icon + ' ' + c.label))
+  );
+  bar.appendChild(top);
+  // 下段：コンボ語（最大 6 件）
+  const bot = el('div', { class:'cb-bot' });
+  combos.slice(0, 6).forEach(r => {
     const rIdx = RARITY_TIERS.indexOf(r.rarity);
-    bar.appendChild(el('span', {
+    bot.appendChild(el('span', {
       class: `cb-bar-item rarity-${rIdx + 1}${r.special ? ' cb-special' : ''}`,
       title: r.desc || r.word,
       onclick: () => showYojiDetail(r),
     }, r.special ? '🌟' + r.word : r.word));
   });
-  if (combos.length > 4) {
-    bar.appendChild(el('span', { class:'cb-bar-more' }, `他 ${combos.length - 4}`));
+  if (combos.length > 6) {
+    bot.appendChild(el('span', { class:'cb-bar-more' }, `他 ${combos.length - 6}`));
   }
+  bar.appendChild(bot);
 }
 
 // パーティメンバーの操作（タップで開く）
@@ -4922,19 +4931,22 @@ function renderEffectsPanel() {
     if (val >= weak)   return 'weak';
     return 'none';
   };
+  // 矢印：強い=⇡、弱い=↑、休=・、重力は逆（低いほど良いので ⇣/↓ で表す）
+  const arrow = (grade, inverted) => grade === 'none' ? '・' : (inverted ? (grade === 'strong' ? '⇣' : '↓') : (grade === 'strong' ? '⇡' : '↑'));
   const items = [
     // 成長系
-    { ic:'📈', lbl:'EXP',     val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hint:'貰える経験値の倍率',     grade: grade(expFinal, 1.10, 1.50) },
-    { ic:'📦', lbl:'ストック', val:'×' + fmt(stockFinal),                                       hint:'拾った字からの EXP 倍率', grade: grade(stockFinal, 1.05, 1.30) },
-    { ic:'🌱', lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%',                       hint:'次 Lv 必要 EXP 削減率',   grade: grade(evoFinal, 0.05, 0.20) },
+    { ic:'📈', lbl:'EXP',     val:'×' + (expFinal >= 1000 ? fmtBig(expFinal) : fmt(expFinal)), hint:'貰える経験値の倍率',     grade: grade(expFinal, 1.10, 1.50), inv:false },
+    { ic:'📦', lbl:'ストック', val:'×' + fmt(stockFinal),                                       hint:'拾った字からの EXP 倍率', grade: grade(stockFinal, 1.05, 1.30), inv:false },
+    { ic:'🌱', lbl:'進化加速', val:'-' + Math.round(evoFinal * 100) + '%',                       hint:'次 Lv 必要 EXP 削減率',   grade: grade(evoFinal, 0.05, 0.20), inv:false },
     // 物理系
-    { ic:'🌧', lbl:'重力',     val:'×' + fmt(gravFinal),                                        hint:'落下速度の倍率（低いほど緩い）', grade: grade(gravFinal, 0.95, 0.70, true) },
-    { ic:'🤝', lbl:'融合範囲', val:'×' + fmt(mergeFinal),                                       hint:'同字どうしが合体する判定半径', grade: grade(mergeFinal, 1.05, 1.20) },
-    { ic:'💧', lbl:'粒数+',    val:'+' + Math.round(dropFinal),                                 hint:'1 回の落下で増える追加粒数', grade: grade(dropFinal, 1, 3) },
+    { ic:'🌧', lbl:'重力',     val:'×' + fmt(gravFinal),                                        hint:'落下速度の倍率（低いほど緩い）', grade: grade(gravFinal, 0.95, 0.70, true), inv:true },
+    { ic:'🤝', lbl:'融合範囲', val:'×' + fmt(mergeFinal),                                       hint:'同字どうしが合体する判定半径', grade: grade(mergeFinal, 1.05, 1.20), inv:false },
+    { ic:'💧', lbl:'粒数+',    val:'+' + Math.round(dropFinal),                                 hint:'1 回の落下で増える追加粒数', grade: grade(dropFinal, 1, 3), inv:false },
     // 状態系
-    { ic:'⭐', lbl:'Lv係数',   val:'×' + fmt(lvMul),                                            hint:'リーダー Lv 由来の全効果倍率', grade: grade(lvMul, 1.10, 1.30) },
-    { ic:'⚙', lbl:'パッシブ',  val:passCount + '/20',                                          hint:'達成済の常時効果数', grade: grade(passCount, 2, 5) },
+    { ic:'⭐', lbl:'Lv係数',   val:'×' + fmt(lvMul),                                            hint:'リーダー Lv 由来の全効果倍率', grade: grade(lvMul, 1.10, 1.30), inv:false },
+    { ic:'⚙', lbl:'パッシブ',  val:passCount + '/20',                                          hint:'達成済の常時効果数', grade: grade(passCount, 2, 5), inv:false },
   ];
+  for (const it of items) it.arr = arrow(it.grade, it.inv);
   const activeCount = items.filter(x => x.grade !== 'none').length;
   const strongCount = items.filter(x => x.grade === 'strong').length;
   const collapsed = panel.classList.contains('collapsed');
@@ -4972,6 +4984,7 @@ function renderEffectsPanel() {
       },
         el('span', { class:'ep-row-ic' }, it.ic),
         el('span', { class:'ep-row-lbl' }, it.lbl),
+        el('span', { class:'ep-row-arr' }, it.arr),
         el('span', { class:'ep-row-val' }, it.val),
       )
     ));
