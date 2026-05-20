@@ -2601,6 +2601,15 @@ function awardRising(p) {
 }
 
 // v10n6: 棚（コインプッシャー床）から落下 → EXP 化
+// v1.1.0: 雨の波紋（着地時）
+function spawnRipple(x) {
+  const node = document.createElement('div');
+  node.className = 'ripple';
+  node.style.left = x + 'px';
+  document.body.appendChild(node);
+  setTimeout(() => node.remove(), 850);
+}
+
 function awardFallen(p) {
   if (p._awarded) return;
   p._awarded = true;
@@ -3152,6 +3161,11 @@ function physicsStep() {
     // v10n6: コインプッシャー床 ── 棚の上だけ着地、棚外は素通りで下に落ちる
     const overLedge = (p.x + SIZE/2) >= ledge.left && (p.x + SIZE/2) <= (ledge.right + SIZE);
     if (overLedge && p.y > H - SIZE) {
+      // v1.1.0: 着地速度に応じて波紋を出す（雨が水面に落ちる演出）
+      if (!p._rippled && p.vy > 1.0) {
+        spawnRipple(p.x + SIZE/2);
+        p._rippled = true;
+      }
       // 棚の上で着地
       p.y = H - SIZE;
       if (Math.abs(p.vy) > 1.6) {

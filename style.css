@@ -4641,3 +4641,63 @@ html, body {
   30%  { transform: scale(1.4) rotate(-8deg); opacity: 1; filter: brightness(1.6) drop-shadow(0 0 12px rgba(255,217,107,.8)); }
   100% { transform: scale(.3) rotate(15deg); opacity: 0; filter: brightness(2); }
 }
+
+/* ════════════════════ v1.1.0: 地面（棚）視覚化＋波紋 ════════════════════ */
+#ledge-surface {
+  position: fixed;
+  left: 12vw;
+  right: 12vw;
+  bottom: 0;
+  height: 4px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    rgba(135,206,235,.0),
+    rgba(135,206,235,.30) 30%,
+    rgba(135,206,235,.55) 70%,
+    rgba(135,206,235,.20));
+  box-shadow: 0 -1px 0 rgba(255,255,255,.10) inset,
+              0 0 12px rgba(135,206,235,.25);
+  border-top: 1px solid rgba(135,206,235,.4);
+}
+body[data-mode="work"] #ledge-surface {
+  background: linear-gradient(to bottom,
+    rgba(135,206,235,.0),
+    rgba(135,206,235,.40) 30%,
+    rgba(135,206,235,.70) 70%,
+    rgba(135,206,235,.25));
+  box-shadow: 0 -1px 0 rgba(255,255,255,.15) inset,
+              0 0 18px rgba(135,206,235,.40);
+}
+body[data-mode="rest"] #ledge-surface {
+  background: linear-gradient(to bottom,
+    rgba(192,168,255,.0),
+    rgba(192,168,255,.40) 30%,
+    rgba(192,168,255,.70) 70%,
+    rgba(192,168,255,.25));
+  box-shadow: 0 -1px 0 rgba(255,255,255,.15) inset,
+              0 0 18px rgba(192,168,255,.40);
+}
+body.stream-mode #ledge-surface { display: none; }
+
+/* 着地波紋 */
+.ripple {
+  position: fixed;
+  bottom: 0;
+  width: 60px;
+  height: 30px;
+  margin-left: -30px;
+  pointer-events: none;
+  border: 2px solid rgba(135,206,235,.65);
+  border-bottom: none;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  opacity: 0;
+  z-index: 1;
+  animation: rippleSpread .8s cubic-bezier(.22,.9,.36,1) forwards;
+}
+body[data-mode="rest"] .ripple { border-color: rgba(192,168,255,.65); }
+@keyframes rippleSpread {
+  0%   { transform: scale(.2, .4); opacity: .85; }
+  40%  { opacity: .65; }
+  100% { transform: scale(2.4, 1.2); opacity: 0; }
+}
