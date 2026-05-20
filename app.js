@@ -1682,6 +1682,14 @@ function computePassiveBonus() {
   return acc;
 }
 
+// v1.1.3: 並び順がコンボの構成字と一致したらボーナス（×1.4）
+function comboOrderMatch(r) {
+  if (!STATE.party || !STATE.party.members || !r || !r.chars) return false;
+  const partyStr = STATE.party.members.map(m => m.char).join('');
+  const recipeStr = r.chars.join('');
+  return partyStr.indexOf(recipeStr) >= 0;  // 連続部分一致
+}
+
 // コンボのボーナス倍率合計（レア × 字数 × 難易度 × リーダーLv × タグ／固有効果）
 // v10n4: すべての熟語コンボに難易度＆Lvスケーリング・固有効果コンボ対応
 function getComboBonus() {
@@ -1694,30 +1702,30 @@ function getComboBonus() {
   };
   const lvMul = leaderLvMul();
   for (const r of combos) {
+    // v1.1.3: 並び順一致なら ×1.4 ボーナス
+    const orderMul = comboOrderMatch(r) ? 1.4 : 1.0;
     // 🌟 SPECIAL（アプリ名隠しコンボ）：固定値を加算（旧仕様維持・Lv補正のみ）
     if (r.special && r.effect) {
       const e = r.effect;
-      if (e.expMul)         acc.expMul        *= e.expMul * lvMul;
-      if (e.evoBoost)       acc.evoBoost      += e.evoBoost * lvMul;
+      if (e.expMul)         acc.expMul        *= e.expMul * lvMul * orderMul;
+      if (e.evoBoost)       acc.evoBoost      += e.evoBoost * lvMul * orderMul;
       if (e.gravityMul)     acc.gravityMul    *= e.gravityMul;
       if (e.mergeRadiusMul) acc.mergeRadiusMul*= e.mergeRadiusMul;
       if (e.dropCountAdd)   acc.dropCountAdd  += e.dropCountAdd;
-      if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul * lvMul;
+      if (e.stockExpMul)    acc.stockExpMul   *= e.stockExpMul * lvMul * orderMul;
       continue;
     }
-    // ✦ 固有効果コンボ（UNIQUE）：物語のある熟語は固有 effect 適用（タグ効果はスキップ）
     const unique = UNIQUE_COMBO_EFFECTS[r.word];
     if (unique) {
       const u = unique;
-      if (u.expMul)         acc.expMul        *= u.expMul * lvMul;
-      if (u.evoBoost)       acc.evoBoost      += u.evoBoost * lvMul;
+      if (u.expMul)         acc.expMul        *= u.expMul * lvMul * orderMul;
+      if (u.evoBoost)       acc.evoBoost      += u.evoBoost * lvMul * orderMul;
       if (u.gravityMul)     acc.gravityMul    *= u.gravityMul;
       if (u.mergeRadiusMul) acc.mergeRadiusMul*= u.mergeRadiusMul;
       if (u.dropCountAdd)   acc.dropCountAdd  += u.dropCountAdd;
-      if (u.stockExpMul)    acc.stockExpMul   *= u.stockExpMul * lvMul;
+      if (u.stockExpMul)    acc.stockExpMul   *= u.stockExpMul * lvMul * orderMul;
       continue;
     }
-    // 通常コンボ：レア × 字数 × 難易度 × Lv × タグ
     const n = r.chars.length;
     const rarMul = COMBO_RARITY_MUL[r.rarity] || 1.0;
     const difMul = comboDifficulty(r);
@@ -1726,11 +1734,10 @@ function getComboBonus() {
     else if (n === 3) baseExp = 0.30;
     else if (n === 4) baseExp = 0.60;
     else              baseExp = 1.0;
-    acc.expMul *= 1 + baseExp * rarMul * difMul * lvMul;
-    if (n === 4) acc.evoBoost += 0.10 * rarMul * lvMul;
-    if (n >= 5)  acc.evoBoost += 0.20 * rarMul * lvMul;
-    // タグ追加効果（味付け）── 難易度＆Lv反映
-    acc._lastWeight = (n / 2) * rarMul * difMul * lvMul;
+    acc.expMul *= 1 + baseExp * rarMul * difMul * lvMul * orderMul;
+    if (n === 4) acc.evoBoost += 0.10 * rarMul * lvMul * orderMul;
+    if (n >= 5)  acc.evoBoost += 0.20 * rarMul * lvMul * orderMul;
+    acc._lastWeight = (n / 2) * rarMul * difMul * lvMul * orderMul;
     applyComboTagEffects(r, acc);
   }
   delete acc._lastWeight;
@@ -3018,7 +3025,9 @@ function physicsStep() {
     // settled な字は位置固定 ── ただし persistent でなく棚外なら settle 解除して落とす
     if (p.settled && !p.rising) {
       // v10n6: 棚から押し出されたら再落下開始（コインプッシャー）
-      const onLedge = p.persistent || (p.x >= ledge.left - SIZE * 0.3 && p.x <= ledge.right + SIZE * 0.3);
+      // v1.1.3: 棚バッファ撤廃 ── 中心が棚外に出たら即座に落とす
+      const cx = p.x + SIZE/2;
+      const onLedge = p.persistent || (cx >= ledge.left && cx <= ledge.right + SIZE);
       if (!onLedge) {
         p.settled = false;
         p.settledX = null;
@@ -3145,13 +3154,12 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // v1.0.9: 接線力強化（しっかり転がる・コインプッシャー）
+          // v1.1.3: 接線力強化＋ settledX 累積バグ修正（|| が初回 falsy 扱いで累積しなかった）
           if (Math.abs(nx) > 0.05) {
             p.vx += nx * 2.2;
-            // 下の字にも押し出し力を伝播（連鎖転がり・settled も滑り出す）
             if (otherStatic && !other.persistent && other.settled) {
-              const push = nx * 2.5;
-              other.settledX = (other.settledX || other.x) - push;
+              if (other.settledX == null) other.settledX = other.x;
+              other.settledX -= nx * 3.0;  // 押し出し量も増（しっかり転がる）
               other.x = other.settledX;
             }
           }
@@ -3724,6 +3732,75 @@ function promoteToHero(idx) {
   playSFX('unlock');
 }
 
+// v1.1.3: パーティカード横ドラッグで並び替え（|dx|<8 はタップ扱い）
+function attachPartyCardReorder(card, idx) {
+  let startX = 0, startY = 0, moved = false, pointerId = null;
+  let placeholder = null;
+  const onMove = (ev) => {
+    if (ev.pointerId !== pointerId) return;
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+    if (!moved && Math.abs(dx) + Math.abs(dy) > 8) {
+      moved = true;
+      card.classList.add('reordering');
+    }
+    if (moved) {
+      ev.preventDefault();
+      card.style.transform = `translate(${dx}px, ${dy*0.3}px)`;
+      card.style.zIndex = '999';
+    }
+  };
+  const onUp = (ev) => {
+    if (ev.pointerId !== pointerId) return;
+    try { card.releasePointerCapture(pointerId); } catch(_) {}
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    if (!moved) {
+      openPartyMemberAction(idx);
+      return;
+    }
+    card.classList.remove('reordering');
+    card.style.transform = '';
+    card.style.zIndex = '';
+    // ドロップ位置にあるカード探す
+    const dropX = ev.clientX, dropY = ev.clientY;
+    const target = document.elementFromPoint(dropX, dropY);
+    const targetCard = target?.closest('.party-card');
+    if (targetCard && targetCard !== card) {
+      const targetIdx = parseInt(targetCard.dataset.idx);
+      if (!isNaN(targetIdx) && STATE.party && STATE.party.members[targetIdx]) {
+        swapPartyMembers(idx, targetIdx);
+        return;
+      }
+    }
+  };
+  card.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    pointerId = e.pointerId;
+    try { card.setPointerCapture(pointerId); } catch(_) {}
+    startX = e.clientX;
+    startY = e.clientY;
+    moved = false;
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+  });
+}
+function swapPartyMembers(a, b) {
+  if (!STATE.party || !STATE.party.members) return;
+  const arr = STATE.party.members;
+  if (!arr[a] || !arr[b]) return;
+  [arr[a], arr[b]] = [arr[b], arr[a]];
+  // hero index 更新
+  if (STATE.party.hero === a) STATE.party.hero = b;
+  else if (STATE.party.hero === b) STATE.party.hero = a;
+  invalidateAggCache();
+  saveState();
+  renderParty();
+  toast('🔀 並び替え（順番がコンボ強化に効く）');
+}
+
 function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
@@ -3744,9 +3821,8 @@ function renderParty() {
     const card = el('div', {
       class: `party-card rarity-${tierIdx + 1}${isHero ? ' hero' : ''}${stage > 0 ? ' evo-' + stage : ''}`,
       dataset: { idx, evo: stage, lv: m.level },
-      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nタップで操作（リーダー昇格・解除）`,
-      onclick: () => openPartyMemberAction(idx),
-      ondblclick: () => promoteToHero(idx),  // PC 互換維持
+      title: `${m.char} Lv.${m.level} / 特性: ${perkLabels}\nタップ=操作 / 横ドラッグ=並び替え（順番でコンボ強化）`,
+      ondblclick: () => promoteToHero(idx),
     },
       el('div', { class:'pc-glyph font-' + styleClass }, m.char, stage > 0 ? el('span', { class:'pc-stage' }, EVO_GLYPH[stage] || '𓂀') : null),
       el('div', { class:'pc-meta' },
@@ -3758,6 +3834,8 @@ function renderParty() {
         el('div', { class:'pc-fill', style: { width: Math.min(100, (m.exp / needExp) * 100) + '%' } })
       ),
     );
+    // v1.1.3: 横ドラッグで並び替え、|dx|<8 はタップ扱い
+    attachPartyCardReorder(card, idx);
     bar.appendChild(card);
   });
   // 空きスロット（最大 4 体まで）
