@@ -4725,6 +4725,18 @@ function refreshPCPanels(){
 // ═══════════════════════════════════════════════════════════════
 let _currentWriting = [];  // { char, rarity }
 
+// v1.3.5: 字→レア度 Map キャッシュ（41,890 codex filter を解消）
+let _stockRarityCache = null;
+function _buildStockRarityCache() {
+  const codex = window.KANJI_CODEX || [];
+  const m = new Map();
+  for (const k of codex) {
+    const c = k.char || k.c;
+    if (c) m.set(c, k.rarity || '★1');
+  }
+  _stockRarityCache = m;
+}
+
 // v1.3.4: 日記＆俳句タブ
 let _writingsTab = 'diary';
 let _haikuRows = [[], [], []];  // 5/7/5 行ごと
@@ -4781,18 +4793,20 @@ function renderHaiku() {
     cnt.textContent = _haikuRows[i].length + '/' + HAIKU_CAP[i];
     cnt.style.color = _haikuRows[i].length === HAIKU_CAP[i] ? '#ffd86b' : 'var(--ink-mute)';
   }
-  // プール
+  // プール（v1.3.5: O(stock_size) で軽量）
   const pool = $('#haiku-pool');
   if (!pool) return;
   pool.innerHTML = '';
-  const codex = window.KANJI_CODEX || [];
   if (!STATE.stock) STATE.stock = {};
+  if (!_stockRarityCache) _buildStockRarityCache();
   const tempUsed = {};
   for (const row of _haikuRows) for (const it of row) tempUsed[it.char] = (tempUsed[it.char] || 0) + 1;
-  const owned = codex.filter(k => {
-    const c = k.char || k.c;
-    return ((STATE.stock[c]||0) - (tempUsed[c]||0)) > 0;
-  }).sort((a,b) => RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity));
+  const owned = [];
+  for (const c of Object.keys(STATE.stock)) {
+    if ((STATE.stock[c]||0) - (tempUsed[c]||0) <= 0) continue;
+    owned.push({ char:c, c, rarity: _stockRarityCache.get(c) || '★1' });
+  }
+  owned.sort((a,b) => RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity));
   if (owned.length === 0) {
     pool.appendChild(el('div', { class:'wc-empty' }, '所有字なし ── タイマーで集めよう'));
     return;
@@ -4934,12 +4948,17 @@ function renderWritingsModal() {
   for (const item of _currentWriting) {
     tempUsed[item.char] = (tempUsed[item.char] || 0) + 1;
   }
-  const owned = codex.filter(k => {
-    const c = k.char || k.c;
+  // v1.3.5: Object.keys(STATE.stock) ベースで O(stock_size) に
+  // 旧：41,890 codex 全件 filter → 重い
+  if (!_stockRarityCache) _buildStockRarityCache();
+  const owned = [];
+  for (const c of Object.keys(STATE.stock)) {
     const stockN = STATE.stock[c] || 0;
     const usedN  = tempUsed[c] || 0;
-    return (stockN - usedN) > 0;
-  });
+    if (stockN - usedN <= 0) continue;
+    const rarity = _stockRarityCache.get(c) || '★1';
+    owned.push({ char: c, c: c, rarity });
+  }
   if (owned.length === 0) {
     const totalStock = Object.values(STATE.stock).reduce((a,b)=>a+b,0);
     const msg = totalStock === 0
@@ -4947,12 +4966,10 @@ function renderWritingsModal() {
       : '使える字を全部使い切りました。クリアまたは保存してください。';
     pool.appendChild(el('div', { class:'wc-empty' }, msg));
   } else {
-    // レア順（低→高）→ 同レアは所有数の多い順
     owned.sort((a,b) => {
       const dr = RARITY_TIERS.indexOf(a.rarity) - RARITY_TIERS.indexOf(b.rarity);
       if (dr !== 0) return dr;
-      const ca = a.char || a.c, cb = b.char || b.c;
-      return (STATE.stock[cb]||0) - (STATE.stock[ca]||0);
+      return (STATE.stock[b.char]||0) - (STATE.stock[a.char]||0);
     });
     owned.forEach(k => {
       const c = k.char || k.c;
