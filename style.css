@@ -4630,3 +4630,14 @@ html, body {
   border: 1px dashed rgba(255,255,255,.15);
   border-radius: 4px;
 }
+
+/* ════════════════════ v1.0.9: 普通の弾け演出（タップ／落下時の burst）═══════════════════ */
+.pomoji.burst {
+  animation: pomojiBurst .4s cubic-bezier(.22,1.2,.36,1) forwards;
+  pointer-events: none;
+}
+@keyframes pomojiBurst {
+  0%   { transform: scale(1) rotate(0); opacity: 1; filter: brightness(1); }
+  30%  { transform: scale(1.4) rotate(-8deg); opacity: 1; filter: brightness(1.6) drop-shadow(0 0 12px rgba(255,217,107,.8)); }
+  100% { transform: scale(.3) rotate(15deg); opacity: 0; filter: brightness(2); }
+}

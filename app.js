@@ -3081,13 +3081,23 @@ function physicsStep() {
       p.vy *= 0.85;  // 静的な台に乗ってる時は重力を切って減衰のみ
     }
     if (p.vy > MAX_FALL_VY) p.vy = MAX_FALL_VY;
-    // 空気摩擦（vx 緩減衰：転がりを残す）
-    p.vx *= 0.99;
-    if (Math.abs(p.vx) < 0.015) p.vx = 0;
+    // v1.0.9: 空気摩擦弱め（転がりが長く持つように）
+    p.vx *= 0.995;
+    if (Math.abs(p.vx) < 0.01) p.vx = 0;
     p.x += p.vx;
     p.y += p.vy;
-    if (p.x < 0)         { p.x = 0;         p.vx *= -0.4; }
-    if (p.x > W - SIZE)  { p.x = W - SIZE;  p.vx *= -0.4; }
+    // v1.0.9: x 壁反射は棚範囲のみ ── 棚外は反射せず素通りで画面外へ
+    if (p.x + SIZE/2 < ledge.left) {
+      // 棚の左外：反射せず、画面遥か外まで行ったら EXP 化
+      if (p.x < -SIZE * 1.2) { awardFallen(p); continue; }
+    } else if (p.x + SIZE/2 > ledge.right + SIZE) {
+      // 棚の右外
+      if (p.x > W + SIZE * 0.2) { awardFallen(p); continue; }
+    } else {
+      // 棚内：x 反射（万一の表示はみ出し防止のみ）
+      if (p.x < 0)        { p.x = 0; p.vx *= -0.4; }
+      if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -0.4; }
+    }
 
     // 餅同士の衝突（円形ソフトボディ ── 落下中の自分だけが動く）
     // 早期 cull：dx/dy が SIZE 超なら確実に衝突しない（sqrt 計算をスキップ）
@@ -3125,12 +3135,13 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // v10n6: 接線方向 ── 真上から乗ったらしっかり横へ転がる（コインプッシャー）
+          // v1.0.9: 接線力強化（しっかり転がる・コインプッシャー）
           if (Math.abs(nx) > 0.05) {
-            p.vx += nx * 1.2;
-            // 下の字（otherStatic）にも転がり押し出し力を与える（settled が棚外に滑り出る）
+            p.vx += nx * 2.2;
+            // 下の字にも押し出し力を伝播（連鎖転がり・settled も滑り出す）
             if (otherStatic && !other.persistent && other.settled) {
-              other.settledX = (other.settledX || other.x) - nx * 1.5;
+              const push = nx * 2.5;
+              other.settledX = (other.settledX || other.x) - push;
               other.x = other.settledX;
             }
           }
@@ -3333,23 +3344,17 @@ function dissolvePomoji(p) {
     }, 20000);
     return;
   }
-  // v1.0.5: タップ → 泡化（rising）して上昇しながら EXP 化する体験に統一
-  // ストックは加算（文章モードで使える）／EXP は rising 経路から
+  // v1.0.9: タップ → 即「弾けて EXP」に戻す（rising 経路は休憩時のみ）
+  const rarity = p.rarity;
+  const rIdx = RARITY_TIERS.indexOf(rarity);
+  const exp = Math.max(1, Math.pow(2, rIdx) * 3);
+  awardExpToParty(p.char, exp) || _orphanExp(exp);
+  spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);
   playSFX('pop');
-  // 既に rising 状態ならそのまま、そうでなければ rising に変換
-  if (!p.rising) {
-    try { convertToRising(p); } catch(_) {
-      // fallback：従来の即時 dissolve
-      const rarity = p.rarity;
-      const rIdx = RARITY_TIERS.indexOf(rarity);
-      const exp = Math.max(1, Math.pow(2, rIdx) * 3);
-      awardExpToParty(p.char, exp) || _orphanExp(exp);
-      spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
-      p.el.classList.add('dissolve');
-      setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 600);
-    }
-  }
+  // 弾け演出：burst クラス（強い拡大+消滅）
+  p.el.classList.add('burst');
+  setTimeout(() => { p.el.remove(); livePomoji.delete(p.id); }, 400);
 }
 
 // v1.0.2: 効果セルタップで小 EXP 獲得（クールダウン 1.5 秒・グレード比例）
