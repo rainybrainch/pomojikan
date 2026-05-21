@@ -370,6 +370,16 @@ function aggregatePartyPerks() {
     if (env.stockExpMul > 1)     agg.stockExpMul   = (agg.stockExpMul || 1) * env.stockExpMul;
     agg.activeEnv = getActiveEnvBonuses();
   } catch(_) {}
+  // v1.5.11: 使用中の土台ボーナス合流
+  try {
+    const lb = getActiveLedgeBonus();
+    if (lb.expMul)         agg.expMul        *= lb.expMul;
+    if (lb.evoBoost)        agg.evoDiscount  += lb.evoBoost;
+    if (lb.gravityMul)      agg.gravityMul   *= lb.gravityMul;
+    if (lb.mergeRadiusMul)  agg.mergeRadiusMul *= lb.mergeRadiusMul;
+    if (lb.dropCountAdd)    agg.dropCountAdd += lb.dropCountAdd;
+    if (lb.stockExpMul)     agg.stockExpMul   = (agg.stockExpMul || 1) * lb.stockExpMul;
+  } catch(_) {}
   return agg;
 }
 
@@ -1636,16 +1646,26 @@ const THEME_LABELS = {
   auto:'自動（季節）', spring:'春', summer:'夏',
   autumn:'秋', winter:'冬', dark:'夜', light:'紙',
 };
-// v1.5.10: 土台バリエ＋実績解除条件
+// v1.5.11: 土台バリエ ── ティア完全達成条件＋使用中ボーナス
+function tierFullyDiscovered(tierIdx) {
+  return tierSeenRatio(tierIdx) >= 1.0;
+}
 const LEDGE_VARIANTS = [
-  { key:'default', name:'標準（水盤）',        cond:()=>true },
-  { key:'stone',   name:'石板',                cond:s=>_passiveCount.cycles(s)>=10,  hint:'10 サイクル達成で解放' },
-  { key:'wood',    name:'木（縞）',            cond:s=>_passiveCount.cycles(s)>=30,  hint:'30 サイクル達成で解放' },
-  { key:'ornate',  name:'装飾（金縁）',        cond:s=>_passiveCount.cycles(s)>=100, hint:'100 サイクル達成で解放' },
-  { key:'jade',    name:'翡翠',                cond:s=>_passiveCount.uniq(s)>=500,   hint:'500 字発見で解放' },
-  { key:'cosmos',  name:'宇宙（星屑）',        cond:s=>_passiveCount.streak(s)>=30,  hint:'連続 30 日で解放' },
-  { key:'divine',  name:'神域（金光脈動）',    cond:s=>_passiveCount.hero(s)>=300,   hint:'リーダー Lv.300 で解放' },
+  { key:'default', name:'標準（水盤）',     cond:()=>true,                                                        eff:{} },
+  { key:'stone',   name:'石板',             cond:s=>_passiveCount.cycles(s)>=10,                                  hint:'10 サイクル達成で解放',       eff:{stockExpMul:1.02} },
+  { key:'wood',    name:'木（縞）',         cond:s=>tierFullyDiscovered(0),                                       hint:'★1 完全制覇で解放',          eff:{mergeRadiusMul:1.03} },
+  { key:'ornate',  name:'装飾（金縁）',     cond:s=>tierFullyDiscovered(2) || _passiveCount.cycles(s)>=100,       hint:'★3 完全制覇 or 100 サイクル', eff:{expMul:1.03} },
+  { key:'jade',    name:'翡翠',             cond:s=>tierFullyDiscovered(4) || _passiveCount.uniq(s)>=500,         hint:'★5 完全制覇 or 500 字発見',  eff:{evoBoost:0.03, mergeRadiusMul:1.02} },
+  { key:'cosmos',  name:'宇宙（星屑）',     cond:s=>tierFullyDiscovered(8) || _passiveCount.streak(s)>=30,        hint:'★9 完全制覇 or 連続 30 日',  eff:{expMul:1.05, dropCountAdd:1} },
+  { key:'divine',  name:'神域（金光脈動）', cond:s=>tierFullyDiscovered(12) || _passiveCount.hero(s)>=300,        hint:'★13 完全制覇 or リーダー Lv.300', eff:{expMul:1.08, evoBoost:0.05, stockExpMul:1.05} },
+  { key:'cyber',   name:'電光（ネオン脈動）', cond:s=>_passiveCount.uniq(s)>=2000 || tierFullyDiscovered(10),     hint:'2,000 字発見 or ★11 完全制覇', eff:{expMul:1.06, dropCountAdd:1} },
+  { key:'ink',     name:'墨絵（静寂）',        cond:s=>_passiveCount.yoji(s)>=500,                                  hint:'熟語 500 解放', eff:{gravityMul:0.95, evoBoost:0.03} },
 ];
+function getActiveLedgeBonus() {
+  const cur = STATE.ledgeStyle || 'default';
+  const v = LEDGE_VARIANTS.find(x => x.key === cur);
+  return v?.eff || {};
+}
 const TFONT_VARIANTS = [
   { key:'serif', name:'明朝', cond:()=>true },
   { key:'mono',  name:'機械', cond:s=>_passiveCount.cycles(s)>=20,  hint:'20 サイクル' },
@@ -1691,7 +1711,7 @@ function openThemePicker() {
   LEDGE_VARIANTS.forEach(v => {
     const active = (STATE.ledgeStyle || 'default') === v.key;
     const unlocked = (() => { try { return v.cond(STATE); } catch(_) { return false; } })();
-    const label = unlocked ? v.name : '🔒 ' + (v.hint || v.name);
+    const label = unlocked ? v.name : '鍵 ' + (v.hint || v.name);
     list.appendChild(el('button', {
       disabled: !unlocked,
       style:{
@@ -1717,7 +1737,7 @@ function openThemePicker() {
   TFONT_VARIANTS.forEach(v => {
     const active = (STATE.tfontStyle || 'serif') === v.key;
     const unlocked = (() => { try { return v.cond(STATE); } catch(_) { return false; } })();
-    const label = unlocked ? v.name : '🔒 ' + (v.hint || v.name);
+    const label = unlocked ? v.name : '鍵 ' + (v.hint || v.name);
     list.appendChild(el('button', {
       disabled: !unlocked,
       style:{

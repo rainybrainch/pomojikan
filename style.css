@@ -5350,3 +5350,50 @@ body[data-ledge="divine"] #ledge-surface {
 body[data-tfont="serif"] #timer-text { font-family: 'Noto Serif JP', serif !important; font-weight: 900; }
 body[data-tfont="mono"]  #timer-text { font-family: 'JetBrains Mono', monospace !important; font-weight: 700; letter-spacing: .06em; }
 body[data-tfont="brush"] #timer-text { font-family: 'Noto Serif JP', serif !important; font-style: italic; font-weight: 900; letter-spacing: .08em; }
+
+/* v1.5.11: サイバーパンク／墨絵 土台 */
+body[data-ledge="cyber"] #ledge-surface {
+  background:
+    linear-gradient(to bottom,
+      rgba(0,255,255,.18) 0,
+      rgba(255,0,200,.12) 4px,
+      rgba(10,5,30,.92) 50%,
+      rgba(0,0,15,1));
+  border-top: 2px solid rgba(0,255,220,.85);
+  box-shadow:
+    0 -1px 0 rgba(255,0,200,.55) inset,
+    0 -2px 0 rgba(0,255,220,.65) inset,
+    0 -12px 24px rgba(0,255,220,.25),
+    0 -18px 36px rgba(255,0,200,.15),
+    inset 0 -8px 10px rgba(0,0,0,.7);
+  animation: cyberPulse 3s ease-in-out infinite;
+}
+body[data-ledge="cyber"] #ledge-surface::before {
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0,255,220,.10) 0, rgba(0,255,220,.10) 1px,
+      transparent 1px, transparent 20px,
+      rgba(255,0,200,.08) 20px, rgba(255,0,200,.08) 21px,
+      transparent 21px, transparent 60px);
+}
+@keyframes cyberPulse {
+  0%,100% { box-shadow: 0 -1px 0 rgba(255,0,200,.55) inset, 0 -2px 0 rgba(0,255,220,.65) inset, 0 -12px 24px rgba(0,255,220,.25), 0 -18px 36px rgba(255,0,200,.15), inset 0 -8px 10px rgba(0,0,0,.7); }
+  50%     { box-shadow: 0 -1px 0 rgba(255,0,200,.85) inset, 0 -2px 0 rgba(0,255,220,.95) inset, 0 -16px 32px rgba(0,255,220,.45), 0 -24px 48px rgba(255,0,200,.30), inset 0 -8px 10px rgba(0,0,0,.7); }
+}
+body[data-ledge="ink"] #ledge-surface {
+  background:
+    linear-gradient(to bottom,
+      rgba(50,50,50,.65) 0,
+      rgba(30,30,30,.75) 50%,
+      rgba(10,10,10,.95));
+  border-top: 1px solid rgba(180,180,180,.55);
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,.18) inset,
+    inset 0 -6px 10px rgba(0,0,0,.6);
+  filter: contrast(1.1);
+}
+body[data-ledge="ink"] #ledge-surface::before {
+  background:
+    radial-gradient(40% 60% at 30% 30%, rgba(0,0,0,.35), transparent 60%),
+    radial-gradient(30% 50% at 70% 60%, rgba(0,0,0,.3), transparent 60%);
+}
