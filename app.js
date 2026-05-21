@@ -8686,6 +8686,11 @@ function syncPiP() {
         dot.style.background = c;
         dot.style.boxShadow = `0 0 8px ${c}cc`;
       }
+      // v1.5.57: メインタブが背面で rAF tick が止まると completePhase が呼ばれず
+      // PiP が 00:00 で固まるバグ → syncPiP から強制進行
+      if (rem <= 0 && typeof completePhase === 'function') {
+        try { completePhase(); } catch(_) {}
+      }
     } else {
       txt.textContent = fmtTime(STATE.timer.workSec);
       mode.textContent = '待';
