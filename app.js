@@ -480,6 +480,8 @@ function checkMilestones() {
   if (typeof STATE.lastSeenVersion !== 'string') STATE.lastSeenVersion = '';
   if (typeof STATE.hudEnabled !== 'boolean') STATE.hudEnabled = true;
   if (typeof STATE.themePref !== 'string') STATE.themePref = 'auto';
+  // v1.3.18: 字ごと Lv 永続化（パーティ抜けても保持）
+  if (!STATE.charLevels) STATE.charLevels = {};  // { char: { level, exp, perks } }
   // v10n15: 堅牢化 ── 旧 state 構造の破損対策
   try {
     if (STATE.party && STATE.party.members) {
@@ -613,13 +615,13 @@ function loadState() {
 }
 
 function saveState() {
-  // プレビューモード中は永続化しない（他人のパーティを試している間は自分のデータを守る）
   if (_previewMode) return;
-  // 初回保存時にユーザーID発行
   if (!STATE.userId) {
     STATE.userId = generateUserId();
     STATE.userCreatedAt = new Date().toISOString();
   }
+  // v1.3.18: 字ごと Lv を charLevels に同期（パーティ抜けても保持）
+  try { preserveMemberLevels(STATE.party?.members); } catch(_) {}
   try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); }
   catch (e) { console.warn('saveState failed:', e); }
 }
@@ -2111,14 +2113,25 @@ function updatePartyXpUI() {
   });
 }
 
+// v1.3.18: Lv up toast スロットル ── 2 秒以内に同じメンバーは合算
+let _lvupTimer = {};
 function onLevelUp(member, idx) {
-  invalidateAggCache();  // Lv 変化で集約結果を再計算させる
-  // 書体進化を判定（前 Lv との比較）
+  invalidateAggCache();
   const prevStage = evolutionStage(member.level - 1);
   const newStage  = evolutionStage(member.level);
   const evolved = (newStage > prevStage);
 
-  toast(`${member.char} → Lv.${member.level}`, member.rarity);
+  // 同メンバーの直近 toast を集約
+  const k = member.char;
+  if (!_lvupTimer[k]) _lvupTimer[k] = { startLv: member.level, t: 0 };
+  clearTimeout(_lvupTimer[k].t);
+  _lvupTimer[k].t = setTimeout(() => {
+    const diff = member.level - (_lvupTimer[k].startLv - 1);
+    if (diff <= 1) toast(`${member.char} → Lv.${member.level}`, member.rarity);
+    else            toast(`${member.char} ↑+${diff} Lv.${member.level}`, member.rarity);
+    delete _lvupTimer[k];
+  }, 1200);
+
   updateUnlockTier();
   renderParty();
   updateProgressPill();
@@ -4509,10 +4522,11 @@ function openPartyMemberAction(idx) {
       },
     }, '★ この字をリーダーに'));
     buttons.push(el('button', { class:'btn-danger mapop-btn', onclick: () => {
-      if (confirm(`${m.char} をパーティから外しますか？\n（Lv. と経験値はリセットされます）`)) {
+      if (confirm(`${m.char} をパーティから外しますか？\n（Lv.${m.level} は保持、再加入で復活）`)) {
         invalidateAggCache();
+        // v1.3.18: 外す前に Lv 保存
+        preserveMemberLevels([m]);
         STATE.party.members.splice(idx, 1);
-        // hero index は順序維持
         if (idx < STATE.party.hero) STATE.party.hero -= 1;
         saveState();
         renderParty();
@@ -4545,6 +4559,35 @@ function openPartyMemberAction(idx) {
   document.body.appendChild(pop);
 }
 
+// v1.3.18: 字メンバー復元／保存（charLevels）
+function buildMemberFor(c, rarity, isLeader) {
+  if (!STATE.charLevels) STATE.charLevels = {};
+  const stored = STATE.charLevels[c];
+  if (stored && typeof stored.level === 'number') {
+    // 既存 Lv/EXP/特性を復元
+    const perks = Array.isArray(stored.perks) ? stored.perks.slice() : pickInherentPerks(c, rarity);
+    if (isLeader && !perks.includes('guardian')) perks.push('guardian');
+    if (!isLeader) perks.indexOf('guardian') >= 0 && perks.splice(perks.indexOf('guardian'), 1);
+    return { char: c, rarity, level: stored.level, exp: stored.exp || 0, perks };
+  }
+  // 新規
+  const perks = pickInherentPerks(c, rarity);
+  if (isLeader && !perks.includes('guardian')) perks.push('guardian');
+  return { char: c, rarity, level: 1, exp: 0, perks };
+}
+function preserveMemberLevels(members) {
+  if (!STATE.charLevels) STATE.charLevels = {};
+  if (!members) return;
+  for (const m of members) {
+    if (!m || !m.char) continue;
+    STATE.charLevels[m.char] = {
+      level: m.level || 1,
+      exp: m.exp || 0,
+      perks: Array.isArray(m.perks) ? m.perks.filter(p => p !== 'guardian') : [],
+    };
+  }
+}
+
 // 字をパーティに加える
 function recruitToParty(c, rarity) {
   if (!STATE.party) return false;
@@ -4556,15 +4599,14 @@ function recruitToParty(c, rarity) {
     toast(`${c} は既にパーティにいます`);
     return false;
   }
-  invalidateAggCache();  // 仲間追加 → 集約再計算
-  const perks = pickInherentPerks(c, rarity);
-  STATE.party.members.push({
-    char: c, rarity, level: 1, exp: 0, perks
-  });
+  invalidateAggCache();
+  // v1.3.18: 過去 Lv 復元
+  const m = buildMemberFor(c, rarity, false);
+  STATE.party.members.push(m);
   saveState();
   renderParty();
-  const perkName = PERKS[perks[0]]?.name || '—';
-  toast(`${c} が仲間になった！特性「${perkName}」`);
+  const perkName = PERKS[m.perks[0]]?.name || '—';
+  toast(m.level > 1 ? `${c} Lv.${m.level} 復帰` : `${c} が仲間になった！特性「${perkName}」`);
   return true;
 }
 
@@ -4583,15 +4625,14 @@ function setAsLeader(c, rarity) {
     if (newIdx >= 0) promoteToHero(newIdx);
     return true;
   }
-  // v1.2.5: 枠満タン → 先頭の旧リーダーを外して、先頭に新しい字を置く
+  // v1.3.18: 枠満タン → 旧リーダーは charLevels に保存して退場、新リーダーは過去 Lv 復元
   const oldHero = STATE.party.members[0];
-  if (!confirm(`パーティが満員です。\n旧リーダー ${oldHero.char}（Lv.${oldHero.level}）を外して ${c} をリーダーにしますか？\n（旧リーダーの Lv は失われます）`)) {
+  if (!confirm(`パーティが満員です。\n旧リーダー ${oldHero.char}（Lv.${oldHero.level}）をベンチに戻して ${c} をリーダーにしますか？\n（旧リーダーの Lv は保持されます）`)) {
     return false;
   }
+  preserveMemberLevels([oldHero]);  // 退場前に保存
   invalidateAggCache();
-  const perks = pickInherentPerks(c, rarity);
-  if (!perks.includes('guardian')) perks.push('guardian');
-  STATE.party.members[0] = { char: c, rarity, level: 1, exp: 0, perks };
+  STATE.party.members[0] = buildMemberFor(c, rarity, true);
   STATE.party.hero = 0;
   saveState();
   renderParty();
@@ -7360,13 +7401,11 @@ function handleVisibilityChange() {
       // v10n14: 復帰時に WakeLock を再取得
       if (STATE.mode === 'work' || STATE.mode === 'rest') requestWakeLock();
 
-      // オフラインボーナス（作業中に隠れていた時間に対して 50%）
+      // v1.3.18: オフラインボーナス控えめ（50%→20%、最大 8 粒）── 溜まり過ぎ対策
       if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS) {
         const wouldHaveSpawned = Math.floor(hiddenElapsed / WORK_SPAWN_INTERVAL_MS);
-        const bonusCount = Math.min(20, Math.floor(wouldHaveSpawned * 0.5));
-        if (bonusCount > 0) {
-          offlineBonusCascade(bonusCount);
-        }
+        const bonusCount = Math.min(8, Math.floor(wouldHaveSpawned * 0.2));
+        if (bonusCount > 0) offlineBonusCascade(bonusCount);
       }
       saveState();
     } else if (STATE.lastHiddenAt) {
