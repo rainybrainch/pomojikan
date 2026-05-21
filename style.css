@@ -5178,3 +5178,39 @@ body.harvest-mode .pomoji {
 .play-hud {
   font-family: 'Noto Serif JP', serif !important;
 }
+
+/* v1.5.6: 効果アイコン字に Lv エフェクト（育成反映）*/
+.ep-row-ic.lvband-novice { box-shadow: 0 0 4px rgba(135,206,235,.50); border-color: rgba(135,206,235,.55); }
+.ep-row-ic.lvband-adept {
+  box-shadow: 0 0 7px rgba(135,206,235,.70), inset 0 0 4px rgba(135,206,235,.4);
+  border-color: rgba(135,206,235,.7);
+  color: #cfe6ff;
+}
+.ep-row-ic.lvband-master {
+  box-shadow: 0 0 10px rgba(255,217,107,.80);
+  border-color: rgba(255,217,107,.85);
+  color: #fff5b0;
+  animation: epIcMasterPulse 2.4s ease-in-out infinite;
+}
+.ep-row-ic.lvband-cosmic {
+  box-shadow: 0 0 14px rgba(192,168,255,.85);
+  border-color: rgba(192,168,255,.85);
+  color: #fff;
+  animation: epIcCosmicPulse 1.8s ease-in-out infinite;
+}
+.ep-row-ic.lvband-divine {
+  background: conic-gradient(from 0deg, #ffd86b, #ff90c0, #c0a0ff, #90c0ff, #c0e8a0, #ffd86b) !important;
+  color: #1a0f00 !important;
+  border-color: rgba(255,217,107,.95) !important;
+  box-shadow: 0 0 16px rgba(255,217,107,.95);
+  animation: epIcDivine 4s linear infinite;
+}
+@keyframes epIcMasterPulse {
+  0%,100% { box-shadow: 0 0 10px rgba(255,217,107,.7); }
+  50%     { box-shadow: 0 0 18px rgba(255,217,107,1); }
+}
+@keyframes epIcCosmicPulse {
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.10); }
+}
+@keyframes epIcDivine { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }

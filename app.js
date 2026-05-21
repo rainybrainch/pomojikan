@@ -6215,18 +6215,22 @@ function renderEffectsPanel() {
     if (sortedActive.length === 0) {
       list.appendChild(el('div', { class:'ep-empty' }, '効果なし ── パーティとコンボで動かそう'));
     } else {
-      sortedActive.forEach(it => list.appendChild(
-        el('div', {
-          class:'ep-row ep-' + it.grade,
-          title: `${it.lbl}：${it.hint}\n現在 ${it.val} ／ タップで小 EXP`,
-          onclick: (e) => tapEffectCell(it, e),
-        },
-          el('span', { class:'ep-row-ic' }, it.ic),
-          el('span', { class:'ep-row-lbl' }, it.lbl),
-          el('span', { class:'ep-row-arr' }, it.arr),
-          el('span', { class:'ep-row-val' }, it.val),
-        )
-      ));
+      sortedActive.forEach(it => {
+        // v1.5.6: アイコン字に育成 Lv エフェクト
+        const band = charLvBand(it.ic);
+        list.appendChild(
+          el('div', {
+            class:'ep-row ep-' + it.grade,
+            title: `${it.lbl}：${it.hint}\n現在 ${it.val} ／ タップで小 EXP`,
+            onclick: (e) => tapEffectCell(it, e),
+          },
+            el('span', { class:'ep-row-ic' + (band ? ' ' + band : '') }, it.ic),
+            el('span', { class:'ep-row-lbl' }, it.lbl),
+            el('span', { class:'ep-row-arr' }, it.arr),
+            el('span', { class:'ep-row-val' }, it.val),
+          )
+        );
+      });
     }
     panel.appendChild(list);
     // 休眠効果は「+N 休眠」ボタンとして畳む（クリックで展開）
