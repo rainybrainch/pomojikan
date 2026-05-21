@@ -2163,6 +2163,27 @@ body.stream-mode .party-bar{
   60%{ transform:translate(2px,-1px) rotate(2deg); }
 }
 
+.pomoji.phys-magnet{
+  filter:drop-shadow(0 0 18px #c080ff) drop-shadow(0 0 8px #8040ff) !important;
+  background:radial-gradient(circle, rgba(180,100,255,.35) 0%, transparent 70%);
+  border:2px double rgba(200,130,255,.85) !important;
+  border-radius:50%;
+  color:#e0b8ff !important;
+  animation:magnetPulse 1.2s ease-in-out infinite;
+}
+.pomoji.phys-magnet::before{
+  content:''; position:absolute; inset:-12px;
+  border:2px dashed rgba(200,130,255,.5); border-radius:50%;
+  animation:magnetRing 2s linear infinite;
+}
+.pomoji.phys-magnet::after{
+  content:'引'; position:absolute; top:-6px; right:-4px;
+  font-size:.55rem; color:#c080ff; font-weight:900;
+  text-shadow:0 0 4px #8040ff;
+}
+@keyframes magnetPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.1); } }
+@keyframes magnetRing{ 0%{ transform:scale(1) rotate(0deg); opacity:.7; } 100%{ transform:scale(1.4) rotate(360deg); opacity:0; } }
+
 .pomoji.phys-wet{
   filter:drop-shadow(0 0 10px #60a8ff) blur(.4px) !important;
   background:radial-gradient(ellipse 60% 80% at 50% 60%, rgba(80,150,255,.4) 0%, transparent 75%);

@@ -2408,14 +2408,9 @@ function onLevelUp(member, idx) {
     const diff = member.level - (_lvupTimer[k].startLv - 1);
     // v1.5.9: 次 Lv までの EXP 表示
     const cap = effectiveLvCap(member);
-    let suffix = '';
-    if (member.level >= cap) suffix = '（MAX）';
-    else {
-      const need = effectiveExpForLevel(member.level + 1) - (member.exp || 0);
-      suffix = `（次まで ${need.toLocaleString()} EXP）`;
-    }
-    if (diff <= 1) toast(`${member.char} Lv.${member.level} ${suffix}`, member.rarity);
-    else            toast(`${member.char} ↑+${diff} Lv.${member.level} ${suffix}`, member.rarity);
+    const suffix = member.level >= cap ? '（MAX）' : '';
+    if (diff <= 1) toast(`${member.char} Lv.${member.level}${suffix}`, member.rarity);
+    else            toast(`${member.char} +${diff} Lv.${member.level}${suffix}`, member.rarity);
     delete _lvupTimer[k];
   }, 1200);
 
@@ -3487,13 +3482,14 @@ function spawnPomoji(opts={}) {
   }, char);
   field.appendChild(node);
 
-  // v1.5.34: 物理属性ランダム ── 通常 80% / 弾性 8% / 暴れ 4% / べちゃ 8%
+  // v1.5.34/48: 物理属性ランダム ── 通常 78% / 弾性 8% / 暴れ 4% / べちゃ 8% / 重力 2%
   let physMode = 'normal';
   if (!opts.persistent) {
     const r = Math.random();
     if (r < 0.08) physMode = 'bouncy';
     else if (r < 0.12) physMode = 'wild';
     else if (r < 0.20) physMode = 'wet';
+    else if (r < 0.22) physMode = 'magnet';  // v1.5.48: 周囲を引き寄せるレアぽもじ
   }
   // v1.5.36: 字ステータスを物理に反映
   const charStats = getCharStats(char);
@@ -3902,6 +3898,19 @@ function physicsStep() {
     }
     // 落下ぽもじ：重力＋円形ソフトボディ衝突（控えめ弾性／ゆっくり転がる）
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
+    // v1.5.48: 重力ぽもじ ── 周囲の落下中字を自分に引き寄せる
+    if (p.physMode === 'magnet' && !p.dragging) {
+      for (const other of livePomoji.values()) {
+        if (other.id === p.id || other.persistent || other.dragging || other.settled || other.rising) continue;
+        const dx = p.x - other.x, dy = p.y - other.y;
+        const d2 = dx*dx + dy*dy;
+        if (d2 < 180*180 && d2 > 1) {
+          const f = 0.04 / Math.sqrt(d2);
+          other.vx += dx * f * 6;
+          other.vy += dy * f * 4;
+        }
+      }
+    }
 
     // ── 安定化：真下に静的な字があれば重力を抑える（震え対策）──
     let restingOnStatic = false;
@@ -7464,14 +7473,17 @@ function showYojiDetail(r) {
       border:'1px solid rgba(240,212,138,.45)', borderRadius:'6px',
       fontSize:'.78rem', color:'#f0e0a8', lineHeight:1.35,
     } }, ' 固有効果 ── ' + (UNIQUE_COMBO_EFFECTS[r.word].story || '物語のある効果')) : null,
-    // v10n8: コンボ効果プレビュー（数値）
+    // v10n8: コンボ効果プレビュー（数値）── v1.5.48: try-catch で内部エラー抑止
     found ? el('div', { class:'ydp-preview', style:{
       margin:'6px 0', padding:'6px 8px',
       background:'rgba(135,206,235,.10)', border:'1px solid rgba(135,206,235,.30)',
       borderRadius:'6px', fontSize:'.72rem', color:'#cfe6ff', lineHeight:1.4,
     } },
-      el('div', { style:{ fontWeight:700, marginBottom:'2px', color:'#87ceeb' } }, ' 発動時の効果（現在のリーダー Lv 基準）'),
-      el('div', {}, formatComboEffect(previewComboEffect(r)))
+      el('div', { style:{ fontWeight:700, marginBottom:'2px', color:'#87ceeb' } }, '発動時の効果（現在のリーダー Lv 基準）'),
+      el('div', {}, (() => {
+        try { return formatComboEffect(previewComboEffect(r)); }
+        catch(e) { return '効果の計算に失敗しました'; }
+      })())
     ) : null,
     el('div', { class:'ydp-chars-label' }, '構成字'),
     el('div', { class:'ydp-chars' }, ...charRow),
@@ -8187,9 +8199,7 @@ function updateProgressPill() {
       const nextTierName = RARITY_TIERS[tier + 1];
       const nextLv = nextTierName ? UNLOCK_LV[nextTierName] : null;
       const remain = nextLv != null ? nextLv - hero.level : null;
-      ldrEl.textContent = nextTierName && remain > 0
-        ? `${hero.char} Lv.${hero.level} 🔓 ${nextTierName}まで-${remain}`
-        : `${hero.char} Lv.${hero.level}  全解放済`;
+      ldrEl.textContent = `${hero.char} Lv.${hero.level}`;
     } else {
       ldrEl.textContent = '主人公 未選択';
     }
