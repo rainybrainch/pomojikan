@@ -4033,19 +4033,29 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // v1.2.6: 接線力＋ settled 解除 ── 押された字は物理に戻して本当に転がる
+          // v1.5.53: settled が壁化するのを防ぐ ── 衝突勢いで必ず unsettle 候補
+          if (otherStatic && !other.persistent && other.settled && relVy > 0.4) {
+            other.settled = false;
+            other.settledX = null;
+            other.settledY = null;
+            other.el?.classList.remove('settled');
+            other.vx = (other.vx || 0) - nx * Math.max(1.5, relVy * 1.2);
+            other.vy += relVy * 0.08;
+            other._stillFrames = 0;
+            try { unsettleAbove(other); } catch(_) {}  // 自分の上の積み崩しもカスケード
+          }
           if (Math.abs(nx) > 0.05) {
             p.vx += nx * 3.5;
-            if (otherStatic && !other.persistent && other.settled) {
-              // settled を解除 → 通常物理（vx + 重力）で自然に転がる
-              other.settled = false;
-              other.settledX = null;
-              other.settledY = null;
-              other.el?.classList.remove('settled');
-              other.vx -= nx * 3.0;  // 押された方向に勢いを与える
-              other._stillFrames = 0;
-            }
           }
+        }
+        // v1.5.53: 横から強くぶつかってきた場合も settled 解除
+        if (otherStatic && !other.persistent && other.settled && Math.abs(p.vx) > 1.2 && Math.abs(nx) > 0.3) {
+          other.settled = false;
+          other.settledX = null;
+          other.settledY = null;
+          other.el?.classList.remove('settled');
+          other.vx = -nx * Math.abs(p.vx) * 0.8;
+          other._stillFrames = 0;
         }
       }
     }
