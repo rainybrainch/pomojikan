@@ -2526,6 +2526,8 @@ function startMeasure() {
   requestWakeLock();
   try { toast('📏 計測モード開始'); } catch(_) {}
   try { playKakkou(); } catch(_) {}
+  // v1.4.7: 計測モードは「常時表示」が肝 → PiP を自動起動（対応 PC のみ）
+  try { if (!_pipWindow && 'documentPictureInPicture' in window) toggleTimerPiP(); } catch(_) {}
   tick();
 }
 function stopMeasure() {
@@ -7530,7 +7532,15 @@ function syncPiP() {
     const mode = doc.getElementById('pip-mode');
     const fg = doc.getElementById('pip-fg');
     if (!txt || !mode || !fg) return;
-    if (STATE.mode === 'work' || STATE.mode === 'rest') {
+    if (STATE.mode === 'measure') {
+      // v1.4.7: 計測モード（カウントアップ・60 分で 1 周）
+      const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
+      txt.textContent = fmtTime(elapsed);
+      const pct = Math.min(1, elapsed / 3600);
+      fg.style.strokeDashoffset = 295.31 * (1 - pct);
+      fg.style.stroke = '#ffd86b';
+      mode.textContent = '📏 計測中';
+    } else if (STATE.mode === 'work' || STATE.mode === 'rest') {
       const rem = Math.max(0, STATE.phaseEnd - Date.now());
       txt.textContent = fmtTime(Math.ceil(rem/1000));
       const total = STATE.mode === 'work' ? STATE.timer.workSec : STATE.timer.restSec;
