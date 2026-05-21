@@ -7663,6 +7663,28 @@ for (const r of YOJI_RECIPES){
   }
 }
 
+// v1.5.45: 絵文字も降らせる ── 9 カテゴリ × ★に分散
+const EMOJI_CATEGORIES = {
+  '★2':  '😀😃😄😁😆😅🤣😂🙂🙃😉😊😇🥰😍😘😗😚😙🥲😋😛😜🤪😝🤑',
+  '★3':  '🤗🤭🤫🤔🤐🤨😐😑😶😏😒🙄😬🤥😌😔😪🤤😴😷🤒🤕🤢🤮🤧🥵🥶🥴😵🤯',
+  '★4':  '🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪲🐛🦋🐌🐞🐜',
+  '★5':  '🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍🥥🥝🍅🍆🥑🥦🥬🥒🌶️🫑🌽🥕🫒🧄🧅🥔🍠',
+  '★6':  '🚗🚕🚙🚌🚎🏎🚓🚑🚒🚐🚚🚛🚜🛴🚲🛵🏍🛺🚞🚋🚝🚄🚅🚈🚂🚆🚇🚊',
+  '★7':  '🏠🏡🏢🏣🏤🏥🏦🏨🏪🏫🏬🏭🏯🏰💒🗼🗽⛪🕌🕍🛕🕋⛩🛤🛣🗾🎑🏞🌅🌄🌠🎇🎆🌇🌆',
+  '★8':  '⚽🏀🏈⚾🥎🎾🏐🏉🥏🎱🪀🏓🏸🏒🏑🥍🏏🪃🥅⛳🪁🏹🎣🤿🥊🥋🎽🛹🛼🛷⛸🥌🎿⛷🏂',
+  '★10': '🌍🌎🌏🌐🗺🧭🏔⛰🌋🗻🏕🏖🏜🏝🏞🌌',
+  '★12': '⭐🌟💫✨☄☀⛅⛈🌤🌥🌦🌧⚡❄☃⛄🔥💧🌊',
+};
+const EMOJI_CODEX_ENTRIES = [];
+for (const [rarity, str] of Object.entries(EMOJI_CATEGORIES)) {
+  // U+FE0F 含む絵文字は 2 コードユニット ── Array.from で正しく分割
+  for (const ch of Array.from(str)) {
+    if (ch === '️') continue;
+    EMOJI_CODEX_ENTRIES.push({ char: ch, rarity, season: 'S9', desc: '絵文字', tags: ['絵文字'] });
+  }
+}
+KANJI_CODEX.push(...EMOJI_CODEX_ENTRIES);
+
 if (typeof window !== 'undefined'){
   window.POMOJI_RARITY = POMOJI_RARITY;
   window.POMOJI_SEASONS = POMOJI_SEASONS;
