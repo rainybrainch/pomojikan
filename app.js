@@ -3972,6 +3972,15 @@ function physicsStep() {
       }
     }
 
+    // v1.5.56: 上半分で settled になっているのは異常 → 強制解除して落下させる
+    if (p.settled && p.y < window.innerHeight * 0.4 && !p.persistent && !p.dragging) {
+      p.settled = false;
+      p.settledX = null;
+      p.settledY = null;
+      p.el?.classList.remove('settled');
+      p.vy = Math.max(p.vy, 1);
+      p._stillFrames = 0;
+    }
     // ── 安定化：真下に静的な字があれば重力を抑える（震え対策）──
     let restingOnStatic = false;
     for (const other of livePomoji.values()) {
@@ -3985,6 +3994,8 @@ function physicsStep() {
         break;
       }
     }
+    // v1.5.56: 画面上端で固まる事故防止 ── 画面上半分にいるなら restingOnStatic を強制無効
+    if (p.y < window.innerHeight * 0.4) restingOnStatic = false;
     if (!restingOnStatic) {
       // v1.5.36: 速ステータス（1-5）で重力 ±20%
       const speedMul = p.stats ? (0.8 + 0.1 * p.stats.speed) : 1;
