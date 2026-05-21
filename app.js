@@ -4033,29 +4033,31 @@ function physicsStep() {
         if (relVy > 0 && dy < 0) {
           p.vy = -relVy * 0.18;
           if (!otherStatic) other.vy += relVy * 0.10;
-          // v1.5.53: settled が壁化するのを防ぐ ── 衝突勢いで必ず unsettle 候補
-          if (otherStatic && !other.persistent && other.settled && relVy > 0.4) {
+          // v1.5.54: settled 壁化防止 ── どんな接触でも unsettle、強い再 settle ブロック
+          if (otherStatic && !other.persistent && other.settled) {
             other.settled = false;
             other.settledX = null;
             other.settledY = null;
             other.el?.classList.remove('settled');
-            other.vx = (other.vx || 0) - nx * Math.max(1.5, relVy * 1.2);
-            other.vy += relVy * 0.08;
-            other._stillFrames = 0;
-            try { unsettleAbove(other); } catch(_) {}  // 自分の上の積み崩しもカスケード
+            other.vx = (other.vx || 0) - nx * Math.max(2.5, relVy * 1.5);
+            other.vy += Math.max(1.0, relVy * 0.5);  // 必ず縦にも動かす
+            other._stillFrames = -30;  // 30 フレーム再 settle 禁止
+            other._settleBlockUntil = Date.now() + 1200;
+            try { unsettleAbove(other); } catch(_) {}
           }
           if (Math.abs(nx) > 0.05) {
             p.vx += nx * 3.5;
           }
         }
-        // v1.5.53: 横から強くぶつかってきた場合も settled 解除
-        if (otherStatic && !other.persistent && other.settled && Math.abs(p.vx) > 1.2 && Math.abs(nx) > 0.3) {
+        // v1.5.54: 横から接触しただけでも settled 解除（vx 閾値撤廃）
+        if (otherStatic && !other.persistent && other.settled && Math.abs(nx) > 0.25) {
           other.settled = false;
           other.settledX = null;
           other.settledY = null;
           other.el?.classList.remove('settled');
-          other.vx = -nx * Math.abs(p.vx) * 0.8;
-          other._stillFrames = 0;
+          other.vx = -nx * Math.max(2.0, Math.abs(p.vx) * 0.8);
+          other._stillFrames = -30;
+          other._settleBlockUntil = Date.now() + 1200;
         }
       }
     }
@@ -4099,7 +4101,8 @@ function physicsStep() {
           continue;
         }
         if (!p.settled && agg.magnet) attractSameChar(p);
-        if (!p.settled && Math.abs(p.vx) < 0.3) {
+        const settleBlocked2 = p._settleBlockUntil && Date.now() < p._settleBlockUntil;
+        if (!p.settled && Math.abs(p.vx) < 0.3 && !settleBlocked2) {
           p.el.classList.add('settled');
           squashEl(p, 'squash');
           p.settled = true;
@@ -4116,7 +4119,8 @@ function physicsStep() {
     // ── 積み重ね settle：床に届かなくても他字の上で静止したら settle ──
     // restingOnStatic で重力カット → vy/vx ほぼ 0 が続いたら settled に昇格
     const speed = Math.abs(p.vx) + Math.abs(p.vy);
-    if (restingOnStatic && speed < 0.18) {
+    const settleBlocked = p._settleBlockUntil && Date.now() < p._settleBlockUntil;
+    if (restingOnStatic && speed < 0.18 && !settleBlocked) {
       p._stillFrames = (p._stillFrames || 0) + 1;
       if (p._stillFrames > 8 && !p.settled) {
         p.vx = 0; p.vy = 0;
