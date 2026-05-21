@@ -6967,6 +6967,50 @@ function applyCodexTabMask() {
 function closeCodex() { $('#codex-modal').classList.remove('show'); }
 
 // 熟語の詳細ポップアップ ── 構成字・タグ・発動条件
+// v1.5.23: パッシブ詳細 ── 意味（簡潔）＋ 効果
+function showPassiveDetail(p, on) {
+  if (!p) return;
+  $$('.passive-detail-pop, .ydp-backdrop, .cd-backdrop').forEach(e => e.remove());
+  // 効果を読みやすい行に
+  const effLines = [];
+  const eff = p.eff || {};
+  if (eff.expMul)         effLines.push(`EXP ×${eff.expMul.toFixed(2)}`);
+  if (eff.stockExpMul)    effLines.push(`ストック ×${eff.stockExpMul.toFixed(2)}`);
+  if (eff.mergeRadiusMul) effLines.push(`融合範囲 ×${eff.mergeRadiusMul.toFixed(2)}`);
+  if (eff.gravityMul)     effLines.push(`重力 ×${eff.gravityMul.toFixed(2)}`);
+  if (eff.dropCountAdd)   effLines.push(`粒 +${eff.dropCountAdd}`);
+  if (eff.evoBoost)       effLines.push(`進化加速 +${(eff.evoBoost*100).toFixed(0)}%`);
+  if (eff.critChance)     effLines.push(`タップ大当り ${(eff.critChance*100).toFixed(0)}%`);
+  if (eff.chainBonus)     effLines.push(`連鎖ボーナス +${(eff.chainBonus*100).toFixed(0)}%`);
+  if (eff.lifetimeMul)    effLines.push(`字寿命 ×${eff.lifetimeMul.toFixed(2)}`);
+  if (eff.spawnRateMul)   effLines.push(`降下密度 ×${eff.spawnRateMul.toFixed(2)}`);
+  if (eff.cycleBonusDrop) effLines.push(`サイクル完了時 +${eff.cycleBonusDrop}字`);
+  if (eff.highRarityExpMul) effLines.push(`高レア EXP ×${eff.highRarityExpMul.toFixed(2)}`);
+  if (eff.lowRarityExpMul)  effLines.push(`低レア EXP ×${eff.lowRarityExpMul.toFixed(2)}`);
+  const pop = el('div', { class:'yoji-detail-pop passive-detail-pop' },
+    el('button', { class:'ydp-close', onclick:(e) => { e.stopPropagation(); pop.remove(); } }, '×'),
+    el('div', { class:'ydp-rarity' }, on ? '発動中' : '未発動'),
+    el('div', { class:'ydp-word', style:{ fontSize:'1.4rem' } }, (p.icon || '◆') + ' ' + p.name),
+    el('div', { class:'ydp-desc' }, p.desc || ''),
+    effLines.length ? el('div', { class:'ydp-preview', style:{
+      margin:'8px 0', padding:'8px 10px',
+      background:'rgba(135,206,235,.10)', border:'1px solid rgba(135,206,235,.30)',
+      borderRadius:'6px', fontSize:'.78rem', color:'#cfe6ff', lineHeight:1.5,
+    } },
+      el('div', { style:{ fontWeight:700, marginBottom:'4px', color:'#87ceeb' } }, '効果'),
+      el('div', {}, effLines.join(' ・ '))
+    ) : null,
+    el('div', { class:'ydp-hint' }, on ? '条件達成 ・ 常時発動中' : '条件を満たすと発動'),
+  );
+  const backdrop = el('div', { class:'ydp-backdrop', style:{
+    position:'fixed', inset:'0', background:'rgba(0,0,0,.4)', zIndex:499,
+  }, onclick: () => { backdrop.remove(); pop.remove(); } });
+  document.body.appendChild(backdrop);
+  document.body.appendChild(pop);
+  const origRemove = pop.remove.bind(pop);
+  pop.remove = () => { try { backdrop.remove(); } catch(_){} origRemove(); };
+}
+
 function showYojiDetail(r) {
   if (!r) return;
   $$('.yoji-detail-pop').forEach(e => e.remove());
@@ -7234,7 +7278,9 @@ function renderCodex() {
           border:'1px solid ' + (on ? 'rgba(135,206,235,.35)' : 'rgba(255,255,255,.08)'),
           borderRadius:'8px',
           display:'flex', alignItems:'center', gap:'10px',
+          cursor:'pointer',
         },
+        onclick: () => showPassiveDetail(p, on),
       },
         el('div', { style:{ fontSize:'1.6rem', minWidth:'32px', textAlign:'center', opacity: on ? 1 : 0.4 } }, p.icon || '◆'),
         el('div', { style:{ flex:1, minWidth:0 } },
@@ -7512,7 +7558,8 @@ function renderCodex() {
       cell.className = cls;
       cell.title = seen ? `${c}（${seen}回発見）` : '？';
       cell.textContent = cellText;
-      if (seen) cell.dataset.char = c;
+      cell.dataset.char = c;
+      cell.dataset.seen = seen ? '1' : '0';
       charToRarity[c] = k.rarity;
       // v1.4.4: 育成済 Lv バッジ（charLevels から）
       const stored = STATE.charLevels?.[c];
@@ -7526,10 +7573,12 @@ function renderCodex() {
     }
     tierGrid.appendChild(tierFrag);
     tierGrid.addEventListener('click', (e) => {
-      const cell = e.target.closest('.codex-cell.seen');
+      const cell = e.target.closest('.codex-cell');
       if (!cell) return;
       const c = cell.dataset.char;
-      if (c) showCharDetail(c, charToRarity[c]);
+      if (!c) return;
+      if (cell.dataset.seen === '1') showCharDetail(c, charToRarity[c]);
+      else toast(`未発見の字 ・ ${charToRarity[c] || '★?'} 帯`);
     });
     section.appendChild(tierGrid);
     // 切り捨て分の「もっと見る」ボタン
