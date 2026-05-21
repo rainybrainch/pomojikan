@@ -3992,6 +3992,21 @@ function attachDragHandlers(node, obj) {
     startTime = Date.now();
     startX = e.clientX;
     startY = e.clientY;
+    // v1.5.21: 長押し（650ms）で字の詳細を開く（burst を抑制）
+    clearTimeout(obj._lpT);
+    obj._lpDetailOpened = false;
+    obj._lpT = setTimeout(() => {
+      if (!moved && obj.dragging) {
+        obj._lpDetailOpened = true;
+        try { showCharDetail(obj.char, obj.rarity); } catch(_) {}
+        try { node.releasePointerCapture(pointerId); } catch(_) {}
+        obj.dragging = false;
+        node.classList.remove('dragging');
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+        document.removeEventListener('pointercancel', onUp);
+      }
+    }, 650);
     origX = obj.x; origY = obj.y;
     node.classList.add('dragging');
     // setPointerCapture が効かない環境向け：document に bind して追従保証
@@ -4033,6 +4048,7 @@ function attachDragHandlers(node, obj) {
     };
     onUp = (ev) => {
       if (ev.pointerId !== pointerId) return;
+      clearTimeout(obj._lpT);
       try { node.releasePointerCapture(pointerId); } catch(_) {}
       document.removeEventListener('pointermove', onMove);
       document.removeEventListener('pointerup', onUp);
@@ -4042,6 +4058,8 @@ function attachDragHandlers(node, obj) {
       obj.vy = 0; obj.vx = 0;
       node.classList.remove('dragging');
       $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
+      // v1.5.21: 長押しで詳細を開いた場合は burst しない
+      if (obj._lpDetailOpened) { obj._lpDetailOpened = false; return; }
       // v1.3.0: 素早いタップ（250ms 以内）は moved 判定無視で必ず burst
       const dt = Date.now() - startTime;
       if (!moved || dt < 250) {
@@ -7030,13 +7048,14 @@ function showYojiDetail(r) {
       }, allInParty ? '✓ 発動中' : ' このコンボで編成') : null,
     ),
   );
+  // v1.5.21: backdrop で必ず前面に
+  const backdrop = el('div', { class:'ydp-backdrop', style:{
+    position:'fixed', inset:'0', background:'rgba(0,0,0,.4)', zIndex:499,
+  }, onclick: () => { backdrop.remove(); pop.remove(); } });
+  document.body.appendChild(backdrop);
   document.body.appendChild(pop);
-  pop.addEventListener('click', (e) => { if (e.target === pop) pop.remove(); });
-  setTimeout(() => {
-    document.addEventListener('click', function once(ev) {
-      if (!pop.contains(ev.target)) { pop.remove(); document.removeEventListener('click', once); }
-    });
-  }, 100);
+  const origRemove = pop.remove.bind(pop);
+  pop.remove = () => { try { backdrop.remove(); } catch(_){} origRemove(); };
 }
 
 // 字のクイック詳細
@@ -7163,7 +7182,15 @@ function showCharDetail(c, rarity) {
       el('div', { class:'cd-recipes-list' }, ...recipeNodes)
     ) : el('div', { class:'cd-recipes-empty' }, '関連熟語なし'),
   );
-  $('#codex-modal .modal-card').appendChild(pop);
+  // v1.5.21: body 直下に追加してモーダルより上に
+  const backdrop = el('div', { class:'cd-backdrop', style:{
+    position:'fixed', inset:'0', background:'rgba(0,0,0,.4)', zIndex:499,
+  }, onclick: () => { backdrop.remove(); pop.remove(); } });
+  document.body.appendChild(backdrop);
+  document.body.appendChild(pop);
+  pop._backdrop = backdrop;
+  const origRemove = pop.remove.bind(pop);
+  pop.remove = () => { try { backdrop.remove(); } catch(_){} origRemove(); };
 }
 function renderCodex() {
   // v10n12: フィルタサマリーを毎回更新
