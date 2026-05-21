@@ -2369,6 +2369,16 @@ function renderPickerPool() {
 let timerRaf = 0;
 let _hudTickCounter = 0;
 function tick() {
+  // v1.4.6: 計測モード（カウントアップ）
+  if (STATE.mode === 'measure') {
+    const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
+    $('#timer-text').textContent = fmtTime(elapsed);
+    // リング進捗：60 分でフルになる視覚インジケータ（情報用）
+    const pct = Math.min(1, elapsed / 3600);
+    updateProgress(pct);
+    timerRaf = requestAnimationFrame(tick);
+    return;
+  }
   if (STATE.mode === 'work' || STATE.mode === 'rest') {
     const remaining = Math.max(0, STATE.phaseEnd - Date.now());
     $('#timer-text').textContent = fmtTime(Math.ceil(remaining/1000));
@@ -2498,6 +2508,44 @@ function setupTimerRingDrag() {
   window.addEventListener('mouseup', onUp);
   window.addEventListener('touchend', onUp);
   window.addEventListener('touchcancel', onUp);
+}
+
+// v1.4.6: 計測モード（カウントアップ） ── ポモドーロ以外の計時にも使う
+function startMeasure() {
+  if (STATE.mode === 'measure') return;
+  stopWorkSpawning();
+  cancelAnimationFrame(timerRaf);
+  STATE.mode = 'measure';
+  STATE.phaseStart = Date.now();
+  STATE.phaseEnd = 0;
+  document.body.dataset.mode = 'measure';
+  $('#main-btn').textContent = '⏹ 計測終了';
+  $('#main-btn').dataset.state = 'measuring';
+  saveState();
+  startWorkSpawning();  // 計測中も字は降る（ぽもじを楽しめる）
+  requestWakeLock();
+  try { toast('📏 計測モード開始'); } catch(_) {}
+  try { playKakkou(); } catch(_) {}
+  tick();
+}
+function stopMeasure() {
+  if (STATE.mode !== 'measure') return;
+  const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  if (!STATE.stats) STATE.stats = { totalCycles:0, totalDrops:0, totalExp:0 };
+  STATE.stats.measureTotalSec = (STATE.stats.measureTotalSec || 0) + elapsed;
+  stopWorkSpawning();
+  STATE.mode = 'idle';
+  STATE.phaseStart = 0;
+  document.body.dataset.mode = 'idle';
+  $('#main-btn').textContent = '▶ 始める';
+  $('#main-btn').dataset.state = 'idle';
+  $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+  updateProgress(0);
+  releaseWakeLock();
+  saveState();
+  try { toast(`📏 計測終了 ── ${mins}分 ${secs}秒`); } catch(_) {}
 }
 
 function startWork() {
@@ -7560,6 +7608,7 @@ function offlineBonusCascade(count) {
 function bindEvents() {
   $('#main-btn').addEventListener('click', () => {
     if (!isPartyChosen()) { openPartyPicker(); return; }
+    if (STATE.mode === 'measure') { stopMeasure(); return; }
     if (STATE.mode === 'idle') startWork();
     else if (STATE.mode === 'paused') resumeTimer();
     else pauseTimer();
@@ -7568,7 +7617,10 @@ function bindEvents() {
     if (STATE.mode === 'work') { startRest(); }
     else if (STATE.mode === 'rest') { stopTimer(); }
   });
-  $('#btn-reset').addEventListener('click', stopTimer);
+  $('#btn-reset').addEventListener('click', () => {
+    if (STATE.mode === 'measure') stopMeasure();
+    else stopTimer();
+  });
 
   $('#btn-timer-settings').addEventListener('click', openTimerSettings);
   $('#ts-cancel').addEventListener('click', closeTimerSettings);
@@ -7613,6 +7665,7 @@ function bindEvents() {
   menuClick('#m-writings',   openWritings);
   // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／🗂 プリセットで全カバー済
   menuClick('#m-sleep', openSleep);
+  menuClick('#m-measure', () => { STATE.mode === 'measure' ? stopMeasure() : startMeasure(); });
   // スリープ：オーバーレイのどこでもタップで起きる
   const sleepOv = $('#sleep-overlay');
   if (sleepOv) {
