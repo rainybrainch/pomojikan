@@ -1080,7 +1080,7 @@ function updateAudioButton() {
   if (emoji) emoji.textContent = STATE.audioOn ? '音' : '無';
   // 新ドロワーメニュー
   const mEmoji = $('#m-audio-emoji');
-  if (mEmoji) mEmoji.textContent = STATE.audioOn ? '音' : '無';
+  if (mEmoji) mEmoji.textContent = '音';
   const mState = $('#m-audio-state');
   if (mState) mState.textContent = STATE.audioOn ? 'オン' : 'オフ';
 }
@@ -2713,7 +2713,8 @@ function startMeasure() {
   saveState();
   startWorkSpawning();  // 計測中も字は降る（ぽもじを楽しめる）
   requestWakeLock();
-  try { toast('📏 計測モード開始'); } catch(_) {}
+  try { toast('計測モード開始'); } catch(_) {}
+  try { const e = $('#m-measure-state'); if (e) e.textContent = 'オン'; } catch(_) {}
   try { playKakkou(); } catch(_) {}
   // v1.4.7: 計測モードは「常時表示」が肝 → PiP を自動起動（対応 PC のみ）
   try { if (!_pipWindow && 'documentPictureInPicture' in window) toggleTimerPiP(); } catch(_) {}
@@ -2724,6 +2725,7 @@ function stopMeasure() {
   const liveSec = STATE.mode === 'measure' ? Math.floor((Date.now() - STATE.phaseStart) / 1000) : 0;
   const elapsed = (STATE.measureAccum || 0) + liveSec;
   STATE.measureAccum = 0;
+  try { const e = $('#m-measure-state'); if (e) e.textContent = 'オフ'; } catch(_) {}
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;
   if (!STATE.stats) STATE.stats = { totalCycles:0, totalDrops:0, totalExp:0 };
@@ -7848,13 +7850,18 @@ let _pipWindow = null;
 let _pipRaf = 0;
 async function toggleTimerPiP() {
   if (!('documentPictureInPicture' in window)) {
-    toast('⚠ PiP 非対応：Chrome/Edge デスクトップで利用可');
+    toast('小窓 非対応：Chrome/Edge デスクトップで利用可');
     return;
   }
-  if (_pipWindow) { _pipWindow.close(); _pipWindow = null; return; }
+  if (_pipWindow) {
+    _pipWindow.close(); _pipWindow = null;
+    try { const e = $('#m-pip-state'); if (e) e.textContent = 'オフ'; } catch(_) {}
+    return;
+  }
   try {
     // v1.4.8: シンプル＆小型化（200x110 → タイマー文字＋小さなドット）
     _pipWindow = await documentPictureInPicture.requestWindow({ width: 200, height: 110 });
+    try { const e = $('#m-pip-state'); if (e) e.textContent = 'オン'; } catch(_) {}
     const doc = _pipWindow.document;
     doc.body.style.cssText = `
       margin:0; background:#0a0f18; color:#fff;
@@ -7884,12 +7891,13 @@ async function toggleTimerPiP() {
     });
     _pipWindow.addEventListener('pagehide', () => {
       _pipWindow = null;
-      clearTimeout(_pipRaf);  // v10n15 fix: setTimeout なので clearTimeout
+      clearTimeout(_pipRaf);
+      try { const e = $('#m-pip-state'); if (e) e.textContent = 'オフ'; } catch(_) {}
     });
     syncPiP();
-    toast(' PiP 開始 ── 他アプリ作業中もタイマーが見える');
+    toast('小窓 開始 ── 他アプリ作業中もタイマーが見える');
   } catch(e) {
-    toast('⚠ PiP 起動失敗: ' + (e.message || ''));
+    toast('小窓 起動失敗: ' + (e.message || ''));
     _pipWindow = null;
   }
 }
