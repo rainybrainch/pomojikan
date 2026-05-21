@@ -445,7 +445,8 @@ const DEFAULT_STATE = {
   lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
   hudEnabled: true,               // v10n10 ─ プレイ中 HUD 表示 ON/OFF
   themePref: 'auto',              // v10n19 ─ 'auto' / 'spring' / 'summer' / 'autumn' / 'winter' / 'dark' / 'light'
-  ledgeStyle: 'default',          // v1.5.9 ─ 'default' / 'ornate' / 'stone'
+  ledgeStyle: 'default',          // v1.5.9 ─ 'default' / 'stone' / 'wood' / 'ornate' / 'jade' / 'cosmos' / 'divine'
+  tfontStyle: 'serif',            // v1.5.10 ─ 'serif' / 'mono' / 'brush'
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
@@ -505,6 +506,7 @@ function checkMilestones() {
   if (typeof STATE.hudEnabled !== 'boolean') STATE.hudEnabled = true;
   if (typeof STATE.themePref !== 'string') STATE.themePref = 'auto';
   if (typeof STATE.ledgeStyle !== 'string') STATE.ledgeStyle = 'default';
+  if (typeof STATE.tfontStyle !== 'string') STATE.tfontStyle = 'serif';
   // v1.3.18: 字ごと Lv 永続化（パーティ抜けても保持）
   if (!STATE.charLevels) STATE.charLevels = {};  // { char: { level, exp, perks } }
   // v10n15: 堅牢化 ── 旧 state 構造の破損対策
@@ -1627,16 +1629,28 @@ function applyTheme() {
   else                        season = pref;
   document.body.dataset.season = season || '';
   document.body.dataset.theme  = theme;
-  // v1.5.9: 土台デザイン
   document.body.dataset.ledge = STATE.ledgeStyle || 'default';
+  document.body.dataset.tfont = STATE.tfontStyle || 'serif';
 }
 const THEME_LABELS = {
   auto:'自動（季節）', spring:'春', summer:'夏',
   autumn:'秋', winter:'冬', dark:'夜', light:'紙',
 };
-const LEDGE_LABELS = {
-  default:'標準（水盤）', ornate:'装飾（金縁）', stone:'石板',
-};
+// v1.5.10: 土台バリエ＋実績解除条件
+const LEDGE_VARIANTS = [
+  { key:'default', name:'標準（水盤）',        cond:()=>true },
+  { key:'stone',   name:'石板',                cond:s=>_passiveCount.cycles(s)>=10,  hint:'10 サイクル達成で解放' },
+  { key:'wood',    name:'木（縞）',            cond:s=>_passiveCount.cycles(s)>=30,  hint:'30 サイクル達成で解放' },
+  { key:'ornate',  name:'装飾（金縁）',        cond:s=>_passiveCount.cycles(s)>=100, hint:'100 サイクル達成で解放' },
+  { key:'jade',    name:'翡翠',                cond:s=>_passiveCount.uniq(s)>=500,   hint:'500 字発見で解放' },
+  { key:'cosmos',  name:'宇宙（星屑）',        cond:s=>_passiveCount.streak(s)>=30,  hint:'連続 30 日で解放' },
+  { key:'divine',  name:'神域（金光脈動）',    cond:s=>_passiveCount.hero(s)>=300,   hint:'リーダー Lv.300 で解放' },
+];
+const TFONT_VARIANTS = [
+  { key:'serif', name:'明朝', cond:()=>true },
+  { key:'mono',  name:'機械', cond:s=>_passiveCount.cycles(s)>=20,  hint:'20 サイクル' },
+  { key:'brush', name:'草書', cond:s=>_passiveCount.cycles(s)>=80,  hint:'80 サイクル' },
+];
 function openThemePicker() {
   let modal = $('#theme-modal');
   if (!modal) {
@@ -1673,23 +1687,56 @@ function openThemePicker() {
     }, lbl));
   });
   // 土台
-  list.appendChild(el('div', { style:{ gridColumn:'1 / -1', fontSize:'.7rem', color:'var(--ink-mute)', padding:'12px 4px 0' } }, '土台'));
-  Object.entries(LEDGE_LABELS).forEach(([key, lbl]) => {
-    const active = (STATE.ledgeStyle || 'default') === key;
+  list.appendChild(el('div', { style:{ gridColumn:'1 / -1', fontSize:'.7rem', color:'var(--ink-mute)', padding:'12px 4px 0' } }, '土台（実績解放）'));
+  LEDGE_VARIANTS.forEach(v => {
+    const active = (STATE.ledgeStyle || 'default') === v.key;
+    const unlocked = (() => { try { return v.cond(STATE); } catch(_) { return false; } })();
+    const label = unlocked ? v.name : '🔒 ' + (v.hint || v.name);
     list.appendChild(el('button', {
+      disabled: !unlocked,
       style:{
         padding:'10px 8px', minHeight:'48px',
         background: active ? 'linear-gradient(135deg, rgba(135,206,235,.25), rgba(135,206,235,.08))' : 'rgba(255,255,255,.04)',
         border: '1px solid ' + (active ? 'rgba(135,206,235,.6)' : 'rgba(255,255,255,.12)'),
         borderRadius:'8px',
-        color: active ? '#cfe6ff' : 'var(--ink)',
-        fontWeight: active ? 700 : 400, cursor:'pointer',
+        color: !unlocked ? 'var(--ink-mute)' : (active ? '#cfe6ff' : 'var(--ink)'),
+        fontWeight: active ? 700 : 400,
+        cursor: unlocked ? 'pointer' : 'not-allowed',
+        opacity: unlocked ? 1 : .55,
+        fontSize: '.78rem',
       },
       onclick: () => {
-        STATE.ledgeStyle = key; saveState(); applyTheme(); openThemePicker();
-        toast(`土台 ${lbl}`);
+        if (!unlocked) { toast(v.hint || '未解放'); return; }
+        STATE.ledgeStyle = v.key; saveState(); applyTheme(); openThemePicker();
+        toast(`土台 ${v.name}`);
       },
-    }, lbl));
+    }, label));
+  });
+  // タイマー書体
+  list.appendChild(el('div', { style:{ gridColumn:'1 / -1', fontSize:'.7rem', color:'var(--ink-mute)', padding:'12px 4px 0' } }, '時計書体'));
+  TFONT_VARIANTS.forEach(v => {
+    const active = (STATE.tfontStyle || 'serif') === v.key;
+    const unlocked = (() => { try { return v.cond(STATE); } catch(_) { return false; } })();
+    const label = unlocked ? v.name : '🔒 ' + (v.hint || v.name);
+    list.appendChild(el('button', {
+      disabled: !unlocked,
+      style:{
+        padding:'10px 8px', minHeight:'48px',
+        background: active ? 'linear-gradient(135deg, rgba(192,168,255,.25), rgba(192,168,255,.08))' : 'rgba(255,255,255,.04)',
+        border: '1px solid ' + (active ? 'rgba(192,168,255,.6)' : 'rgba(255,255,255,.12)'),
+        borderRadius:'8px',
+        color: !unlocked ? 'var(--ink-mute)' : (active ? '#e8d8ff' : 'var(--ink)'),
+        fontWeight: active ? 700 : 400,
+        cursor: unlocked ? 'pointer' : 'not-allowed',
+        opacity: unlocked ? 1 : .55,
+        fontSize: '.78rem',
+      },
+      onclick: () => {
+        if (!unlocked) { toast(v.hint || '未解放'); return; }
+        STATE.tfontStyle = v.key; saveState(); applyTheme(); openThemePicker();
+        toast(`書体 ${v.name}`);
+      },
+    }, label));
   });
   modal.classList.add('show');
 }
