@@ -6978,7 +6978,7 @@ function openOmikujiPicker() {
       disabled: !freeAvailable,
       onclick: () => {
         if (!freeAvailable) return;
-        const r = recipesRandom();
+        const r = recipesRandom(false);
         const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
         STATE.omikuji.streak = (STATE.omikuji.lastDay === yest) ? (STATE.omikuji.streak || 0) + 1 : 1;
         STATE.omikuji.lastDay = today;
@@ -7004,7 +7004,7 @@ function openOmikujiPicker() {
           toast('ストック不足');
           return;
         }
-        const r = recipesRandom();
+        const r = recipesRandom(true);
         // 運勢ランダム（連続日数より少し高めの揺らぎ）
         const tier = Math.min(5, Math.max(1, Math.floor(Math.random() * 6)));
         _omikujiDraw(r, tier, '有料');
@@ -7018,6 +7018,19 @@ function openOmikujiPicker() {
       el('div', {}, '・ EXP バフ ×1.10〜×1.30（15〜40分）'),
       el('div', {}, '・ 連続日数で運勢上昇（末吉→大大吉）'),
     ),
+    (() => {
+      const rates = omikujiDropRates();
+      const tiers = Object.keys(rates).map(Number).sort((a, b) => a - b);
+      if (!tiers.length) return null;
+      return el('div', { style:{ fontSize:'.65rem', color:'var(--ink-mute)', lineHeight:1.5, padding:'8px', background:'rgba(155,120,200,.06)', borderRadius:'6px' } },
+        el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'#c8a8ff' } }, `排出率（現在の解放範囲 ★1〜★${(STATE.unlockedTier||0)+2}）`),
+        ...tiers.map(t => el('div', {}, `★${t+1} ── ${rates[t].toFixed(1)}%`)),
+      );
+    })(),
+    el('div', { style:{ fontSize:'.65rem', color:'var(--ink-mute)', lineHeight:1.5, padding:'8px', background:'rgba(255,255,255,.04)', borderRadius:'6px' } },
+      el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'var(--ink)' } }, 'ストックって？'),
+      el('div', {}, '字をタップした時に貯まる「所有数」。パーティに同じ字を複数入れる時の上限になります。有料ガチャでは合計から多い字順に消費。'),
+    ),
   );
   const backdrop = el('div', { style:{ position:'fixed', inset:'0', background:'rgba(0,0,0,.5)', zIndex:599 }, onclick: () => { pop.remove(); backdrop.remove(); } });
   document.body.appendChild(backdrop);
@@ -7026,9 +7039,61 @@ function openOmikujiPicker() {
   pop.remove = () => { try { backdrop.remove(); } catch(_) {} orig(); };
 }
 
-function recipesRandom() {
-  const r = window.YOJI_RECIPES;
-  return r[Math.floor(Math.random() * r.length)];
+// v1.5.32: ガチャ抽選 ── 進捗連動プール + レア度逆数の重み付け
+// レア度の出現率（★ごとの相対重み）── ★1 が一番出やすく、★16 は超レア
+const OMIKUJI_WEIGHT = [
+  /*★1*/ 320, /*★2*/ 240, /*★3*/ 180, /*★4*/ 130, /*★5*/ 95,
+  /*★6*/  70, /*★7*/  50, /*★8*/  36, /*★9*/  25, /*★10*/ 17,
+  /*★11*/ 11, /*★12*/  7, /*★13*/  4, /*★14*/  2, /*★15*/  1, /*★16*/ 0.5,
+];
+function omikujiPool(includeUnlocked) {
+  const all = window.YOJI_RECIPES || [];
+  const maxTier = STATE.unlockedTier || 0;  // 0 = ★1帯のみ
+  return all.filter(r => {
+    const rIdx = RARITY_TIERS.indexOf(r.rarity);
+    if (rIdx < 0) return false;
+    // 進捗で制限：未解放ティアを 1 つ上まで覗き見可（夢を残す）
+    if (rIdx > maxTier + 1) return false;
+    return true;
+  });
+}
+function omikujiDropRates() {
+  const pool = omikujiPool();
+  const tierCount = {};
+  pool.forEach(r => {
+    const rIdx = RARITY_TIERS.indexOf(r.rarity);
+    tierCount[rIdx] = (tierCount[rIdx] || 0) + 1;
+  });
+  let total = 0;
+  Object.keys(tierCount).forEach(t => { total += (OMIKUJI_WEIGHT[t] || 0) * tierCount[t]; });
+  const rates = {};
+  Object.keys(tierCount).forEach(t => {
+    rates[t] = total > 0 ? ((OMIKUJI_WEIGHT[t] || 0) * tierCount[t] / total) * 100 : 0;
+  });
+  return rates;
+}
+function recipesRandom(paid) {
+  const pool = omikujiPool();
+  if (!pool.length) {
+    // フォールバック：全レシピ
+    const r = window.YOJI_RECIPES;
+    return r[Math.floor(Math.random() * r.length)];
+  }
+  // 重み付き抽選：rarity の OMIKUJI_WEIGHT。有料は高レア +30% 補正
+  let total = 0;
+  const weights = pool.map(r => {
+    const rIdx = RARITY_TIERS.indexOf(r.rarity);
+    let w = OMIKUJI_WEIGHT[rIdx] || 1;
+    if (paid && rIdx >= 8) w *= 1.3;  // 有料は ★9 以上が 30% 出やすい
+    total += w;
+    return w;
+  });
+  let pick = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    pick -= weights[i];
+    if (pick <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
 }
 
 // 「あと 1 字でコンボ成立」する熟語を推薦
