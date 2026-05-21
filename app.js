@@ -168,6 +168,37 @@ function getCharTags(c) {
   return Array.from(idx[c] || []);
 }
 
+// v1.5.35: 字ごとのステータス ── タグ＋字コードで決定（決定論的）
+// 4 ステータス：速（落下速度）/ 力（EXP倍率）/ 命（寿命）/ 結（融合範囲）
+function _hashCode(s) {
+  let h = 0; for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+const _charStatCache = new Map();
+function getCharStats(c) {
+  if (_charStatCache.has(c)) return _charStatCache.get(c);
+  const tags = getCharTags(c);
+  let speed = 3, power = 3, life = 3, bond = 3;  // 1-5 スケール
+  // タグ補正
+  if (tags.includes('火') || tags.includes('雷') || tags.includes('武')) power += 2;
+  if (tags.includes('風') || tags.includes('鳥') || tags.includes('天体')) speed += 2;
+  if (tags.includes('水') || tags.includes('雨') || tags.includes('花')) bond += 2;
+  if (tags.includes('山') || tags.includes('土') || tags.includes('神字')) life += 2;
+  if (tags.includes('禅') || tags.includes('仏教') || tags.includes('思想')) life += 1;
+  if (tags.includes('感情') || tags.includes('愛')) bond += 1;
+  // ハッシュ揺らぎ（±1）
+  const h = _hashCode(c);
+  speed += ((h >> 0) % 3) - 1;
+  power += ((h >> 4) % 3) - 1;
+  life  += ((h >> 8) % 3) - 1;
+  bond  += ((h >> 12) % 3) - 1;
+  // クランプ 1-5
+  const cl = v => Math.max(1, Math.min(5, v));
+  const stats = { speed:cl(speed), power:cl(power), life:cl(life), bond:cl(bond) };
+  _charStatCache.set(c, stats);
+  return stats;
+}
+
 // ひらがな・カタカナの音韻列 → 固有 perk マッピング
 // 「あ・い・う・え・お」と「か行」では性質が違う、という意味付け
 const KANA_ROW_PERK = {
@@ -7621,6 +7652,22 @@ function showCharDetail(c, rarity) {
       el('span', {}, `発見 ${seen} 回`),
       el('span', { style:{ color: stock > 0 ? 'var(--gold)' : 'inherit' } }, `所有 ${stock}`),
     ),
+    // v1.5.35: 字ステータス（速/力/命/結）
+    (() => {
+      const s = getCharStats(c);
+      const bar = (n) => '●'.repeat(n) + '○'.repeat(5 - n);
+      return el('div', { style:{
+        display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'4px 10px',
+        padding:'6px 10px', background:'rgba(135,206,235,.06)',
+        border:'1px solid rgba(135,206,235,.2)', borderRadius:'6px',
+        fontSize:'.72rem', color:'var(--ink-mute)', fontFamily:'monospace',
+      } },
+        el('span', { title:'落下速度' }, `速 ${bar(s.speed)}`),
+        el('span', { title:'EXP 倍率' }, `力 ${bar(s.power)}`),
+        el('span', { title:'寿命' }, `命 ${bar(s.life)}`),
+        el('span', { title:'融合範囲' }, `結 ${bar(s.bond)}`),
+      );
+    })(),
     member ? el('div', { class:'cd-party' },
       `パーティ字 ・ Lv.${member.level} ・ ${(member.perks||[]).map(pid=>PERKS[pid]?.name).filter(Boolean).join('・')}`
     ) : null,

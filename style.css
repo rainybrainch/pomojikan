@@ -2086,22 +2086,53 @@ body.stream-mode .party-bar{
   transform:translate(-50%, -50%);
   animation:lvupPoof 1.1s cubic-bezier(.2,.9,.3,1.1) forwards;
 }
-/* v1.5.34: 物理モード別ぽもじ ── 視覚的に違いを示す */
+/* v1.5.35: 物理モード別ぽもじ ── 視覚を強化 */
 .pomoji.phys-bouncy{
-  filter:drop-shadow(0 0 10px rgba(120,255,180,.65)) !important;
-  animation:bouncyPulse 1.4s ease-in-out infinite;
+  filter:drop-shadow(0 0 14px #80ff99) drop-shadow(0 0 4px #40ff60) !important;
+  background:radial-gradient(circle, rgba(120,255,160,.25) 0%, transparent 65%);
+  border:2px dashed rgba(120,255,160,.7) !important;
+  border-radius:50%;
+  color:#a8ffb8 !important;
+  animation:bouncyPulse 1s ease-in-out infinite;
 }
-@keyframes bouncyPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
+.pomoji.phys-bouncy::after{
+  content:'弾'; position:absolute; top:-6px; right:-4px;
+  font-size:.55rem; color:#80ff99; font-weight:900;
+  text-shadow:0 0 4px #40ff60;
+}
+@keyframes bouncyPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.15); } }
+
 .pomoji.phys-wild{
-  filter:drop-shadow(0 0 14px rgba(255,80,80,.8)) !important;
-  animation:wildShake .25s linear infinite;
-  color:#ffd0d0;
+  filter:drop-shadow(0 0 16px #ff5060) drop-shadow(0 0 5px #ff2030) !important;
+  background:radial-gradient(circle, rgba(255,80,80,.3) 0%, transparent 65%);
+  border:2px solid rgba(255,80,80,.85) !important;
+  border-radius:8px;
+  color:#ffb0b0 !important;
+  animation:wildShake .18s linear infinite;
 }
-@keyframes wildShake{ 0%,100%{ transform:translate(0,0); } 25%{ transform:translate(-1px,1px); } 75%{ transform:translate(1px,-1px); } }
+.pomoji.phys-wild::after{
+  content:'暴'; position:absolute; top:-6px; right:-4px;
+  font-size:.55rem; color:#ff5060; font-weight:900;
+  text-shadow:0 0 4px #ff2030;
+}
+@keyframes wildShake{
+  0%,100%{ transform:translate(0,0) rotate(0deg); }
+  20%{ transform:translate(-2px,1px) rotate(-2deg); }
+  60%{ transform:translate(2px,-1px) rotate(2deg); }
+}
+
 .pomoji.phys-wet{
-  filter:drop-shadow(0 0 6px rgba(100,180,255,.6)) blur(.3px) !important;
-  color:#9fc8ff;
-  transform:scaleY(.85);
+  filter:drop-shadow(0 0 10px #60a8ff) blur(.4px) !important;
+  background:radial-gradient(ellipse 60% 80% at 50% 60%, rgba(80,150,255,.4) 0%, transparent 75%);
+  border:1px solid rgba(100,180,255,.5) !important;
+  border-radius:50% 50% 45% 45% / 45% 45% 60% 60%;
+  color:#a0c8ff !important;
+  transform:scaleY(.78);
+}
+.pomoji.phys-wet::after{
+  content:'湿'; position:absolute; top:-6px; right:-4px;
+  font-size:.55rem; color:#60a8ff; font-weight:900;
+  text-shadow:0 0 4px #2080ff;
 }
 
 @keyframes lvupPoof{
