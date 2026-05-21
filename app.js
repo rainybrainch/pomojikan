@@ -445,7 +445,29 @@ function rarityCapMultiplier() {
 function rarityLvCap(rarity) {
   return Math.floor((RARITY_LV_CAP_BASE[rarity] || 100000) * rarityCapMultiplier());
 }
-function isAtRarityCap(m) { return m && (m.level >= rarityLvCap(m.rarity)); }
+// v1.5.38: 字ごと限界突破ボーナス（charCapBoost[c] = +N Lv）
+function effectiveLvCap(m) {
+  if (!m) return 0;
+  const base = rarityLvCap(m.rarity);
+  const boost = (STATE.charCapBoost && STATE.charCapBoost[m.char]) || 0;
+  return base + boost;
+}
+function isAtRarityCap(m) { return m && (m.level >= effectiveLvCap(m)); }
+// 限界突破 ── 1回 +10 Lv ・ コスト：ストック (rIdx+1) × 5
+function limitBreakChar(c, rarity) {
+  const rIdx = Math.max(0, RARITY_TIERS.indexOf(rarity));
+  const cost = (rIdx + 1) * 5;
+  const owned = (STATE.stock || {})[c] || 0;
+  if (owned < cost) { toast(`限界突破には ${c} を ${cost} 個必要（現 ${owned}）`); return false; }
+  STATE.stock[c] -= cost;
+  if (STATE.stock[c] <= 0) delete STATE.stock[c];
+  if (!STATE.charCapBoost) STATE.charCapBoost = {};
+  STATE.charCapBoost[c] = (STATE.charCapBoost[c] || 0) + 10;
+  saveState();
+  invalidateAggCache();
+  toast(`限界突破！ ${c} の Lv 上限 +10`, rarity);
+  return true;
+}
 // 進化加速の上限を 95% → 50% に抑制（実効必要 EXP がほぼ 0 にならない）
 function effectiveExpForLevel(lv) {
   const disc = (typeof _aggCache !== 'undefined' && _aggCache && _aggCache.evoDiscount)
@@ -2385,7 +2407,7 @@ function onLevelUp(member, idx) {
   _lvupTimer[k].t = setTimeout(() => {
     const diff = member.level - (_lvupTimer[k].startLv - 1);
     // v1.5.9: 次 Lv までの EXP 表示
-    const cap = rarityLvCap(member.rarity);
+    const cap = effectiveLvCap(member);
     let suffix = '';
     if (member.level >= cap) suffix = '（MAX）';
     else {
@@ -7667,6 +7689,40 @@ function showCharDetail(c, rarity) {
       el('span', {}, `発見 ${seen} 回`),
       el('span', { style:{ color: stock > 0 ? 'var(--gold)' : 'inherit' } }, `所有 ${stock}`),
     ),
+    // v1.5.38: 限界突破ボタン（パーティ内の字 & MAX 到達 or 上限+10 ロック解除候補）
+    (() => {
+      const rIdx = Math.max(0, RARITY_TIERS.indexOf(rarity));
+      const cost = (rIdx + 1) * 5;
+      const owned = (STATE.stock || {})[c] || 0;
+      const boost = (STATE.charCapBoost && STATE.charCapBoost[c]) || 0;
+      const baseCap = rarityLvCap(rarity);
+      const totalCap = baseCap + boost;
+      const showBtn = member ? true : (owned >= cost);
+      if (!showBtn && boost === 0) return null;
+      return el('div', { style:{
+        padding:'8px 10px', background:'rgba(155,120,200,.08)',
+        border:'1px solid rgba(155,120,200,.3)', borderRadius:'6px',
+        fontSize:'.72rem', display:'flex', flexDirection:'column', gap:'4px',
+      } },
+        el('div', { style:{ color:'#c8a8ff', fontWeight:700 } },
+          `Lv 上限 ${totalCap}（基本 ${baseCap}${boost > 0 ? ` +突破 ${boost}` : ''}）`),
+        el('button', {
+          style:{
+            padding:'6px 10px', borderRadius:'5px', cursor: owned >= cost ? 'pointer' : 'not-allowed',
+            background: owned >= cost ? 'linear-gradient(135deg,#5b3a8c,#8b5fc8)' : 'rgba(255,255,255,.05)',
+            color: owned >= cost ? '#fff' : 'var(--ink-mute)',
+            border:'1px solid rgba(155,120,200,.4)', fontWeight:700, fontSize:'.7rem',
+          },
+          disabled: owned < cost,
+          onclick: () => {
+            if (limitBreakChar(c, rarity)) {
+              $$('.char-detail-pop').forEach(p => p.remove());
+              showCharDetail(c, rarity);
+            }
+          },
+        }, owned >= cost ? `限界突破 ・ ${c}×${cost} 消費で Lv上限 +10` : `限界突破には ${c}×${cost} 必要（${owned}/${cost}）`),
+      );
+    })(),
     // v1.5.35: 字ステータス（速/力/命/結）
     (() => {
       const s = getCharStats(c);
