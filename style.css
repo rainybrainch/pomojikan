@@ -5247,3 +5247,45 @@ body.harvest-mode .pomoji {
   0% { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
+
+/* v1.5.9: 土台 3 デザインバリエーション */
+body[data-ledge="ornate"] #ledge-surface {
+  background:
+    linear-gradient(to bottom,
+      rgba(255,230,180,.65) 0,
+      rgba(200,160,80,.50) 4px,
+      rgba(100,60,20,.65) 50%,
+      rgba(30,15,5,.90));
+  border-top: 2px solid rgba(255,230,160,.95);
+  box-shadow:
+    0 -1px 0 rgba(255,250,200,.55) inset,
+    0 -12px 28px rgba(255,200,80,.30),
+    inset 0 -10px 14px rgba(0,0,0,.45);
+}
+body[data-ledge="ornate"] #ledge-surface::before {
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0, transparent 24px,
+      rgba(255,240,180,.10) 24px, rgba(255,240,180,.10) 26px,
+      transparent 26px, transparent 50px,
+      rgba(255,180,60,.18) 50px, rgba(255,180,60,.18) 51px);
+}
+body[data-ledge="stone"] #ledge-surface {
+  background:
+    linear-gradient(to bottom,
+      rgba(180,180,200,.55) 0,
+      rgba(120,120,140,.45) 4px,
+      rgba(50,50,70,.70) 50%,
+      rgba(15,15,25,.92));
+  border-top: 1.5px solid rgba(220,220,240,.6);
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,.20) inset,
+    0 -6px 18px rgba(100,100,150,.25),
+    inset 0 -8px 12px rgba(0,0,0,.50);
+}
+body[data-ledge="stone"] #ledge-surface::before {
+  background:
+    repeating-linear-gradient(45deg,
+      transparent 0, transparent 14px,
+      rgba(0,0,0,.08) 14px, rgba(0,0,0,.08) 15px);
+}
