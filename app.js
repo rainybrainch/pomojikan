@@ -380,6 +380,13 @@ function aggregatePartyPerks() {
     if (lb.dropCountAdd)    agg.dropCountAdd += lb.dropCountAdd;
     if (lb.stockExpMul)     agg.stockExpMul   = (agg.stockExpMul || 1) * lb.stockExpMul;
   } catch(_) {}
+  // v1.5.16: 画面上ライブぽもじボーナス（1 字 +0.5% EXP、上限 +30%）
+  try {
+    const live = Array.from(livePomoji.values()).filter(p => !p.persistent && !p.rising).length;
+    const liveBonus = 1 + Math.min(0.30, live * 0.005);
+    if (liveBonus > 1) agg.expMul *= liveBonus;
+    agg.liveCount = live;
+  } catch(_) {}
   return agg;
 }
 
@@ -1684,7 +1691,18 @@ const LEDGE_VARIANTS = [
   // 穴あき：5 穴（高速 EXP・字積もらない・ストック減）
   { key:'holes',   name:'穴あき（高速）',     cond:s=>_passiveCount.cycles(s)>=200,                                hint:'200 サイクル達成で解放',
     eff:{expMul:1.10, stockExpMul:0.80}, holes:[{l:0,r:0.08},{l:0.25,r:0.31},{l:0.46,r:0.54},{l:0.69,r:0.75},{l:0.92,r:1}] },
+  // v1.5.16: 傾斜土台 ── settled 字が常に右に転がる（右穴に落ちやすい）
+  { key:'tilt_right', name:'傾斜（右流れ）',    cond:s=>_passiveCount.streak(s)>=14,                                  hint:'連続 14 日達成で解放',
+    eff:{dropCountAdd:1, mergeRadiusMul:1.03}, holes:[{l:0,r:0.10},{l:0.88,r:1}], tiltVx:0.25 },
+  // 傾斜（左流れ）── 同様だが左
+  { key:'tilt_left',  name:'傾斜（左流れ）',    cond:s=>_passiveCount.streak(s)>=14,                                  hint:'連続 14 日達成で解放',
+    eff:{dropCountAdd:1, mergeRadiusMul:1.03}, holes:[{l:0,r:0.10},{l:0.88,r:1}], tiltVx:-0.25 },
 ];
+function ledgeTiltVx() {
+  const cur = STATE.ledgeStyle || 'default';
+  const v = LEDGE_VARIANTS.find(x => x.key === cur);
+  return v?.tiltVx || 0;
+}
 function ledgeHoles(W) {
   const cur = STATE.ledgeStyle || 'default';
   const v = LEDGE_VARIANTS.find(x => x.key === cur);
@@ -2894,6 +2912,8 @@ function stopTimer() {
   setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   try { releaseWakeLock(); } catch(_) {}
   updateProgress(0);
+  // v1.5.16: 停止時にセット進捗もリセット（次のスタートは 1/N から）
+  if (STATE.timer) STATE.timer.setsDone = 0;
   saveState();
   updateProgressPill();
   cancelAnimationFrame(timerRaf);
@@ -3674,6 +3694,15 @@ function physicsStep() {
       const cx = p.x + SIZE/2;
       // v1.5.15: multi-hole 対応
       const onLedge = p.persistent || !isOverHole(cx, W);
+      // v1.5.16: 傾斜土台で settled 字に常時 vx 押し
+      const tvx = ledgeTiltVx();
+      if (tvx !== 0 && !p.persistent && onLedge) {
+        p.settled = false;
+        p.settledX = null;
+        p.settledY = null;
+        p.el?.classList.remove('settled');
+        p.vx = (p.vx || 0) + tvx;
+      }
       if (!onLedge) {
         p.settled = false;
         p.settledX = null;
