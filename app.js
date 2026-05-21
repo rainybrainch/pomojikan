@@ -8510,13 +8510,8 @@ async function toggleTimerPiP() {
       if (STATE.mode === 'measure') stopMeasure();
       else if (STATE.mode === 'work' || STATE.mode === 'rest') stopTimer();
     });
-    // 本体クリックでも停止（小窓全体がボタン）
-    doc.body.style.cursor = 'pointer';
-    doc.body.addEventListener('click', (e) => {
-      if (e.target.id === 'pip-stop') return;  // 既にハンドル済
-      if (STATE.mode === 'measure') stopMeasure();
-      else if (STATE.mode === 'work' || STATE.mode === 'rest') stopTimer();
-    });
+    // v1.5.39: 本体クリック停止は誤操作多いので廃止 ── × ボタンのみ
+    doc.body.style.cursor = 'default';
     _pipWindow.addEventListener('pagehide', () => {
       _pipWindow = null;
       clearTimeout(_pipRaf);
@@ -8544,7 +8539,7 @@ function syncPiP() {
       const tgt = STATE.timer?.setsTarget || 0;
       const done = STATE.timer?.setsDone || 0;
       sets.textContent = (tgt > 0 && (STATE.mode === 'work' || STATE.mode === 'rest'))
-        ? `🔁 ${done + (STATE.mode === 'work' ? 1 : 0)}/${tgt}` : '';
+        ? `${done + (STATE.mode === 'work' ? 1 : 0)}/${tgt}set` : '';
     }
     if (STATE.mode === 'measure') {
       const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);

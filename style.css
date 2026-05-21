@@ -709,16 +709,23 @@ body[data-mode="rest"] .timer-text{
 }
 .timer-cog:hover{ background:var(--accent-dim); transform:rotate(45deg); }
 
-/* 進捗ピル ── タイマー下のインライン配置（コンパクト） */
+/* 進捗ピル ── ヘッダー帯の中に固定（タイトル左横） */
 .progress-pill{
-  display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;
-  margin:0 auto;
-  padding:5px 12px;
+  position:fixed;
+  top:8px;
+  left:80px;
+  right:60px;
+  z-index:9;
+  display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-start;
+  margin:0;
+  padding:4px 10px;
   background:rgba(0,0,0,.45);
-  border:1px solid rgba(135,206,235,.28);
-  border-radius:12px;
-  font-size:.7rem;
-  max-width:90%;
+  border:1px solid rgba(135,206,235,.22);
+  border-radius:10px;
+  font-size:.62rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
   letter-spacing:.08em;
   color:var(--ink-mute);
   backdrop-filter:blur(6px);
@@ -1297,16 +1304,7 @@ body[data-mode="rest"] .timer-text{
   border-radius:14px;
   position:relative;
 }
-.tank-hint::before{
-  content:'雨';
-  display:block;
-  font-size:1.5rem;
-  margin-bottom:8px;
-  color:var(--accent-2);
-  font-family:'Noto Serif JP', serif;
-  font-weight:900;
-  animation:tankHintBob 2.4s ease-in-out infinite;
-}
+.tank-hint::before{ content:none; display:none; }
 @keyframes tankHintBob{
   0%, 100%{ transform:translateY(0); }
   50%    { transform:translateY(-4px); }
