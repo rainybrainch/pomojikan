@@ -84,23 +84,23 @@
     </div>
 
     <div class="controls-row">
-      <button class="main-btn" id="main-btn" data-state="idle">▶ 始める</button>
-      <button class="sub-btn" id="btn-skip">⏭ 次へ</button>
+      <button class="main-btn" id="main-btn" data-state="idle">始める</button>
+      <button class="sub-btn" id="btn-skip">次へ</button>
       <button class="sub-btn" id="btn-reset">↺ 停止</button>
     </div>
 
     <div class="party-bar empty" id="party-bar">
-      <button class="party-pick-cta" id="party-pick-cta">✦ 主人公を選んで始める</button>
+      <button class="party-pick-cta" id="party-pick-cta"> 主人公を選んで始める</button>
     </div>
 
     <div class="tank-hint" id="tank-hint">
       タイマー開始で <strong>字（ぽもじ）が画面に降ってくる</strong>。<br>
-      <small>👆 タップで <strong>はじけてストック</strong> ／ 🤏 ドラッグして重ねると <strong>合体・進化</strong></small>
+      <small> タップで <strong>はじけてストック</strong> ／  ドラッグして重ねると <strong>合体・進化</strong></small>
     </div>
   </div>
 </main>
 
-<!-- 💤 スリープオーバーレイ（タップで起きる） -->
+<!--  スリープオーバーレイ（タップで起きる） -->
 <div class="sleep-overlay" id="sleep-overlay" aria-hidden="true">
   <div class="sleep-zzz" aria-hidden="true">
     <span class="sz-z sz-z1">z</span>
@@ -130,12 +130,12 @@
       <small>残り 3 枠は、Lv が上がって解放される字（カタカナ → 数字 → 英語 → 漢字…）から仲間にできます。</small>
     </p>
     <p class="modal-desc" style="margin-top:6px;font-size:.78rem;color:var(--gold);">
-      気に入る字が無ければ「🎲 リロール」で並び替え
+      気に入る字が無ければ「 リロール」で並び替え
     </p>
     <div class="party-picker-grid" id="party-picker-grid"></div>
     <div class="modal-status" id="party-picker-status">タップして 1 体選ぶ</div>
     <div class="modal-actions">
-      <button class="btn-secondary" id="party-picker-reroll">🎲 リロール</button>
+      <button class="btn-secondary" id="party-picker-reroll"> リロール</button>
       <button class="btn-primary" id="party-picker-confirm" disabled>この字で始める</button>
     </div>
   </div>
@@ -184,7 +184,7 @@
 <div class="modal" id="codex-modal" role="dialog" aria-modal="true">
   <div class="modal-card modal-card-wide">
     <button class="modal-close" id="codex-close" aria-label="閉じる">×</button>
-    <h2 class="modal-title">📖 ぽも字図鑑</h2>
+    <h2 class="modal-title"> ぽも字図鑑</h2>
     <div class="modal-status" id="codex-summary">発見 0 字</div>
     <div class="codex-pyramid" id="codex-pyramid"></div>
     <div class="codex-legend collapsed" id="codex-legend">
@@ -262,7 +262,7 @@
         <input type="checkbox" id="codex-only-seen"> <span>発見済のみ</span>
       </label>
       <label class="codex-toggle">
-        <input type="checkbox" id="codex-only-favorite"> <span>⭐ お気に入り</span>
+        <input type="checkbox" id="codex-only-favorite"> <span> お気に入り</span>
       </label>
       <button class="btn-secondary codex-shuffle-btn" id="codex-shuffle" title="ランダムに熟語を 1 つ見る">おみくじ</button>
       <button class="btn-secondary codex-reset-btn" id="codex-reset-filter" title="フィルタを全解除">↺</button>
@@ -361,8 +361,8 @@
 
     <div class="ob-step" data-step="2" hidden>
       <div class="ob-hero ob-hero-actions">
-        <span class="ob-action"><span class="oa-emoji">👆</span><span class="oa-label">タップ</span></span>
-        <span class="ob-action"><span class="oa-emoji">🤏</span><span class="oa-label">ドラッグ</span></span>
+        <span class="ob-action"><span class="oa-emoji"></span><span class="oa-label">タップ</span></span>
+        <span class="ob-action"><span class="oa-emoji"></span><span class="oa-label">ドラッグ</span></span>
         <span class="ob-action"><span class="oa-emoji">🪙</span><span class="oa-label">ストック</span></span>
       </div>
       <h2 class="ob-title">触れて、重ねて、貯める。</h2>
@@ -389,7 +389,7 @@
         カタカナ → 数字 → 英語 → 漢字（小1→拾段神字）と段階解放。<br>
         <strong>Lv 上限なし</strong>、字も特性も無限に育つ。
       </p>
-      <p class="ob-small">あなたのパーティが熟語を成立させると <strong style="color:var(--gold)">⚡ コンボ</strong> 発動。</p>
+      <p class="ob-small">あなたのパーティが熟語を成立させると <strong style="color:var(--gold)"> コンボ</strong> 発動。</p>
     </div>
 
     <div class="ob-dots">
@@ -514,7 +514,7 @@
         ・★5〜★8　→ 1〜2 個<br>
         ・★9〜★12 → 2 個（レア候補）<br>
         ・★13〜★15 → 2〜3 個<br>
-        ・★16　 　 → 3 個＋✦ レア特性 確定<br>
+        ・★16　 　 → 3 個＋ レア特性 確定<br>
         ・主人公　 → 上記＋「守護」確定
       </p>
     </section>
@@ -525,12 +525,12 @@
         特性は <strong>取得した瞬間に Lv 1</strong>。最初は控えめだけど、字をストックすると Lv が上がって効果がどんどん強くなる。<br>
         ・タグ系（感情・神字・武 等）：そのタグの字をストックすると上がる<br>
         ・基本系（積み重ね・急降下 等）：どんな字でも少しずつ上がる<br><br>
-        図鑑（📖）→「✦ 特性」タブ で 全特性と現在 Lv を確認できます。
+        図鑑（）→「 特性」タブ で 全特性と現在 Lv を確認できます。
       </p>
     </section>
 
     <section class="help-section">
-      <h3 class="help-h">⑧ ✦ レア特性 ── ★9 以降の宝</h3>
+      <h3 class="help-h">⑧  レア特性 ── ★9 以降の宝</h3>
       <p class="help-text">
         ★9 以降の字を仲間にすると、確率で<strong>レア特性</strong>が付くことがあります。★16 は確定。<br>
         Lv1 では控えめ、育成で本領発揮：<br><br>
@@ -571,8 +571,8 @@
       <p class="help-text">
         ・<strong>Space</strong>：開始 ／ 一時停止<br>
         ・<strong>M</strong>：メニュー ／ <strong>B</strong>：図鑑 ／ <strong>S</strong>：記録 ／ <strong>W</strong>：文章<br>
-        ・<strong>R</strong>：🎲 ランダム熟語 ／ <strong>N</strong>：💡 あと1字でコンボ提案<br>
-        ・<strong>Z</strong>：💤 スリープ ON/OFF<br>
+        ・<strong>R</strong>： ランダム熟語 ／ <strong>N</strong>： あと1字でコンボ提案<br>
+        ・<strong>Z</strong>： スリープ ON/OFF<br>
         ・<strong>K</strong>：このキー一覧をトーストで表示<br>
         ・<strong>Esc</strong>：開いてるモーダル／ドロワーを閉じる<br>
         ・<strong>H</strong> または <strong>?</strong>：遊び方<br><br>
@@ -581,9 +581,9 @@
     </section>
 
     <section class="help-section">
-      <h3 class="help-h">💤 スリープ</h3>
+      <h3 class="help-h"> スリープ</h3>
       <p class="help-text">
-        メニュー → <strong>💤 スリープ</strong> で画面を黒くして時計だけ大きく表示。<br>
+        メニュー → <strong> スリープ</strong> で画面を黒くして時計だけ大きく表示。<br>
         集中中はタイマー残時間／停止中は現在時刻を表示。<br>
         タップ／クリック／Esc で復帰。タイマーは止まらないので「机に置きっぱなし」運用に。
       </p>
@@ -604,7 +604,7 @@
 <div class="modal" id="stats-modal" role="dialog" aria-modal="true">
   <div class="modal-card">
     <button class="modal-close" id="stats-close" aria-label="閉じる">×</button>
-    <h2 class="modal-title">📊 記録</h2>
+    <h2 class="modal-title"> 記録</h2>
     <div class="stats-list" id="stats-list"></div>
 
     <div class="user-id-zone">

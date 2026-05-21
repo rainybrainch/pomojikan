@@ -59,7 +59,7 @@ const EVO_STAGE_LV = [
   1000000,   // 14: 永遠
   10000000,  // 15: ∞（自己存在）
 ];
-const EVO_GLYPH = ['', '✦', '✧', '☀', '☆', '✯', '✪', '❂', '✺', '✹', '𓂀', '𓁹', '𒀭', '☥', '⚛', '∞'];
+const EVO_GLYPH = ['', '✦', '✧', '✩', '☆', '✯', '✪', '❂', '✺', '✹', '𓂀', '𓁹', '𒀭', '☥', '⚛', '∞'];
 const EVO_STYLE = ['kai', 'gyo', 'sou', 'tens', 'kou', 'shin', 'choetsu', 'hoshi', 'shinwa', 'sozo', 'eigou', 'mushi', 'kyomu', 'eien', 'mugen'];
 
 // Lv に応じた動的グロー半径（対数的に増える ・ Lv 100 で約 30px、Lv 10000 で約 80px）
@@ -338,7 +338,7 @@ function aggregatePartyPerks() {
     agg.expMul *= combo.expMul;
     agg.evoDiscount += combo.evoBoost;
   }
-  // 🌟 SPECIAL コンボ系の追加効果（落下／合体／粒数／ストックEXP）
+  //  SPECIAL コンボ系の追加効果（落下／合体／粒数／ストックEXP）
   if (combo.gravityMul && combo.gravityMul !== 1.0)        agg.gravityMul *= combo.gravityMul;
   if (combo.mergeRadiusMul && combo.mergeRadiusMul !== 1.0) agg.mergeRadiusMul *= combo.mergeRadiusMul;
   if (combo.dropCountAdd)                                   agg.dropCountAdd += combo.dropCountAdd;
@@ -723,7 +723,7 @@ function updateBackupStatus() {
   const last = STATE.lastBackupAt;
   let text, cls;
   if (!last) {
-    text = '⚠ 一度もバックアップしていません ── 進捗が大きい今こそ「💾 JSON バックアップ」を';
+    text = '⚠ 一度もバックアップしていません ── 進捗が大きい今こそ「 JSON バックアップ」を';
     cls = 'danger';
   } else {
     const days = Math.floor((Date.now() - last) / 86400000);
@@ -762,7 +762,7 @@ function exportStateJSON() {
     // v10n：最終バックアップ日時を記録（何十年遊ぶための安全網）
     STATE.lastBackupAt = Date.now();
     saveState();
-    toast('💾 バックアップを保存', '★14');
+    toast(' バックアップを保存', '★14');
   } catch (e) {
     toast('バックアップ失敗', '★1');
   }
@@ -819,7 +819,7 @@ function showTransferCodeModal(code) {
         try { await navigator.clipboard.writeText(code); toast('コピーしました'); }
         catch (e) {}
       }
-    }, '📋 もう一度コピー')
+    }, ' もう一度コピー')
   );
   // innerHTML for the note (br tag)
   pop.querySelector('.cp-note').innerHTML = '別の端末で「コードから復元」に貼り付けてください。<br>このコードでアカウントを移行できます。';
@@ -1066,21 +1066,21 @@ function toggleAudio() {
   if (STATE.audioOn) {
     ensureAudio();              // ユーザージェスチャで AudioContext 起動
     refreshAudioByMode();
-    toast('🔊 音響オン（雨と泡）');
+    toast('音響オン（雨と泡）');
   } else {
     stopRainAudio();
     stopBubbleAudio();
-    toast('🔇 音響オフ');
+    toast('音響オフ');
   }
 }
 
 function updateAudioButton() {
   // 旧ヘッダー（残ってる場合のみ）
   const emoji = $('#btn-audio .ib-emoji');
-  if (emoji) emoji.textContent = STATE.audioOn ? '🔊' : '🔇';
+  if (emoji) emoji.textContent = STATE.audioOn ? '音' : '無';
   // 新ドロワーメニュー
   const mEmoji = $('#m-audio-emoji');
-  if (mEmoji) mEmoji.textContent = STATE.audioOn ? '🔊' : '🔇';
+  if (mEmoji) mEmoji.textContent = STATE.audioOn ? '音' : '無';
   const mState = $('#m-audio-state');
   if (mState) mState.textContent = STATE.audioOn ? 'オン' : 'オフ';
 }
@@ -1286,7 +1286,7 @@ function partyAverageLevel() {
 // 公式構想：4体パーティで「春夏秋冬」「諸行無常」等の四字熟語コンボ
 // ═══════════════════════════════════════════════════════════════
 
-// 🌟 アプリ名隠しコンボ（SPECIAL_COMBOS）── 通常熟語より段違いの効果
+//  アプリ名隠しコンボ（SPECIAL_COMBOS）── 通常熟語より段違いの効果
 // 「ぽも時間」＝時の凝縮（時間を彫る）
 // 「ぽ文字漢」＝字を集める（収集に特化）
 // v1.1.8: MBTI 16 種コンボ ── 英字 4 字パーティで発動、性格に合わせた効果
@@ -1340,7 +1340,7 @@ function detectPartyCombos() {
   const partySet = new Set(partyChars);
   const recipes = window.YOJI_RECIPES || [];
   const matches = [];
-  // 🌟 アプリ名コンボ優先判定（通常熟語より上に）
+  //  アプリ名コンボ優先判定（通常熟語より上に）
   // v1.1.8: MBTI 16 種も SPECIAL 扱いで判定
   for (const sc of MBTI_COMBOS) {
     if (sc.chars.every(c => partySet.has(c))) matches.push(sc);
@@ -1854,104 +1854,104 @@ function _countCharsByTag(state, tag) {
 }
 const PASSIVES = [
   // 発見数系（コレクション）
-  { id:'p_uniq_10',    name:'初学の灯',    desc:'10 字発見：EXP +1%',         icon:'📚', cond:s=>_passiveCount.uniq(s)>=10,    eff:{expMul:1.01} },
-  { id:'p_uniq_100',   name:'学識',         desc:'100 字発見：EXP +3%',        icon:'📘', cond:s=>_passiveCount.uniq(s)>=100,   eff:{expMul:1.03} },
-  { id:'p_uniq_1000',  name:'博識',         desc:'1,000 字発見：EXP +6% / 融合範囲 +3%', icon:'📚', cond:s=>_passiveCount.uniq(s)>=1000,  eff:{expMul:1.06, mergeRadiusMul:1.03} },
-  { id:'p_uniq_10000', name:'万巻の主',     desc:'10,000 字発見：EXP +12% / ストック +5%', icon:'🏛', cond:s=>_passiveCount.uniq(s)>=10000, eff:{expMul:1.12, stockExpMul:1.05} },
+  { id:'p_uniq_10',    name:'初学の灯',    desc:'10 字発見：EXP +1%',         icon:'書', cond:s=>_passiveCount.uniq(s)>=10,    eff:{expMul:1.01} },
+  { id:'p_uniq_100',   name:'学識',         desc:'100 字発見：EXP +3%',        icon:'冊', cond:s=>_passiveCount.uniq(s)>=100,   eff:{expMul:1.03} },
+  { id:'p_uniq_1000',  name:'博識',         desc:'1,000 字発見：EXP +6% / 融合範囲 +3%', icon:'書', cond:s=>_passiveCount.uniq(s)>=1000,  eff:{expMul:1.06, mergeRadiusMul:1.03} },
+  { id:'p_uniq_10000', name:'万巻の主',     desc:'10,000 字発見：EXP +12% / ストック +5%', icon:'殿', cond:s=>_passiveCount.uniq(s)>=10000, eff:{expMul:1.12, stockExpMul:1.05} },
   // 熟語解放系
-  { id:'p_yoji_100',   name:'語彙の門',     desc:'熟語 100 解放：融合範囲 +5%', icon:'📖', cond:s=>_passiveCount.yoji(s)>=100,   eff:{mergeRadiusMul:1.05} },
-  { id:'p_yoji_1000',  name:'語学者',       desc:'熟語 1,000 解放：EXP +5% / 粒+1', icon:'📜', cond:s=>_passiveCount.yoji(s)>=1000,  eff:{expMul:1.05, dropCountAdd:1} },
-  { id:'p_yoji_4000',  name:'達語',         desc:'熟語 4,000 解放：EXP +10% / 進化加速 +5%', icon:'🪶', cond:s=>_passiveCount.yoji(s)>=4000, eff:{expMul:1.10, evoBoost:0.05} },
+  { id:'p_yoji_100',   name:'語彙の門',     desc:'熟語 100 解放：融合範囲 +5%', icon:'典', cond:s=>_passiveCount.yoji(s)>=100,   eff:{mergeRadiusMul:1.05} },
+  { id:'p_yoji_1000',  name:'語学者',       desc:'熟語 1,000 解放：EXP +5% / 粒+1', icon:'巻', cond:s=>_passiveCount.yoji(s)>=1000,  eff:{expMul:1.05, dropCountAdd:1} },
+  { id:'p_yoji_4000',  name:'達語',         desc:'熟語 4,000 解放：EXP +10% / 進化加速 +5%', icon:'筆', cond:s=>_passiveCount.yoji(s)>=4000, eff:{expMul:1.10, evoBoost:0.05} },
   // 累計サイクル
-  { id:'p_cycle_10',   name:'始まりの拍',   desc:'10 サイクル：ストック +2%',  icon:'⏱', cond:s=>_passiveCount.cycles(s)>=10,  eff:{stockExpMul:1.02} },
-  { id:'p_cycle_100',  name:'継続の力',     desc:'100 サイクル：ストック +5% / 重力 -2%', icon:'🌱', cond:s=>_passiveCount.cycles(s)>=100, eff:{stockExpMul:1.05, gravityMul:0.98} },
-  { id:'p_cycle_1000', name:'熟達',         desc:'1,000 サイクル：EXP +8% / 進化加速 +5%', icon:'🌳', cond:s=>_passiveCount.cycles(s)>=1000, eff:{expMul:1.08, evoBoost:0.05} },
+  { id:'p_cycle_10',   name:'始まりの拍',   desc:'10 サイクル：ストック +2%',  icon:'刻', cond:s=>_passiveCount.cycles(s)>=10,  eff:{stockExpMul:1.02} },
+  { id:'p_cycle_100',  name:'継続の力',     desc:'100 サイクル：ストック +5% / 重力 -2%', icon:'芽', cond:s=>_passiveCount.cycles(s)>=100, eff:{stockExpMul:1.05, gravityMul:0.98} },
+  { id:'p_cycle_1000', name:'熟達',         desc:'1,000 サイクル：EXP +8% / 進化加速 +5%', icon:'樹', cond:s=>_passiveCount.cycles(s)>=1000, eff:{expMul:1.08, evoBoost:0.05} },
   // 連続日数
-  { id:'p_streak_7',   name:'一週間の習慣', desc:'連続 7 日：EXP +2%',          icon:'🔥', cond:s=>_passiveCount.streak(s)>=7,   eff:{expMul:1.02} },
-  { id:'p_streak_30',  name:'一か月の継続', desc:'連続 30 日：EXP +5% / 重力 -3%', icon:'🔥', cond:s=>_passiveCount.streak(s)>=30,  eff:{expMul:1.05, gravityMul:0.97} },
-  { id:'p_streak_100', name:'百日の坐',     desc:'連続 100 日：全効果 +5% 相当', icon:'🏔', cond:s=>_passiveCount.streak(s)>=100, eff:{expMul:1.05, stockExpMul:1.05, mergeRadiusMul:1.05} },
+  { id:'p_streak_7',   name:'一週間の習慣', desc:'連続 7 日：EXP +2%',          icon:'炎', cond:s=>_passiveCount.streak(s)>=7,   eff:{expMul:1.02} },
+  { id:'p_streak_30',  name:'一か月の継続', desc:'連続 30 日：EXP +5% / 重力 -3%', icon:'炎', cond:s=>_passiveCount.streak(s)>=30,  eff:{expMul:1.05, gravityMul:0.97} },
+  { id:'p_streak_100', name:'百日の坐',     desc:'連続 100 日：全効果 +5% 相当', icon:'峰', cond:s=>_passiveCount.streak(s)>=100, eff:{expMul:1.05, stockExpMul:1.05, mergeRadiusMul:1.05} },
   // タグ収集
-  { id:'p_seven_virt', name:'七徳の祝福',   desc:'七徳タグ 7 種：進化加速 +5%', icon:'✦',  cond:s=>_countCharsByTag(s,'七徳')>=7, eff:{evoBoost:0.05} },
-  { id:'p_seven_sin',  name:'七大罪の連動', desc:'七大罪タグ 7 種：粒 +1 / 重力 -3%', icon:'☷', cond:s=>_countCharsByTag(s,'七大罪')>=7, eff:{dropCountAdd:1, gravityMul:0.97} },
+  { id:'p_seven_virt', name:'七徳の祝福',   desc:'七徳タグ 7 種：進化加速 +5%', icon:'徳',  cond:s=>_countCharsByTag(s,'七徳')>=7, eff:{evoBoost:0.05} },
+  { id:'p_seven_sin',  name:'七大罪の連動', desc:'七大罪タグ 7 種：粒 +1 / 重力 -3%', icon:'罪', cond:s=>_countCharsByTag(s,'七大罪')>=7, eff:{dropCountAdd:1, gravityMul:0.97} },
   // リーダー Lv（自パーティ依存だが恒久的）
-  { id:'p_hero_100',   name:'楷書師の杖',   desc:'リーダー Lv.100：ストック +3%', icon:'🖋', cond:s=>_passiveCount.hero(s)>=100, eff:{stockExpMul:1.03} },
+  { id:'p_hero_100',   name:'楷書師の杖',   desc:'リーダー Lv.100：ストック +3%', icon:'墨', cond:s=>_passiveCount.hero(s)>=100, eff:{stockExpMul:1.03} },
   // v1.3.13: タグ収集パッシブ（10 種）── 文字種の多様性を活かす
-  { id:'p_tag_emo',     name:'感情の機微',   desc:'感情タグ 10 種発見：EXP +3%',            icon:'💗', cond:s=>_countCharsByTag(s,'感情')>=10, eff:{expMul:1.03} },
-  { id:'p_tag_nature',  name:'自然の調和',   desc:'自然タグ 15 種発見：融合 +5%',          icon:'🌿', cond:s=>_countCharsByTag(s,'自然')>=15, eff:{mergeRadiusMul:1.05} },
-  { id:'p_tag_zen',     name:'禅の境地',     desc:'禅タグ 5 種発見：重力 -5%',              icon:'☯', cond:s=>_countCharsByTag(s,'禅')>=5, eff:{gravityMul:0.95} },
-  { id:'p_tag_butsu',   name:'仏の教え',     desc:'仏教タグ 8 種発見：進化 +5%',            icon:'🪷', cond:s=>_countCharsByTag(s,'仏教')>=8, eff:{evoBoost:0.05} },
-  { id:'p_tag_bu',      name:'武の心',       desc:'武タグ 5 種発見：粒 +1',                  icon:'⚔', cond:s=>_countCharsByTag(s,'武')>=5, eff:{dropCountAdd:1} },
-  { id:'p_tag_kami',    name:'神域の門',     desc:'神字タグ 3 種発見：EXP +5% / 進化 +3%',  icon:'⛩', cond:s=>_countCharsByTag(s,'神字')>=3, eff:{expMul:1.05, evoBoost:0.03} },
-  { id:'p_tag_thought', name:'思想の系譜',   desc:'思想タグ 10 種発見：EXP +5%',            icon:'📜', cond:s=>_countCharsByTag(s,'思想')>=10, eff:{expMul:1.05} },
-  { id:'p_tag_tian',    name:'天体の運行',   desc:'天体タグ 8 種発見：ストック +5%',        icon:'🌟', cond:s=>_countCharsByTag(s,'天体')>=8, eff:{stockExpMul:1.05} },
+  { id:'p_tag_emo',     name:'感情の機微',   desc:'感情タグ 10 種発見：EXP +3%',            icon:'愛', cond:s=>_countCharsByTag(s,'感情')>=10, eff:{expMul:1.03} },
+  { id:'p_tag_nature',  name:'自然の調和',   desc:'自然タグ 15 種発見：融合 +5%',          icon:'葉', cond:s=>_countCharsByTag(s,'自然')>=15, eff:{mergeRadiusMul:1.05} },
+  { id:'p_tag_zen',     name:'禅の境地',     desc:'禅タグ 5 種発見：重力 -5%',              icon:'禅', cond:s=>_countCharsByTag(s,'禅')>=5, eff:{gravityMul:0.95} },
+  { id:'p_tag_butsu',   name:'仏の教え',     desc:'仏教タグ 8 種発見：進化 +5%',            icon:'蓮', cond:s=>_countCharsByTag(s,'仏教')>=8, eff:{evoBoost:0.05} },
+  { id:'p_tag_bu',      name:'武の心',       desc:'武タグ 5 種発見：粒 +1',                  icon:'刀', cond:s=>_countCharsByTag(s,'武')>=5, eff:{dropCountAdd:1} },
+  { id:'p_tag_kami',    name:'神域の門',     desc:'神字タグ 3 種発見：EXP +5% / 進化 +3%',  icon:'神', cond:s=>_countCharsByTag(s,'神字')>=3, eff:{expMul:1.05, evoBoost:0.03} },
+  { id:'p_tag_thought', name:'思想の系譜',   desc:'思想タグ 10 種発見：EXP +5%',            icon:'巻', cond:s=>_countCharsByTag(s,'思想')>=10, eff:{expMul:1.05} },
+  { id:'p_tag_tian',    name:'天体の運行',   desc:'天体タグ 8 種発見：ストック +5%',        icon:'星', cond:s=>_countCharsByTag(s,'天体')>=8, eff:{stockExpMul:1.05} },
   { id:'p_tag_kanji',   name:'漢字千',       desc:'漢字 1,000 字発見：EXP +5% / 融合 +3%',  icon:'漢', cond:s=>{let n=0;for(const c of Object.keys(s.collection||{}))if((typeof getCharTags==='function'?getCharTags(c):[]).includes('漢字')||/[一-鿿]/.test(c))n++;return n>=1000;}, eff:{expMul:1.05, mergeRadiusMul:1.03} },
-  { id:'p_tag_world',   name:'世界の文字',   desc:'非日本字 100 種発見：EXP +5%',           icon:'🌏', cond:s=>{let n=0;for(const c of Object.keys(s.collection||{}))if(!/[぀-ゟ゠-ヿ一-鿿]/.test(c))n++;return n>=100;}, eff:{expMul:1.05} },
+  { id:'p_tag_world',   name:'世界の文字',   desc:'非日本字 100 種発見：EXP +5%',           icon:'界', cond:s=>{let n=0;for(const c of Object.keys(s.collection||{}))if(!/[぀-ゟ゠-ヿ一-鿿]/.test(c))n++;return n>=100;}, eff:{expMul:1.05} },
   // v1.3.13: 字固有パッシブ（10 種）── 象徴的な字をパーティに持つと発動
-  { id:'p_char_heart', name:'心の灯',     desc:'「心」をパーティに：EXP +3%',           icon:'❤', cond:s=>s.party?.members?.some(m=>m.char==='心'), eff:{expMul:1.03} },
-  { id:'p_char_power', name:'力の柱',     desc:'「力」をパーティに：粒 +1',             icon:'💪', cond:s=>s.party?.members?.some(m=>m.char==='力'), eff:{dropCountAdd:1} },
-  { id:'p_char_light', name:'光の道',     desc:'「光」をパーティに：進化 +3%',          icon:'✨', cond:s=>s.party?.members?.some(m=>m.char==='光'), eff:{evoBoost:0.03} },
-  { id:'p_char_water', name:'水の流',     desc:'「水」をパーティに：重力 -3%',          icon:'💧', cond:s=>s.party?.members?.some(m=>m.char==='水'), eff:{gravityMul:0.97} },
-  { id:'p_char_tree',  name:'木の根',     desc:'「木」をパーティに：ストック +3%',      icon:'🌲', cond:s=>s.party?.members?.some(m=>m.char==='木'), eff:{stockExpMul:1.03} },
-  { id:'p_char_fire',  name:'火の勢',     desc:'「火」をパーティに：粒 +1 / EXP +2%',  icon:'🔥', cond:s=>s.party?.members?.some(m=>m.char==='火'), eff:{dropCountAdd:1, expMul:1.02} },
-  { id:'p_char_kami',  name:'神の名',     desc:'「神」をパーティに：EXP +5%',           icon:'⛩', cond:s=>s.party?.members?.some(m=>m.char==='神'), eff:{expMul:1.05} },
-  { id:'p_char_dou',   name:'道の心',     desc:'「道」をパーティに：進化 +3% / 融合 +2%', icon:'🛤', cond:s=>s.party?.members?.some(m=>m.char==='道'), eff:{evoBoost:0.03, mergeRadiusMul:1.02} },
-  { id:'p_char_kotoba',name:'言の力',     desc:'「言」をパーティに：ストック +5%',      icon:'💬', cond:s=>s.party?.members?.some(m=>m.char==='言'), eff:{stockExpMul:1.05} },
-  { id:'p_char_yume',  name:'夢の彼方',   desc:'「夢」をパーティに：EXP +3% / 進化 +2%', icon:'💭', cond:s=>s.party?.members?.some(m=>m.char==='夢'), eff:{expMul:1.03, evoBoost:0.02} },
+  { id:'p_char_heart', name:'心の灯',     desc:'「心」をパーティに：EXP +3%',           icon:'心', cond:s=>s.party?.members?.some(m=>m.char==='心'), eff:{expMul:1.03} },
+  { id:'p_char_power', name:'力の柱',     desc:'「力」をパーティに：粒 +1',             icon:'拳', cond:s=>s.party?.members?.some(m=>m.char==='力'), eff:{dropCountAdd:1} },
+  { id:'p_char_light', name:'光の道',     desc:'「光」をパーティに：進化 +3%',          icon:'光', cond:s=>s.party?.members?.some(m=>m.char==='光'), eff:{evoBoost:0.03} },
+  { id:'p_char_water', name:'水の流',     desc:'「水」をパーティに：重力 -3%',          icon:'滴', cond:s=>s.party?.members?.some(m=>m.char==='水'), eff:{gravityMul:0.97} },
+  { id:'p_char_tree',  name:'木の根',     desc:'「木」をパーティに：ストック +3%',      icon:'森', cond:s=>s.party?.members?.some(m=>m.char==='木'), eff:{stockExpMul:1.03} },
+  { id:'p_char_fire',  name:'火の勢',     desc:'「火」をパーティに：粒 +1 / EXP +2%',  icon:'炎', cond:s=>s.party?.members?.some(m=>m.char==='火'), eff:{dropCountAdd:1, expMul:1.02} },
+  { id:'p_char_kami',  name:'神の名',     desc:'「神」をパーティに：EXP +5%',           icon:'神', cond:s=>s.party?.members?.some(m=>m.char==='神'), eff:{expMul:1.05} },
+  { id:'p_char_dou',   name:'道の心',     desc:'「道」をパーティに：進化 +3% / 融合 +2%', icon:'道', cond:s=>s.party?.members?.some(m=>m.char==='道'), eff:{evoBoost:0.03, mergeRadiusMul:1.02} },
+  { id:'p_char_kotoba',name:'言の力',     desc:'「言」をパーティに：ストック +5%',      icon:'語', cond:s=>s.party?.members?.some(m=>m.char==='言'), eff:{stockExpMul:1.05} },
+  { id:'p_char_yume',  name:'夢の彼方',   desc:'「夢」をパーティに：EXP +3% / 進化 +2%', icon:'夢', cond:s=>s.party?.members?.some(m=>m.char==='夢'), eff:{expMul:1.03, evoBoost:0.02} },
   // v1.3.14: 新次元パッシブ（差別化）
   // critChance: タップ字に確率で EXP ×3 ／ chainBonus: 連続合体ボーナス ／ lifetimeMul: 字寿命
-  { id:'p_crit_basic',  name:'閃き',         desc:'タップで 5% 確率 EXP ×3',           icon:'⚡', cond:s=>_passiveCount.cycles(s)>=50,   eff:{critChance:0.05} },
-  { id:'p_crit_master', name:'達観',         desc:'タップで 12% 確率 EXP ×3（200サイクル）', icon:'🌀', cond:s=>_passiveCount.cycles(s)>=200, eff:{critChance:0.07} },
-  { id:'p_chain_a',     name:'数珠つなぎ',    desc:'同字 3 連続合体で全効果 +5%（一時的）', icon:'📿', cond:s=>_passiveCount.uniq(s)>=200, eff:{chainBonus:0.05} },
-  { id:'p_chain_b',     name:'紡ぎの極',     desc:'連鎖ボーナス +10%（1000字発見）',     icon:'🧵', cond:s=>_passiveCount.uniq(s)>=1000, eff:{chainBonus:0.10} },
-  { id:'p_life_1',      name:'残響',         desc:'字寿命 +20%（5分→6分）',             icon:'⏳', cond:s=>_passiveCount.yoji(s)>=200, eff:{lifetimeMul:1.20} },
-  { id:'p_life_2',      name:'長息',         desc:'字寿命 +50%（7.5分・継続30日）',    icon:'🪶', cond:s=>_passiveCount.streak(s)>=30, eff:{lifetimeMul:1.50} },
-  { id:'p_rare_focus',  name:'高貴の眼',     desc:'★10 以上字の EXP +25%（4000熟語）',  icon:'👁', cond:s=>_passiveCount.yoji(s)>=4000, eff:{highRarityExpMul:1.25} },
-  { id:'p_low_love',    name:'初心忘れず',   desc:'★1-3 字の EXP +50%（ひらがな愛）',  icon:'🌱', cond:s=>_passiveCount.uniq(s)>=50, eff:{lowRarityExpMul:1.50} },
-  { id:'p_cycle_burst', name:'完成の火花',    desc:'サイクル完了時 ボーナス字 +3',       icon:'🎇', cond:s=>_passiveCount.cycles(s)>=100, eff:{cycleBonusDrop:3} },
-  { id:'p_speed_focus', name:'速読',         desc:'連続日数 7+：字降下速度 +20%（密度UP）', icon:'💨', cond:s=>_passiveCount.streak(s)>=7, eff:{spawnRateMul:1.20} },
+  { id:'p_crit_basic',  name:'閃き',         desc:'タップで 5% 確率 EXP ×3',           icon:'閃', cond:s=>_passiveCount.cycles(s)>=50,   eff:{critChance:0.05} },
+  { id:'p_crit_master', name:'達観',         desc:'タップで 12% 確率 EXP ×3（200サイクル）', icon:'渦', cond:s=>_passiveCount.cycles(s)>=200, eff:{critChance:0.07} },
+  { id:'p_chain_a',     name:'数珠つなぎ',    desc:'同字 3 連続合体で全効果 +5%（一時的）', icon:'珠', cond:s=>_passiveCount.uniq(s)>=200, eff:{chainBonus:0.05} },
+  { id:'p_chain_b',     name:'紡ぎの極',     desc:'連鎖ボーナス +10%（1000字発見）',     icon:'糸', cond:s=>_passiveCount.uniq(s)>=1000, eff:{chainBonus:0.10} },
+  { id:'p_life_1',      name:'残響',         desc:'字寿命 +20%（5分→6分）',             icon:'時', cond:s=>_passiveCount.yoji(s)>=200, eff:{lifetimeMul:1.20} },
+  { id:'p_life_2',      name:'長息',         desc:'字寿命 +50%（7.5分・継続30日）',    icon:'筆', cond:s=>_passiveCount.streak(s)>=30, eff:{lifetimeMul:1.50} },
+  { id:'p_rare_focus',  name:'高貴の眼',     desc:'★10 以上字の EXP +25%（4000熟語）',  icon:'眼', cond:s=>_passiveCount.yoji(s)>=4000, eff:{highRarityExpMul:1.25} },
+  { id:'p_low_love',    name:'初心忘れず',   desc:'★1-3 字の EXP +50%（ひらがな愛）',  icon:'芽', cond:s=>_passiveCount.uniq(s)>=50, eff:{lowRarityExpMul:1.50} },
+  { id:'p_cycle_burst', name:'完成の火花',    desc:'サイクル完了時 ボーナス字 +3',       icon:'華', cond:s=>_passiveCount.cycles(s)>=100, eff:{cycleBonusDrop:3} },
+  { id:'p_speed_focus', name:'速読',         desc:'連続日数 7+：字降下速度 +20%（密度UP）', icon:'風', cond:s=>_passiveCount.streak(s)>=7, eff:{spawnRateMul:1.20} },
 ];
 
 // v1.3.12: 環境ボーナス ── 季節・月・曜日・週など「時間」由来（プレイ実績じゃなく文脈）
 const ENV_BONUSES = [
   // 季節（3-5/6-8/9-11/12-2）
-  { id:'e_season_spring', name:'🌸 春の祝福', desc:'3-5 月：融合 +4% / EXP +2%', icon:'🌸', cond:()=>{const m=new Date().getMonth()+1;return m>=3&&m<=5;}, eff:{mergeRadiusMul:1.04, expMul:1.02} },
-  { id:'e_season_summer', name:'🌊 夏の活力', desc:'6-8 月：粒+1 / EXP +3%',     icon:'🌊', cond:()=>{const m=new Date().getMonth()+1;return m>=6&&m<=8;}, eff:{dropCountAdd:1, expMul:1.03} },
-  { id:'e_season_autumn', name:'🍁 秋の収穫', desc:'9-11 月：ストック +5% / 進化 +3%', icon:'🍁', cond:()=>{const m=new Date().getMonth()+1;return m>=9&&m<=11;}, eff:{stockExpMul:1.05, evoBoost:0.03} },
-  { id:'e_season_winter', name:'❄ 冬の沈潜', desc:'12-2 月：重力 -5% / 進化 +4%', icon:'❄', cond:()=>{const m=new Date().getMonth()+1;return m===12||m<=2;}, eff:{gravityMul:0.95, evoBoost:0.04} },
+  { id:'e_season_spring', name:'春の祝福', desc:'3-5 月：融合 +4% / EXP +2%', icon:'桜', cond:()=>{const m=new Date().getMonth()+1;return m>=3&&m<=5;}, eff:{mergeRadiusMul:1.04, expMul:1.02} },
+  { id:'e_season_summer', name:'夏の活力', desc:'6-8 月：粒+1 / EXP +3%',     icon:'波', cond:()=>{const m=new Date().getMonth()+1;return m>=6&&m<=8;}, eff:{dropCountAdd:1, expMul:1.03} },
+  { id:'e_season_autumn', name:'秋の収穫', desc:'9-11 月：ストック +5% / 進化 +3%', icon:'紅', cond:()=>{const m=new Date().getMonth()+1;return m>=9&&m<=11;}, eff:{stockExpMul:1.05, evoBoost:0.03} },
+  { id:'e_season_winter', name:'冬の沈潜', desc:'12-2 月：重力 -5% / 進化 +4%', icon:'雪', cond:()=>{const m=new Date().getMonth()+1;return m===12||m<=2;}, eff:{gravityMul:0.95, evoBoost:0.04} },
   // 月別（和風月名・12 種）
-  { id:'e_m_1',  name:'睦月 ・ 始の和', desc:'1 月：ストック +5%',                 icon:'🎍', cond:()=>new Date().getMonth()===0,  eff:{stockExpMul:1.05} },
-  { id:'e_m_2',  name:'如月 ・ 残寒',    desc:'2 月：重力 -3%',                     icon:'❄', cond:()=>new Date().getMonth()===1,  eff:{gravityMul:0.97} },
-  { id:'e_m_3',  name:'弥生 ・ 桜便り',  desc:'3 月：融合範囲 +5%',                 icon:'🌸', cond:()=>new Date().getMonth()===2,  eff:{mergeRadiusMul:1.05} },
-  { id:'e_m_4',  name:'卯月 ・ 始動',    desc:'4 月：EXP +5%',                       icon:'🌱', cond:()=>new Date().getMonth()===3,  eff:{expMul:1.05} },
-  { id:'e_m_5',  name:'皐月 ・ 風薫',    desc:'5 月：粒 +1',                         icon:'🎏', cond:()=>new Date().getMonth()===4,  eff:{dropCountAdd:1} },
-  { id:'e_m_6',  name:'水無月 ・ 雨季',  desc:'6 月：重力 -5% / 融合 +3%',          icon:'☔', cond:()=>new Date().getMonth()===5,  eff:{gravityMul:0.95, mergeRadiusMul:1.03} },
-  { id:'e_m_7',  name:'文月 ・ 七夕',    desc:'7 月：EXP +5% / 進化 +3%',           icon:'🎋', cond:()=>new Date().getMonth()===6,  eff:{expMul:1.05, evoBoost:0.03} },
-  { id:'e_m_8',  name:'葉月 ・ 盛夏',    desc:'8 月：粒 +2',                         icon:'🌻', cond:()=>new Date().getMonth()===7,  eff:{dropCountAdd:2} },
-  { id:'e_m_9',  name:'長月 ・ 月見',    desc:'9 月：進化 +5%',                     icon:'🌕', cond:()=>new Date().getMonth()===8,  eff:{evoBoost:0.05} },
-  { id:'e_m_10', name:'神無月 ・ 紅葉',  desc:'10 月：ストック +8%',                icon:'🍂', cond:()=>new Date().getMonth()===9,  eff:{stockExpMul:1.08} },
-  { id:'e_m_11', name:'霜月 ・ 静寂',    desc:'11 月：重力 -4% / ストック +3%',     icon:'☁', cond:()=>new Date().getMonth()===10, eff:{gravityMul:0.96, stockExpMul:1.03} },
-  { id:'e_m_12', name:'師走 ・ 結びの月', desc:'12 月：EXP +8%',                     icon:'⛄', cond:()=>new Date().getMonth()===11, eff:{expMul:1.08} },
+  { id:'e_m_1',  name:'睦月 ・ 始の和', desc:'1 月：ストック +5%',                 icon:'松', cond:()=>new Date().getMonth()===0,  eff:{stockExpMul:1.05} },
+  { id:'e_m_2',  name:'如月 ・ 残寒',    desc:'2 月：重力 -3%',                     icon:'雪', cond:()=>new Date().getMonth()===1,  eff:{gravityMul:0.97} },
+  { id:'e_m_3',  name:'弥生 ・ 桜便り',  desc:'3 月：融合範囲 +5%',                 icon:'桜', cond:()=>new Date().getMonth()===2,  eff:{mergeRadiusMul:1.05} },
+  { id:'e_m_4',  name:'卯月 ・ 始動',    desc:'4 月：EXP +5%',                       icon:'芽', cond:()=>new Date().getMonth()===3,  eff:{expMul:1.05} },
+  { id:'e_m_5',  name:'皐月 ・ 風薫',    desc:'5 月：粒 +1',                         icon:'幟', cond:()=>new Date().getMonth()===4,  eff:{dropCountAdd:1} },
+  { id:'e_m_6',  name:'水無月 ・ 雨季',  desc:'6 月：重力 -5% / 融合 +3%',          icon:'雨', cond:()=>new Date().getMonth()===5,  eff:{gravityMul:0.95, mergeRadiusMul:1.03} },
+  { id:'e_m_7',  name:'文月 ・ 七夕',    desc:'7 月：EXP +5% / 進化 +3%',           icon:'笹', cond:()=>new Date().getMonth()===6,  eff:{expMul:1.05, evoBoost:0.03} },
+  { id:'e_m_8',  name:'葉月 ・ 盛夏',    desc:'8 月：粒 +2',                         icon:'葵', cond:()=>new Date().getMonth()===7,  eff:{dropCountAdd:2} },
+  { id:'e_m_9',  name:'長月 ・ 月見',    desc:'9 月：進化 +5%',                     icon:'満', cond:()=>new Date().getMonth()===8,  eff:{evoBoost:0.05} },
+  { id:'e_m_10', name:'神無月 ・ 紅葉',  desc:'10 月：ストック +8%',                icon:'落', cond:()=>new Date().getMonth()===9,  eff:{stockExpMul:1.08} },
+  { id:'e_m_11', name:'霜月 ・ 静寂',    desc:'11 月：重力 -4% / ストック +3%',     icon:'雲', cond:()=>new Date().getMonth()===10, eff:{gravityMul:0.96, stockExpMul:1.03} },
+  { id:'e_m_12', name:'師走 ・ 結びの月', desc:'12 月：EXP +8%',                     icon:'冬', cond:()=>new Date().getMonth()===11, eff:{expMul:1.08} },
   // 曜日（7 種）
-  { id:'e_d_mon', name:'月曜 ・ 始動',   desc:'月曜：EXP +2%',            icon:'🌙', cond:()=>new Date().getDay()===1, eff:{expMul:1.02} },
-  { id:'e_d_tue', name:'火曜 ・ 燃焼',   desc:'火曜：粒 +1',              icon:'🔥', cond:()=>new Date().getDay()===2, eff:{dropCountAdd:1} },
-  { id:'e_d_wed', name:'水曜 ・ 流',     desc:'水曜：重力 -2%',           icon:'💧', cond:()=>new Date().getDay()===3, eff:{gravityMul:0.98} },
-  { id:'e_d_thu', name:'木曜 ・ 育',     desc:'木曜：進化 +2%',           icon:'🌳', cond:()=>new Date().getDay()===4, eff:{evoBoost:0.02} },
-  { id:'e_d_fri', name:'金曜 ・ 結',     desc:'金曜：融合 +3%',           icon:'🤝', cond:()=>new Date().getDay()===5, eff:{mergeRadiusMul:1.03} },
-  { id:'e_d_sat', name:'土曜 ・ 蓄',     desc:'土曜：ストック +3%',       icon:'⛰', cond:()=>new Date().getDay()===6, eff:{stockExpMul:1.03} },
-  { id:'e_d_sun', name:'日曜 ・ 静',     desc:'日曜：重力 -3% / EXP +2%', icon:'☀', cond:()=>new Date().getDay()===0, eff:{gravityMul:0.97, expMul:1.02} },
+  { id:'e_d_mon', name:'月曜 ・ 始動',   desc:'月曜：EXP +2%',            icon:'夜', cond:()=>new Date().getDay()===1, eff:{expMul:1.02} },
+  { id:'e_d_tue', name:'火曜 ・ 燃焼',   desc:'火曜：粒 +1',              icon:'炎', cond:()=>new Date().getDay()===2, eff:{dropCountAdd:1} },
+  { id:'e_d_wed', name:'水曜 ・ 流',     desc:'水曜：重力 -2%',           icon:'滴', cond:()=>new Date().getDay()===3, eff:{gravityMul:0.98} },
+  { id:'e_d_thu', name:'木曜 ・ 育',     desc:'木曜：進化 +2%',           icon:'樹', cond:()=>new Date().getDay()===4, eff:{evoBoost:0.02} },
+  { id:'e_d_fri', name:'金曜 ・ 結',     desc:'金曜：融合 +3%',           icon:'結', cond:()=>new Date().getDay()===5, eff:{mergeRadiusMul:1.03} },
+  { id:'e_d_sat', name:'土曜 ・ 蓄',     desc:'土曜：ストック +3%',       icon:'山', cond:()=>new Date().getDay()===6, eff:{stockExpMul:1.03} },
+  { id:'e_d_sun', name:'日曜 ・ 静',     desc:'日曜：重力 -3% / EXP +2%', icon:'陽', cond:()=>new Date().getDay()===0, eff:{gravityMul:0.97, expMul:1.02} },
   // 時間帯（6 種）── 朝活・午前・昼・午後・夜・深夜
-  { id:'e_t_morning', name:'朝活 ・ 始の風', desc:'5-9 時：EXP +8% / 進化 +3%（朝活ボーナス）', icon:'🌅', cond:()=>{const h=new Date().getHours();return h>=5&&h<9;}, eff:{expMul:1.08, evoBoost:0.03} },
-  { id:'e_t_am',      name:'午前 ・ 集中',   desc:'9-12 時：EXP +5% / 融合 +2%',                icon:'☀', cond:()=>{const h=new Date().getHours();return h>=9&&h<12;}, eff:{expMul:1.05, mergeRadiusMul:1.02} },
-  { id:'e_t_noon',    name:'昼 ・ 休息',     desc:'12-14 時：重力 -3% / ストック +3%',          icon:'🌞', cond:()=>{const h=new Date().getHours();return h>=12&&h<14;}, eff:{gravityMul:0.97, stockExpMul:1.03} },
-  { id:'e_t_pm',      name:'午後 ・ 持続',   desc:'14-17 時：ストック +5%',                     icon:'🌤', cond:()=>{const h=new Date().getHours();return h>=14&&h<17;}, eff:{stockExpMul:1.05} },
-  { id:'e_t_evening', name:'夕 ・ 結び',     desc:'17-19 時：融合 +5% / EXP +2%',                icon:'🌇', cond:()=>{const h=new Date().getHours();return h>=17&&h<19;}, eff:{mergeRadiusMul:1.05, expMul:1.02} },
-  { id:'e_t_night',   name:'夜 ・ 深耕',     desc:'19-22 時：EXP +5% / 進化 +2%',                icon:'🌙', cond:()=>{const h=new Date().getHours();return h>=19&&h<22;}, eff:{expMul:1.05, evoBoost:0.02} },
-  { id:'e_t_late',    name:'深夜 ・ 静寂',   desc:'22-5 時：重力 -5% / 進化 +4%（深夜の創造）', icon:'🌌', cond:()=>{const h=new Date().getHours();return h>=22||h<5;}, eff:{gravityMul:0.95, evoBoost:0.04} },
+  { id:'e_t_morning', name:'朝活 ・ 始の風', desc:'5-9 時：EXP +8% / 進化 +3%（朝活ボーナス）', icon:'朝', cond:()=>{const h=new Date().getHours();return h>=5&&h<9;}, eff:{expMul:1.08, evoBoost:0.03} },
+  { id:'e_t_am',      name:'午前 ・ 集中',   desc:'9-12 時：EXP +5% / 融合 +2%',                icon:'陽', cond:()=>{const h=new Date().getHours();return h>=9&&h<12;}, eff:{expMul:1.05, mergeRadiusMul:1.02} },
+  { id:'e_t_noon',    name:'昼 ・ 休息',     desc:'12-14 時：重力 -3% / ストック +3%',          icon:'昼', cond:()=>{const h=new Date().getHours();return h>=12&&h<14;}, eff:{gravityMul:0.97, stockExpMul:1.03} },
+  { id:'e_t_pm',      name:'午後 ・ 持続',   desc:'14-17 時：ストック +5%',                     icon:'晴', cond:()=>{const h=new Date().getHours();return h>=14&&h<17;}, eff:{stockExpMul:1.05} },
+  { id:'e_t_evening', name:'夕 ・ 結び',     desc:'17-19 時：融合 +5% / EXP +2%',                icon:'夕', cond:()=>{const h=new Date().getHours();return h>=17&&h<19;}, eff:{mergeRadiusMul:1.05, expMul:1.02} },
+  { id:'e_t_night',   name:'夜 ・ 深耕',     desc:'19-22 時：EXP +5% / 進化 +2%',                icon:'夜', cond:()=>{const h=new Date().getHours();return h>=19&&h<22;}, eff:{expMul:1.05, evoBoost:0.02} },
+  { id:'e_t_late',    name:'深夜 ・ 静寂',   desc:'22-5 時：重力 -5% / 進化 +4%（深夜の創造）', icon:'宙', cond:()=>{const h=new Date().getHours();return h>=22||h<5;}, eff:{gravityMul:0.95, evoBoost:0.04} },
   // 週（月内 1-4 週）
-  { id:'e_w_1', name:'第1週 ・ 開花',  desc:'月の 1 週目：EXP +3%',       icon:'🌷', cond:()=>Math.ceil(new Date().getDate()/7)===1, eff:{expMul:1.03} },
-  { id:'e_w_2', name:'第2週 ・ 充実',  desc:'月の 2 週目：ストック +3%',  icon:'🌳', cond:()=>Math.ceil(new Date().getDate()/7)===2, eff:{stockExpMul:1.03} },
-  { id:'e_w_3', name:'第3週 ・ 結実',  desc:'月の 3 週目：進化 +3%',      icon:'🍎', cond:()=>Math.ceil(new Date().getDate()/7)===3, eff:{evoBoost:0.03} },
-  { id:'e_w_4', name:'第4週 ・ 還元',  desc:'月の 4-5 週目：全効果 +1%',  icon:'🍃', cond:()=>Math.ceil(new Date().getDate()/7)>=4, eff:{expMul:1.01, stockExpMul:1.01, mergeRadiusMul:1.01} },
+  { id:'e_w_1', name:'第1週 ・ 開花',  desc:'月の 1 週目：EXP +3%',       icon:'花', cond:()=>Math.ceil(new Date().getDate()/7)===1, eff:{expMul:1.03} },
+  { id:'e_w_2', name:'第2週 ・ 充実',  desc:'月の 2 週目：ストック +3%',  icon:'樹', cond:()=>Math.ceil(new Date().getDate()/7)===2, eff:{stockExpMul:1.03} },
+  { id:'e_w_3', name:'第3週 ・ 結実',  desc:'月の 3 週目：進化 +3%',      icon:'実', cond:()=>Math.ceil(new Date().getDate()/7)===3, eff:{evoBoost:0.03} },
+  { id:'e_w_4', name:'第4週 ・ 還元',  desc:'月の 4-5 週目：全効果 +1%',  icon:'葉', cond:()=>Math.ceil(new Date().getDate()/7)>=4, eff:{expMul:1.01, stockExpMul:1.01, mergeRadiusMul:1.01} },
 ];
 function getActiveEnvBonuses() {
   return ENV_BONUSES.filter(b => { try { return b.cond(STATE); } catch(_) { return false; } });
@@ -2009,7 +2009,7 @@ function getComboBonus() {
   for (const r of combos) {
     // v1.1.3: 並び順一致なら ×1.4 ボーナス
     const orderMul = comboOrderMatch(r) ? 1.4 : 1.0;
-    // 🌟 SPECIAL（アプリ名隠しコンボ）：固定値を加算（旧仕様維持・Lv補正のみ）
+    //  SPECIAL（アプリ名隠しコンボ）：固定値を加算（旧仕様維持・Lv補正のみ）
     if (r.special && r.effect) {
       const e = r.effect;
       if (e.expMul)         acc.expMul        *= e.expMul * lvMul * orderMul;
@@ -2081,11 +2081,11 @@ function checkComboPickup() {
       }
       if (r.special) {
         playSFX('unlock'); setTimeout(() => playSFX('milestone'), 250);
-        toast(`🌟 隠しコンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
+        toast(` 隠しコンボ発動「${r.word}」 ${r.desc || ''}`, r.rarity);
       } else {
         playSFX(r.chars.length >= 4 ? 'milestone' : 'merge');
         if (wasNew) { setTimeout(() => playSFX('unlock'), 200); setTimeout(() => playSFX('discover'), 600); }
-        toast(`${wasNew ? '✨ 新熟語解放' : '⚡ コンボ発動'}「${r.word}」 ${r.desc || ''}`, r.rarity);
+        toast(`${wasNew ? '新熟語解放' : 'コンボ発動'}「${r.word}」 ${r.desc || ''}`, r.rarity);
       }
     }
   }
@@ -2105,7 +2105,7 @@ function spawnYojiUnlockCelebration(recipe) {
     )
   );
   const overlay = el('div', { class:`yoji-unlock-celebration rarity-${rIdx + 1}` },
-    el('div', { class:'yuc-label' }, '✨ 新しい熟語を解放'),
+    el('div', { class:'yuc-label' }, '新しい熟語を解放'),
     charRow,
     el('div', { class:'yuc-arrow' }, '↓'),
     el('div', { class:'yuc-mask' }, '？'.repeat(Math.max(2, recipe.word.length))),
@@ -2131,18 +2131,18 @@ function spawnComboBurst(recipe) {
   if (cb) {
     // v1.1.4: % 表記
     if (cb.expMul > 1.01)         lines.push(`📈 EXP +${Math.round((cb.expMul-1)*100)}%`);
-    if (cb.gravityMul < 0.99)     lines.push(`🌧 重力 -${Math.round((1-cb.gravityMul)*100)}%`);
-    if (cb.mergeRadiusMul > 1.01) lines.push(`🤝 融合 +${Math.round((cb.mergeRadiusMul-1)*100)}%`);
-    if (cb.dropCountAdd)          lines.push(`💧 粒 +${cb.dropCountAdd}個`);
+    if (cb.gravityMul < 0.99)     lines.push(`重力 -${Math.round((1-cb.gravityMul)*100)}%`);
+    if (cb.mergeRadiusMul > 1.01) lines.push(` 融合 +${Math.round((cb.mergeRadiusMul-1)*100)}%`);
+    if (cb.dropCountAdd)          lines.push(`粒 +${cb.dropCountAdd}個`);
     if (cb.stockExpMul > 1.01)    lines.push(`📦 ストック +${Math.round((cb.stockExpMul-1)*100)}%`);
-    if (cb.evoBoost > 0.005)      lines.push(`🌱 進化 +${Math.round(cb.evoBoost*100)}%`);
+    if (cb.evoBoost > 0.005)      lines.push(` 進化 +${Math.round(cb.evoBoost*100)}%`);
   }
   const effLine = lines.length ? lines.join(' ・ ') : '';
   const node = el('div', {
     class: `combo-burst rarity-${rIdx + 1}${isSpecial ? ' combo-special' : ''}`,
     style: { left: (W/2 - width/2) + 'px', top: (H/2 - (isSpecial ? 110 : 80)) + 'px' },
   },
-    el('div', { class:'cb-label' }, isSpecial ? '🌟 隠しコンボ発動' : '⚡ コンボ発動'),
+    el('div', { class:'cb-label' }, isSpecial ? '隠しコンボ発動' : 'コンボ発動'),
     el('div', { class:'cb-word' }, recipe.word),
     recipe.desc ? el('div', { class:'cb-desc' }, recipe.desc) : null,
     effLine ? el('div', { class:'cb-eff' }, effLine) : null,
@@ -2384,11 +2384,11 @@ function openOnboarding() {
       const yojiCount = (window.YOJI_RECIPES || []).length;
       const perkCount = Object.keys(PERKS || {}).length;
       console.log(
-        `%c☔ ぽもじかん コレクション総量 ── 字 ${charCount} ・ 熟語 ${yojiCount} ・ 特性 ${perkCount}`,
+        `%c ぽもじかん コレクション総量 ── 字 ${charCount} ・ 熟語 ${yojiCount} ・ 特性 ${perkCount}`,
         'color:#f0d48a; font-weight:900;'
       );
       console.log(
-        '%c 🎉 100 サイクルリリース達成 ── 開発進化v9c時点',
+        '%c  100 サイクルリリース達成 ── 開発進化v9c時点',
         'color:#ff6b9d; font-weight:900; font-size:14px;'
       );
     }, 500);
@@ -2626,7 +2626,7 @@ function setupTimerRingDrag() {
       setTextWithLvBand("timer-text", fmtTime(STATE.timer.restSec));
       updateProgress(STATE.timer.restSec / 60 / 60);
       zone.classList.add('editing-rest');
-      try { toast('🌙 休憩時間モード（指を動かして分数設定）'); } catch(_) {}
+      try { toast(' 休憩時間モード（指を動かして分数設定）'); } catch(_) {}
     }, 500);
     e.preventDefault();
   }
@@ -2653,7 +2653,7 @@ function setupTimerRingDrag() {
     }
     saveState();
     const m = Math.floor((editMode === 'work' ? STATE.timer.workSec : STATE.timer.restSec) / 60);
-    try { toast(`⏱ ${editMode === 'work' ? '作業' : '休憩'} ${m} 分`); } catch(_) {}
+    try { toast(`${editMode === 'work' ? '作業' : '休憩'} ${m} 分`); } catch(_) {}
     // ring を通常状態に戻す（idle 表示用）
     setTimeout(() => {
       zone.classList.remove('editing-work', 'editing-rest');
@@ -2680,7 +2680,7 @@ function pauseMeasure() {
   STATE.measureAccum = (STATE.measureAccum || 0) + elapsed;
   STATE.mode = 'measurePaused';
   document.body.dataset.mode = 'idle';
-  $('#main-btn').textContent = '▶ 計測再開';
+  $('#main-btn').textContent = '計測再開';
   cancelAnimationFrame(timerRaf);
   stopWorkSpawning();
   saveState();
@@ -2692,7 +2692,7 @@ function resumeMeasure() {
   STATE.phaseStart = Date.now();
   STATE.mode = 'measure';
   document.body.dataset.mode = 'measure';
-  $('#main-btn').textContent = '⏹ 計測終了';
+  $('#main-btn').textContent = '計測終了';
   startWorkSpawning();
   requestWakeLock();
   saveState();
@@ -2708,7 +2708,7 @@ function startMeasure() {
   STATE.phaseStart = Date.now();
   STATE.phaseEnd = 0;
   document.body.dataset.mode = 'measure';
-  $('#main-btn').textContent = '⏹ 計測終了';
+  $('#main-btn').textContent = '計測終了';
   $('#main-btn').dataset.state = 'measuring';
   saveState();
   startWorkSpawning();  // 計測中も字は降る（ぽもじを楽しめる）
@@ -2732,7 +2732,7 @@ function stopMeasure() {
   STATE.mode = 'idle';
   STATE.phaseStart = 0;
   document.body.dataset.mode = 'idle';
-  $('#main-btn').textContent = '▶ 始める';
+  $('#main-btn').textContent = '始める';
   $('#main-btn').dataset.state = 'idle';
   setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   updateProgress(0);
@@ -2757,7 +2757,7 @@ function startWork() {
   try { if (!_pipWindow && 'documentPictureInPicture' in window) toggleTimerPiP(); } catch(_) {}
   STATE.phaseEnd = Date.now() + STATE.timer.workSec * 1000;
   document.body.dataset.mode = 'work';
-  $('#main-btn').textContent = '⏸ 一時停止';
+  $('#main-btn').textContent = '一時停止';
   $('#main-btn').dataset.state = 'running';
   saveState();
   updateProgressPill();
@@ -2809,7 +2809,7 @@ function triggerLuckyCombo() {
   if (candidates.length === 0) return false;
   const r = candidates[Math.floor(Math.random() * candidates.length)];
   const codex = window.KANJI_CODEX || [];
-  try { toast(`✨ 熟語ラッキー：${r.word}`, r.rarity); } catch(_) {}
+  try { toast(`熟語ラッキー：${r.word}`, r.rarity); } catch(_) {}
   r.chars.forEach((c, i) => {
     setTimeout(() => {
       if (STATE.mode !== 'work') return;
@@ -2869,7 +2869,7 @@ function pauseTimer() {
   STATE.pausedMode = STATE.mode;
   STATE.pausedRemaining = Math.max(0, STATE.phaseEnd - Date.now());
   STATE.mode = 'paused';
-  $('#main-btn').textContent = '▶ 再開';
+  $('#main-btn').textContent = '再開';
   $('#main-btn').dataset.state = 'paused';
   saveState();
   updateProgressPill();
@@ -2896,7 +2896,7 @@ function resumeTimer() {
     document.body.dataset.mode = 'work';
     startWorkSpawning();
   }
-  $('#main-btn').textContent = '⏸ 一時停止';
+  $('#main-btn').textContent = '一時停止';
   $('#main-btn').dataset.state = 'running';
   saveState();
   refreshAudioByMode();
@@ -2907,7 +2907,7 @@ function resumeTimer() {
 function stopTimer() {
   STATE.mode = 'idle';
   document.body.dataset.mode = 'idle';
-  $('#main-btn').textContent = '▶ 始める';
+  $('#main-btn').textContent = '始める';
   $('#main-btn').dataset.state = 'idle';
   setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   try { releaseWakeLock(); } catch(_) {}
@@ -2950,7 +2950,7 @@ function completePhase() {
     stopWorkSpawning();
     spawnCycleDrops();
     updateProgressPill();
-    flashCompletionBurst('☔ 凝縮 完了');
+    flashCompletionBurst('凝縮 完了');
     burstPartyPersistents();
     playSFX('cycle');
     writeSharedRbJikoku();   // 5本柱接続：時刻メトリクスを共有
@@ -2967,7 +2967,7 @@ function completePhase() {
     // rest モード開始を少し遅らせる：cycle drops が画面に着地〜泡化する余裕を持たせる
     setTimeout(() => startRest(), 600);
   } else if (STATE.mode === 'rest') {
-    flashCompletionBurst('🫧 発散 完了');
+    flashCompletionBurst('発散 完了');
     stopRisingPomoji();
     // v10n16/17: セット数カウント＆目標到達判定 → 未達なら自動で次の作業へ
     if (!STATE.timer.setsDone) STATE.timer.setsDone = 0;
@@ -3121,7 +3121,7 @@ function _hideHarvestCounter() {
   const c = document.getElementById('harvest-counter');
   if (!c) return;
   if (_harvestCount > 0) {
-    c.textContent = `✨ ${_harvestCount} 個 収穫！`;
+    c.textContent = `${_harvestCount} 個 収穫！`;
     c.classList.add('done');
     setTimeout(() => { c.remove(); }, 1400);
   } else {
@@ -3417,7 +3417,7 @@ function bumpDailyLog(field, amount) {
   }
 }
 
-// 🌙 昨日の送り状 ── 朝の再起動で見られる、寝る前への鼓舞
+//  昨日の送り状 ── 朝の再起動で見られる、寝る前への鼓舞
 function showDailyReportIfNew() {
   const today = new Date().toISOString().slice(0, 10);
   // 既に今日の起動で表示済ならスキップ
@@ -3451,11 +3451,11 @@ function showDailyReportIfNew() {
   } },
     el('div', { class:'daily-report-card' },
       el('button', { class:'dr-close', onclick: () => overlay.remove() }, '×'),
-      el('div', { class:'dr-moon' }, '🌙'),
+      el('div', { class:'dr-moon' }, ''),
       el('h2', { class:'dr-title' }, `${dateLabel} の送り状`),
       el('div', { class:'dr-grid' },
         el('div', { class:'dr-cell' },
-          el('div', { class:'dr-icon' }, '🎯'),
+          el('div', { class:'dr-icon' }, ''),
           el('div', { class:'dr-num' }, cycles.toLocaleString()),
           el('div', { class:'dr-label' }, 'サイクル')
         ),
@@ -3465,12 +3465,12 @@ function showDailyReportIfNew() {
           el('div', { class:'dr-label' }, '新発見字')
         ),
         el('div', { class:'dr-cell' },
-          el('div', { class:'dr-icon' }, '✨'),
+          el('div', { class:'dr-icon' }, ''),
           el('div', { class:'dr-num' }, newYoji.toLocaleString()),
           el('div', { class:'dr-label' }, '新解放熟語')
         ),
         el('div', { class:'dr-cell' },
-          el('div', { class:'dr-icon' }, '⚡'),
+          el('div', { class:'dr-icon' }, ''),
           el('div', { class:'dr-num' }, exp >= 10000 ? Math.round(exp/1000) + 'k' : exp.toLocaleString()),
           el('div', { class:'dr-label' }, '獲得 EXP')
         )
@@ -3523,7 +3523,7 @@ function grantDiscoveryBonus(rarity, char) {
   STATE.stats.totalExp = (STATE.stats.totalExp || 0) + total;
 
   if (milestoneMul > 1) {
-    toast(`✦ 発見 ${uniq} 種達成！ ボーナス ×${milestoneMul}`, rarity);
+    toast(` 発見 ${uniq} 種達成！ ボーナス ×${milestoneMul}`, rarity);
     spawnMilestoneBurst(uniq, milestoneMul);
     playSFX('milestone');
   }
@@ -3567,7 +3567,7 @@ function dropCascade(kanjiList, baseDelay=220, tierJump=420) {
       const obj = spawnPomoji({ kanji: k });
       // 拾段/初段なら追加で軽い演出
       if (tierIdx >= 4 && obj) {
-        toast(`✦ ${k.char || k.c}（${k.rarity}）`, k.rarity);
+        toast(` ${k.char || k.c}（${k.rarity}）`, k.rarity);
       }
     }, t);
   });
@@ -3866,7 +3866,7 @@ function physicsStep() {
         p.vy = 0;
         // 横慣性は少し残す（自然に転がる）
         p.vx *= 0.6;
-        // 🫧 休憩中に着地した字は即座に泡（rising）化 ── 取り残し防止
+        //  休憩中に着地した字は即座に泡（rising）化 ── 取り残し防止
         if (STATE.mode === 'rest' && !p.persistent) {
           convertToRising(p);
           continue;
@@ -4117,7 +4117,7 @@ function feedPomojiToMember(p, idx, cardEl) {
     spawnXpFloat(r.left + r.width/2, r.top, exp, p.rarity);
   }
   try { playSFX(same ? 'merge' : 'pop'); } catch(_) {}
-  if (same) try { toast(`✦ 同字餌付け：${p.char} → ${member.char} EXP ×4`, p.rarity); } catch(_) {}
+  if (same) try { toast(` 同字餌付け：${p.char} → ${member.char} EXP ×4`, p.rarity); } catch(_) {}
   setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); renderParty(); }, 380);
 }
 
@@ -4248,7 +4248,7 @@ function triggerPartyBuff(c, rarity) {
   _tempBuffs = _tempBuffs.filter(b => b.type !== buff.type);
   _tempBuffs.push(buff);
   invalidateAggCache();
-  try { toast('✨ ' + buff.label, rarity); } catch(_) {}
+  try { toast(buff.label, rarity); } catch(_) {}
   if (buff.aura) {
     document.body.classList.add('combo-aura-' + buff.aura);
     setTimeout(() => document.body.classList.remove('combo-aura-' + buff.aura), 3000);
@@ -4287,7 +4287,7 @@ function addStock(char) {
 
   if (STATE.party && STATE.party.members) {
     // ストック→Lv：パーティ全員に rarity 比例の小 EXP
-    // 🌟「ぽ文字漢」コンボ成立時は ×1.3
+    // 「ぽ文字漢」コンボ成立時は ×1.3
     const agg = aggregatePartyPerks();
     const stockMul = (agg && agg.stockExpMul) ? agg.stockExpMul : 1.0;
     // v1.4.2: stock EXP を更に控えめに（旧 0.3 → 0.15）
@@ -4426,7 +4426,7 @@ function mergePomoji(src, target) {
     target.el.classList.add(`merge-lv-${newLv}`);
     target.el.classList.add('merge-evolve');
     setTimeout(() => target.el.classList.remove('merge-evolve'), 600);
-    if (newLv >= 2) toast(`✦ 進化 ${target.char} Lv${newLv}`, src.rarity);
+    if (newLv >= 2) toast(` 進化 ${target.char} Lv${newLv}`, src.rarity);
     playSFX('merge');
   }
 
@@ -4437,13 +4437,13 @@ function mergePomoji(src, target) {
       STATE.party.members[i].level += 1;
       onLevelUp(STATE.party.members[i], i);
     }
-    toast(`⚡ 連鎖 大爆発！ 全員 Lv+1`, '★8');
+    toast(`連鎖 大爆発！ 全員 Lv+1`, '★8');
   }
   // 神撃（legendary_burst）：10% で EXP × 10
   if (agg.megaBurst && Math.random() < agg.megaBurst) {
     const bonus = exp * 9;  // 既に exp 入れてるので追加で 9倍 = 合計 10倍
     awardExpToParty(target.char, bonus) || _orphanExp(bonus);
-    toast(`🌟 神撃 EXP ×10`, '★16');
+    toast(` 神撃 EXP ×10`, '★16');
     spawnXpFloat(target.x + SIZE/2, target.y - 20, bonus, target.rarity);
   }
 
@@ -4456,7 +4456,7 @@ function mergePomoji(src, target) {
   }, 800);
   if (tagMatch) {
     const shared = Array.from(srcTags).find(t => tgtTags.has(t));
-    toast(`✦ 同質共振「${shared}」XP+50%`);
+    toast(` 同質共振「${shared}」XP+50%`);
   }
 
   addStock(src.char);  // 合体で消える側もストックに（書ける字を増やす）
@@ -4516,7 +4516,7 @@ function updateStreak() {
   // 連続のマイルストーンで toast
   const cur = STATE.streak.current;
   if (cur === 3 || cur === 7 || cur === 14 || cur === 30 || cur % 30 === 0) {
-    toast(`🔥 連続 ${cur} 日 達成`, '★12');
+    toast(`連続 ${cur} 日 達成`, '★12');
     playSFX('milestone');
   }
 }
@@ -4651,7 +4651,7 @@ function renderParty() {
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
     bar.classList.add('empty');
-    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta">✦ リーダー（最初の一字）を選んで始める</button>';
+    bar.innerHTML = '<button class="party-pick-cta" id="party-pick-cta"> リーダー（最初の一字）を選んで始める</button>';
     $('#party-pick-cta').onclick = () => openPartyPicker();
     return;
   }
@@ -4690,7 +4690,7 @@ function renderParty() {
       class: 'party-card empty-slot',
       title: '図鑑で字をタップ → ★リーダー設定 / ＋仲間追加',
       onclick: () => {
-        toast('図鑑📖 で字をタップ → ★リーダーに設定 か ＋仲間に加える');
+        toast('図鑑 で字をタップ → ★リーダーに設定 か ＋仲間に加える');
         openCodex();
       }
     },
@@ -4746,7 +4746,7 @@ function renderComboBar() {
   const effChips = allChips.slice(0, 3);
   const hidden = allChips.length - effChips.length;
   const top = el('div', { class:'cb-top' },
-    el('span', { class:'cb-top-label' }, `⚡ ${combos.length}`),
+    el('span', { class:'cb-top-label' }, `${combos.length}`),
     ...effChips.map(c => el('span', {
       class:'cb-chip', style:{ color: c.color, borderColor: c.color + '55', background: c.color + '15' }
     }, c.icon + ' ' + c.label)),
@@ -4763,7 +4763,7 @@ function renderComboBar() {
       class: `cb-bar-item rarity-${rIdx + 1}${r.special ? ' cb-special' : ''}${ordered ? ' cb-ordered' : ''}`,
       title: (r.desc || r.word) + (ordered ? '\n☆ 並び順一致 ×1.4' : ''),
       onclick: () => showYojiDetail(r),
-    }, (r.special ? '🌟' : '') + r.word + (ordered ? ' ☆' : '')));
+    }, (r.special ? '' : '') + r.word + (ordered ? ' ☆' : '')));
   });
   if (combos.length > 6) {
     bot.appendChild(el('span', { class:'cb-bar-more' }, `他 ${combos.length - 6}`));
@@ -4799,7 +4799,7 @@ function openPartyMemberAction(idx) {
       }
     },
       el('div', { style:{ display:'flex', justifyContent:'space-between', fontSize:'.85rem', fontWeight:700 } },
-        el('span', {}, (isRare ? '✦ ' : '') + p.name),
+        el('span', {}, (isRare ? ' ' : '') + p.name),
         el('span', { style:{ color:'var(--gold)', fontFamily:'JetBrains Mono, monospace', fontSize:'.75rem' } },
           `Lv.${lv}`
         ),
@@ -5311,7 +5311,7 @@ function resetAllData() {
   try {
     localStorage.removeItem(LS_KEY);
     if (_yomuChannel) { try { _yomuChannel.close(); } catch(_) {} }
-    toast('🌀 リセット完了 ── リロードします');
+    toast(' リセット完了 ── リロードします');
     setTimeout(() => location.reload(), 800);
   } catch(e) {
     alert('リセット失敗：' + (e.message || ''));
@@ -5606,10 +5606,10 @@ async function shareHaiku() {
       await navigator.share({ title: 'ぽもじかんの俳句', text: full });
     } else {
       await navigator.clipboard.writeText(full);
-      toast('📋 クリップボードにコピー');
+      toast(' クリップボードにコピー');
     }
   } catch(e) {
-    try { await navigator.clipboard.writeText(full); toast('📋 コピー'); } catch(_) {}
+    try { await navigator.clipboard.writeText(full); toast(' コピー'); } catch(_) {}
   }
 }
 function renderWritingsHistory() {
@@ -5652,8 +5652,8 @@ function detectGenre(chars) {
   if (n === 4) return '四字熟語';
   if (n === 5) return '五字 ・ 俳句の上の句';
   if (n === 7) return '七字 ・ 俳句の中の句';
-  if (n === 17) return '🎯 俳句（5-7-5）';
-  if (n === 31) return '🎯 短歌（5-7-5-7-7）';
+  if (n === 17) return ' 俳句（5-7-5）';
+  if (n === 31) return ' 短歌（5-7-5-7-7）';
   if (n >= 8 && n <= 16) return `短文（${n}字 ／ 俳句まで -${17-n}）`;
   if (n >= 18 && n <= 30) return `詩（${n}字 ／ 短歌まで -${31-n}）`;
   if (n > 31 && n <= 50) return `散文（${n}字）`;
@@ -5839,7 +5839,7 @@ function _onRainybrainMessage(e) {
       const drops = Math.min(10, Math.floor(min / 5));
       if (drops > 0 && STATE.mode === 'work') {
         for (let i = 0; i < drops; i++) setTimeout(() => spawnPomoji({}), i * 200);
-        try { toast(`📖 読雨から ${drops} 字 降臨（読書 ${min} 分）`); } catch(_) {}
+        try { toast(` 読雨から ${drops} 字 降臨（読書 ${min} 分）`); } catch(_) {}
       }
     }
     // マネぼう／服牢365 のタスク完了 → リーダーに小 EXP ボーナス
@@ -5849,13 +5849,13 @@ function _onRainybrainMessage(e) {
         const exp = Math.max(10, Math.floor(50 * leaderLvMul()));
         awardExpToParty(hero.char, exp);
         try { spawnXpFloat(window.innerWidth/2, 80, exp, hero.rarity); } catch(_) {}
-        try { toast(`✦ 他アプリ達成 EXP +${exp}`); } catch(_) {}
+        try { toast(` 他アプリ達成 EXP +${exp}`); } catch(_) {}
       }
     }
     // 服牢365 の名言登録 → ★レア度ランダムの字を 1 粒
     else if (msg.event === 'fukurou365_quote_added' || msg.event === 'quote_added') {
       if (STATE.mode === 'work') setTimeout(() => spawnPomoji({}), 100);
-      try { toast('💬 服牢365 から 1 字 降臨'); } catch(_) {}
+      try { toast(' 服牢365 から 1 字 降臨'); } catch(_) {}
     }
     // 汎用：external_usage（任意アプリが稼働時間報告）
     else if (msg.event === 'external_usage') {
@@ -5863,7 +5863,7 @@ function _onRainybrainMessage(e) {
       const drops = Math.min(15, Math.floor(min / 10));
       if (drops > 0 && STATE.mode === 'work') {
         for (let i = 0; i < drops; i++) setTimeout(() => spawnPomoji({}), i * 150);
-        try { toast(`⏱ 他アプリから ${drops} 字 降臨（${min} 分）`); } catch(_) {}
+        try { toast(`他アプリから ${drops} 字 降臨（${min} 分）`); } catch(_) {}
       }
     }
   } catch(_) {}
@@ -6051,7 +6051,7 @@ function renderCodexFilterSummary() {
   if (!s) return;
   const parts = [];
   if (codexFilter.season !== 'all') {
-    const labels = { S1:'S1 字種', S2:'S2 漢字', S3:'S3 熟語', S4:'S4 四字熟語', S5:'S5 昭和', S6:'S6 令和', S7:'S7 未来', S8:'S8 世界', PERKS:'✦ 特性' };
+    const labels = { S1:'S1 字種', S2:'S2 漢字', S3:'S3 熟語', S4:'S4 四字熟語', S5:'S5 昭和', S6:'S6 令和', S7:'S7 未来', S8:'S8 世界', PERKS:' 特性' };
     parts.push(labels[codexFilter.season] || codexFilter.season);
   }
   if (codexFilter.tier !== 'all') parts.push('★' + (parseInt(codexFilter.tier) + 1));
@@ -6061,7 +6061,7 @@ function renderCodexFilterSummary() {
   if (codexFilter.onlySeen) parts.push('発見済のみ');
   if (codexFilter.onlyFavorite) parts.push('⭐');
   if (parts.length === 0) { s.style.display = 'none'; s.textContent = ''; }
-  else { s.style.display = ''; s.textContent = '🎯 ' + parts.join(' × '); }
+  else { s.style.display = ''; s.textContent = ' ' + parts.join(' × '); }
 }
 
 // v1.0.3: ヘルプ＋ツアー統合モーダル
@@ -6080,10 +6080,10 @@ function openHelpPlusTour() {
             '🎓 新機能ツアー（5 ページ）'),
           el('button', { class:'btn-secondary', style:{ minHeight:'48px' },
             onclick: () => { modal.classList.remove('show'); $('#help-modal')?.classList.add('show'); } },
-            '📖 操作ガイド'),
+            ' 操作ガイド'),
           el('a', { href:'changelog.html', target:'_blank', rel:'noopener',
             style:{ marginTop:'4px', textAlign:'center', color:'var(--ink-mute)', fontSize:'.78rem' } },
-            '📜 変更履歴'),
+            ' 変更履歴'),
         ),
       ),
     );
@@ -6095,11 +6095,11 @@ function openHelpPlusTour() {
 // v10n16: 新機能ツアー（5 ページに圧縮）
 const CURRENT_VERSION = 'v1.0.0';
 const TOUR_PAGES = [
-  { emoji:'★', title:'リーダー制', body:'「主人公」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。🗂 編成プリセットで名前付き保存（最大12個）。' },
-  { emoji:'⚡', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで⚙ パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
+  { emoji:'★', title:'リーダー制', body:'「主人公」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。編 編成プリセットで名前付き保存（最大12個）。' },
+  { emoji:'', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで⚙ パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
   { emoji:'🎰', title:'物理＆タイマー UI', body:'コインプッシャー型：字が押されて棚から落ちると自動EXP化＝重くならない。タイマー円の縁をなぞって分数設定、長押しで休憩時間。' },
-  { emoji:'👁', title:'現効果パネル & HUD', body:'パーティ下に EXP / 重力 / 融合 / 粒+ / ストック / 進化加速が常時表示。画面左上 HUD で次の推薦コンボも見える。図鑑は折りたたみで見やすく。' },
-  { emoji:'📺', title:'画面外でも動く', body:'メニュー右上 ☰ →「📺 小窓タイマー」で他アプリ作業中も時計が前面に。Wake Lock で画面が暗くならず、🔔 通知でサイクル完了も逃さない。💾 データ管理で別端末引継ぎも。' },
+  { emoji:'', title:'現効果パネル & HUD', body:'パーティ下に EXP / 重力 / 融合 / 粒+ / ストック / 進化加速が常時表示。画面左上 HUD で次の推薦コンボも見える。図鑑は折りたたみで見やすく。' },
+  { emoji:'', title:'画面外でも動く', body:'メニュー右上 ≡ →「 小窓タイマー」で他アプリ作業中も時計が前面に。Wake Lock で画面が暗くならず、 通知でサイクル完了も逃さない。 データ管理で別端末引継ぎも。' },
 ];
 function openTour(force=false) {
   if (!force && STATE.lastSeenVersion === CURRENT_VERSION) return;
@@ -6115,7 +6115,7 @@ function openTour(force=false) {
         el('div', { style:{ padding:'8px 20px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'8px' } },
           el('button', { class:'btn-secondary', id:'tour-prev', style:{ minWidth:'72px' } }, '◀'),
           el('div', { id:'tour-dots', style:{ display:'flex', gap:'4px' } }),
-          el('button', { class:'btn-primary', id:'tour-next', style:{ minWidth:'72px' } }, '▶'),
+          el('button', { class:'btn-primary', id:'tour-next', style:{ minWidth:'72px' } }, ''),
         ),
       ),
     );
@@ -6135,7 +6135,7 @@ function openTour(force=false) {
         background: i === page ? 'var(--gold)' : 'rgba(255,255,255,.2)' }
     })));
     $('#tour-prev').disabled = (page === 0);
-    $('#tour-next').textContent = (page === TOUR_PAGES.length - 1) ? '✓ 始める' : '▶';
+    $('#tour-next').textContent = (page === TOUR_PAGES.length - 1) ? '✓ 始める' : '';
   }
   $('#tour-prev').onclick = () => { if (page > 0) { page--; render(); } };
   $('#tour-next').onclick = () => {
@@ -6159,7 +6159,7 @@ function openDataManager() {
     modal = el('div', { class:'modal', id:'data-manager-modal', role:'dialog' },
       el('div', { class:'modal-card', style:{ maxWidth:'480px' } },
         el('div', { class:'modal-head' },
-          el('div', { class:'modal-title' }, '💾 データ管理'),
+          el('div', { class:'modal-title' }, ' データ管理'),
           el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
         ),
         el('div', { style:{ padding:'14px 18px', display:'flex', flexDirection:'column', gap:'14px' } },
@@ -6177,12 +6177,12 @@ function openDataManager() {
           el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', lineHeight:1.4 } },
             '⚠ 現在のデータは上書きされます。心配なら先に書き出してから'),
           el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:'10px', lineHeight:1.4 } },
-            '💡 別の端末で続きを遊ぶ：1) ここで書き出し  2) 別端末で同じアプリ開く  3) ここから復元'),
+            ' 別の端末で続きを遊ぶ：1) ここで書き出し  2) 別端末で同じアプリ開く  3) ここから復元'),
           el('button', { class:'btn-danger', style:{ padding:'10px', minHeight:'48px', marginTop:'10px' },
             onclick: resetAllData },
             '⚠ すべてのデータをリセット（始めから）'),
           el('div', { style:{ fontSize:'.7rem', color:'#ffb070', lineHeight:1.4 } },
-            '🛑 注意：パーティ・字 Lv・ストック・プリセット・記録 全て消去。先に書出してから推奨'),
+            ' 注意：パーティ・字 Lv・ストック・プリセット・記録 全て消去。先に書出してから推奨'),
         ),
       ),
     );
@@ -6243,7 +6243,7 @@ function renderHUD() {
   const buffs = getActiveTempBuffs ? getActiveTempBuffs() : [];
   for (const b of buffs) {
     const sec = Math.max(0, Math.ceil((b.until - Date.now()) / 1000));
-    hud.appendChild(el('div', { class:'hud-row hud-buff' }, `✨ ${b.src}：${b.label.replace(/（.+?）/, '')}（${sec}s）`));
+    hud.appendChild(el('div', { class:'hud-row hud-buff' }, ` ${b.src}：${b.label.replace(/（.+?）/, '')}（${sec}s）`));
   }
 }
 function toggleHUD() {
@@ -6253,7 +6253,7 @@ function toggleHUD() {
   if (stateEl) stateEl.textContent = STATE.hudEnabled ? 'オン' : 'オフ';
   if (STATE.hudEnabled) renderHUD();
   else $('#play-hud')?.remove();
-  toast(`👁 HUD ${STATE.hudEnabled ? 'オン' : 'オフ'}`);
+  toast(` HUD ${STATE.hudEnabled ? 'オン' : 'オフ'}`);
 }
 
 // v10n9: パーティプリセット保存／読込
@@ -6275,12 +6275,12 @@ function savePartyPreset() {
   };
   // v1.3.17: 12 個満タンなら新規保存不可（自動削除しない）
   if (STATE.partyPresets.length >= 12) {
-    toast('プリセット上限（12）── 不要な物を 🗑 で外してから');
+    toast('プリセット上限（12）── 不要な物を外してから');
     return;
   }
   STATE.partyPresets.push(preset);
   saveState();
-  toast(`💾 「${trimmed}」保存`);
+  toast(` 「${trimmed}」保存`);
   if ($('#party-presets-modal')?.classList.contains('show')) renderPartyPresetsModal();
 }
 function loadPartyPreset(id) {
@@ -6302,7 +6302,7 @@ function deletePartyPreset(id) {
   if (!confirm(`「${p.name}」削除？`)) return;
   STATE.partyPresets = STATE.partyPresets.filter(x => x.id !== id);
   saveState();
-  toast(`🗑 削除`);
+  toast(` 削除`);
   if ($('#party-presets-modal')?.classList.contains('show')) renderPartyPresetsModal();
 }
 function openPartyPresets() {
@@ -6311,12 +6311,12 @@ function openPartyPresets() {
     modal = el('div', { class:'modal', id:'party-presets-modal', role:'dialog' },
       el('div', { class:'modal-card', style:{ maxWidth:'520px' } },
         el('div', { class:'modal-head' },
-          el('div', { class:'modal-title' }, '🗂 パーティ プリセット'),
+          el('div', { class:'modal-title' }, 'パーティ プリセット'),
           el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
         ),
         el('div', { id:'party-presets-list', style:{ padding:'12px 16px', display:'flex', flexDirection:'column', gap:'8px' } }),
         el('div', { style:{ padding:'8px 16px 16px', display:'flex', gap:'8px' } },
-          el('button', { class:'btn-primary', onclick: savePartyPreset, style:{ flex:1 } }, '💾 現パーティを保存'),
+          el('button', { class:'btn-primary', onclick: savePartyPreset, style:{ flex:1 } }, ' 現パーティを保存'),
         ),
       )
     );
@@ -6354,7 +6354,7 @@ function renderPartyPresetsModal() {
       el('button', { class:'btn-secondary', style:{ padding:'4px 10px', fontSize:'.78rem' },
         onclick: () => loadPartyPreset(p.id) }, '📂 読込'),
       el('button', { class:'btn-danger', style:{ padding:'4px 8px', fontSize:'.78rem' },
-        onclick: () => deletePartyPreset(p.id) }, '🗑'),
+        onclick: () => deletePartyPreset(p.id) }, ''),
     ));
   });
 }
@@ -6448,7 +6448,7 @@ function renderEffectsPanel() {
   }
   const collapsed = panel.classList.contains('collapsed');
   panel.innerHTML = '';
-  // v1.0.4: 簡潔ヘッダ「⚡ 効果 N/8（うち強 M）」
+  // v1.0.4: 簡潔ヘッダ「 効果 N/8（うち強 M）」
   const modeLabel = strongCount >= 3 ? '大爆発中' : strongCount >= 1 ? '強化中' : activeCount >= 4 ? '稼働中' : activeCount > 0 ? '静か' : '休眠';
   const modeColor = strongCount >= 3 ? '#ffd86b' : strongCount >= 1 ? '#ffc070' : activeCount > 0 ? '#cfe6ff' : 'var(--ink-mute)';
   const header = el('div', { class:'ep-head' },
@@ -6457,13 +6457,13 @@ function renderEffectsPanel() {
     }, collapsed ? '▸' : '▾'),
     el('span', { class:'ep-title',
       onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
-    }, '⚡ 効果'),
+    }, '効果'),
     el('span', { class:'ep-mode', style:{ color: modeColor, fontWeight:700 },
       onclick: () => { panel.classList.toggle('collapsed'); renderEffectsPanel(); },
     }, `${activeCount}/8 ・ ${modeLabel}`),
     el('button', { class:'ep-preset-btn', title:'パーティ プリセット',
       onclick: (e) => { e.stopPropagation(); openPartyPresets(); },
-    }, '🗂'),
+    }, '編'),
   );
   panel.appendChild(header);
   if (!collapsed) {
@@ -6721,7 +6721,7 @@ function openComboPlacementPicker(r) {
   const modal = el('div', { class:'modal show', id:'combo-placement-modal', role:'dialog' },
     el('div', { class:'modal-card', style:{ maxWidth:'440px' } },
       el('div', { class:'modal-head' },
-        el('div', { class:'modal-title' }, `✨ 配置：${r.word}`),
+        el('div', { class:'modal-title' }, ` 配置：${r.word}`),
         el('button', { class:'modal-close', onclick: () => modal.remove() }, '×'),
       ),
       el('div', { style:{ padding:'12px 16px' } },
@@ -6747,7 +6747,7 @@ function openComboPlacementPicker(r) {
           renderParty();
           updateProgressPill();
           try { playSFX('unlock'); } catch(_) {}
-          toast(`✨ 「${r.word}」配置完了 ── 順番一致でコンボ ×1.4`, r.rarity);
+          toast(` 「${r.word}」配置完了 ── 順番一致でコンボ ×1.4`, r.rarity);
           modal.remove();
         } }, '✓ この配置で確定'),
       ),
@@ -6787,7 +6787,7 @@ function assemblePartyFromYoji(r) {
   renderParty();
   updateProgressPill();
   try { playSFX('unlock'); } catch(_) {}
-  toast(`✨「${r.word}」コンボ編成完了`, r.rarity);
+  toast(`「${r.word}」コンボ編成完了`, r.rarity);
   return { ok:true };
 }
 
@@ -6838,7 +6838,7 @@ function suggestNearComboYoji() {
   }
   // ランダムで 1 個ピックして表示
   const pick = candidates[Math.floor(Math.random() * candidates.length)];
-  toast(`💡 「${pick.missingChar}」を仲間にすれば「${pick.recipe.word}」発動`, pick.recipe.rarity);
+  toast(` 「${pick.missingChar}」を仲間にすれば「${pick.recipe.word}」発動`, pick.recipe.rarity);
 }
 
 // シーズンタブに「N件」バッジを付与（解放欲を煽る）
@@ -6947,14 +6947,14 @@ function showYojiDetail(r) {
       background:'linear-gradient(90deg, rgba(240,212,138,.18), rgba(240,212,138,.06))',
       border:'1px solid rgba(240,212,138,.45)', borderRadius:'6px',
       fontSize:'.78rem', color:'#f0e0a8', lineHeight:1.35,
-    } }, '✦ 固有効果 ── ' + (UNIQUE_COMBO_EFFECTS[r.word].story || '物語のある効果')) : null,
+    } }, ' 固有効果 ── ' + (UNIQUE_COMBO_EFFECTS[r.word].story || '物語のある効果')) : null,
     // v10n8: コンボ効果プレビュー（数値）
     found ? el('div', { class:'ydp-preview', style:{
       margin:'6px 0', padding:'6px 8px',
       background:'rgba(135,206,235,.10)', border:'1px solid rgba(135,206,235,.30)',
       borderRadius:'6px', fontSize:'.72rem', color:'#cfe6ff', lineHeight:1.4,
     } },
-      el('div', { style:{ fontWeight:700, marginBottom:'2px', color:'#87ceeb' } }, '⚡ 発動時の効果（現在のリーダー Lv 基準）'),
+      el('div', { style:{ fontWeight:700, marginBottom:'2px', color:'#87ceeb' } }, ' 発動時の効果（現在のリーダー Lv 基準）'),
       el('div', {}, formatComboEffect(previewComboEffect(r)))
     ) : null,
     el('div', { class:'ydp-chars-label' }, '構成字'),
@@ -7000,7 +7000,7 @@ function showYojiDetail(r) {
           pop.remove();
           openComboPlacementPicker(r);
         },
-      }, allInParty ? '✓ 発動中' : '✨ このコンボで編成') : null,
+      }, allInParty ? '✓ 発動中' : ' このコンボで編成') : null,
     ),
   );
   document.body.appendChild(pop);
@@ -7198,7 +7198,7 @@ function renderCodex() {
   if (codexFilter.season === 'PERKS') {
     const perks = Object.entries(PERKS);
     const section = el('div', { class:'codex-section' },
-      el('h3', { class:'codex-section-title' }, `✦ 特性図鑑（${perks.length} 個 ・ 字をストックして育つ）`)
+      el('h3', { class:'codex-section-title' }, ` 特性図鑑（${perks.length} 個 ・ 字をストックして育つ）`)
     );
     const list = el('div', { class:'perk-codex-list' });
     // パーティ持ち特性を先頭に
@@ -7223,11 +7223,11 @@ function renderCodex() {
       const isOwned = ownedPerks.has(pid);
       if (isOwned) ownedCnt++;
       const catLabel = {
-        basic:'基本', tag:'タグ系', rare:'✦ レア', special:'主人公専用',
+        basic:'基本', tag:'タグ系', rare:' レア', special:'主人公専用',
       }[cat] || cat;
       // 未獲得：名前・効果を「???」でマスク。カテゴリと「入手方法」だけ見せる
       const displayName = isOwned
-        ? ((isRare ? '✦ ' : isSpecial ? '★ ' : '') + p.name)
+        ? ((isRare ? ' ' : isSpecial ? '★ ' : '') + p.name)
         : '？？？';
       const displayDesc = isOwned ? (p.desc || '') : '─ 入手して効果を確認 ─';
       const card = el('div', { class:'perk-card cat-' + cat + (isRare ? ' rare' : '') + (isOwned ? ' owned' : ' locked') },
@@ -7507,18 +7507,18 @@ function updateProgressPill() {
   const achName = TIER_ACHIEVEMENT[tier];
   // モード表示を冒頭に
   const modeLabel =
-    STATE.mode === 'work'   ? '🎯 作業中' :
-    STATE.mode === 'rest'   ? '🫧 休憩中' :
-    STATE.mode === 'paused' ? '⏸ 一時停止' :
-    '⌛ 準備中';
+    STATE.mode === 'work'   ? '作業中' :
+    STATE.mode === 'rest'   ? '休憩中' :
+    STATE.mode === 'paused' ? '一時停止' :
+    '待機';
   bandEl.textContent = `${modeLabel} ・ ${tierName}帯 ${achName}`;
   const streak = STATE.streak?.current || 0;
-  const streakStr = streak > 0 ? `🔥${streak}日 ・ ` : '';
+  const streakStr = streak > 0 ? `継続${streak}日 ・ ` : '';
   // v10n17: セット進捗（target>0 かつ作業/休憩中）
   const tgt = STATE.timer?.setsTarget || 0;
   const done = STATE.timer?.setsDone || 0;
   const setsStr = (tgt > 0 && (STATE.mode === 'work' || STATE.mode === 'rest'))
-    ? `🔁 ${done + (STATE.mode === 'work' ? 1 : 0)}/${tgt}セット ・ ` : '';
+    ? `${done + (STATE.mode === 'work' ? 1 : 0)}/${tgt}セット ・ ` : '';
   cycEl.textContent = `${setsStr}${streakStr}${STATE.stats.totalCycles || 0} 回完了`;
   // リーダー Lv ＋ 次解放までの差分
   const ldrEl = $('#pp-leader');
@@ -7530,7 +7530,7 @@ function updateProgressPill() {
       const remain = nextLv != null ? nextLv - hero.level : null;
       ldrEl.textContent = nextTierName && remain > 0
         ? `${hero.char} Lv.${hero.level} 🔓 ${nextTierName}まで-${remain}`
-        : `${hero.char} Lv.${hero.level} ✦ 全解放済`;
+        : `${hero.char} Lv.${hero.level}  全解放済`;
     } else {
       ldrEl.textContent = '主人公 未選択';
     }
@@ -7572,7 +7572,7 @@ function openStats() {
   list.innerHTML = '';
   const cells = [
     { label:'累計サイクル', value: STATE.stats.totalCycles || 0 },
-    { label:'🔥 連続日数', value: `${STATE.streak?.current || 0} 日（最長 ${STATE.streak?.longest || 0}）` },
+    { label:'連続日数', value: `${STATE.streak?.current || 0} 日（最長 ${STATE.streak?.longest || 0}）` },
     { label:'🛡 ストリークフリーズ', value: `${STATE.streakFreezes || 0} / 3（10日毎+1 ・ 1日休み救済）` },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
@@ -7770,7 +7770,7 @@ function openStats() {
         el('div', { class:'milestone-icon' }, '🏆'),
         el('div', { class:'milestone-label' }, m.label),
         el('div', { class:'milestone-desc' }, m.desc),
-        el('div', { class:'milestone-date' }, dateStr + ' ▶')
+        el('div', { class:'milestone-date' }, dateStr + ' ')
       );
       cell.addEventListener('click', () => {
         try { spawnMilestoneCelebration(m); playSFX('milestone'); } catch(_) {}
@@ -7835,7 +7835,7 @@ function ensureNotificationPermission() {
 function notifyPhaseComplete(prevMode) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try {
-    const title = prevMode === 'work' ? '🫧 作業完了 ── 休憩へ' : '🌧 休憩完了 ── 次のサイクルへ';
+    const title = prevMode === 'work' ? '作業完了 ── 休憩へ' : '休憩完了 ── 次のサイクルへ';
     const body  = prevMode === 'work' ? `${Math.floor(STATE.timer.restSec/60)} 分の休憩` : `${Math.floor(STATE.timer.workSec/60)} 分の作業`;
     new Notification(title, {
       body, icon: './icon-192.png', tag: 'pomojikan-phase', renotify: true, silent: false,
@@ -7866,8 +7866,8 @@ async function toggleTimerPiP() {
       <span id="pip-dot" style="width:10px;height:10px;border-radius:50%;background:#666;flex:0 0 auto;box-shadow:0 0 0 rgba(0,0,0,0);transition:background .3s,box-shadow .3s;"></span>
       <div id="pip-text" style="font-size:2.6rem;font-weight:800;letter-spacing:.04em;line-height:1;">--:--</div>
       <span id="pip-sets" style="position:absolute;bottom:6px;left:10px;font-size:.6rem;opacity:.6;font-family:sans-serif;color:#cfe6ff;"></span>
-      <span id="pip-mode" style="position:absolute;bottom:6px;right:10px;font-size:.6rem;opacity:.55;font-family:sans-serif;">⏸</span>
-      <span id="pip-stop" style="position:absolute;top:4px;right:8px;font-size:.7rem;opacity:.5;cursor:pointer;user-select:none;" title="クリックで停止">⏹</span>
+      <span id="pip-mode" style="position:absolute;bottom:6px;right:10px;font-size:.6rem;opacity:.55;font-family:sans-serif;">停</span>
+      <span id="pip-stop" style="position:absolute;top:4px;right:8px;font-size:.7rem;opacity:.5;cursor:pointer;user-select:none;" title="クリックで停止">×</span>
       <svg id="pip-svg-hidden" style="display:none"><circle id="pip-fg"/></svg>
     `;
     // v1.4.9: PiP からの停止操作
@@ -7887,7 +7887,7 @@ async function toggleTimerPiP() {
       clearTimeout(_pipRaf);  // v10n15 fix: setTimeout なので clearTimeout
     });
     syncPiP();
-    toast('📺 PiP 開始 ── 他アプリ作業中もタイマーが見える');
+    toast(' PiP 開始 ── 他アプリ作業中もタイマーが見える');
   } catch(e) {
     toast('⚠ PiP 起動失敗: ' + (e.message || ''));
     _pipWindow = null;
@@ -8002,7 +8002,7 @@ function offlineBonusCascade(count) {
   awardExpToParty(hero.char, exp);
   try {
     spawnXpFloat(window.innerWidth/2, 100, exp, hero.rarity);
-    toast(`🌅 おかえり ── 不在の ${count} 粒を吸収 EXP +${exp}`);
+    toast(`おかえり ── 不在の ${count} 粒を吸収 EXP +${exp}`);
   } catch(_) {}
 }
 
@@ -8069,7 +8069,7 @@ function bindEvents() {
   menuClick('#m-pip',        toggleTimerPiP);
   menuClick('#m-theme',      openThemePicker);
   menuClick('#m-writings',   openWritings);
-  // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／🗂 プリセットで全カバー済
+  // v10n11: m-edit-party 廃止 ── 図鑑からリーダー設定／編 プリセットで全カバー済
   menuClick('#m-sleep', openSleep);
   menuClick('#m-measure', () => { STATE.mode === 'measure' ? stopMeasure() : startMeasure(); });
   // スリープ：オーバーレイのどこでもタップで起きる
