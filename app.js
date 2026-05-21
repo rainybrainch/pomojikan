@@ -2479,12 +2479,12 @@ function renderPickerPool() {
 let timerRaf = 0;
 let _hudTickCounter = 0;
 function tick() {
-  // v1.4.6: 計測モード（カウントアップ）
+  // v1.4.6/v1.5.14: 計測モード（カウントアップ・累積方式）
   if (STATE.mode === 'measure') {
-    const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
-    setTextWithLvBand("timer-text", fmtTime(elapsed));
-    // リング進捗：60 分でフルになる視覚インジケータ（情報用）
-    const pct = Math.min(1, elapsed / 3600);
+    const liveSec = Math.floor((Date.now() - STATE.phaseStart) / 1000);
+    const totalSec = (STATE.measureAccum || 0) + liveSec;
+    setTextWithLvBand("timer-text", fmtTime(totalSec));
+    const pct = Math.min(1, totalSec / 3600);
     updateProgress(pct);
     timerRaf = requestAnimationFrame(tick);
     return;
@@ -2621,6 +2621,33 @@ function setupTimerRingDrag() {
 }
 
 // v1.4.6: 計測モード（カウントアップ） ── ポモドーロ以外の計時にも使う
+// v1.5.14: 計測モードの一時停止／再開（accumulator 方式で正確）
+function pauseMeasure() {
+  if (STATE.mode !== 'measure') return;
+  const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
+  STATE.measureAccum = (STATE.measureAccum || 0) + elapsed;
+  STATE.mode = 'measurePaused';
+  document.body.dataset.mode = 'idle';
+  $('#main-btn').textContent = '▶ 計測再開';
+  cancelAnimationFrame(timerRaf);
+  stopWorkSpawning();
+  saveState();
+  try { releaseWakeLock(); } catch(_) {}
+  toast('計測 一時停止');
+}
+function resumeMeasure() {
+  if (STATE.mode !== 'measurePaused') return;
+  STATE.phaseStart = Date.now();
+  STATE.mode = 'measure';
+  document.body.dataset.mode = 'measure';
+  $('#main-btn').textContent = '⏹ 計測終了';
+  startWorkSpawning();
+  requestWakeLock();
+  saveState();
+  tick();
+  toast('計測 再開');
+}
+
 function startMeasure() {
   if (STATE.mode === 'measure') return;
   stopWorkSpawning();
@@ -2641,8 +2668,10 @@ function startMeasure() {
   tick();
 }
 function stopMeasure() {
-  if (STATE.mode !== 'measure') return;
-  const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
+  if (STATE.mode !== 'measure' && STATE.mode !== 'measurePaused') return;
+  const liveSec = STATE.mode === 'measure' ? Math.floor((Date.now() - STATE.phaseStart) / 1000) : 0;
+  const elapsed = (STATE.measureAccum || 0) + liveSec;
+  STATE.measureAccum = 0;
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;
   if (!STATE.stats) STATE.stats = { totalCycles:0, totalDrops:0, totalExp:0 };
@@ -2784,7 +2813,9 @@ function startRest() {
 
 function pauseTimer() {
   if (STATE.mode !== 'work' && STATE.mode !== 'rest') return;
-  STATE.pausedRemaining = STATE.phaseEnd - Date.now();
+  // v1.5.14: pausedMode を明示保存（body.dataset 依存を解消）
+  STATE.pausedMode = STATE.mode;
+  STATE.pausedRemaining = Math.max(0, STATE.phaseEnd - Date.now());
   STATE.mode = 'paused';
   $('#main-btn').textContent = '▶ 再開';
   $('#main-btn').dataset.state = 'paused';
@@ -2795,21 +2826,29 @@ function pauseTimer() {
   stopWorkSpawning();
   stopRainAudio();
   stopBubbleAudio();
+  try { releaseWakeLock(); } catch(_) {}
 }
 
 function resumeTimer() {
-  STATE.phaseEnd = Date.now() + STATE.pausedRemaining;
-  if (document.body.dataset.mode === 'rest') {
+  // v1.5.14: pausedMode から確実復元
+  const m = STATE.pausedMode || (document.body.dataset.mode === 'rest' ? 'rest' : 'work');
+  STATE.phaseEnd = Date.now() + (STATE.pausedRemaining || 0);
+  STATE.pausedRemaining = 0;
+  STATE.pausedMode = null;
+  if (m === 'rest') {
     STATE.mode = 'rest';
+    document.body.dataset.mode = 'rest';
     startRisingPomoji();
   } else {
     STATE.mode = 'work';
+    document.body.dataset.mode = 'work';
     startWorkSpawning();
   }
   $('#main-btn').textContent = '⏸ 一時停止';
   $('#main-btn').dataset.state = 'running';
   saveState();
   refreshAudioByMode();
+  try { requestWakeLock(); } catch(_) {}
   tick();
 }
 
@@ -7904,7 +7943,9 @@ function offlineBonusCascade(count) {
 function bindEvents() {
   $('#main-btn').addEventListener('click', () => {
     if (!isPartyChosen()) { openPartyPicker(); return; }
-    if (STATE.mode === 'measure') { stopMeasure(); return; }
+    // v1.5.14: 計測中／計測ポーズも処理
+    if (STATE.mode === 'measure') { pauseMeasure(); return; }
+    if (STATE.mode === 'measurePaused') { resumeMeasure(); return; }
     if (STATE.mode === 'idle') startWork();
     else if (STATE.mode === 'paused') resumeTimer();
     else pauseTimer();
