@@ -7122,30 +7122,93 @@ function showCharDetail(c, rarity) {
 
   // v10n3: 図鑑からリーダー設定／パーティ追加を直接できるように
   const hasParty = STATE.party && STATE.party.members && STATE.party.members.length > 0;
+  const partySize = hasParty ? STATE.party.members.length : 0;
   const isAlreadyHero = hasParty && partyIdx >= 0 && partyIdx === (STATE.party.hero || 0);
-  const canRecruit = hasParty && STATE.party.members.length < 4 && partyIdx < 0;
+  const isInParty = partyIdx >= 0;
+  const isFull = partySize >= 4;
+  const canRecruit = hasParty && !isFull && partyIdx < 0;
   const actionBtns = [];
-  if (hasParty && !isAlreadyHero) {
+  // 現パーティ状態の案内
+  if (hasParty) {
+    const partyChars = STATE.party.members.map((m, i) => (i === (STATE.party.hero||0) ? '★' : '') + m.char).join(' ');
+    actionBtns.push(el('div', { class:'cd-party-status', style:{
+      padding:'6px 8px', background:'rgba(135,206,235,.08)', border:'1px solid rgba(135,206,235,.2)',
+      borderRadius:'6px', fontSize:'.72rem', color:'var(--ink-mute)', textAlign:'center',
+    } }, `現パーティ ${partySize}/4 ・ ${partyChars}`));
+  }
+  if (!hasParty) {
     actionBtns.push(el('button', {
       class:'cd-recruit cd-leader-btn',
-      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700 },
+      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700, padding:'12px', fontSize:'.95rem' },
       onclick: () => {
         if (setAsLeader(c, rarity)) {
           $$('.char-detail-pop').forEach(e => e.remove());
           renderCodex();
         }
       },
-    }, '★ リーダーに設定'));
-  }
-  if (canRecruit) {
-    actionBtns.push(el('button', { class:'cd-recruit', onclick: () => {
-      recruitToParty(c, rarity);
-      $$('.char-detail-pop').forEach(e => e.remove());
-      renderCodex();
-    } }, '＋ 仲間に加える'));
-  }
-  if (isAlreadyHero) {
-    actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'8px', textAlign:'center', color:'var(--gold)', fontWeight:700 } }, '★ 現在のリーダーです'));
+    }, `★ ${c} を主人公にして始める`));
+  } else if (isAlreadyHero) {
+    actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'10px', textAlign:'center', color:'var(--gold)', fontWeight:700, background:'rgba(240,212,138,.1)', borderRadius:'6px' } }, `★ ${c} は現在のリーダーです`));
+  } else if (isInParty) {
+    // 既に仲間 → リーダー昇格ボタン
+    actionBtns.push(el('button', {
+      class:'cd-recruit cd-leader-btn',
+      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700, padding:'12px' },
+      onclick: () => {
+        if (setAsLeader(c, rarity)) {
+          $$('.char-detail-pop').forEach(e => e.remove());
+          renderCodex();
+        }
+      },
+    }, `★ ${c} をリーダーに昇格`));
+  } else if (canRecruit) {
+    actionBtns.push(el('button', { class:'cd-recruit cd-leader-btn',
+      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700, padding:'12px' },
+      onclick: () => {
+        if (setAsLeader(c, rarity)) {
+          $$('.char-detail-pop').forEach(e => e.remove());
+          renderCodex();
+        }
+      },
+    }, `★ リーダーに設定（${partySize+1}/4）`));
+    actionBtns.push(el('button', { class:'cd-recruit',
+      style:{ padding:'10px' },
+      onclick: () => {
+        if (recruitToParty(c, rarity)) {
+          $$('.char-detail-pop').forEach(e => e.remove());
+          renderCodex();
+        }
+      },
+    }, `＋ 仲間に加える（${partySize+1}/4）`));
+  } else if (isFull) {
+    // 満員 → メンバー指定スワップ
+    actionBtns.push(el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', textAlign:'center', marginTop:'4px' } }, 'パーティ満員 ・ 入れ替えるメンバーを選ぶ'));
+    const swapRow = el('div', { style:{ display:'flex', gap:'4px', flexWrap:'wrap', justifyContent:'center' } });
+    STATE.party.members.forEach((m, i) => {
+      const isHero = i === (STATE.party.hero || 0);
+      swapRow.appendChild(el('button', {
+        style:{
+          padding:'8px 10px', borderRadius:'6px', fontSize:'.85rem',
+          background: isHero ? 'rgba(240,212,138,.2)' : 'rgba(255,255,255,.06)',
+          border:'1px solid ' + (isHero ? 'rgba(240,212,138,.5)' : 'rgba(255,255,255,.15)'),
+          color: isHero ? '#f0d48a' : 'var(--ink)', cursor:'pointer', fontWeight:700,
+        },
+        onclick: () => {
+          if (!confirm(`${m.char}（Lv.${m.level}）を外して ${c} を加える？\n（${m.char} の Lv は保持され、いつでも復帰可）`)) return;
+          preserveMemberLevels([m]);
+          invalidateAggCache();
+          STATE.party.members[i] = buildMemberFor(c, rarity, isHero);
+          if (isHero) STATE.party.hero = i;
+          saveState();
+          renderParty();
+          updateProgressPill();
+          toast(`${m.char} → ${c} 入替完了`, rarity);
+          $$('.char-detail-pop').forEach(e => e.remove());
+          renderCodex();
+        },
+      }, (isHero ? '★' : '') + m.char + ` Lv${m.level}`));
+    });
+    actionBtns.push(swapRow);
   }
   // v10n8: ⭐ お気に入りボタン
   actionBtns.push(el('button', {
@@ -7578,7 +7641,12 @@ function renderCodex() {
       const c = cell.dataset.char;
       if (!c) return;
       if (cell.dataset.seen === '1') showCharDetail(c, charToRarity[c]);
-      else toast(`未発見の字 ・ ${charToRarity[c] || '★?'} 帯`);
+      else {
+        const tierLocked = cell.classList.contains('locked');
+        toast(tierLocked
+          ? `★${(STATE.unlockedTier||0)+1} 帯までしか開放されていません ・ リーダーを育てて解放`
+          : `未発見 ・ ${charToRarity[c] || '★?'} 帯 ・ 降ってくれば自動発見`);
+      }
     });
     section.appendChild(tierGrid);
     // 切り捨て分の「もっと見る」ボタン
