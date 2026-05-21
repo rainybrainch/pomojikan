@@ -2368,11 +2368,15 @@ function onLevelUp(member, idx) {
   renderParty();
   updateProgressPill();
 
-  // Flash the leveled card
+  // Flash the leveled card + ぽわーん演出
   const card = document.querySelector(`.party-card[data-idx="${idx}"]`);
   if (card) {
     card.classList.add('levelup-flash');
     setTimeout(() => card.classList.remove('levelup-flash'), 1000);
+    try {
+      const r = card.getBoundingClientRect();
+      spawnLevelUpPoof(r.left + r.width/2, r.top + r.height/2, member.rarity);
+    } catch(_) {}
   }
 
   // 書体進化時 ── 派手な祝祭演出（フィールド全体に光放射）
@@ -3426,13 +3430,23 @@ function spawnPomoji(opts={}) {
   }, char);
   field.appendChild(node);
 
+  // v1.5.34: 物理属性ランダム ── 通常 80% / 弾性 8% / 暴れ 4% / べちゃ 8%
+  let physMode = 'normal';
+  if (!opts.persistent) {
+    const r = Math.random();
+    if (r < 0.08) physMode = 'bouncy';
+    else if (r < 0.12) physMode = 'wild';
+    else if (r < 0.20) physMode = 'wet';
+  }
   const obj = {
     id, char, rarity, tier: tierIdx, x, y,
     vx: (Math.random()-0.5)*1.0, vy: 0,
     el: node, settled: false, isFirstSee, mergeLevel: 1,
     persistent: !!opts.persistent,
+    physMode,
     spawnedAt: Date.now(),
   };
+  if (physMode !== 'normal') node.classList.add('phys-' + physMode);
   if (obj.persistent) node.classList.add('persistent');
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
@@ -3910,14 +3924,29 @@ function physicsStep() {
       }
       // 棚の上で着地（厚み分上で止まる）
       p.y = H - SIZE - LEDGE_THICKNESS;
-      if (Math.abs(p.vy) > 1.6) {
-        p.vy *= -0.22;
-        squashEl(p, 'squash');
+      // v1.5.34: 物理モード別反発係数
+      const bounce = p.physMode === 'bouncy' ? -0.75
+                   : p.physMode === 'wild'   ? -0.95
+                   : p.physMode === 'wet'    ? -0.05
+                   : -0.22;
+      const settleThreshold = p.physMode === 'wet' ? 3.5
+                            : p.physMode === 'bouncy' ? 0.6
+                            : p.physMode === 'wild' ? 0.4
+                            : 1.6;
+      if (Math.abs(p.vy) > settleThreshold) {
+        p.vy *= bounce;
+        if (p.physMode === 'wild') {
+          // 暴れ：周囲を強く揺らす
+          p.vx += (Math.random() - 0.5) * 6;
+          unsettleAbove(p);
+        } else if (p.physMode === 'bouncy') {
+          p.vx += (Math.random() - 0.5) * 1.5;
+        }
+        squashEl(p, p.physMode === 'wet' ? 'squash' : 'squash');
       } else {
         p.vy = 0;
-        // 横慣性は少し残す（自然に転がる）
-        p.vx *= 0.6;
-        //  休憩中に着地した字は即座に泡（rising）化 ── 取り残し防止
+        const friction = p.physMode === 'wet' ? 0.1 : p.physMode === 'bouncy' ? 0.85 : 0.6;
+        p.vx *= friction;
         if (STATE.mode === 'rest' && !p.persistent) {
           convertToRising(p);
           continue;
@@ -4445,16 +4474,29 @@ function fmtBig(n){
 }
 
 // 浮上する「+N XP」表示（ジューシー要素）
-function spawnXpFloat(x, y, amount, rarity) {
+// v1.5.34: 通常落下は数字なしの光だけ。大きい EXP（コンボ等）は数字も
+function spawnXpFloat(x, y, amount, rarity, showNumber) {
   const field = $('#play-field');
   if (!field) return;
   const rIdx = RARITY_TIERS.indexOf(rarity);
   const node = el('div', {
-    class: `xp-float rarity-${rIdx + 1}`,
+    class: `xp-glow rarity-${rIdx + 1}`,
     style: { left: x + 'px', top: y + 'px' }
-  }, `+${amount}`);
+  }, showNumber ? `+${amount}` : '');
   field.appendChild(node);
-  setTimeout(() => node.remove(), 1200);
+  setTimeout(() => node.remove(), 900);
+}
+// レベルアップ ぽわーん演出
+function spawnLevelUpPoof(x, y, rarity) {
+  const field = $('#play-field');
+  if (!field) return;
+  const rIdx = RARITY_TIERS.indexOf(rarity || '★1');
+  const node = el('div', {
+    class: `lvup-poof rarity-${rIdx + 1}`,
+    style: { left: x + 'px', top: y + 'px' }
+  });
+  field.appendChild(node);
+  setTimeout(() => node.remove(), 1100);
 }
 
 function _orphanExp(exp) {
