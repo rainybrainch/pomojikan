@@ -2318,15 +2318,18 @@ function renderPickerPool() {
     if (!_pickerSelected) return;
     const c = _pickerSelected;
     const k = _pickerPool.find(p => (p.char||p.c) === c);
-    const perks = pickInherentPerks(c, k.rarity);
-    if (!perks.includes('guardian')) perks.push('guardian');
-    const hero = { char: c, rarity: k.rarity, level: 1, exp: 0, perks };
+    // v1.3.19: 過去 Lv 復元
+    const hero = (typeof buildMemberFor === 'function')
+      ? buildMemberFor(c, k.rarity, true)
+      : { char: c, rarity: k.rarity, level: 1, exp: 0, perks: pickInherentPerks(c, k.rarity).concat(['guardian']) };
     STATE.party = { hero: 0, members: [hero] };
     saveState();
     $('#party-picker-modal').classList.remove('show');
     renderParty();
-    const perkNames = perks.map(p => PERKS[p]?.name).filter(Boolean).join('・');
-    toast(`★ リーダー ${c} ── ${perkNames}\n（以降のリーダー変更は図鑑から）`);
+    const perkNames = (hero.perks || []).map(p => PERKS[p]?.name).filter(Boolean).join('・');
+    toast(hero.level > 1
+      ? `★ リーダー ${c} Lv.${hero.level} 復帰`
+      : `★ リーダー ${c} ── ${perkNames}`);
   };
 }
 
@@ -6242,11 +6245,8 @@ function openComboPlacementPicker(r) {
             if (!confirm('現パーティを置き換えますか？')) return;
           }
           invalidateAggCache();
-          const members = final.map((f, i) => {
-            const perks = pickInherentPerks(f.char, f.rarity);
-            if (i === 0 && !perks.includes('guardian')) perks.push('guardian');
-            return { char:f.char, rarity:f.rarity, level:1, exp:0, perks };
-          });
+          // v1.3.19: 過去 Lv 復元
+          const members = final.map((f, i) => buildMemberFor(f.char, f.rarity, i === 0));
           STATE.party = { hero: 0, members };
           saveState();
           renderParty();
@@ -6285,11 +6285,8 @@ function assemblePartyFromYoji(r) {
     }
   }
   invalidateAggCache();
-  const members = found.map((f, i) => {
-    const perks = pickInherentPerks(f.char, f.rarity);
-    if (i === 0 && !perks.includes('guardian')) perks.push('guardian');
-    return { char:f.char, rarity:f.rarity, level:1, exp:0, perks };
-  });
+  // v1.3.19: 過去 Lv 復元
+  const members = found.map((f, i) => buildMemberFor(f.char, f.rarity, i === 0));
   STATE.party = { hero: 0, members };
   saveState();
   renderParty();
