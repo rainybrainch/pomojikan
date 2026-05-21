@@ -7492,26 +7492,20 @@ async function toggleTimerPiP() {
   }
   if (_pipWindow) { _pipWindow.close(); _pipWindow = null; return; }
   try {
-    _pipWindow = await documentPictureInPicture.requestWindow({ width: 260, height: 260 });
+    // v1.4.8: シンプル＆小型化（200x110 → タイマー文字＋小さなドット）
+    _pipWindow = await documentPictureInPicture.requestWindow({ width: 200, height: 110 });
     const doc = _pipWindow.document;
     doc.body.style.cssText = `
-      margin:0; background:#07111c; color:#cfe6ff;
-      font-family:'Noto Serif JP',serif; overflow:hidden;
+      margin:0; background:#0a0f18; color:#fff;
+      font-family:'JetBrains Mono','SF Mono',monospace; overflow:hidden;
       display:flex; align-items:center; justify-content:center; height:100vh;
-      position:relative;
+      position:relative; gap:10px;
     `;
     doc.body.innerHTML = `
-      <div style="position:relative; width:200px; height:200px;">
-        <svg viewBox="0 0 100 100" width="200" height="200" style="display:block;position:absolute;inset:0;">
-          <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="3"/>
-          <circle id="pip-fg" cx="50" cy="50" r="47" fill="none" stroke="#87ceeb" stroke-width="3"
-            stroke-dasharray="295.31" stroke-dashoffset="0" transform="rotate(-90 50 50)" stroke-linecap="round"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div id="pip-text" style="font-size:2.4rem;font-weight:900;color:#fff;letter-spacing:.04em;">--:--</div>
-          <div id="pip-mode" style="font-size:.78rem;opacity:.7;margin-top:4px;">⏸ 待機</div>
-        </div>
-      </div>
+      <span id="pip-dot" style="width:10px;height:10px;border-radius:50%;background:#666;flex:0 0 auto;box-shadow:0 0 0 rgba(0,0,0,0);transition:background .3s,box-shadow .3s;"></span>
+      <div id="pip-text" style="font-size:2.6rem;font-weight:800;letter-spacing:.04em;line-height:1;">--:--</div>
+      <span id="pip-mode" style="position:absolute;bottom:6px;right:10px;font-size:.6rem;opacity:.55;font-family:sans-serif;">⏸</span>
+      <svg id="pip-svg-hidden" style="display:none"><circle id="pip-fg"/></svg>
     `;
     _pipWindow.addEventListener('pagehide', () => {
       _pipWindow = null;
@@ -7532,26 +7526,25 @@ function syncPiP() {
     const mode = doc.getElementById('pip-mode');
     const fg = doc.getElementById('pip-fg');
     if (!txt || !mode || !fg) return;
+    const dot = doc.getElementById('pip-dot');
     if (STATE.mode === 'measure') {
-      // v1.4.7: 計測モード（カウントアップ・60 分で 1 周）
       const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
       txt.textContent = fmtTime(elapsed);
-      const pct = Math.min(1, elapsed / 3600);
-      fg.style.strokeDashoffset = 295.31 * (1 - pct);
-      fg.style.stroke = '#ffd86b';
-      mode.textContent = '📏 計測中';
+      mode.textContent = '📏';
+      if (dot) { dot.style.background = '#ffd86b'; dot.style.boxShadow = '0 0 8px rgba(255,217,107,.8)'; }
     } else if (STATE.mode === 'work' || STATE.mode === 'rest') {
       const rem = Math.max(0, STATE.phaseEnd - Date.now());
       txt.textContent = fmtTime(Math.ceil(rem/1000));
-      const total = STATE.mode === 'work' ? STATE.timer.workSec : STATE.timer.restSec;
-      const pct = 1 - (rem/1000) / total;
-      fg.style.strokeDashoffset = 295.31 * (1 - pct);
-      fg.style.stroke = STATE.mode === 'work' ? '#87ceeb' : '#c0a8ff';
-      mode.textContent = STATE.mode === 'work' ? '🌧 作業中' : '🫧 休憩中';
+      mode.textContent = STATE.mode === 'work' ? '🌧' : '🫧';
+      if (dot) {
+        const c = STATE.mode === 'work' ? '#87ceeb' : '#c0a8ff';
+        dot.style.background = c;
+        dot.style.boxShadow = `0 0 8px ${c}cc`;
+      }
     } else {
       txt.textContent = fmtTime(STATE.timer.workSec);
-      mode.textContent = '⏸ 待機';
-      fg.style.strokeDashoffset = 295.31;
+      mode.textContent = '⏸';
+      if (dot) { dot.style.background = '#666'; dot.style.boxShadow = '0 0 0 rgba(0,0,0,0)'; }
     }
   } catch(_) {}
   _pipRaf = setTimeout(syncPiP, 500);
