@@ -5099,3 +5099,21 @@ body.harvest-mode .pomoji {
   font-weight: 700;
   color: #ff9070;
 }
+
+/* v1.4.4: 図鑑セルに Lv バッジ */
+.codex-cell { position: relative; }
+.codex-lv-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: .52rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  padding: 1px 3px;
+  background: linear-gradient(135deg, #f0d48a, #d4a84a);
+  color: #1a1208;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  pointer-events: none;
+  line-height: 1;
+}

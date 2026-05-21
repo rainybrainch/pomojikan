@@ -6898,7 +6898,7 @@ function renderCodex() {
   }
 
   // v1.1.9: 図鑑の重さ大幅軽減 ── CAP 800 → 200（16 tier × 200 = 3200 cells max）
-  const CELL_CAP = 200;
+  const CELL_CAP = 600;  // v1.4.4: 「全て」選択時の初期表示を広く
   if (!window._tierExpanded) window._tierExpanded = {};
 
   // DocumentFragment で reflow を 1 回に圧縮
@@ -6954,13 +6954,20 @@ function renderCodex() {
                   (partyIdx >= 0 ? ' in-party' : '') +
                   (tierIdx > STATE.unlockedTier ? ' locked' : '');
       const cellText = tierIdx > STATE.unlockedTier && !seen ? '?' : c;
-      // 高速化：innerHTML 直接（el() の overhead 回避）
       const cell = document.createElement('div');
       cell.className = cls;
       cell.title = seen ? `${c}（${seen}回発見）` : '？';
       cell.textContent = cellText;
       if (seen) cell.dataset.char = c;
       charToRarity[c] = k.rarity;
+      // v1.4.4: 育成済 Lv バッジ（charLevels から）
+      const stored = STATE.charLevels?.[c];
+      if (stored?.level && stored.level > 1) {
+        const lvBadge = document.createElement('span');
+        lvBadge.className = 'codex-lv-badge';
+        lvBadge.textContent = 'L' + stored.level;
+        cell.appendChild(lvBadge);
+      }
       tierFrag.appendChild(cell);
     }
     tierGrid.appendChild(tierFrag);
