@@ -7594,13 +7594,23 @@ function handleVisibilityChange() {
         startWorkSpawning();
       }
       tick();
-      // v10n14: 復帰時に WakeLock を再取得
       if (STATE.mode === 'work' || STATE.mode === 'rest') requestWakeLock();
 
-      // v1.4.9: PiP 開いてる時は「オンライン扱い」── オフラインボーナス出さない
+      // v1.5.0: 復帰時に画面に残ってる rising 字を全て即時 EXP 化（休憩で浮いて消えない問題）
+      try {
+        for (const p of livePomoji.values()) {
+          if (p.rising && !p._awarded) {
+            p._awarded = true;
+            try { awardRising(p); } catch(_) {}
+            try { p.el?.remove(); } catch(_) {}
+            livePomoji.delete(p.id);
+          }
+        }
+      } catch(_) {}
+
       if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS && !_pipWindow) {
         const wouldHaveSpawned = Math.floor(hiddenElapsed / WORK_SPAWN_INTERVAL_MS);
-        const bonusCount = Math.min(8, Math.floor(wouldHaveSpawned * 0.2));
+        const bonusCount = Math.min(20, Math.floor(wouldHaveSpawned * 0.5));
         if (bonusCount > 0) offlineBonusCascade(bonusCount);
       }
       saveState();
@@ -7610,14 +7620,22 @@ function handleVisibilityChange() {
   }
 }
 
+// v1.5.0: オフラインボーナスを「メッセージ＋ EXP」のみに（字スポーン廃止）
 function offlineBonusCascade(count) {
-  toast(`おかえり！オフラインボーナス ${count} 粒（50%）`);
-  const drops = [];
-  for (let i = 0; i < count; i++) {
-    const k = (STATE.party && i % 3 === 0) ? pickPartyDrop() : pickKanjiForDrop();
-    if (k) drops.push(k);
+  if (!isPartyChosen()) {
+    toast(`おかえり ── オフライン ${count} 粒分`);
+    return;
   }
-  dropCascade(drops, 160, 260);
+  // リーダーに集約 EXP 付与
+  const hero = STATE.party.members[STATE.party.hero || 0];
+  const rIdx = RARITY_TIERS.indexOf(hero.rarity);
+  const perDrop = Math.max(1, Math.pow(1.3, rIdx) * 3);
+  const exp = Math.floor(perDrop * count * 1.5);  // ボーナス係数
+  awardExpToParty(hero.char, exp);
+  try {
+    spawnXpFloat(window.innerWidth/2, 100, exp, hero.rarity);
+    toast(`🌅 おかえり ── 不在の ${count} 粒を吸収 EXP +${exp}`);
+  } catch(_) {}
 }
 
 // ═══════════════════════════════════════════════════════════════
