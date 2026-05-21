@@ -1648,21 +1648,55 @@ const THEME_LABELS = {
   auto:'自動（季節）', spring:'春', summer:'夏',
   autumn:'秋', winter:'冬', dark:'夜', light:'紙',
 };
-// v1.5.11: 土台バリエ ── ティア完全達成条件＋使用中ボーナス
+// v1.5.15: 土台バリエ ── 形状（穴配置）＋トレードオフ付き効果
 function tierFullyDiscovered(tierIdx) {
   return tierSeenRatio(tierIdx) >= 1.0;
 }
+// holes: [{l:0.10, r:0.20}, ...] = 棚を切り抜いて穴を開ける（l/r は画面幅比率）
 const LEDGE_VARIANTS = [
-  { key:'default', name:'標準（水盤）',     cond:()=>true,                                                        eff:{} },
-  { key:'stone',   name:'石板',             cond:s=>_passiveCount.cycles(s)>=10,                                  hint:'10 サイクル達成で解放',       eff:{stockExpMul:1.02} },
-  { key:'wood',    name:'木（縞）',         cond:s=>tierFullyDiscovered(0),                                       hint:'★1 完全制覇で解放',          eff:{mergeRadiusMul:1.03} },
-  { key:'ornate',  name:'装飾（金縁）',     cond:s=>tierFullyDiscovered(2) || _passiveCount.cycles(s)>=100,       hint:'★3 完全制覇 or 100 サイクル', eff:{expMul:1.03} },
-  { key:'jade',    name:'翡翠',             cond:s=>tierFullyDiscovered(4) || _passiveCount.uniq(s)>=500,         hint:'★5 完全制覇 or 500 字発見',  eff:{evoBoost:0.03, mergeRadiusMul:1.02} },
-  { key:'cosmos',  name:'宇宙（星屑）',     cond:s=>tierFullyDiscovered(8) || _passiveCount.streak(s)>=30,        hint:'★9 完全制覇 or 連続 30 日',  eff:{expMul:1.05, dropCountAdd:1} },
-  { key:'divine',  name:'神域（金光脈動）', cond:s=>tierFullyDiscovered(12) || _passiveCount.hero(s)>=300,        hint:'★13 完全制覇 or リーダー Lv.300', eff:{expMul:1.08, evoBoost:0.05, stockExpMul:1.05} },
-  { key:'cyber',   name:'電光（ネオン脈動）', cond:s=>_passiveCount.uniq(s)>=2000 || tierFullyDiscovered(10),     hint:'2,000 字発見 or ★11 完全制覇', eff:{expMul:1.06, dropCountAdd:1} },
-  { key:'ink',     name:'墨絵（静寂）',        cond:s=>_passiveCount.yoji(s)>=500,                                  hint:'熟語 500 解放', eff:{gravityMul:0.95, evoBoost:0.03} },
+  // 標準：両端 12% 穴（バランス）
+  { key:'default', name:'標準（水盤）',     cond:()=>true,
+    eff:{}, holes:[{l:0,r:0.12},{l:0.88,r:1}] },
+  // 石板：両端少し広め（10%）── 字が溜まりやすく、ストック型
+  { key:'stone',   name:'石板',             cond:s=>_passiveCount.cycles(s)>=10,                                  hint:'10 サイクル達成で解放',
+    eff:{stockExpMul:1.04, mergeRadiusMul:1.02}, holes:[{l:0,r:0.10},{l:0.90,r:1}] },
+  // 木：標準＋融合
+  { key:'wood',    name:'木（縞）',         cond:s=>tierFullyDiscovered(0),                                       hint:'★1 完全制覇で解放',
+    eff:{mergeRadiusMul:1.04}, holes:[{l:0,r:0.12},{l:0.88,r:1}] },
+  // 装飾：棚狭め（両端 16% 穴）→ EXP厚／字が早く落ちる
+  { key:'ornate',  name:'装飾（金縁）',     cond:s=>tierFullyDiscovered(2) || _passiveCount.cycles(s)>=100,       hint:'★3 完全制覇 or 100 サイクル',
+    eff:{expMul:1.05}, holes:[{l:0,r:0.16},{l:0.84,r:1}] },
+  // 翡翠：両端広い棚（8%）＋融合進化
+  { key:'jade',    name:'翡翠',             cond:s=>tierFullyDiscovered(4) || _passiveCount.uniq(s)>=500,         hint:'★5 完全制覇 or 500 字発見',
+    eff:{evoBoost:0.04, mergeRadiusMul:1.03}, holes:[{l:0,r:0.08},{l:0.92,r:1}] },
+  // 宇宙：両端 18% 穴・字が早く落ちる
+  { key:'cosmos',  name:'宇宙（星屑）',     cond:s=>tierFullyDiscovered(8) || _passiveCount.streak(s)>=30,        hint:'★9 完全制覇 or 連続 30 日',
+    eff:{expMul:1.06, dropCountAdd:1}, holes:[{l:0,r:0.18},{l:0.82,r:1}] },
+  // 神域：超広い棚（両端 5%）＋全効果厚
+  { key:'divine',  name:'神域（金光脈動）', cond:s=>tierFullyDiscovered(12) || _passiveCount.hero(s)>=300,        hint:'★13 完全制覇 or リーダー Lv.300',
+    eff:{expMul:1.08, evoBoost:0.05, stockExpMul:1.05}, holes:[{l:0,r:0.05},{l:0.95,r:1}] },
+  // 電光：3 穴（中央スリット）── 落下早×EXP+
+  { key:'cyber',   name:'電光（ネオン脈動）', cond:s=>_passiveCount.uniq(s)>=2000 || tierFullyDiscovered(10),     hint:'2,000 字発見 or ★11 完全制覇',
+    eff:{expMul:1.07, dropCountAdd:1}, holes:[{l:0,r:0.12},{l:0.46,r:0.54},{l:0.88,r:1}] },
+  // 墨絵：超広棚＋重力緩
+  { key:'ink',     name:'墨絵（静寂）',        cond:s=>_passiveCount.yoji(s)>=500,                                  hint:'熟語 500 解放',
+    eff:{gravityMul:0.92, evoBoost:0.04, mergeRadiusMul:1.05}, holes:[{l:0,r:0.06},{l:0.94,r:1}] },
+  // 穴あき：5 穴（高速 EXP・字積もらない・ストック減）
+  { key:'holes',   name:'穴あき（高速）',     cond:s=>_passiveCount.cycles(s)>=200,                                hint:'200 サイクル達成で解放',
+    eff:{expMul:1.10, stockExpMul:0.80}, holes:[{l:0,r:0.08},{l:0.25,r:0.31},{l:0.46,r:0.54},{l:0.69,r:0.75},{l:0.92,r:1}] },
 ];
+function ledgeHoles(W) {
+  const cur = STATE.ledgeStyle || 'default';
+  const v = LEDGE_VARIANTS.find(x => x.key === cur);
+  const config = v?.holes || [{l:0,r:0.12},{l:0.88,r:1}];
+  return config.map(h => ({ left: W * h.l, right: W * h.r }));
+}
+function isOverHole(cx, W) {
+  for (const h of ledgeHoles(W)) {
+    if (cx >= h.left && cx <= h.right) return true;
+  }
+  return false;
+}
 function getActiveLedgeBonus() {
   const cur = STATE.ledgeStyle || 'default';
   const v = LEDGE_VARIANTS.find(x => x.key === cur);
@@ -3638,7 +3672,8 @@ function physicsStep() {
       } else {
       // v10n6: 棚から押し出されたら再落下開始（コインプッシャー）
       const cx = p.x + SIZE/2;
-      const onLedge = p.persistent || (cx >= ledge.left && cx <= ledge.right + SIZE);
+      // v1.5.15: multi-hole 対応
+      const onLedge = p.persistent || !isOverHole(cx, W);
       if (!onLedge) {
         p.settled = false;
         p.settledX = null;
@@ -3722,14 +3757,10 @@ function physicsStep() {
     if (Math.abs(p.vx) < 0.008) p.vx = 0;
     p.x += p.vx;
     p.y += p.vy;
-    // v1.0.9: x 壁反射は棚範囲のみ ── 棚外は反射せず素通りで画面外へ
-    if (p.x + SIZE/2 < ledge.left) {
-      // 棚の左外：反射せず、画面遥か外まで行ったら EXP 化
-      if (p.x < -SIZE * 1.2) { awardFallen(p); continue; }
-    } else if (p.x + SIZE/2 > ledge.right + SIZE) {
-      // 棚の右外
-      if (p.x > W + SIZE * 0.2) { awardFallen(p); continue; }
-    } else {
+    // v1.5.15: 画面端まで行ったら EXP 化、それ以外は反射なし（穴に落ちる）
+    if (p.x < -SIZE * 1.2) { awardFallen(p); continue; }
+    if (p.x > W + SIZE * 0.2) { awardFallen(p); continue; }
+    {
       // 棚内：x 反射（万一の表示はみ出し防止のみ）
       if (p.x < 0)        { p.x = 0; p.vx *= -0.4; }
       if (p.x > W - SIZE) { p.x = W - SIZE; p.vx *= -0.4; }
@@ -3789,7 +3820,8 @@ function physicsStep() {
     }
 
     // v10n6: コインプッシャー床 ── 棚の上だけ着地、棚外は素通りで下に落ちる
-    const overLedge = (p.x + SIZE/2) >= ledge.left && (p.x + SIZE/2) <= (ledge.right + SIZE);
+    // v1.5.15: multi-hole 対応 ── 穴の上は素通り、それ以外は棚
+    const overLedge = !isOverHole(p.x + SIZE/2, W);
     if (overLedge && p.y > H - SIZE - LEDGE_THICKNESS) {
       // v1.3.12: 着地で必ず波紋（速度しきい値撤廃）
       if (!p._rippled) {
@@ -7229,13 +7261,21 @@ function renderCodex() {
       return (b.chars?.length || 0) - (a.chars?.length || 0);
     });
     const SEASON_LABEL = {
-      S3:'熟語', S4:'四字熟語',
+      S3:'二字熟語', S4:'四字熟語',
       S5:'昭和文化', S6:'令和現代', S7:'未来（萌芽）'
     };
+    // v1.5.15: 発見率を tier 同様に表示＋進捗バー
+    const seasonRecipes = (window.YOJI_RECIPES || []).filter(r => r.season === codexFilter.season);
+    const seasonSeen = seasonRecipes.filter(r => isYojiDiscovered(r)).length;
+    const seasonTotal = seasonRecipes.length;
+    const seasonPct = seasonTotal > 0 ? Math.round(seasonSeen / seasonTotal * 100) : 0;
     const section = el('div', { class:'codex-section' },
       el('h3', { class:'codex-section-title' },
-        `${codexFilter.season} ${SEASON_LABEL[codexFilter.season] || ''}（${recipes.length} 個）`)
+        `${codexFilter.season} ${SEASON_LABEL[codexFilter.season] || ''}（${seasonSeen} / ${seasonTotal} 解放 ・ ${seasonPct}%）`)
     );
+    section.appendChild(el('div', { class:'codex-progress-bar' },
+      el('div', { class:'cpb-fill', style:{ width: seasonPct + '%' } })
+    ));
     const list = el('div', { class:'codex-yoji-list' });
     let foundCnt = 0;
     recipes.forEach(r => {
