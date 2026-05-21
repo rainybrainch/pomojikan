@@ -7555,6 +7555,7 @@ async function toggleTimerPiP() {
     doc.body.innerHTML = `
       <span id="pip-dot" style="width:10px;height:10px;border-radius:50%;background:#666;flex:0 0 auto;box-shadow:0 0 0 rgba(0,0,0,0);transition:background .3s,box-shadow .3s;"></span>
       <div id="pip-text" style="font-size:2.6rem;font-weight:800;letter-spacing:.04em;line-height:1;">--:--</div>
+      <span id="pip-sets" style="position:absolute;bottom:6px;left:10px;font-size:.6rem;opacity:.6;font-family:sans-serif;color:#cfe6ff;"></span>
       <span id="pip-mode" style="position:absolute;bottom:6px;right:10px;font-size:.6rem;opacity:.55;font-family:sans-serif;">⏸</span>
       <span id="pip-stop" style="position:absolute;top:4px;right:8px;font-size:.7rem;opacity:.5;cursor:pointer;user-select:none;" title="クリックで停止">⏹</span>
       <svg id="pip-svg-hidden" style="display:none"><circle id="pip-fg"/></svg>
@@ -7591,6 +7592,14 @@ function syncPiP() {
     const fg = doc.getElementById('pip-fg');
     if (!txt || !mode || !fg) return;
     const dot = doc.getElementById('pip-dot');
+    const sets = doc.getElementById('pip-sets');
+    // セット進捗（target>0 で work/rest のみ）
+    if (sets) {
+      const tgt = STATE.timer?.setsTarget || 0;
+      const done = STATE.timer?.setsDone || 0;
+      sets.textContent = (tgt > 0 && (STATE.mode === 'work' || STATE.mode === 'rest'))
+        ? `🔁 ${done + (STATE.mode === 'work' ? 1 : 0)}/${tgt}` : '';
+    }
     if (STATE.mode === 'measure') {
       const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
       txt.textContent = fmtTime(elapsed);
