@@ -1135,7 +1135,7 @@ function updateAudioButton() {
   if (emoji) emoji.textContent = STATE.audioOn ? '音' : '無';
   // 新ドロワーメニュー
   const mEmoji = $('#m-audio-emoji');
-  if (mEmoji) mEmoji.textContent = '音';
+  if (mEmoji) mEmoji.textContent = STATE.audioOn ? '🔊' : '🔇';
   const mState = $('#m-audio-state');
   if (mState) mState.textContent = STATE.audioOn ? 'オン' : 'オフ';
 }
