@@ -2560,15 +2560,18 @@ function stopMeasure() {
   try { toast(`📏 計測終了 ── ${mins}分 ${secs}秒`); } catch(_) {}
 }
 
+let _lastStartAt = 0;
 function startWork() {
+  // v1.5.8: 連打防止 ── 3 秒以内の再スタートでは派手演出スキップ
+  const now = Date.now();
+  const isQuickRestart = (now - _lastStartAt) < 3000;
+  _lastStartAt = now;
   STATE.mode = 'work';
-  STATE.phaseStart = Date.now();
+  STATE.phaseStart = now;
   setTimeout(() => { try { renderHUD(); } catch(_) {} }, 50);
-  // v10n14: Wake Lock & 通知許可要求
   requestWakeLock();
   ensureNotificationPermission();
-  // v10n18: スタート／作業再開でカッコウ
-  try { playKakkou(); } catch(_) {}
+  if (!isQuickRestart) { try { playKakkou(); } catch(_) {} }
   // v1.4.9: 作業も自動 PiP（対応 PC のみ）── 常時表示
   try { if (!_pipWindow && 'documentPictureInPicture' in window) toggleTimerPiP(); } catch(_) {}
   STATE.phaseEnd = Date.now() + STATE.timer.workSec * 1000;
@@ -4775,8 +4778,12 @@ function recruitToParty(c, rarity) {
     toast('パーティ枠は 4 体まで');
     return false;
   }
-  if (partyContainsChar(c) >= 0) {
-    toast(`${c} は既にパーティにいます`);
+  // v1.5.8: 同字許可（所有数 stock[c] を上限に）
+  if (!STATE.stock) STATE.stock = {};
+  const existingCount = STATE.party.members.filter(m => m.char === c).length;
+  const owned = STATE.stock[c] || 0;
+  if (existingCount >= Math.max(1, owned)) {
+    toast(`${c} の所有数（${owned}）以上はパーティに入れられません`);
     return false;
   }
   invalidateAggCache();
