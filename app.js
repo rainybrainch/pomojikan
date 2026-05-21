@@ -1135,7 +1135,12 @@ function updateAudioButton() {
   if (emoji) emoji.textContent = STATE.audioOn ? '音' : '無';
   // 新ドロワーメニュー
   const mEmoji = $('#m-audio-emoji');
-  if (mEmoji) mEmoji.textContent = STATE.audioOn ? '🔊' : '🔇';
+  if (mEmoji) {
+    const mode = STATE.iconMode || 'emoji';
+    mEmoji.textContent = mode === 'kanji'
+      ? (STATE.audioOn ? '音' : '無')
+      : (STATE.audioOn ? '🔊' : '🔇');
+  }
   const mState = $('#m-audio-state');
   if (mState) mState.textContent = STATE.audioOn ? 'オン' : 'オフ';
 }
@@ -1905,7 +1910,52 @@ function openThemePicker() {
       },
     }, label));
   });
+  // v1.5.50: アイコンモード（絵文字 ／ 漢字）
+  list.appendChild(el('div', { style:{ gridColumn:'1 / -1', fontSize:'.7rem', color:'var(--ink-mute)', padding:'12px 4px 0' } }, 'メニューアイコン'));
+  ['emoji','kanji'].forEach(key => {
+    const active = (STATE.iconMode || 'emoji') === key;
+    const label = key === 'emoji' ? '🎨 絵文字' : '漢 漢字';
+    list.appendChild(el('button', {
+      style:{
+        padding:'10px 8px', minHeight:'48px',
+        background: active ? 'linear-gradient(135deg, rgba(240,212,138,.25), rgba(240,212,138,.08))' : 'rgba(255,255,255,.04)',
+        border: '1px solid ' + (active ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.12)'),
+        borderRadius:'8px',
+        color: active ? '#ffe9a0' : 'var(--ink)',
+        fontWeight: active ? 700 : 400, cursor:'pointer',
+      },
+      onclick: () => {
+        STATE.iconMode = key; saveState(); applyIconMode(); openThemePicker();
+        toast(`アイコン ${key === 'emoji' ? '絵文字' : '漢字'}`);
+      },
+    }, label));
+  });
   modal.classList.add('show');
+}
+
+// v1.5.50: メニューアイコンの絵文字／漢字切替
+const ICON_MAP_KANJI = {
+  'm-stats':'録','m-codex':'鑑','m-writings':'書','m-theme':'彩','m-help':'問','m-data':'蓄',
+  'm-measure':'計','m-pip':'窓','m-hud':'視','m-sleep':'眠',
+};
+const ICON_MAP_EMOJI = {
+  'm-stats':'📊','m-codex':'📖','m-writings':'📝','m-theme':'🎨','m-help':'❓','m-data':'💾',
+  'm-measure':'⏱️','m-pip':'🪟','m-hud':'👁️','m-sleep':'💤',
+};
+function applyIconMode() {
+  const mode = STATE.iconMode || 'emoji';
+  const map = mode === 'kanji' ? ICON_MAP_KANJI : ICON_MAP_EMOJI;
+  for (const [id, ic] of Object.entries(map)) {
+    const span = document.querySelector(`#${id} .mi-emoji`);
+    if (span && span.id !== 'm-audio-emoji') span.textContent = ic;
+  }
+  // 音響は別途（状態連動）
+  const audioSpan = $('#m-audio-emoji');
+  if (audioSpan) {
+    audioSpan.textContent = mode === 'kanji'
+      ? (STATE.audioOn ? '音' : '無')
+      : (STATE.audioOn ? '🔊' : '🔇');
+  }
 }
 
 // v10n19: コンボタグから一時 aura クラスを body に
@@ -9016,6 +9066,7 @@ function init() {
   try { _ensureYomuChannel(); } catch(_) {}
   // v10n19: テーマ適用
   try { applyTheme(); } catch(_) {}
+  try { applyIconMode(); } catch(_) {}
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
   window.addEventListener('pagehide', () => {
     try { if (_pipWindow) _pipWindow.close(); } catch(_) {}
