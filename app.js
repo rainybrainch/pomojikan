@@ -2382,7 +2382,7 @@ function tick() {
   // v1.4.6: 計測モード（カウントアップ）
   if (STATE.mode === 'measure') {
     const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
-    $('#timer-text').textContent = fmtTime(elapsed);
+    setTextWithLvBand("timer-text", fmtTime(elapsed));
     // リング進捗：60 分でフルになる視覚インジケータ（情報用）
     const pct = Math.min(1, elapsed / 3600);
     updateProgress(pct);
@@ -2391,7 +2391,7 @@ function tick() {
   }
   if (STATE.mode === 'work' || STATE.mode === 'rest') {
     const remaining = Math.max(0, STATE.phaseEnd - Date.now());
-    $('#timer-text').textContent = fmtTime(Math.ceil(remaining/1000));
+    setTextWithLvBand("timer-text", fmtTime(Math.ceil(remaining/1000)));
     const total = STATE.mode === 'work' ? STATE.timer.workSec : STATE.timer.restSec;
     const pct = 1 - (remaining/1000) / total;
     updateProgress(pct);
@@ -2448,7 +2448,7 @@ function setupTimerRingDrag() {
       STATE.timer.restSec = m * 60;
     }
     STATE.timer.presetIdx = -1;
-    $('#timer-text').textContent = fmtTime(m * 60);
+    setTextWithLvBand("timer-text", fmtTime(m * 60));
     // リング進捗を「設定分/60分」で塗る（視覚 feedback）
     updateProgress(m / 60);
     // 色味で work/rest を区別
@@ -2471,7 +2471,7 @@ function setupTimerRingDrag() {
     // 長押し 500ms で休憩時間モード
     longPressTimer = setTimeout(() => {
       editMode = 'rest';
-      $('#timer-text').textContent = fmtTime(STATE.timer.restSec);
+      setTextWithLvBand("timer-text", fmtTime(STATE.timer.restSec));
       updateProgress(STATE.timer.restSec / 60 / 60);
       zone.classList.add('editing-rest');
       try { toast('🌙 休憩時間モード（指を動かして分数設定）'); } catch(_) {}
@@ -2506,7 +2506,7 @@ function setupTimerRingDrag() {
     setTimeout(() => {
       zone.classList.remove('editing-work', 'editing-rest');
       if (STATE.mode === 'idle') {
-        $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+        setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
         updateProgress(0);
       }
     }, 800);
@@ -2553,7 +2553,7 @@ function stopMeasure() {
   document.body.dataset.mode = 'idle';
   $('#main-btn').textContent = '▶ 始める';
   $('#main-btn').dataset.state = 'idle';
-  $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+  setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   updateProgress(0);
   releaseWakeLock();
   saveState();
@@ -2715,7 +2715,7 @@ function stopTimer() {
   document.body.dataset.mode = 'idle';
   $('#main-btn').textContent = '▶ 始める';
   $('#main-btn').dataset.state = 'idle';
-  $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+  setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   try { releaseWakeLock(); } catch(_) {}
   updateProgress(0);
   saveState();
@@ -4950,7 +4950,7 @@ function applyTimerSettings() {
   // セット目標を変更した時は進捗をリセット（混乱防止）
   if (sets !== prevTarget) STATE.timer.setsDone = 0;
   saveState();
-  if (STATE.mode === 'idle') $('#timer-text').textContent = fmtTime(work);
+  if (STATE.mode === 'idle') setTextWithLvBand("timer-text", fmtTime(work));
   closeTimerSettings();
   toast(sets > 0 ? `時間を変更（目標 ${sets} セット）` : '時間を変更しました');
 }
@@ -5166,6 +5166,22 @@ function importDiaryInput() {
   updateDiaryInputStatus();
   renderWritingsModal();
   toast(`⬇ ${newItems.length} 字 取込`);
+}
+
+// v1.5.7: 字列にカスタム lvband を適用（タイマー数字や任意テキストに）
+function setTextWithLvBand(elOrId, s) {
+  const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+  if (!el) return;
+  if (el.dataset.lastText === s) return;
+  el.dataset.lastText = s;
+  el.innerHTML = '';
+  for (const ch of s) {
+    const span = document.createElement('span');
+    const band = (typeof charLvBand === 'function') ? charLvBand(ch) : '';
+    span.className = 'tx-glyph' + (band ? ' ' + band : '');
+    span.textContent = ch;
+    el.appendChild(span);
+  }
 }
 
 // v1.3.6: 字のパーティ Lv からエフェクトクラスを決定
@@ -5637,7 +5653,7 @@ function applyPreset(idx) {
   STATE.timer.restSec = p.rest;
   STATE.timer.presetIdx = idx;
   saveState();
-  if (STATE.mode === 'idle') $('#timer-text').textContent = fmtTime(p.work);
+  if (STATE.mode === 'idle') setTextWithLvBand("timer-text", fmtTime(p.work));
   toast(`${p.label} に変更`);
 }
 
@@ -7608,12 +7624,12 @@ function syncPiP() {
     if (STATE.mode === 'measure') {
       const elapsed = Math.floor((Date.now() - STATE.phaseStart) / 1000);
       txt.textContent = fmtTime(elapsed);
-      mode.textContent = '📏';
+      mode.textContent = '計';
       if (dot) { dot.style.background = '#ffd86b'; dot.style.boxShadow = '0 0 8px rgba(255,217,107,.8)'; }
     } else if (STATE.mode === 'work' || STATE.mode === 'rest') {
       const rem = Math.max(0, STATE.phaseEnd - Date.now());
       txt.textContent = fmtTime(Math.ceil(rem/1000));
-      mode.textContent = STATE.mode === 'work' ? '🌧' : '🫧';
+      mode.textContent = STATE.mode === 'work' ? '集' : '休';
       if (dot) {
         const c = STATE.mode === 'work' ? '#87ceeb' : '#c0a8ff';
         dot.style.background = c;
@@ -7621,7 +7637,7 @@ function syncPiP() {
       }
     } else {
       txt.textContent = fmtTime(STATE.timer.workSec);
-      mode.textContent = '⏸';
+      mode.textContent = '待';
       if (dot) { dot.style.background = '#666'; dot.style.boxShadow = '0 0 0 rgba(0,0,0,0)'; }
     }
   } catch(_) {}
@@ -8022,7 +8038,7 @@ function init() {
     if (params.get('stream') === '1') document.body.classList.add('stream-mode');
   } catch(_) {}
   bindEvents();
-  $('#timer-text').textContent = fmtTime(STATE.timer.workSec);
+  setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   // 共有 URL チェック（自分のパーティ読み込み後）
   checkSharedPartyOnBoot();
   renderParty();
