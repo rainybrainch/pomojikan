@@ -3295,7 +3295,9 @@ function awardFallen(p) {
   if (p._awarded) return;
   p._awarded = true;
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  const exp = Math.max(1, Math.pow(1.3, rIdx) * 6);
+  // v1.5.36: 力ステータス（1-5）で EXP ±40%
+  const powerMul = p.stats ? (0.8 + 0.1 * p.stats.power) : 1;
+  const exp = Math.max(1, Math.round(Math.pow(1.3, rIdx) * 6 * powerMul));
   // 落下位置の上方向に XP float を出す（画面内で見える位置）
   const H = window.innerHeight;
   spawnXpFloat(p.x + SIZE/2, Math.min(H - 40, Math.max(40, p.y)), exp, p.rarity);
@@ -3469,12 +3471,15 @@ function spawnPomoji(opts={}) {
     else if (r < 0.12) physMode = 'wild';
     else if (r < 0.20) physMode = 'wet';
   }
+  // v1.5.36: 字ステータスを物理に反映
+  const charStats = getCharStats(char);
   const obj = {
     id, char, rarity, tier: tierIdx, x, y,
     vx: (Math.random()-0.5)*1.0, vy: 0,
     el: node, settled: false, isFirstSee, mergeLevel: 1,
     persistent: !!opts.persistent,
     physMode,
+    stats: charStats,
     spawnedAt: Date.now(),
   };
   if (physMode !== 'normal') node.classList.add('phys-' + physMode);
@@ -3850,10 +3855,13 @@ function physicsStep() {
       p.el.style.top  = p.y + 'px';
       continue;
     }
-    // 寿命チェック：一般字（非persistent）は 5分で自動吸収
-    if (!p.persistent && p.spawnedAt && (Date.now() - p.spawnedAt) > POMOJI_LIFETIME_MS) {
-      expireAsExp(p);
-      continue;
+    // 寿命チェック：一般字（非persistent）── 命ステータス（1-5）で ±40%
+    if (!p.persistent && p.spawnedAt) {
+      const lifeMul = p.stats ? (0.8 + 0.1 * p.stats.life) : 1;
+      if ((Date.now() - p.spawnedAt) > POMOJI_LIFETIME_MS * lifeMul) {
+        expireAsExp(p);
+        continue;
+      }
     }
     // 落下ぽもじ：重力＋円形ソフトボディ衝突（控えめ弾性／ゆっくり転がる）
     const tierMul = TIER_FALL_MUL[p.tier] || 1.0;
@@ -3872,7 +3880,9 @@ function physicsStep() {
       }
     }
     if (!restingOnStatic) {
-      p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0);
+      // v1.5.36: 速ステータス（1-5）で重力 ±20%
+      const speedMul = p.stats ? (0.8 + 0.1 * p.stats.speed) : 1;
+      p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0) * speedMul;
     } else {
       p.vy *= 0.85;  // 静的な台に乗ってる時は重力を切って減衰のみ
     }
@@ -4036,7 +4046,9 @@ function squashEl(p, cls) {
 
 function checkMergeCollision(p) {
   const agg = aggregatePartyPerks();
-  const radius = SIZE * 0.9 * (agg.mergeRadiusMul || 1.0);
+  // v1.5.36: 結ステータス（1-5）で融合範囲 ±40%
+  const bondMul = p.stats ? (0.8 + 0.1 * p.stats.bond) : 1;
+  const radius = SIZE * 0.9 * (agg.mergeRadiusMul || 1.0) * bondMul;
   for (const other of livePomoji.values()) {
     if (other.id === p.id) continue;
     if (other.char !== p.char) continue;
@@ -4326,7 +4338,8 @@ function dissolvePomoji(p) {
   // v1.0.9: タップ → 即「弾けて EXP」に戻す（rising 経路は休憩時のみ）
   const rarity = p.rarity;
   const rIdx = RARITY_TIERS.indexOf(rarity);
-  const exp = Math.max(1, Math.pow(1.3, rIdx) * 3);
+  const powerMul = p.stats ? (0.8 + 0.1 * p.stats.power) : 1;
+  const exp = Math.max(1, Math.round(Math.pow(1.3, rIdx) * 3 * powerMul));
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);
