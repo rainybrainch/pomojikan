@@ -2014,12 +2014,22 @@ function partyHeroLevel() {
   return hero ? hero.level : 0;
 }
 
+// v1.5.2: 字発見率ベースで段階解放（リーダー Lv 自動解放を廃止）
+// tier N の字を 80% 以上発見したら tier N+1 解放
+function tierSeenRatio(tierIdx) {
+  const codex = window.KANJI_CODEX || [];
+  const tier = RARITY_TIERS[tierIdx];
+  const chars = codex.filter(k => k.rarity === tier);
+  if (chars.length === 0) return 0;
+  const seen = chars.filter(k => (STATE.collection?.[k.char || k.c] || 0) > 0).length;
+  return seen / chars.length;
+}
 function currentDropTier() {
-  // リーダー Lv 基準で帯を決める（旧：パーティ平均）
-  const lv = partyHeroLevel();
+  // 段階解放：tier 0 は常に開放。以後、前 tier が 80% 以上発見されたら次を解放
   let band = 0;
-  for (let i = 0; i < RARITY_TIERS.length; i++) {
-    if (lv >= UNLOCK_LV[RARITY_TIERS[i]]) band = i;
+  for (let i = 1; i < RARITY_TIERS.length; i++) {
+    if (tierSeenRatio(i - 1) >= 0.8) band = i;
+    else break;
   }
   return band;
 }
@@ -5665,6 +5675,7 @@ function matchesScript(ch, scriptKey) {
 function openCodex() {
   $('#codex-modal').classList.add('show');
   setupCodexCollapsibles();
+  renderCodexPyramid();
   renderCodexFilterSummary();
   applyCodexLegendMask();
   applyCodexTabMask();
@@ -5685,6 +5696,37 @@ function openCodex() {
     }, `(${total.toLocaleString()})`));
   }
   renderCodex();
+}
+
+// v1.5.2: ピラミッド可視化 ── ★1-16 の解放進捗を一目で
+function renderCodexPyramid() {
+  const cont = document.getElementById('codex-pyramid');
+  if (!cont) return;
+  cont.innerHTML = '';
+  const currentTier = STATE.unlockedTier || 0;
+  for (let i = RARITY_TIERS.length - 1; i >= 0; i--) {
+    const tier = RARITY_TIERS[i];
+    const ratio = tierSeenRatio(i);
+    const pct = Math.round(ratio * 100);
+    const unlocked = i <= currentTier;
+    const isCurrent = i === currentTier;
+    const widthPct = Math.max(15, 100 - i * 5);  // 上ほど狭い
+    const step = document.createElement('div');
+    step.className = 'pyramid-step' + (unlocked ? ' unlocked' : ' locked') + (isCurrent ? ' current' : '');
+    step.style.width = widthPct + '%';
+    step.innerHTML = `
+      <span class="ps-tier">${unlocked ? tier : '？'}</span>
+      <span class="ps-bar"><span class="ps-fill" style="width:${pct}%"></span></span>
+      <span class="ps-pct">${unlocked ? pct + '%' : '🔒'}</span>
+    `;
+    if (isCurrent) {
+      const here = document.createElement('span');
+      here.className = 'ps-here';
+      here.textContent = '◀ ここ';
+      step.appendChild(here);
+    }
+    cont.appendChild(step);
+  }
 }
 
 // v10n12: 凡例・文字種フィルタの折りたたみトグル

@@ -5117,3 +5117,36 @@ body.harvest-mode .pomoji {
   pointer-events: none;
   line-height: 1;
 }
+
+/* v1.5.2: 解放ピラミッド */
+.codex-pyramid {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; margin: 6px 0 10px;
+  padding: 8px;
+  background: rgba(0,0,0,.25);
+  border-radius: 8px;
+}
+.pyramid-step {
+  display: grid;
+  grid-template-columns: 32px 1fr 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: .68rem;
+  position: relative;
+  transition: background .2s;
+}
+.pyramid-step.unlocked { background: rgba(135,206,235,.12); color: #cfe6ff; }
+.pyramid-step.locked   { background: rgba(255,255,255,.03); color: var(--ink-mute); opacity: .55; }
+.pyramid-step.current  { background: linear-gradient(90deg, rgba(240,212,138,.32), rgba(240,212,138,.08)); color: #ffe9a0; font-weight: 800; border: 1px solid rgba(240,212,138,.55); }
+.ps-tier { font-family: 'JetBrains Mono', monospace; font-weight: 700; text-align: center; }
+.ps-bar { height: 6px; background: rgba(255,255,255,.10); border-radius: 3px; overflow: hidden; }
+.ps-fill { display: block; height: 100%; background: linear-gradient(90deg, #87ceeb, #f0d48a); border-radius: 3px; }
+.pyramid-step.current .ps-fill { background: linear-gradient(90deg, #f0d48a, #ffd86b); }
+.ps-pct { font-family: 'JetBrains Mono', monospace; font-size: .62rem; text-align: right; }
+.ps-here { position: absolute; right: -42px; color: var(--gold); font-size: .62rem; font-weight: 700; }
+@media (max-width:480px) {
+  .pyramid-step { font-size: .6rem; grid-template-columns: 26px 1fr 32px; padding: 2px 6px; }
+  .ps-here { right: -36px; font-size: .56rem; }
+}
