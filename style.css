@@ -500,7 +500,7 @@ body[data-weather="heavyrain"] .rd{ animation-duration:.55s !important; }
 .game-main{
   display:flex;flex-direction:column;align-items:stretch;
   gap:14px;
-  padding:36px 14px 14px;
+  padding:14px 14px 14px;
   max-width:560px;
   margin:0 auto;
   min-height:calc(100vh - 56px);
@@ -709,21 +709,17 @@ body[data-mode="rest"] .timer-text{
 }
 .timer-cog:hover{ background:var(--accent-dim); transform:rotate(45deg); }
 
-/* 進捗ピル ── ヘッダー直下に固定（重なり回避） */
-.progress-pill{
-  position:fixed;
-  top:54px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:8;
-  display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:center;
-  margin:0;
-  padding:4px 12px;
-  background:rgba(0,0,0,.55);
-  border:1px solid rgba(135,206,235,.22);
+/* 進捗ピル ── ヘッダー内中央（flex で重なり防止） */
+.app-header .progress-pill{
+  flex:1 1 0;
+  min-width:0;
+  margin:0 10px;
+  display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:center;
+  padding:4px 10px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(135,206,235,.2);
   border-radius:99px;
-  font-size:.65rem;
-  max-width:calc(100vw - 24px);
+  font-size:.6rem;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
@@ -1304,6 +1300,13 @@ body[data-mode="rest"] .timer-text{
   border:1px dashed rgba(135,206,235,.25);
   border-radius:14px;
   position:relative;
+  animation:tankHintSway 3.6s ease-in-out infinite;
+}
+@keyframes tankHintSway{
+  0%, 100%{ transform:translate(0, 0) rotate(0deg); }
+  25%    { transform:translate(-3px, -2px) rotate(-.6deg); }
+  50%    { transform:translate(0, -4px) rotate(0deg); }
+  75%    { transform:translate(3px, -2px) rotate(.6deg); }
 }
 .tank-hint::before{ content:none; display:none; }
 @keyframes tankHintBob{
