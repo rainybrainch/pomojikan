@@ -373,6 +373,13 @@ function aggregatePartyPerks() {
 // 旧: 10 * lv^1.6 → Lv1→2 で 10 必要（タップ数回で達成）
 // 新: 60 * lv^1.8 → Lv1→2 で 60、Lv10→11 で 3,800、Lv100→101 で 24万
 const expForLevel = (lv) => Math.floor(100 * Math.pow(lv, 2.5));
+// v1.4.0: レア度ごと Lv 上限
+const RARITY_LV_CAP = {
+  '★1':50,'★2':80,'★3':120,'★4':180,'★5':250,'★6':350,'★7':500,'★8':700,
+  '★9':1000,'★10':1500,'★11':2500,'★12':4000,'★13':8000,'★14':30000,'★15':100000,'★16':1000000,
+};
+function rarityLvCap(rarity) { return RARITY_LV_CAP[rarity] || 1000000; }
+function isAtRarityCap(m) { return m && (m.level >= rarityLvCap(m.rarity)); }
 // 進化加速の上限を 95% → 50% に抑制（実効必要 EXP がほぼ 0 にならない）
 function effectiveExpForLevel(lv) {
   const disc = (typeof _aggCache !== 'undefined' && _aggCache && _aggCache.evoDiscount)
@@ -2081,7 +2088,7 @@ function awardExpToParty(c, exp, opts={}) {
       const hero = STATE.party.members[STATE.party.hero];
       hero.exp += heroBonus;
       let s = 0;
-      if (hero.exp >= effectiveExpForLevel(hero.level + 1)) {
+      if (hero.exp >= effectiveExpForLevel(hero.level + 1) && !isAtRarityCap(hero)) {
         hero.exp -= effectiveExpForLevel(hero.level + 1);
         hero.level += 1;
         onLevelUp(hero, STATE.party.hero);
@@ -2089,7 +2096,7 @@ function awardExpToParty(c, exp, opts={}) {
     }
   }
   let s2 = 0;
-  if (m.exp >= effectiveExpForLevel(m.level + 1)) {
+  if (m.exp >= effectiveExpForLevel(m.level + 1) && !isAtRarityCap(m)) {
     m.exp -= effectiveExpForLevel(m.level + 1);
     m.level += 1;
     onLevelUp(m, idx);
@@ -3189,7 +3196,7 @@ function grantDiscoveryBonus(rarity, char) {
     const m = STATE.party.members[i];
     m.exp = (m.exp || 0) + perMember;
     let s = 0;
-    if (m.exp >= effectiveExpForLevel(m.level + 1)) {
+    if (m.exp >= effectiveExpForLevel(m.level + 1) && !isAtRarityCap(m)) {
       m.exp -= effectiveExpForLevel(m.level + 1);
       m.level += 1;
       onLevelUp(m, i);
@@ -3764,7 +3771,7 @@ function feedPomojiToMember(p, idx, cardEl) {
   // EXP 反映
   member.exp = (member.exp || 0) + exp;
   let s = 0;
-  if (member.exp >= effectiveExpForLevel(member.level + 1)) {
+  if (member.exp >= effectiveExpForLevel(member.level + 1) && !isAtRarityCap(member)) {
     member.exp -= effectiveExpForLevel(member.level + 1);
     member.level += 1;
     onLevelUp(member, idx);
@@ -3964,7 +3971,7 @@ function addStock(char) {
       const m = STATE.party.members[i];
       m.exp = (m.exp || 0) + expPerStock;
       let s = 0;
-      if (m.exp >= effectiveExpForLevel(m.level + 1)) {
+      if (m.exp >= effectiveExpForLevel(m.level + 1) && !isAtRarityCap(m)) {
         m.exp -= effectiveExpForLevel(m.level + 1);
         m.level += 1;
         onLevelUp(m, i);
@@ -4047,7 +4054,7 @@ function _orphanExp(exp) {
   hero.exp += Math.floor(exp / 4);
   STATE.stats.totalExp = (STATE.stats.totalExp || 0) + Math.floor(exp / 4);
   let s = 0;
-  if (hero.exp >= effectiveExpForLevel(hero.level + 1)) {
+  if (hero.exp >= effectiveExpForLevel(hero.level + 1) && !isAtRarityCap(hero)) {
     hero.exp -= effectiveExpForLevel(hero.level + 1);
     hero.level += 1;
     onLevelUp(hero, STATE.party.hero);
