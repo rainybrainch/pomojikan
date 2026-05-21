@@ -5243,6 +5243,26 @@ function updateDiaryInputStatus() {
     status.className = 'wr-input-status missing';
   }
 }
+// v1.5.12: 普通入力（ぽもじ消費なし）
+function importDiaryInputPlain() {
+  const input = document.getElementById('diary-input');
+  if (!input || !input.value) { toast('入力欄が空'); return; }
+  const text = input.value;
+  if (!_stockRarityCache) _buildStockRarityCache();
+  const newItems = [];
+  for (const c of text) {
+    if (c === '\n' || c === ' ' || c === '　') continue;
+    const rarity = _stockRarityCache.get(c) || '★1';
+    newItems.push({ char: c, rarity, plain: true });
+  }
+  if (newItems.length === 0) { toast('取込なし'); return; }
+  _currentWriting.push(...newItems);
+  input.value = '';
+  updateDiaryInputStatus();
+  renderWritingsModal();
+  toast(`${newItems.length} 字 そのまま取込（消費なし）`);
+}
+
 function importDiaryInput() {
   const input = document.getElementById('diary-input');
   if (!input || !input.value) { toast('入力欄が空'); return; }
@@ -5345,6 +5365,11 @@ function openWritings() {
     diaryInput.addEventListener('input', updateDiaryInputStatus);
     diaryInput._bound = true;
   }
+  const diaryImportPlain = $('#diary-import-plain');
+  if (diaryImportPlain && !diaryImportPlain._bound) {
+    diaryImportPlain.addEventListener('click', importDiaryInputPlain);
+    diaryImportPlain._bound = true;
+  }
   if (diaryImport && !diaryImport._bound) {
     diaryImport.addEventListener('click', importDiaryInput);
     diaryImport._bound = true;
@@ -5445,13 +5470,13 @@ function saveHaiku() {
   const chars = _haikuRows.flat().map(it => ({ char: it.char, rarity: it.rarity }));
   const text = haikuText();
   const date = new Date().toISOString().slice(0,10);
-  const entry = { text, genre: '🌸 俳句', date, public: true, chars };
+  const entry = { text, genre: '俳句', date, public: true, chars };
   STATE.writings = STATE.writings || [];
   STATE.writings.push(entry);
   saveState();
   // v1.3.7: 俳句も読雨に放流（日記と整合）
   try { publishToYomu(entry); } catch(_) {}
-  toast('🌸 俳句を保存');
+  toast('俳句を保存');
   _haikuRows = [[],[],[]];
   renderHaiku();
 }
@@ -5459,7 +5484,7 @@ async function shareHaiku() {
   if (!isHaikuComplete()) { toast('5-7-5 を埋めて'); return; }
   const text = haikuText();
   const url = 'https://rainybrainch.github.io/pomojikan/';
-  const full = `🌸 ぽもじかんで詠んだ俳句\n\n${text}\n\n#ぽもじかん #俳句\n${url}`;
+  const full = `ぽもじかんで詠んだ俳句\n\n${text}\n\n#ぽもじかん #俳句\n${url}`;
   try {
     if (navigator.share) {
       await navigator.share({ title: 'ぽもじかんの俳句', text: full });
@@ -5487,7 +5512,7 @@ function renderWritingsHistory() {
       el('div', { class:'wh-meta' },
         el('span', {}, w.genre || '─'),
         el('span', {}, w.date || ''),
-        w.public ? el('span', { style:{ color:'#ffd86b' } }, '🌸 公開可') : el('span', { style:{ color:'var(--ink-mute)' } }, '🔒 非公開'),
+        w.public ? el('span', { style:{ color:'#ffd86b' } }, '公開可') : el('span', { style:{ color:'var(--ink-mute)' } }, '非公開'),
       ),
       el('button', {
         class:'wh-del', title:'削除',
@@ -5660,14 +5685,15 @@ function saveCurrentWriting() {
   const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   if (!STATE.writings) STATE.writings = [];
   if (!STATE.stock) STATE.stock = {};
-  // ストック消費を確定（使った字を所有数から引く）
+  // v1.5.12: plain（そのまま取込）字はストック消費しない
   for (const item of _currentWriting) {
+    if (item.plain) continue;
     STATE.stock[item.char] = Math.max(0, (STATE.stock[item.char] || 0) - 1);
     if (STATE.stock[item.char] === 0) delete STATE.stock[item.char];
   }
   STATE.writings.push({ text, genre, date, chars: _currentWriting.slice() });
   saveState();
-  toast(`📜 保存：${genre}「${text}」`);
+  toast(`日記に保存：${genre}「${text}」`);
   // 読雨連携：BroadcastChannel 'rainybrain' で文章を放流（読雨側で受信可）
   publishToYomu({ text, genre, date, chars: _currentWriting.slice() });
   _currentWriting = [];

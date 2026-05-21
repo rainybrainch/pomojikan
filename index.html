@@ -276,11 +276,11 @@
 <div class="modal" id="writings-modal" role="dialog" aria-modal="true">
   <div class="modal-card modal-card-wide">
     <button class="modal-close" id="writings-close" aria-label="閉じる">×</button>
-    <h2 class="modal-title">📓 日記＆俳句</h2>
+    <h2 class="modal-title">日記と俳句</h2>
     <div class="wr-tabs">
-      <button class="wr-tab active" data-wr-tab="diary">📓 日記</button>
-      <button class="wr-tab" data-wr-tab="haiku">🌸 俳句</button>
-      <button class="wr-tab" data-wr-tab="history">📜 履歴</button>
+      <button class="wr-tab active" data-wr-tab="diary">日記</button>
+      <button class="wr-tab" data-wr-tab="haiku">俳句</button>
+      <button class="wr-tab" data-wr-tab="history">綴り</button>
     </div>
 
     <!-- 日記タブ -->
@@ -289,16 +289,17 @@
         集めた字を使って、その日の日記を編む。<strong>非公開・端末内のみ</strong>。
       </p>
       <div class="writings-current">
-        <div class="wc-label">📅 <span id="diary-date"></span> ・ <span id="wc-genre" class="wc-genre">─</span></div>
+        <div class="wc-label">日付 <span id="diary-date"></span> ・ <span id="wc-genre" class="wc-genre">─</span></div>
         <div class="wc-slots" id="wc-slots"></div>
-        <textarea id="diary-input" class="wr-input" rows="3" placeholder="ここにタイプ／コピペで入力（不足字があると赤く表示）"></textarea>
+        <textarea id="diary-input" class="wr-input" rows="3" placeholder="ここにタイプ／コピペで入力（普通に日記として）"></textarea>
         <div class="wr-input-status" id="diary-input-status"></div>
         <div class="wc-actions">
           <button class="btn-secondary" id="wc-clear">クリア</button>
           <button class="btn-secondary" id="wc-undo">← 取消</button>
-          <button class="btn-secondary" id="diary-import" title="入力欄を取り込む">⬇ 取込</button>
-          <button class="btn-primary"   id="wc-save">📜 日記に保存</button>
-          <button class="btn-secondary" id="wc-export-2" title="日記＋俳句を JSON 出力">📥</button>
+          <button class="btn-secondary" id="diary-import-plain" title="ぽもじを使わずそのまま取り込む（消費なし）">そのまま取込</button>
+          <button class="btn-secondary" id="diary-import" title="ぽもじを使って取り込む（育成字は光る・消費あり）">ぽもじ使用取込</button>
+          <button class="btn-primary"   id="wc-save">日記に保存</button>
+          <button class="btn-secondary" id="wc-export-2" title="日記＋俳句を JSON 出力">出力</button>
         </div>
       </div>
       <div class="writings-pool">

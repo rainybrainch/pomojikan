@@ -5397,3 +5397,23 @@ body[data-ledge="ink"] #ledge-surface::before {
     radial-gradient(40% 60% at 30% 30%, rgba(0,0,0,.35), transparent 60%),
     radial-gradient(30% 50% at 70% 60%, rgba(0,0,0,.3), transparent 60%);
 }
+
+/* v1.5.12: 日記＆俳句 UI 没入化 */
+.wr-tabs { border-bottom-color: rgba(240,212,138,.25); }
+.wr-tab { font-family: 'Noto Serif JP', serif; letter-spacing: .1em; }
+.wr-tab.active { color: var(--gold); border-bottom-color: var(--gold); text-shadow: 0 0 8px rgba(240,212,138,.4); }
+.writings-current {
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(20,16,8,.35), rgba(0,0,0,.15));
+  border: 1px solid rgba(240,212,138,.18);
+  border-radius: 8px;
+  margin: 10px 0;
+}
+.wc-label { font-family: 'Noto Serif JP', serif; color: var(--gold); font-size: .85rem; letter-spacing: .08em; margin-bottom: 8px; }
+.wr-input {
+  font-family: 'Noto Serif JP', serif !important;
+  line-height: 1.8;
+  background: rgba(0,0,0,.4) !important;
+  border: 1px solid rgba(240,212,138,.25) !important;
+}
+.wr-input:focus { outline: 2px solid var(--gold); border-color: var(--gold) !important; }
