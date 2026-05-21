@@ -4656,17 +4656,23 @@ function spawnLevelUpPoof(x, y, rarity) {
 }
 
 function _orphanExp(exp) {
-  // Not a party member → distribute small XP to hero
-  if (!STATE.party) return;
-  const hero = STATE.party.members[STATE.party.hero];
-  hero.exp += Math.floor(exp / 4);
-  STATE.stats.totalExp = (STATE.stats.totalExp || 0) + Math.floor(exp / 4);
-  let s = 0;
-  if (hero.exp >= effectiveExpForLevel(hero.level + 1) && !isAtRarityCap(hero)) {
-    hero.exp -= effectiveExpForLevel(hero.level + 1);
-    hero.level += 1;
-    onLevelUp(hero, STATE.party.hero);
-  }
+  // v1.5.51: パーティ全員に均等分配＋リーダー優遇 ── バランス改善
+  if (!STATE.party || !STATE.party.members?.length) return;
+  const members = STATE.party.members;
+  const heroIdx = STATE.party.hero || 0;
+  const perMember = Math.max(1, Math.floor(exp / 2 / members.length));  // 半分を均等分配
+  const heroBonus = Math.floor(exp / 2);                                  // 残り半分はリーダー
+  members.forEach((m, idx) => {
+    if (!m) return;
+    const give = perMember + (idx === heroIdx ? heroBonus : 0);
+    m.exp += give;
+    STATE.stats.totalExp = (STATE.stats.totalExp || 0) + give;
+    if (m.exp >= effectiveExpForLevel(m.level + 1) && !isAtRarityCap(m)) {
+      m.exp -= effectiveExpForLevel(m.level + 1);
+      m.level += 1;
+      onLevelUp(m, idx);
+    }
+  });
   updatePartyXpUI();
 }
 
