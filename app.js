@@ -3508,6 +3508,19 @@ function spawnPomoji(opts={}) {
   };
   if (physMode !== 'normal') node.classList.add('phys-' + physMode);
   if (obj.persistent) node.classList.add('persistent');
+  // v1.5.47: 絵文字専用クラス（餅背景を消して絵文字を主役に）
+  const isEmojiChar = getCharTags(char).includes('絵文字');
+  if (isEmojiChar) {
+    node.classList.add('pomoji-emoji');
+    // カテゴリ別オーラ
+    if ('🔥💥⚡☄🌋'.includes(char)) node.classList.add('emoji-fire');
+    else if ('💧🌊💦🌀☔'.includes(char)) node.classList.add('emoji-water');
+    else if ('✨🌟💫⭐🌠'.includes(char)) node.classList.add('emoji-spark');
+    else if ('💀☠👻👽👿🤖'.includes(char)) node.classList.add('emoji-dark');
+    else if ('🌸🌺🌷🌹🌻🌼💐'.includes(char)) node.classList.add('emoji-bloom');
+    else if ('💰💎💴💵🪙'.includes(char)) node.classList.add('emoji-gold');
+  }
+  obj.isEmoji = isEmojiChar;
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
@@ -4363,7 +4376,23 @@ function dissolvePomoji(p) {
   const rarity = p.rarity;
   const rIdx = RARITY_TIERS.indexOf(rarity);
   const powerMul = p.stats ? (0.8 + 0.1 * p.stats.power) : 1;
-  const exp = Math.max(1, Math.round(Math.pow(1.3, rIdx) * 3 * powerMul));
+  let exp = Math.max(1, Math.round(Math.pow(1.3, rIdx) * 3 * powerMul));
+  // v1.5.47: 絵文字特有効果
+  if (p.isEmoji) {
+    if ('🔥💥⚡☄🌋'.includes(p.char)) { exp *= 2; spawnLevelUpPoof(p.x + SIZE/2, p.y + SIZE/2, '★12'); }
+    else if ('✨🌟💫⭐🌠'.includes(p.char)) { exp *= 3; spawnLevelUpPoof(p.x + SIZE/2, p.y + SIZE/2, '★14'); }
+    else if ('💰💎💴💵🪙'.includes(p.char)) { exp *= 4; addStock(p.char); addStock(p.char); }
+    else if ('💀☠👻'.includes(p.char)) { exp = Math.max(1, Math.floor(exp * 0.5)); }  // 不吉
+    else if ('🍎🍐🍊🍌🍉🍇🍓🍑🥭🍍🍒🍕🍔🍣🍦🍰'.includes(p.char)) { addStock(p.char); addStock(p.char); }
+    else if ('💧🌊💦☔'.includes(p.char)) {
+      // 周囲の同字を引き寄せ
+      for (const q of livePomoji.values()) {
+        if (q.id === p.id || q.persistent || !q.isEmoji) continue;
+        const dx = q.x - p.x, dy = q.y - p.y;
+        if (dx*dx + dy*dy < 200*200) { q.vx += dx > 0 ? -2 : 2; q.vy -= 2; }
+      }
+    }
+  }
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   spawnXpFloat(p.x + SIZE/2, p.y + SIZE/2, exp, rarity);
   addStock(p.char);

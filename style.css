@@ -2090,6 +2090,44 @@ body.stream-mode .party-bar{
   transform:translate(-50%, -50%);
   animation:lvupPoof 1.1s cubic-bezier(.2,.9,.3,1.1) forwards;
 }
+/* v1.5.47: 絵文字専用ぽもじ ── 餅背景なし、絵文字をそのまま大きく */
+.pomoji.pomoji-emoji{
+  background:none !important;
+  border:none !important;
+  text-shadow:none !important;
+  color:inherit !important;
+  font-size:2.4rem !important;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));
+}
+.pomoji.pomoji-emoji.emoji-fire{
+  filter:drop-shadow(0 0 8px #ff6020) drop-shadow(0 0 14px #ff3000);
+  animation:emojiFire 1s ease-in-out infinite;
+}
+@keyframes emojiFire{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.1); } }
+.pomoji.pomoji-emoji.emoji-water{
+  filter:drop-shadow(0 0 10px #40c0ff) drop-shadow(0 2px 6px rgba(0,80,200,.5));
+  animation:emojiWater 2s ease-in-out infinite;
+}
+@keyframes emojiWater{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
+.pomoji.pomoji-emoji.emoji-spark{
+  filter:drop-shadow(0 0 12px #fff060) drop-shadow(0 0 20px #ffd040);
+  animation:emojiSpark 1.2s linear infinite;
+}
+@keyframes emojiSpark{ 0%,100%{ filter:drop-shadow(0 0 12px #fff060) drop-shadow(0 0 20px #ffd040); } 50%{ filter:drop-shadow(0 0 20px #ffffff) drop-shadow(0 0 28px #fff080); } }
+.pomoji.pomoji-emoji.emoji-dark{
+  filter:drop-shadow(0 0 10px #8040ff) drop-shadow(0 0 16px #4020a0) grayscale(.3);
+  animation:emojiDark 1.6s ease-in-out infinite;
+}
+@keyframes emojiDark{ 0%,100%{ opacity:1; } 50%{ opacity:.7; } }
+.pomoji.pomoji-emoji.emoji-bloom{
+  filter:drop-shadow(0 0 8px #ffa0d0) drop-shadow(0 0 14px #ff80c0);
+}
+.pomoji.pomoji-emoji.emoji-gold{
+  filter:drop-shadow(0 0 10px #ffd060) drop-shadow(0 0 16px #c8a040);
+  animation:emojiGold 1.4s ease-in-out infinite;
+}
+@keyframes emojiGold{ 0%,100%{ transform:rotate(-3deg); } 50%{ transform:rotate(3deg); } }
+
 /* v1.5.35: 物理モード別ぽもじ ── 視覚を強化 */
 .pomoji.phys-bouncy{
   filter:drop-shadow(0 0 14px #80ff99) drop-shadow(0 0 4px #40ff60) !important;
