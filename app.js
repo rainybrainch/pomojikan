@@ -269,9 +269,13 @@ function aggregatePartyPerks() {
     blessing:      0,       // every N cycles
     instantEvoOn:  [],      // list of tags
   };
-  // 全 perk をパーティから集める（重複あり）
+  // v1.4.5: メイン + ベンチ（サブパーティ）両方から特性を集める
+  const allMembers = [
+    ...(STATE.party.members || []),
+    ...(STATE.party.bench || []),
+  ];
   const seenPerks = new Set();
-  for (const m of STATE.party.members) {
+  for (const m of allMembers) {
     for (const pid of (m.perks || [])) {
       if (seenPerks.has(pid)) continue;  // 同特性は1回だけ集計（Lv が共有なので）
       seenPerks.add(pid);
@@ -505,6 +509,13 @@ function checkMilestones() {
   try {
     if (STATE.party && STATE.party.members) {
       for (const m of STATE.party.members) {
+        if (typeof m.level !== 'number' || !isFinite(m.level)) m.level = 1;
+        if (typeof m.exp !== 'number' || !isFinite(m.exp))     m.exp = 0;
+        if (!Array.isArray(m.perks)) m.perks = [];
+      }
+      // v1.4.5: ベンチ枠
+      if (!Array.isArray(STATE.party.bench)) STATE.party.bench = [];
+      for (const m of STATE.party.bench) {
         if (typeof m.level !== 'number' || !isFinite(m.level)) m.level = 1;
         if (typeof m.exp !== 'number' || !isFinite(m.exp))     m.exp = 0;
         if (!Array.isArray(m.perks)) m.perks = [];
@@ -2539,6 +2550,30 @@ const WORK_SPAWN_INTERVAL_MS = 13000;  // v1.4.3: 10s→13s（テンポを落と
 let workSpawnTimer = 0;
 let workDropCount = 0;
 
+// v1.4.5: 熟語ラッキー降下 ── 構成字を 1 字ずつ連続で降らせる
+function triggerLuckyCombo() {
+  const recipes = window.YOJI_RECIPES || [];
+  if (recipes.length === 0) return false;
+  // 解放済 or 構成字を全て発見済の熟語から
+  const candidates = recipes.filter(r => {
+    if (!r.chars || r.chars.length < 2 || r.chars.length > 5) return false;
+    if (STATE.discoveredYoji && STATE.discoveredYoji[r.word]) return true;
+    return r.chars.every(c => (STATE.collection[c] || 0) > 0);
+  });
+  if (candidates.length === 0) return false;
+  const r = candidates[Math.floor(Math.random() * candidates.length)];
+  const codex = window.KANJI_CODEX || [];
+  try { toast(`✨ 熟語ラッキー：${r.word}`, r.rarity); } catch(_) {}
+  r.chars.forEach((c, i) => {
+    setTimeout(() => {
+      if (STATE.mode !== 'work') return;
+      const k = codex.find(x => (x.char||x.c) === c) || { char: c, c: c, rarity: r.rarity };
+      spawnPomoji({ kanji: k });
+    }, i * 700);
+  });
+  return true;
+}
+
 function startWorkSpawning() {
   stopWorkSpawning();
   workDropCount = 0;
@@ -2551,9 +2586,12 @@ function stopWorkSpawning() {
 }
 function workSpawnTick() {
   if (STATE.mode !== 'work') return;
+  // v1.4.5: 熟語ラッキー（8% 確率）── 解放済熟語の構成字を連続降下
+  if (Math.random() < 0.08) {
+    if (triggerLuckyCombo()) return;
+  }
   workDropCount++;
   let k;
-  // v1.4.3: パーティ字を 2/3 で出す（旧 1/3）── メンバー中心の体験に
   if (STATE.party && STATE.party.members?.length && workDropCount % 3 !== 0) {
     k = pickPartyDrop();
   } else {
@@ -4544,6 +4582,11 @@ function openPartyMemberAction(idx) {
         $$('.member-action-pop').forEach(e => e.remove());
       },
     }, '★ この字をリーダーに'));
+    // v1.4.5: ベンチ送り
+    buttons.push(el('button', { class:'btn-secondary mapop-btn', onclick: () => {
+      sendToBench(idx);
+      $$('.member-action-pop').forEach(e => e.remove());
+    }}, '🪑 ベンチへ（特性のみ残る）'));
     buttons.push(el('button', { class:'btn-danger mapop-btn', onclick: () => {
       if (confirm(`${m.char} をパーティから外しますか？\n（Lv.${m.level} は保持、再加入で復活）`)) {
         invalidateAggCache();
@@ -4598,6 +4641,48 @@ function buildMemberFor(c, rarity, isLeader) {
   if (isLeader && !perks.includes('guardian')) perks.push('guardian');
   return { char: c, rarity, level: 1, exp: 0, perks };
 }
+// v1.4.5: ベンチ（サブパーティ）操作
+const BENCH_CAP = 10;
+function sendToBench(idx) {
+  if (!STATE.party || !STATE.party.members) return;
+  if (!Array.isArray(STATE.party.bench)) STATE.party.bench = [];
+  if (STATE.party.bench.length >= BENCH_CAP) {
+    toast(`ベンチ枠 ${BENCH_CAP} 個まで`);
+    return;
+  }
+  const m = STATE.party.members[idx];
+  if (!m) return;
+  preserveMemberLevels([m]);
+  if (m.perks) m.perks = m.perks.filter(p => p !== 'guardian');
+  STATE.party.members.splice(idx, 1);
+  STATE.party.bench.push(m);
+  // 先頭にいなくなった場合 hero=0 の guardian を付け直す
+  if (STATE.party.members[0]) {
+    if (!STATE.party.members[0].perks) STATE.party.members[0].perks = [];
+    if (!STATE.party.members[0].perks.includes('guardian')) STATE.party.members[0].perks.push('guardian');
+  }
+  STATE.party.hero = 0;
+  invalidateAggCache();
+  saveState();
+  renderParty();
+  toast(`🪑 ${m.char} ベンチへ（特性は乗ったまま）`);
+}
+function callFromBench(benchIdx) {
+  if (!STATE.party || !STATE.party.bench) return;
+  if (STATE.party.members.length >= 4) {
+    toast('メイン枠 4 体 ── 先に外して');
+    return;
+  }
+  const m = STATE.party.bench[benchIdx];
+  if (!m) return;
+  STATE.party.bench.splice(benchIdx, 1);
+  STATE.party.members.push(m);
+  invalidateAggCache();
+  saveState();
+  renderParty();
+  toast(`★ ${m.char} メインに復帰`);
+}
+
 function preserveMemberLevels(members) {
   if (!STATE.charLevels) STATE.charLevels = {};
   if (!members) return;
