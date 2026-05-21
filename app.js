@@ -372,7 +372,8 @@ function aggregatePartyPerks() {
 // v1.2.2: EXP カーブを急に（あと1で〜が頻発する問題対策）
 // 旧: 10 * lv^1.6 → Lv1→2 で 10 必要（タップ数回で達成）
 // 新: 60 * lv^1.8 → Lv1→2 で 60、Lv10→11 で 3,800、Lv100→101 で 24万
-const expForLevel = (lv) => Math.floor(100 * Math.pow(lv, 2.5));
+// v1.4.2: カーブ更にキツく（cap 10 ★1 でも実感ある手応え）
+const expForLevel = (lv) => Math.floor(250 * Math.pow(lv, 2.5));
 // v1.4.1: レア度ごと Lv 上限（タイト・段階的）＋最高 Lv 字で上限解放
 const RARITY_LV_CAP_BASE = {
   '★1':10,'★2':15,'★3':20,'★4':30,'★5':50,'★6':80,'★7':120,'★8':180,
@@ -3976,8 +3977,8 @@ function addStock(char) {
     // 🌟「ぽ文字漢」コンボ成立時は ×1.3
     const agg = aggregatePartyPerks();
     const stockMul = (agg && agg.stockExpMul) ? agg.stockExpMul : 1.0;
-    // v1.2.9: stock EXP を 30% に削減（旧：4 体均等大放出で甘すぎた）
-    const expPerStock = Math.max(1, Math.round((rIdx + 1) * 0.3 * stockMul));
+    // v1.4.2: stock EXP を更に控えめに（旧 0.3 → 0.15）
+    const expPerStock = Math.max(1, Math.round((rIdx + 1) * 0.15 * stockMul));
     for (let i = 0; i < STATE.party.members.length; i++) {
       const m = STATE.party.members[i];
       m.exp = (m.exp || 0) + expPerStock;
@@ -4936,6 +4937,22 @@ function refreshPCPanels(){
 // ═══════════════════════════════════════════════════════════════
 let _currentWriting = [];  // { char, rarity }
 
+// v1.4.2: 全データリセット（2 段階確認）
+function resetAllData() {
+  if (!confirm('⚠ すべてのデータを消去します。\n本当に始めから？（書き出しはお済みですか？）')) return;
+  const phrase = 'リセット';
+  const typed = prompt(`本当にリセットする場合は「${phrase}」と入力：`, '');
+  if (typed !== phrase) { toast('キャンセル（合言葉が違う）'); return; }
+  try {
+    localStorage.removeItem(LS_KEY);
+    if (_yomuChannel) { try { _yomuChannel.close(); } catch(_) {} }
+    toast('🌀 リセット完了 ── リロードします');
+    setTimeout(() => location.reload(), 800);
+  } catch(e) {
+    alert('リセット失敗：' + (e.message || ''));
+  }
+}
+
 // v1.3.15: 日記入力の検証（不足表示）と取込
 function updateDiaryInputStatus() {
   const input = document.getElementById('diary-input');
@@ -5708,6 +5725,11 @@ function openDataManager() {
             '⚠ 現在のデータは上書きされます。心配なら先に書き出してから'),
           el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', borderTop:'1px solid rgba(255,255,255,.06)', paddingTop:'10px', lineHeight:1.4 } },
             '💡 別の端末で続きを遊ぶ：1) ここで書き出し  2) 別端末で同じアプリ開く  3) ここから復元'),
+          el('button', { class:'btn-danger', style:{ padding:'10px', minHeight:'48px', marginTop:'10px' },
+            onclick: resetAllData },
+            '⚠ すべてのデータをリセット（始めから）'),
+          el('div', { style:{ fontSize:'.7rem', color:'#ffb070', lineHeight:1.4 } },
+            '🛑 注意：パーティ・字 Lv・ストック・プリセット・記録 全て消去。先に書出してから推奨'),
         ),
       ),
     );
