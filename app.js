@@ -2559,6 +2559,8 @@ function startWork() {
   ensureNotificationPermission();
   // v10n18: スタート／作業再開でカッコウ
   try { playKakkou(); } catch(_) {}
+  // v1.4.9: 作業も自動 PiP（対応 PC のみ）── 常時表示
+  try { if (!_pipWindow && 'documentPictureInPicture' in window) toggleTimerPiP(); } catch(_) {}
   STATE.phaseEnd = Date.now() + STATE.timer.workSec * 1000;
   document.body.dataset.mode = 'work';
   $('#main-btn').textContent = '⏸ 一時停止';
@@ -7505,8 +7507,21 @@ async function toggleTimerPiP() {
       <span id="pip-dot" style="width:10px;height:10px;border-radius:50%;background:#666;flex:0 0 auto;box-shadow:0 0 0 rgba(0,0,0,0);transition:background .3s,box-shadow .3s;"></span>
       <div id="pip-text" style="font-size:2.6rem;font-weight:800;letter-spacing:.04em;line-height:1;">--:--</div>
       <span id="pip-mode" style="position:absolute;bottom:6px;right:10px;font-size:.6rem;opacity:.55;font-family:sans-serif;">⏸</span>
+      <span id="pip-stop" style="position:absolute;top:4px;right:8px;font-size:.7rem;opacity:.5;cursor:pointer;user-select:none;" title="クリックで停止">⏹</span>
       <svg id="pip-svg-hidden" style="display:none"><circle id="pip-fg"/></svg>
     `;
+    // v1.4.9: PiP からの停止操作
+    doc.getElementById('pip-stop')?.addEventListener('click', () => {
+      if (STATE.mode === 'measure') stopMeasure();
+      else if (STATE.mode === 'work' || STATE.mode === 'rest') stopTimer();
+    });
+    // 本体クリックでも停止（小窓全体がボタン）
+    doc.body.style.cursor = 'pointer';
+    doc.body.addEventListener('click', (e) => {
+      if (e.target.id === 'pip-stop') return;  // 既にハンドル済
+      if (STATE.mode === 'measure') stopMeasure();
+      else if (STATE.mode === 'work' || STATE.mode === 'rest') stopTimer();
+    });
     _pipWindow.addEventListener('pagehide', () => {
       _pipWindow = null;
       clearTimeout(_pipRaf);  // v10n15 fix: setTimeout なので clearTimeout
@@ -7582,8 +7597,8 @@ function handleVisibilityChange() {
       // v10n14: 復帰時に WakeLock を再取得
       if (STATE.mode === 'work' || STATE.mode === 'rest') requestWakeLock();
 
-      // v1.3.18: オフラインボーナス控えめ（50%→20%、最大 8 粒）── 溜まり過ぎ対策
-      if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS) {
+      // v1.4.9: PiP 開いてる時は「オンライン扱い」── オフラインボーナス出さない
+      if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS && !_pipWindow) {
         const wouldHaveSpawned = Math.floor(hiddenElapsed / WORK_SPAWN_INTERVAL_MS);
         const bonusCount = Math.min(8, Math.floor(wouldHaveSpawned * 0.2));
         if (bonusCount > 0) offlineBonusCascade(bonusCount);
