@@ -6894,11 +6894,41 @@ function computeSeasonProgress(season) {
 }
 
 // ランダム熟語表示 ── サプライズ発見モチベ
+// v1.5.30: おみくじ ── 1日1回ご利益（恵雨）／2回目以降は閲覧のみ
 function showRandomYoji() {
   const recipes = window.YOJI_RECIPES || [];
   if (recipes.length === 0) return;
   const r = recipes[Math.floor(Math.random() * recipes.length)];
-  toast(`おみくじ ── 今日の熟語「${r.word}」を引きました`, r.rarity);
+  const today = new Date().toISOString().slice(0, 10);
+  if (!STATE.omikuji) STATE.omikuji = { lastDay:null, streak:0 };
+  const isFirst = STATE.omikuji.lastDay !== today;
+  if (isFirst) {
+    // 連続日数を更新
+    const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    STATE.omikuji.streak = (STATE.omikuji.lastDay === yest) ? (STATE.omikuji.streak || 0) + 1 : 1;
+    STATE.omikuji.lastDay = today;
+    // 運勢：連続日数で上下
+    const fortuneTier = Math.min(5, Math.floor(STATE.omikuji.streak / 3) + 1);
+    const fortuneName = ['末吉','吉','中吉','吉','大吉','大大吉'][fortuneTier] || '吉';
+    // ご利益①：構成字を全てストックに +1（その熟語を作りやすくなる）
+    if (!STATE.stock) STATE.stock = {};
+    (r.chars || []).forEach(c => { STATE.stock[c] = (STATE.stock[c] || 0) + 1; });
+    // ご利益②：EXP バフ（運勢に応じた時間と倍率）
+    const buffMin = 15 + fortuneTier * 5;  // 20-40 分
+    const buffMul = 1 + 0.05 * fortuneTier;  // 1.10-1.30
+    _tempBuffs = _tempBuffs.filter(b => b.src !== 'おみくじ');
+    _tempBuffs.push({
+      type:'exp', mul: buffMul,
+      label:`おみくじ ${fortuneName}：EXP ×${buffMul.toFixed(2)}（${buffMin}分）`,
+      until: Date.now() + buffMin * 60 * 1000,
+      src:'おみくじ',
+    });
+    saveState();
+    invalidateAggCache();
+    toast(`【${fortuneName}】「${r.word}」 ・ 構成字 +1 ・ EXP ×${buffMul.toFixed(2)}（${buffMin}分）`, r.rarity);
+  } else {
+    toast(`今日はもう引きました ・ 明日また引けます（次：${(STATE.omikuji.streak || 0) + 1}連日）`, r.rarity);
+  }
   showYojiDetail(r);
 }
 
