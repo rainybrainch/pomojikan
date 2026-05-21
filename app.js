@@ -3532,14 +3532,14 @@ function spawnPomoji(opts={}) {
   }, char);
   field.appendChild(node);
 
-  // v1.5.34/48: 物理属性ランダム ── 通常 78% / 弾性 8% / 暴れ 4% / べちゃ 8% / 重力 2%
+  // v1.5.55: 基本効果統一 ── 物理属性はレアな個性として 5% のみ、残りは字ステータスで個性付け
   let physMode = 'normal';
   if (!opts.persistent) {
     const r = Math.random();
-    if (r < 0.08) physMode = 'bouncy';
-    else if (r < 0.12) physMode = 'wild';
-    else if (r < 0.20) physMode = 'wet';
-    else if (r < 0.22) physMode = 'magnet';  // v1.5.48: 周囲を引き寄せるレアぽもじ
+    if (r < 0.015) physMode = 'bouncy';
+    else if (r < 0.025) physMode = 'wild';
+    else if (r < 0.035) physMode = 'wet';
+    else if (r < 0.05) physMode = 'magnet';
   }
   // v1.5.36: 字ステータスを物理に反映
   const charStats = getCharStats(char);
@@ -3567,6 +3567,16 @@ function spawnPomoji(opts={}) {
     else if ('💰💎💴💵🪙'.includes(char)) node.classList.add('emoji-gold');
   }
   obj.isEmoji = isEmojiChar;
+  // v1.5.55: 字の最高ステータスに応じた個性オーラ（弱め）── 全字共通の効果は維持しつつ、見た目で個性を伝える
+  if (charStats && !isEmojiChar) {
+    const max = Math.max(charStats.speed, charStats.power, charStats.life, charStats.bond);
+    if (max >= 4) {
+      if (charStats.power === max) node.classList.add('aura-power');
+      else if (charStats.speed === max) node.classList.add('aura-speed');
+      else if (charStats.life === max) node.classList.add('aura-life');
+      else if (charStats.bond === max) node.classList.add('aura-bond');
+    }
+  }
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 

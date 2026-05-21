@@ -2163,6 +2163,12 @@ body.stream-mode .party-bar{
   60%{ transform:translate(2px,-1px) rotate(2deg); }
 }
 
+/* v1.5.55: ステータス由来の個性オーラ（弱め・字の個性を見せる） */
+.pomoji.aura-power{ box-shadow:0 0 8px rgba(255,120,80,.4); }
+.pomoji.aura-speed{ box-shadow:0 0 8px rgba(120,200,255,.4); }
+.pomoji.aura-life{  box-shadow:0 0 8px rgba(140,255,160,.4); }
+.pomoji.aura-bond{  box-shadow:0 0 8px rgba(200,140,255,.4); }
+
 .pomoji.phys-magnet{
   filter:drop-shadow(0 0 18px #c080ff) drop-shadow(0 0 8px #8040ff) !important;
   background:radial-gradient(circle, rgba(180,100,255,.35) 0%, transparent 70%);
