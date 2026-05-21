@@ -3055,7 +3055,14 @@ function pickKanjiForDrop() {
     const fallback = codex.filter(k => allowedTiers.includes(k.rarity));
     return fallback.length ? choose(fallback) : null;
   }
-  // v1.3.15: リーダーのタグと一致する字を 35% の確率で優先抽選
+  // v1.5.1: ⭐ お気に入り字を 50% で優先抽選（プール内に該当があれば）
+  if (Math.random() < 0.50) {
+    try {
+      const favs = pool.filter(k => isFavoriteChar(k.char || k.c));
+      if (favs.length > 0) return choose(favs);
+    } catch(_) {}
+  }
+  // v1.3.15: リーダーのタグと一致する字を 35% で優先（fav と独立）
   if (STATE.party && STATE.party.members && STATE.party.members[0] && Math.random() < 0.35) {
     try {
       const leaderTags = getCharTags(STATE.party.members[0].char) || [];
