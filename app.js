@@ -2535,7 +2535,7 @@ function spawnPartyPersistents() {
 }
 
 // 作業中の継続落下：10秒に1粒（3粒に1回はパーティ字保証）
-const WORK_SPAWN_INTERVAL_MS = 10000;
+const WORK_SPAWN_INTERVAL_MS = 13000;  // v1.4.3: 10s→13s（テンポを落とす）
 let workSpawnTimer = 0;
 let workDropCount = 0;
 
@@ -2553,7 +2553,8 @@ function workSpawnTick() {
   if (STATE.mode !== 'work') return;
   workDropCount++;
   let k;
-  if (STATE.party && workDropCount % 3 === 0) {
+  // v1.4.3: パーティ字を 2/3 で出す（旧 1/3）── メンバー中心の体験に
+  if (STATE.party && STATE.party.members?.length && workDropCount % 3 !== 0) {
     k = pickPartyDrop();
   } else {
     k = pickKanjiForDrop();
@@ -2991,7 +2992,7 @@ function pickPartyDrop() {
 }
 
 // ぽもじ上限（負荷管理：persistent パーティ字を除いて 30体超えたら最古を消滅）
-const MAX_LIVE_POMOJI = 30;
+const MAX_LIVE_POMOJI = 18;  // v1.4.3: 30→18（インフレ抑制）
 // 一般ぽもじ寿命：5分（300 秒）。経過したら経験値吸収して消える
 const POMOJI_LIFETIME_MS = 5 * 60 * 1000;
 
