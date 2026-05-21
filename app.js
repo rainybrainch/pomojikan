@@ -512,7 +512,7 @@ const DEFAULT_STATE = {
   milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
-  favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（⭐）字／熟語
+  favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（★）字／熟語
   partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
   lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
   hudEnabled: true,               // v10n10 ─ プレイ中 HUD 表示 ON/OFF
@@ -1324,7 +1324,7 @@ async function copyShareURL() {
   }
   try {
     await navigator.clipboard.writeText(url);
-    toast('🔗 共有 URL をコピーしました', '★12');
+    toast(' 共有 URL をコピーしました', '★12');
   } catch (e) {
     prompt('共有 URL をコピーしてください', url);
   }
@@ -2714,7 +2714,7 @@ function setupTimerRingDrag() {
   function onDown(e) {
     if (STATE.mode !== 'idle') return;
     const target = e.target;
-    // ⚙ ボタンと timer-text 中央タップは除外（既存機能保護）
+    //  ボタンと timer-text 中央タップは除外（既存機能保護）
     if (target.id === 'btn-timer-settings' || target.closest('#btn-timer-settings')) return;
     dragging = true;
     startedDragging = false;
@@ -3370,7 +3370,7 @@ function pickKanjiForDrop() {
     const fallback = codex.filter(k => allowedTiers.includes(k.rarity));
     return fallback.length ? choose(fallback) : null;
   }
-  // v1.5.1: ⭐ お気に入り字を 50% で優先抽選（プール内に該当があれば）
+  // v1.5.1: ★ お気に入り字を 50% で優先抽選（プール内に該当があれば）
   if (Math.random() < 0.50) {
     try {
       const favs = pool.filter(k => isFavoriteChar(k.char || k.c));
@@ -5226,7 +5226,7 @@ function setAsLeader(c, rarity) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 💤 スリープモード ── 画面を休める（タイマーは止めない）
+//  スリープモード ── 画面を休める（タイマーは止めない）
 // ═══════════════════════════════════════════════════════════════
 let _sleepTickId = 0;
 function openSleep() {
@@ -6179,7 +6179,7 @@ function renderCodexPyramid() {
     step.innerHTML = `
       <span class="ps-tier">${unlocked ? tier : '？'}</span>
       <span class="ps-bar"><span class="ps-fill" style="width:${pct}%"></span></span>
-      <span class="ps-pct">${unlocked ? pct + '%' : '🔒'}</span>
+      <span class="ps-pct">${unlocked ? pct + '%' : '×'}</span>
     `;
     if (isCurrent) {
       const here = document.createElement('span');
@@ -6255,7 +6255,7 @@ function renderCodexFilterSummary() {
   if (codexFilter.tag) parts.push('# ' + codexFilter.tag);
   if (codexFilter.query) parts.push('🔍 "' + codexFilter.query + '"');
   if (codexFilter.onlySeen) parts.push('発見済のみ');
-  if (codexFilter.onlyFavorite) parts.push('⭐');
+  if (codexFilter.onlyFavorite) parts.push('★');
   if (parts.length === 0) { s.style.display = 'none'; s.textContent = ''; }
   else { s.style.display = ''; s.textContent = ' ' + parts.join(' × '); }
 }
@@ -6292,8 +6292,8 @@ function openHelpPlusTour() {
 const CURRENT_VERSION = 'v1.0.0';
 const TOUR_PAGES = [
   { emoji:'★', title:'リーダー制', body:'「主人公」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。編 編成プリセットで名前付き保存（最大12個）。' },
-  { emoji:'', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで⚙ パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
-  { emoji:'🎰', title:'物理＆タイマー UI', body:'コインプッシャー型：字が押されて棚から落ちると自動EXP化＝重くならない。タイマー円の縁をなぞって分数設定、長押しで休憩時間。' },
+  { emoji:'', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
+  { emoji:'', title:'物理＆タイマー UI', body:'コインプッシャー型：字が押されて棚から落ちると自動EXP化＝重くならない。タイマー円の縁をなぞって分数設定、長押しで休憩時間。' },
   { emoji:'', title:'現効果パネル & HUD', body:'パーティ下に EXP / 重力 / 融合 / 粒+ / ストック / 進化加速が常時表示。画面左上 HUD で次の推薦コンボも見える。図鑑は折りたたみで見やすく。' },
   { emoji:'', title:'画面外でも動く', body:'メニュー右上 ≡ →「 小窓タイマー」で他アプリ作業中も時計が前面に。Wake Lock で画面が暗くならず、 通知でサイクル完了も逃さない。 データ管理で別端末引継ぎも。' },
 ];
@@ -6740,7 +6740,7 @@ function previewLeaderSwap(idx) {
   };
 }
 
-// v10n8: お気に入り（⭐）── 字／熟語
+// v10n8: お気に入り（★）── 字／熟語
 function toggleFavoriteChar(c) {
   if (!STATE.favorites) STATE.favorites = { chars:{}, yoji:{} };
   if (STATE.favorites.chars[c]) {
@@ -6748,7 +6748,7 @@ function toggleFavoriteChar(c) {
     toast(`☆ ${c} のお気に入り解除`);
   } else {
     STATE.favorites.chars[c] = Date.now();
-    toast(`⭐ ${c} をお気に入りに`);
+    toast(`★ ${c} をお気に入りに`);
   }
   saveState();
 }
@@ -6759,7 +6759,7 @@ function toggleFavoriteYoji(w) {
     toast(`☆ ${w} のお気に入り解除`);
   } else {
     STATE.favorites.yoji[w] = Date.now();
-    toast(`⭐ ${w} をお気に入りに`);
+    toast(`★ ${w} をお気に入りに`);
   }
   saveState();
 }
@@ -7454,7 +7454,7 @@ function showYojiDetail(r) {
           ? '✓ 解放済 ・ パーティに揃えるとコンボ発動'
           : '構成字を集めると解放できます'
     ),
-    // v10n8: アクション行 ── ⭐ お気に入り ＋ ワンタップ編成
+    // v10n8: アクション行 ── ★ お気に入り ＋ ワンタップ編成
     el('div', { style:{ display:'flex', gap:'6px', marginTop:'10px', flexWrap:'wrap' } },
       el('button', {
         class:'ydp-fav-btn',
@@ -7470,7 +7470,7 @@ function showYojiDetail(r) {
           pop.remove();
           showYojiDetail(r);
         },
-      }, isFavoriteYoji(r.word) ? '⭐ お気に入り' : '☆ お気に入り'),
+      }, isFavoriteYoji(r.word) ? '★ お気に入り' : '☆ お気に入り'),
       (r.chars && r.chars.length <= 4 && found) ? el('button', {
         class:'ydp-assemble-btn',
         style:{
@@ -7612,7 +7612,7 @@ function showCharDetail(c, rarity) {
     }, `★ ${c} をリーダーに昇格`));
   }
   // 空き加入／メンバー入替は上の 4 枠グリッドで完結（重複ボタン削除）
-  // v10n8: ⭐ お気に入りボタン
+  // v10n8: ★ お気に入りボタン
   actionBtns.push(el('button', {
     class:'cd-fav-btn',
     style:{
@@ -7626,7 +7626,7 @@ function showCharDetail(c, rarity) {
       $$('.char-detail-pop').forEach(e => e.remove());
       showCharDetail(c, rarity);
     },
-  }, isFavoriteChar(c) ? '⭐ お気に入り' : '☆ お気に入りに追加'));
+  }, isFavoriteChar(c) ? '★ お気に入り' : '☆ お気に入りに追加'));
   // v1.5.13: 字ごと表示スタイル切替
   const curStyle = STATE.charDisplayStyle?.[c] || 'auto';
   const styleOptions = [
@@ -7744,7 +7744,7 @@ function showCharDetail(c, rarity) {
     ) : null,
     recruitBtn,
     recipes.length > 0 ? el('div', { class:'cd-recipes' },
-      el('div', { class:'cd-recipes-title' }, `🔗 関連熟語 ${recipes.length} 件${recipes.length > 10 ? '（上位10）' : ''}`),
+      el('div', { class:'cd-recipes-title' }, ` 関連熟語 ${recipes.length} 件${recipes.length > 10 ? '（上位10）' : ''}`),
       el('div', { class:'cd-recipes-list' }, ...recipeNodes)
     ) : el('div', { class:'cd-recipes-empty' }, '関連熟語なし'),
   );
@@ -7782,7 +7782,7 @@ function renderCodex() {
     const active = new Set(getActivePassives().map(p => p.id));
     const section = el('div', { class:'codex-section' },
       el('h3', { class:'codex-section-title' },
-        `⚙ パッシブ ── 常時発動の弱効果（${active.size} / ${PASSIVES.length} 発動中）`
+        ` パッシブ ── 常時発動の弱効果（${active.size} / ${PASSIVES.length} 発動中）`
       )
     );
     const list = el('div', { class:'codex-yoji-list' });
@@ -7803,7 +7803,7 @@ function renderCodex() {
         el('div', { style:{ fontSize:'1.6rem', minWidth:'32px', textAlign:'center', opacity: on ? 1 : 0.4 } }, p.icon || '◆'),
         el('div', { style:{ flex:1, minWidth:0 } },
           el('div', { style:{ fontWeight:700, fontSize:'.9rem', color: on ? '#cfe6ff' : 'var(--ink-mute)' } },
-            (on ? '✓ ' : '🔒 ') + p.name
+            (on ? '✓ ' : '× ') + p.name
           ),
           el('div', { style:{ fontSize:'.74rem', color:'var(--ink-mute)', lineHeight:1.4 } }, p.desc),
         ),
@@ -7900,7 +7900,7 @@ function renderCodex() {
     if (codexFilter.onlySeen) {
       recipes = recipes.filter(r => isYojiDiscovered(r));
     }
-    // v10n8: 「⭐ お気に入りのみ」フィルタ
+    // v10n8: 「★ お気に入りのみ」フィルタ
     if (codexFilter.onlyFavorite) {
       recipes = recipes.filter(r => isFavoriteYoji(r.word));
     }
@@ -8043,7 +8043,7 @@ function renderCodex() {
     const tPct = tierKanji.length > 0 ? Math.round(seenCnt / tierKanji.length * 100) : 0;
     const stateText = tierIdx <= STATE.unlockedTier
       ? `${seenCnt} / ${tierKanji.length} 発見 ・ ${tPct}%`
-      : '🔒 Lv.' + UNLOCK_LV[tier];
+      : '× Lv.' + UNLOCK_LV[tier];
     const section = el('div', { class:'codex-section' + (isUnrevealed ? ' tier-locked' : '') },
       el('h3', { class:'codex-section-title' },
         `${tierLabel} ${achievement} （${stateText}）`)
@@ -8418,7 +8418,7 @@ function openStats() {
     const pct = Math.round(ratio * 100);
     const remain = Math.max(0, thr - cur);
     badgeGrid.appendChild(el('div', { class:'milestone-cell locked', title: m.desc },
-      el('div', { class:'milestone-icon' }, '🔒'),
+      el('div', { class:'milestone-icon' }, '×'),
       el('div', { class:'milestone-label' }, '？？？'),
       el('div', { class:'milestone-desc' }, m.desc),
       el('div', { class:'milestone-progress-bar' },
@@ -8885,7 +8885,7 @@ function bindEvents() {
         openStats();
         break;
       case 'z': case 'Z':
-        // 💤 スリープを Z で起動／解除
+        //  スリープを Z で起動／解除
         if ($('#sleep-overlay')?.classList.contains('show')) closeSleep();
         else openSleep();
         break;
