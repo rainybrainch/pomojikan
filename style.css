@@ -4179,7 +4179,7 @@ body[data-mode="idle"] .timer-zone::after {
 /* v1.0.5: 右上に絶対配置／pointer-events を子要素にだけ通してぽもじタップを奪わない */
 .effects-panel {
   position: fixed;
-  top: 56px;
+  top: 220px;
   right: 8px;
   z-index: 6;
   width: 240px;
@@ -4203,7 +4203,7 @@ body[data-mode="idle"] .timer-zone::after {
 .effects-panel.collapsed .ep-grid,
 .effects-panel.collapsed .ep-groups { display: none; }
 @media (max-width: 480px) {
-  .effects-panel { width: 168px; font-size: .62rem; top: 50px; padding: 3px 6px; }
+  .effects-panel { width: 148px; font-size: .62rem; top: 200px; padding: 3px 6px; }
 }
 .ep-head {
   display: flex; align-items: center; gap: 8px;
