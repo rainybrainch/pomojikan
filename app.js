@@ -2109,7 +2109,7 @@ function spawnYojiUnlockCelebration(recipe) {
     charRow,
     el('div', { class:'yuc-arrow' }, '↓'),
     el('div', { class:'yuc-mask' }, '？'.repeat(Math.max(2, recipe.word.length))),
-    el('div', { class:'yuc-word' }, recipe.word),
+    el('div', { class:'yuc-word', style:{ cursor:'pointer' }, onclick:() => showYojiDetail(recipe) }, recipe.word),
     recipe.desc ? el('div', { class:'yuc-desc' }, recipe.desc) : null,
     el('div', { class:'yuc-rarity' }, recipe.rarity),
   );
@@ -2140,12 +2140,14 @@ function spawnComboBurst(recipe) {
   const effLine = lines.length ? lines.join(' ・ ') : '';
   const node = el('div', {
     class: `combo-burst rarity-${rIdx + 1}${isSpecial ? ' combo-special' : ''}`,
-    style: { left: (W/2 - width/2) + 'px', top: (H/2 - (isSpecial ? 110 : 80)) + 'px' },
+    style: { left: (W/2 - width/2) + 'px', top: (H/2 - (isSpecial ? 110 : 80)) + 'px', cursor:'pointer' },
+    onclick: () => { try { showYojiDetail(recipe); } catch(_){} node.remove(); },
   },
     el('div', { class:'cb-label' }, isSpecial ? '隠しコンボ発動' : 'コンボ発動'),
     el('div', { class:'cb-word' }, recipe.word),
     recipe.desc ? el('div', { class:'cb-desc' }, recipe.desc) : null,
     effLine ? el('div', { class:'cb-eff' }, effLine) : null,
+    el('div', { class:'cb-hint', style:{ fontSize:'.6rem', opacity:.55, marginTop:'4px' } }, 'タップで詳細'),
   );
   document.body.appendChild(node);
   setTimeout(() => node.remove(), isSpecial ? 3000 : 2400);
@@ -7160,6 +7162,8 @@ function showCharDetail(c, rarity) {
     return el('span', {
       class:`cd-recipe rarity-${rrIdx + 1}`,
       title: r.desc || r.word,
+      style:{ cursor:'pointer' },
+      onclick: (e) => { e.stopPropagation(); showYojiDetail(r); },
     }, r.word);
   });
 
