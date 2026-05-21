@@ -1123,7 +1123,8 @@ function buildBackgroundLayers() {
 
 // v1.5.28: パーティ字に応じた天候モード ── 雨/晴/雪/雲/風/雷/桜/星/月/炎
 const WEATHER_MAP = {
-  rain:    ['雨','梅','霖','雫','霧','霜','露','潤','湿','滴'],
+  heavyrain: ['雨','梅','霖','雫','霧','霜','露','潤','湿','滴'],
+  rain:    [],  // 既定（パーティに天候字なし時）
   sunny:   ['晴','陽','日','明','光','輝','燦','照','耀'],
   snow:    ['雪','氷','冬','寒','凍','霰','雹'],
   cloudy:  ['雲','曇','霞','靄','朦'],
@@ -1154,7 +1155,7 @@ function detectPartyWeather() {
 }
 function applyWeatherMode() {
   const w = detectPartyWeather();
-  document.body.dataset.weather = w || 'default';
+  document.body.dataset.weather = w || 'rain';
 }
 
 // パーティ Lv が大きく上がった時に背景密度を更新（毎回 dispose して再構築）
@@ -6901,18 +6902,39 @@ function _omikujiTotalStock() {
   for (const k of Object.keys(STATE.stock || {})) n += STATE.stock[k] || 0;
   return n;
 }
+// v1.5.33: 字の rarity を取得（codex から）
+function _charRarityIdx(c) {
+  const codex = window.KANJI_CODEX || [];
+  const k = codex.find(x => (x.char || x.c) === c);
+  if (!k) return 0;
+  return Math.max(0, RARITY_TIERS.indexOf(k.rarity));
+}
+// 消費：所有数で重み付きランダム抽選で 10 個削る ・ 平均 rIdx を返す
 function _omikujiConsumeStock(cost) {
-  // ストックを多い順に削る
-  const entries = Object.entries(STATE.stock || {}).sort((a, b) => b[1] - a[1]);
-  let remain = cost;
-  for (const [c, v] of entries) {
-    if (remain <= 0) break;
-    const take = Math.min(v, remain);
-    STATE.stock[c] -= take;
-    remain -= take;
-    if (STATE.stock[c] <= 0) delete STATE.stock[c];
+  const stock = STATE.stock || {};
+  let pool = [];
+  for (const [c, v] of Object.entries(stock)) {
+    for (let i = 0; i < v; i++) pool.push(c);
   }
-  return remain === 0;
+  if (pool.length < cost) return { ok:false, avgRIdx:0, breakdown:{} };
+  // ランダムに cost 個抽出
+  const picked = [];
+  const idxs = new Set();
+  while (idxs.size < cost) {
+    idxs.add(Math.floor(Math.random() * pool.length));
+  }
+  for (const i of idxs) picked.push(pool[i]);
+  // 削る
+  let sumR = 0;
+  const breakdown = {};
+  picked.forEach(c => {
+    STATE.stock[c] -= 1;
+    if (STATE.stock[c] <= 0) delete STATE.stock[c];
+    const r = _charRarityIdx(c);
+    sumR += r;
+    breakdown[r] = (breakdown[r] || 0) + 1;
+  });
+  return { ok:true, avgRIdx: sumR / cost, breakdown };
 }
 function _omikujiDraw(r, fortuneTier, label) {
   const fortuneName = ['末吉','吉','中吉','吉','大吉','大大吉'][fortuneTier] || '吉';
@@ -7000,14 +7022,20 @@ function openOmikujiPicker() {
       disabled: !canPay,
       onclick: () => {
         if (!canPay) return;
-        if (!_omikujiConsumeStock(OMIKUJI_GACHA_COST)) {
+        const consumed = _omikujiConsumeStock(OMIKUJI_GACHA_COST);
+        if (!consumed.ok) {
           toast('ストック不足');
           return;
         }
-        const r = recipesRandom(true);
-        // 運勢ランダム（連続日数より少し高めの揺らぎ）
+        const focusR = Math.round(consumed.avgRIdx);
+        const r = recipesRandom(true, focusR);
         const tier = Math.min(5, Math.max(1, Math.floor(Math.random() * 6)));
         _omikujiDraw(r, tier, '有料');
+        // 消費内訳を toast で告知
+        const bdStr = Object.entries(consumed.breakdown)
+          .sort((a,b) => Number(a[0]) - Number(b[0]))
+          .map(([t,n]) => `★${Number(t)+1}×${n}`).join(' ');
+        toast(`消費：${bdStr}（焦点★${focusR+1}）`);
         pop.remove();
         showYojiDetail(r);
       },
@@ -7027,10 +7055,28 @@ function openOmikujiPicker() {
         ...tiers.map(t => el('div', {}, `★${t+1} ── ${rates[t].toFixed(1)}%`)),
       );
     })(),
-    el('div', { style:{ fontSize:'.65rem', color:'var(--ink-mute)', lineHeight:1.5, padding:'8px', background:'rgba(255,255,255,.04)', borderRadius:'6px' } },
-      el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'var(--ink)' } }, 'ストックって？'),
-      el('div', {}, '字をタップした時に貯まる「所有数」。パーティに同じ字を複数入れる時の上限になります。有料ガチャでは合計から多い字順に消費。'),
-    ),
+    (() => {
+      // ストックのレア度別内訳
+      const stock = STATE.stock || {};
+      const byTier = {};
+      let total = 0;
+      for (const [c, v] of Object.entries(stock)) {
+        const r = _charRarityIdx(c);
+        byTier[r] = (byTier[r] || 0) + v;
+        total += v;
+      }
+      let avg = 0;
+      for (const t of Object.keys(byTier)) avg += Number(t) * byTier[t];
+      avg = total > 0 ? avg / total : 0;
+      const tiers = Object.keys(byTier).map(Number).sort((a,b) => a - b);
+      return el('div', { style:{ fontSize:'.65rem', color:'var(--ink-mute)', lineHeight:1.5, padding:'8px', background:'rgba(255,255,255,.04)', borderRadius:'6px' } },
+        el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'var(--ink)' } }, `ストック構成（合計 ${total} ・ 平均 ★${(avg+1).toFixed(1)}）`),
+        tiers.length === 0
+          ? el('div', {}, '字をタップしてストックを貯めると、その平均レア度に合わせた熟語が出やすくなります。')
+          : el('div', {}, tiers.map(t => `★${t+1}:${byTier[t]}`).join(' / ')),
+        el('div', { style:{ marginTop:'4px', color:'var(--accent-2)' } }, '有料ガチャは「ストックの平均レア度」に近い熟語が出やすくなります（釣鐘曲線）'),
+      );
+    })(),
   );
   const backdrop = el('div', { style:{ position:'fixed', inset:'0', background:'rgba(0,0,0,.5)', zIndex:599 }, onclick: () => { pop.remove(); backdrop.remove(); } });
   document.body.appendChild(backdrop);
@@ -7072,19 +7118,26 @@ function omikujiDropRates() {
   });
   return rates;
 }
-function recipesRandom(paid) {
+function recipesRandom(paid, focusRIdx) {
   const pool = omikujiPool();
   if (!pool.length) {
-    // フォールバック：全レシピ
     const r = window.YOJI_RECIPES;
     return r[Math.floor(Math.random() * r.length)];
   }
-  // 重み付き抽選：rarity の OMIKUJI_WEIGHT。有料は高レア +30% 補正
+  // 重み：OMIKUJI_WEIGHT × focusBoost（focusRIdx 近傍を厚くする釣鐘）
+  // focusRIdx 未指定なら通常重みのみ
   let total = 0;
   const weights = pool.map(r => {
     const rIdx = RARITY_TIERS.indexOf(r.rarity);
     let w = OMIKUJI_WEIGHT[rIdx] || 1;
-    if (paid && rIdx >= 8) w *= 1.3;  // 有料は ★9 以上が 30% 出やすい
+    if (paid && typeof focusRIdx === 'number') {
+      // 釣鐘曲線：focusRIdx の ±1 で ×3、±2 で ×2、±3 で ×1.4
+      const d = Math.abs(rIdx - focusRIdx);
+      const focusMul = d === 0 ? 3.5 : d === 1 ? 2.5 : d === 2 ? 1.7 : d === 3 ? 1.25 : 1.0;
+      w *= focusMul;
+    } else if (paid) {
+      if (rIdx >= 8) w *= 1.3;  // 旧仕様の汎用補正
+    }
     total += w;
     return w;
   });
@@ -7324,7 +7377,7 @@ function showYojiDetail(r) {
           pop.remove();
           openComboPlacementPicker(r);
         },
-      }, allInParty ? '✓ 発動中' : ' このコンボで編成') : null,
+      }, allInParty ? '✓ 既にこの編成で発動中' : '★ この熟語の編成でパーティを組む') : null,
     ),
   );
   // v1.5.21: backdrop で必ず前面に
@@ -7361,13 +7414,67 @@ function showCharDetail(c, rarity) {
   const isFull = partySize >= 4;
   const canRecruit = hasParty && !isFull && partyIdx < 0;
   const actionBtns = [];
-  // 現パーティ状態の案内
+  // 現パーティ状態 ── 4枠を常に表示・タップで入替
   if (hasParty) {
-    const partyChars = STATE.party.members.map((m, i) => (i === (STATE.party.hero||0) ? '★' : '') + m.char).join(' ');
-    actionBtns.push(el('div', { class:'cd-party-status', style:{
-      padding:'6px 8px', background:'rgba(135,206,235,.08)', border:'1px solid rgba(135,206,235,.2)',
-      borderRadius:'6px', fontSize:'.72rem', color:'var(--ink-mute)', textAlign:'center',
-    } }, `現パーティ ${partySize}/4 ・ ${partyChars}`));
+    const partyGrid = el('div', { style:{
+      display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'4px',
+      padding:'6px', background:'rgba(135,206,235,.08)', border:'1px solid rgba(135,206,235,.2)',
+      borderRadius:'6px',
+    } });
+    for (let i = 0; i < 4; i++) {
+      const m = STATE.party.members[i];
+      const isHero = i === (STATE.party.hero || 0);
+      if (m) {
+        partyGrid.appendChild(el('button', {
+          style:{
+            padding:'8px 4px', borderRadius:'6px', cursor:'pointer',
+            background: isHero ? 'rgba(240,212,138,.18)' : 'rgba(255,255,255,.06)',
+            border:'1px solid ' + (isHero ? 'rgba(240,212,138,.5)' : 'rgba(255,255,255,.15)'),
+            color: isHero ? '#f0d48a' : 'var(--ink)', fontWeight:700,
+            display:'flex', flexDirection:'column', alignItems:'center', gap:'2px',
+          },
+          title: isHero ? `★リーダー ${m.char}（Lv.${m.level}） ・ タップで ${c} と入替` : `${m.char}（Lv.${m.level}） ・ タップで ${c} と入替`,
+          onclick: () => {
+            if (m.char === c) { toast('同じ字です'); return; }
+            if (!confirm(`${m.char}（Lv.${m.level}）を外して ${c} を加える？\n（${m.char} の Lv は保持され、いつでも復帰可）`)) return;
+            preserveMemberLevels([m]);
+            invalidateAggCache();
+            STATE.party.members[i] = buildMemberFor(c, rarity, isHero);
+            if (isHero) STATE.party.hero = i;
+            saveState();
+            renderParty();
+            updateProgressPill();
+            toast(`${m.char} → ${c} 入替完了`, rarity);
+            $$('.char-detail-pop').forEach(e => e.remove());
+            renderCodex();
+          },
+        },
+          el('span', { style:{ fontSize:'1.1rem', fontFamily:"'Noto Serif JP',serif" } }, (isHero ? '★' : '') + m.char),
+          el('span', { style:{ fontSize:'.6rem', opacity:.8 } }, `Lv.${m.level}`),
+        ));
+      } else {
+        partyGrid.appendChild(el('button', {
+          style:{
+            padding:'8px 4px', borderRadius:'6px', cursor:'pointer',
+            background:'rgba(255,255,255,.02)', border:'1px dashed rgba(255,255,255,.15)',
+            color:'var(--ink-mute)', fontSize:'.7rem',
+            display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', minHeight:'44px',
+          },
+          title:`空き枠 ・ タップで ${c} を加入`,
+          onclick: () => {
+            if (recruitToParty(c, rarity)) {
+              $$('.char-detail-pop').forEach(e => e.remove());
+              renderCodex();
+            }
+          },
+        },
+          el('span', { style:{ fontSize:'1rem' } }, '＋'),
+          el('span', { style:{ fontSize:'.55rem' } }, '空き'),
+        ));
+      }
+    }
+    actionBtns.push(el('div', { style:{ fontSize:'.68rem', color:'var(--ink-mute)', textAlign:'center', marginBottom:'2px' } }, `現パーティ ${partySize}/4 ・ 枠タップで入替／加入`));
+    actionBtns.push(partyGrid);
   }
   if (!hasParty) {
     actionBtns.push(el('button', {
@@ -7381,12 +7488,11 @@ function showCharDetail(c, rarity) {
       },
     }, `★ ${c} を主人公にして始める`));
   } else if (isAlreadyHero) {
-    actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'10px', textAlign:'center', color:'var(--gold)', fontWeight:700, background:'rgba(240,212,138,.1)', borderRadius:'6px' } }, `★ ${c} は現在のリーダーです`));
+    actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'8px', textAlign:'center', color:'var(--gold)', fontWeight:700, background:'rgba(240,212,138,.1)', borderRadius:'6px', fontSize:'.85rem' } }, `★ ${c} は現リーダー`));
   } else if (isInParty) {
-    // 既に仲間 → リーダー昇格ボタン
     actionBtns.push(el('button', {
       class:'cd-recruit cd-leader-btn',
-      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700, padding:'12px' },
+      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700, padding:'10px' },
       onclick: () => {
         if (setAsLeader(c, rarity)) {
           $$('.char-detail-pop').forEach(e => e.remove());
@@ -7394,55 +7500,8 @@ function showCharDetail(c, rarity) {
         }
       },
     }, `★ ${c} をリーダーに昇格`));
-  } else if (canRecruit) {
-    actionBtns.push(el('button', { class:'cd-recruit cd-leader-btn',
-      style:{ background:'linear-gradient(135deg,#f0d48a,#d4a84a)', color:'#1a1208', fontWeight:700, padding:'12px' },
-      onclick: () => {
-        if (setAsLeader(c, rarity)) {
-          $$('.char-detail-pop').forEach(e => e.remove());
-          renderCodex();
-        }
-      },
-    }, `★ リーダーに設定（${partySize+1}/4）`));
-    actionBtns.push(el('button', { class:'cd-recruit',
-      style:{ padding:'10px' },
-      onclick: () => {
-        if (recruitToParty(c, rarity)) {
-          $$('.char-detail-pop').forEach(e => e.remove());
-          renderCodex();
-        }
-      },
-    }, `＋ 仲間に加える（${partySize+1}/4）`));
-  } else if (isFull) {
-    // 満員 → メンバー指定スワップ
-    actionBtns.push(el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', textAlign:'center', marginTop:'4px' } }, 'パーティ満員 ・ 入れ替えるメンバーを選ぶ'));
-    const swapRow = el('div', { style:{ display:'flex', gap:'4px', flexWrap:'wrap', justifyContent:'center' } });
-    STATE.party.members.forEach((m, i) => {
-      const isHero = i === (STATE.party.hero || 0);
-      swapRow.appendChild(el('button', {
-        style:{
-          padding:'8px 10px', borderRadius:'6px', fontSize:'.85rem',
-          background: isHero ? 'rgba(240,212,138,.2)' : 'rgba(255,255,255,.06)',
-          border:'1px solid ' + (isHero ? 'rgba(240,212,138,.5)' : 'rgba(255,255,255,.15)'),
-          color: isHero ? '#f0d48a' : 'var(--ink)', cursor:'pointer', fontWeight:700,
-        },
-        onclick: () => {
-          if (!confirm(`${m.char}（Lv.${m.level}）を外して ${c} を加える？\n（${m.char} の Lv は保持され、いつでも復帰可）`)) return;
-          preserveMemberLevels([m]);
-          invalidateAggCache();
-          STATE.party.members[i] = buildMemberFor(c, rarity, isHero);
-          if (isHero) STATE.party.hero = i;
-          saveState();
-          renderParty();
-          updateProgressPill();
-          toast(`${m.char} → ${c} 入替完了`, rarity);
-          $$('.char-detail-pop').forEach(e => e.remove());
-          renderCodex();
-        },
-      }, (isHero ? '★' : '') + m.char + ` Lv${m.level}`));
-    });
-    actionBtns.push(swapRow);
   }
+  // 空き加入／メンバー入替は上の 4 枠グリッドで完結（重複ボタン削除）
   // v10n8: ⭐ お気に入りボタン
   actionBtns.push(el('button', {
     class:'cd-fav-btn',
@@ -7496,15 +7555,18 @@ function showCharDetail(c, rarity) {
     ? el('div', { class:'cd-actions', style:{ display:'flex', flexDirection:'column', gap:'6px', margin:'8px 0' } }, ...actionBtns)
     : null;
 
-  // 関連熟語をレア順 ・ クリックでテキストコピー
+  // 関連熟語 ── 未解放は ？？？ マスク（ネタバレ防止）
   const recipeNodes = recipes.slice(0, 10).map(r => {
     const rrIdx = RARITY_TIERS.indexOf(r.rarity);
+    const found = (STATE.discoveredYoji && STATE.discoveredYoji[r.word])
+      || (r.chars || []).every(ch => (STATE.collection[ch] || 0) > 0);
+    const label = found ? r.word : '？'.repeat(Math.max(2, r.word.length));
     return el('span', {
-      class:`cd-recipe rarity-${rrIdx + 1}`,
-      title: r.desc || r.word,
-      style:{ cursor:'pointer' },
+      class:`cd-recipe rarity-${rrIdx + 1}` + (found ? '' : ' locked'),
+      title: found ? (r.desc || r.word) : '未解放：構成字を集めると見える',
+      style:{ cursor:'pointer', opacity: found ? 1 : 0.55 },
       onclick: (e) => { e.stopPropagation(); showYojiDetail(r); },
-    }, r.word);
+    }, label);
   });
 
   const pop = el('div', { class: `char-detail-pop rarity-${rIdx + 1}` },

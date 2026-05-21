@@ -159,8 +159,13 @@ button:focus-visible, input:focus-visible{
   transition:opacity 1.2s ease;
   z-index:0;
 }
+/* 既定で雨は常時うっすら降る ・ work モードで濃く */
+.rain-bg{ opacity:.35; }
 body[data-mode="work"] .rain-bg{ opacity:.65; }
 body[data-mode="rest"] .bubble-bg{ opacity:.65; }
+/* 豪雨：雨字が居る時 */
+body[data-weather="heavyrain"] .rain-bg{ opacity:.85 !important; }
+body[data-weather="heavyrain"] .rd{ animation-duration:.55s !important; }
 
 .rain-bg .rd{
   position:absolute; top:-30px;
@@ -704,24 +709,16 @@ body[data-mode="rest"] .timer-text{
 }
 .timer-cog:hover{ background:var(--accent-dim); transform:rotate(45deg); }
 
-/* 進捗ピル ── ヘッダー直下に固定 */
+/* 進捗ピル ── タイマー下のインライン配置（コンパクト） */
 .progress-pill{
-  position:fixed;
-  top:50px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:8;
-  display:inline-flex;align-items:center;gap:8px;
-  margin-top:0;
-  padding:5px 14px;
-  background:rgba(0,0,0,.55);
+  display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;
+  margin:0 auto;
+  padding:5px 12px;
+  background:rgba(0,0,0,.45);
   border:1px solid rgba(135,206,235,.28);
-  border-radius:99px;
+  border-radius:12px;
   font-size:.7rem;
-  max-width:calc(100vw - 220px);
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  max-width:90%;
   letter-spacing:.08em;
   color:var(--ink-mute);
   backdrop-filter:blur(6px);
@@ -4203,7 +4200,7 @@ body[data-mode="idle"] .timer-zone::after {
 
 /* ═══════ v1.5.28: パーティ字に応じた天候モード ═══════ */
 body[data-weather="sunny"] { background: linear-gradient(180deg, #2a1808 0%, #3d2410 60%, #0a1020 100%); }
-body[data-weather="sunny"] .rain-bg { opacity:.05 !important; }
+body[data-weather="sunny"] .rain-bg { opacity:0 !important; }
 body[data-weather="sunny"]::before {
   content:''; position:fixed; top:-20%; right:-10%; width:60vw; height:60vw;
   background:radial-gradient(circle, rgba(255,210,80,.3) 0%, rgba(255,160,40,.1) 30%, transparent 60%);
