@@ -373,12 +373,23 @@ function aggregatePartyPerks() {
 // 旧: 10 * lv^1.6 → Lv1→2 で 10 必要（タップ数回で達成）
 // 新: 60 * lv^1.8 → Lv1→2 で 60、Lv10→11 で 3,800、Lv100→101 で 24万
 const expForLevel = (lv) => Math.floor(100 * Math.pow(lv, 2.5));
-// v1.4.0: レア度ごと Lv 上限
-const RARITY_LV_CAP = {
-  '★1':50,'★2':80,'★3':120,'★4':180,'★5':250,'★6':350,'★7':500,'★8':700,
-  '★9':1000,'★10':1500,'★11':2500,'★12':4000,'★13':8000,'★14':30000,'★15':100000,'★16':1000000,
+// v1.4.1: レア度ごと Lv 上限（タイト・段階的）＋最高 Lv 字で上限解放
+const RARITY_LV_CAP_BASE = {
+  '★1':10,'★2':15,'★3':20,'★4':30,'★5':50,'★6':80,'★7':120,'★8':180,
+  '★9':250,'★10':350,'★11':500,'★12':800,'★13':1500,'★14':3000,'★15':10000,'★16':100000,
 };
-function rarityLvCap(rarity) { return RARITY_LV_CAP[rarity] || 1000000; }
+function rarityCapMultiplier() {
+  if (!STATE.charLevels) return 1;
+  let maxLv = 0;
+  for (const c of Object.keys(STATE.charLevels)) {
+    const lv = STATE.charLevels[c]?.level || 0;
+    if (lv > maxLv) maxLv = lv;
+  }
+  return 1 + Math.floor(maxLv / 500) * 0.5;  // 500 Lv 毎に全 cap +50%
+}
+function rarityLvCap(rarity) {
+  return Math.floor((RARITY_LV_CAP_BASE[rarity] || 100000) * rarityCapMultiplier());
+}
 function isAtRarityCap(m) { return m && (m.level >= rarityLvCap(m.rarity)); }
 // 進化加速の上限を 95% → 50% に抑制（実効必要 EXP がほぼ 0 にならない）
 function effectiveExpForLevel(lv) {
