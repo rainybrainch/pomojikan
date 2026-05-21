@@ -1121,6 +1121,42 @@ function buildBackgroundLayers() {
   }
 }
 
+// v1.5.28: パーティ字に応じた天候モード ── 雨/晴/雪/雲/風/雷/桜/星/月/炎
+const WEATHER_MAP = {
+  rain:    ['雨','梅','霖','雫','霧','霜','露','潤','湿','滴'],
+  sunny:   ['晴','陽','日','明','光','輝','燦','照','耀'],
+  snow:    ['雪','氷','冬','寒','凍','霰','雹'],
+  cloudy:  ['雲','曇','霞','靄','朦'],
+  wind:    ['風','嵐','颯','涼','吹'],
+  thunder: ['雷','閃','電','轟','稲'],
+  blossom: ['桜','花','華','蕾','咲','桃','梅'],
+  star:    ['星','宙','銀','彗','宇'],
+  moon:    ['月','夜','闇','宵','朧'],
+  fire:    ['炎','火','焔','燃','灯','烈'],
+};
+function detectPartyWeather() {
+  if (!STATE.party || !STATE.party.members) return null;
+  const heroIdx = STATE.party.hero || 0;
+  // リーダー優先 → 仲間順 → ベンチ
+  const bench = STATE.party.bench || [];
+  const ordered = [
+    STATE.party.members[heroIdx],
+    ...STATE.party.members.filter((_, i) => i !== heroIdx),
+    ...bench,
+  ];
+  for (const m of ordered) {
+    if (!m || !m.char) continue;
+    for (const [mode, chars] of Object.entries(WEATHER_MAP)) {
+      if (chars.includes(m.char)) return mode;
+    }
+  }
+  return null;
+}
+function applyWeatherMode() {
+  const w = detectPartyWeather();
+  document.body.dataset.weather = w || 'default';
+}
+
 // パーティ Lv が大きく上がった時に背景密度を更新（毎回 dispose して再構築）
 function refreshBackgroundDensity() {
   const rain = $('#rain-bg');
@@ -1128,6 +1164,7 @@ function refreshBackgroundDensity() {
   if (rain) rain.innerHTML = '';
   if (bub) bub.innerHTML = '';
   buildBackgroundLayers();
+  try { applyWeatherMode(); } catch(_) {}
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4695,6 +4732,7 @@ function movePartyMember(from, to) {
 function swapPartyMembers(a, b) { movePartyMember(a, b); }
 
 function renderParty() {
+  try { applyWeatherMode(); } catch(_) {}
   const bar = $('#party-bar');
   if (!isPartyChosen()) {
     bar.classList.add('empty');
@@ -6860,6 +6898,7 @@ function showRandomYoji() {
   const recipes = window.YOJI_RECIPES || [];
   if (recipes.length === 0) return;
   const r = recipes[Math.floor(Math.random() * recipes.length)];
+  toast(`おみくじ ── 今日の熟語「${r.word}」を引きました`, r.rarity);
   showYojiDetail(r);
 }
 
