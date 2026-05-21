@@ -6894,42 +6894,141 @@ function computeSeasonProgress(season) {
 }
 
 // ランダム熟語表示 ── サプライズ発見モチベ
-// v1.5.30: おみくじ ── 1日1回ご利益（恵雨）／2回目以降は閲覧のみ
+// v1.5.31: おみくじガチャ ── 無料1日1回 + 有料（ストック10消費）何度でも
+const OMIKUJI_GACHA_COST = 10;  // 任意発見済字のストック合計から消費
+function _omikujiTotalStock() {
+  let n = 0;
+  for (const k of Object.keys(STATE.stock || {})) n += STATE.stock[k] || 0;
+  return n;
+}
+function _omikujiConsumeStock(cost) {
+  // ストックを多い順に削る
+  const entries = Object.entries(STATE.stock || {}).sort((a, b) => b[1] - a[1]);
+  let remain = cost;
+  for (const [c, v] of entries) {
+    if (remain <= 0) break;
+    const take = Math.min(v, remain);
+    STATE.stock[c] -= take;
+    remain -= take;
+    if (STATE.stock[c] <= 0) delete STATE.stock[c];
+  }
+  return remain === 0;
+}
+function _omikujiDraw(r, fortuneTier, label) {
+  const fortuneName = ['末吉','吉','中吉','吉','大吉','大大吉'][fortuneTier] || '吉';
+  // ご利益①：構成字を全てストックに +1
+  if (!STATE.stock) STATE.stock = {};
+  (r.chars || []).forEach(c => { STATE.stock[c] = (STATE.stock[c] || 0) + 1; });
+  // ご利益②：EXP バフ
+  const buffMin = 15 + fortuneTier * 5;
+  const buffMul = 1 + 0.05 * fortuneTier;
+  _tempBuffs = _tempBuffs.filter(b => b.src !== 'おみくじ');
+  _tempBuffs.push({
+    type:'exp', mul: buffMul,
+    label:`おみくじ ${fortuneName}：EXP ×${buffMul.toFixed(2)}（${buffMin}分）`,
+    until: Date.now() + buffMin * 60 * 1000,
+    src:'おみくじ',
+  });
+  saveState();
+  invalidateAggCache();
+  toast(`【${label} ${fortuneName}】「${r.word}」 ・ 構成字+1 ・ EXP×${buffMul.toFixed(2)}（${buffMin}分）`, r.rarity);
+}
+
 function showRandomYoji() {
   const recipes = window.YOJI_RECIPES || [];
   if (recipes.length === 0) return;
-  const r = recipes[Math.floor(Math.random() * recipes.length)];
+  // ピッカー UI を出して 無料 / 有料 を選ばせる
+  openOmikujiPicker();
+}
+
+function openOmikujiPicker() {
+  $$('.omikuji-picker').forEach(e => e.remove());
   const today = new Date().toISOString().slice(0, 10);
   if (!STATE.omikuji) STATE.omikuji = { lastDay:null, streak:0 };
-  const isFirst = STATE.omikuji.lastDay !== today;
-  if (isFirst) {
-    // 連続日数を更新
-    const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-    STATE.omikuji.streak = (STATE.omikuji.lastDay === yest) ? (STATE.omikuji.streak || 0) + 1 : 1;
-    STATE.omikuji.lastDay = today;
-    // 運勢：連続日数で上下
-    const fortuneTier = Math.min(5, Math.floor(STATE.omikuji.streak / 3) + 1);
-    const fortuneName = ['末吉','吉','中吉','吉','大吉','大大吉'][fortuneTier] || '吉';
-    // ご利益①：構成字を全てストックに +1（その熟語を作りやすくなる）
-    if (!STATE.stock) STATE.stock = {};
-    (r.chars || []).forEach(c => { STATE.stock[c] = (STATE.stock[c] || 0) + 1; });
-    // ご利益②：EXP バフ（運勢に応じた時間と倍率）
-    const buffMin = 15 + fortuneTier * 5;  // 20-40 分
-    const buffMul = 1 + 0.05 * fortuneTier;  // 1.10-1.30
-    _tempBuffs = _tempBuffs.filter(b => b.src !== 'おみくじ');
-    _tempBuffs.push({
-      type:'exp', mul: buffMul,
-      label:`おみくじ ${fortuneName}：EXP ×${buffMul.toFixed(2)}（${buffMin}分）`,
-      until: Date.now() + buffMin * 60 * 1000,
-      src:'おみくじ',
-    });
-    saveState();
-    invalidateAggCache();
-    toast(`【${fortuneName}】「${r.word}」 ・ 構成字 +1 ・ EXP ×${buffMul.toFixed(2)}（${buffMin}分）`, r.rarity);
-  } else {
-    toast(`今日はもう引きました ・ 明日また引けます（次：${(STATE.omikuji.streak || 0) + 1}連日）`, r.rarity);
-  }
-  showYojiDetail(r);
+  const freeAvailable = STATE.omikuji.lastDay !== today;
+  const totalStock = _omikujiTotalStock();
+  const canPay = totalStock >= OMIKUJI_GACHA_COST;
+  const streak = STATE.omikuji.streak || 0;
+  const nextFortuneTier = Math.min(5, Math.floor(streak / 3) + 1);
+  const nextFortuneName = ['末吉','吉','中吉','吉','大吉','大大吉'][nextFortuneTier] || '吉';
+
+  const pop = el('div', { class:'omikuji-picker', style:{
+    position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
+    width:'min(340px,90vw)', padding:'22px 20px', zIndex:600,
+    background:'linear-gradient(180deg, rgba(30,20,55,.98), rgba(7,10,28,.98))',
+    border:'2px solid var(--gold)', borderRadius:'14px',
+    boxShadow:'0 8px 40px rgba(0,0,0,.6), 0 0 30px rgba(240,212,138,.4)',
+    display:'flex', flexDirection:'column', gap:'10px',
+    fontFamily:"'Noto Serif JP', serif",
+  } },
+    el('button', { style:{ position:'absolute', top:'6px', right:'10px', background:'transparent', border:'none', color:'var(--ink-mute)', fontSize:'1.4rem', cursor:'pointer' }, onclick:() => pop.remove() }, '×'),
+    el('div', { style:{ fontWeight:900, fontSize:'1.1rem', color:'var(--gold)', textAlign:'center' } }, 'おみくじガチャ'),
+    el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', textAlign:'center', lineHeight:1.5 } },
+      `連続 ${streak} 日 ・ 今の運勢「${nextFortuneName}」`
+    ),
+    // 無料毎日
+    el('button', {
+      style:{
+        padding:'14px', borderRadius:'8px', cursor: freeAvailable ? 'pointer' : 'not-allowed',
+        background: freeAvailable ? 'linear-gradient(135deg,#f0d48a,#d4a84a)' : 'rgba(255,255,255,.06)',
+        color: freeAvailable ? '#1a1208' : 'var(--ink-mute)',
+        border: '1px solid ' + (freeAvailable ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.12)'),
+        fontWeight:700, fontSize:'.95rem',
+      },
+      disabled: !freeAvailable,
+      onclick: () => {
+        if (!freeAvailable) return;
+        const r = recipesRandom();
+        const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+        STATE.omikuji.streak = (STATE.omikuji.lastDay === yest) ? (STATE.omikuji.streak || 0) + 1 : 1;
+        STATE.omikuji.lastDay = today;
+        const tier = Math.min(5, Math.floor(STATE.omikuji.streak / 3) + 1);
+        _omikujiDraw(r, tier, '無料');
+        pop.remove();
+        showYojiDetail(r);
+      },
+    }, freeAvailable ? '無料おみくじ（1日1回）' : '本日の無料は引き済 ・ 明日まで'),
+    // 有料ガチャ
+    el('button', {
+      style:{
+        padding:'14px', borderRadius:'8px', cursor: canPay ? 'pointer' : 'not-allowed',
+        background: canPay ? 'linear-gradient(135deg,#5b3a8c,#8b5fc8)' : 'rgba(255,255,255,.06)',
+        color: canPay ? '#fff' : 'var(--ink-mute)',
+        border: '1px solid ' + (canPay ? 'rgba(155,120,200,.6)' : 'rgba(255,255,255,.12)'),
+        fontWeight:700, fontSize:'.95rem',
+      },
+      disabled: !canPay,
+      onclick: () => {
+        if (!canPay) return;
+        if (!_omikujiConsumeStock(OMIKUJI_GACHA_COST)) {
+          toast('ストック不足');
+          return;
+        }
+        const r = recipesRandom();
+        // 運勢ランダム（連続日数より少し高めの揺らぎ）
+        const tier = Math.min(5, Math.max(1, Math.floor(Math.random() * 6)));
+        _omikujiDraw(r, tier, '有料');
+        pop.remove();
+        showYojiDetail(r);
+      },
+    }, canPay ? `おみくじガチャ（ストック ${OMIKUJI_GACHA_COST} 消費 ・ 残 ${totalStock}）` : `ストック不足（${totalStock}/${OMIKUJI_GACHA_COST}）`),
+    el('div', { style:{ fontSize:'.68rem', color:'var(--ink-mute)', lineHeight:1.5, marginTop:'4px', padding:'8px', background:'rgba(135,206,235,.08)', borderRadius:'6px' } },
+      el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'#cfe6ff' } }, 'ご利益'),
+      el('div', {}, '・ 引いた熟語の構成字を全て +1 ストック'),
+      el('div', {}, '・ EXP バフ ×1.10〜×1.30（15〜40分）'),
+      el('div', {}, '・ 連続日数で運勢上昇（末吉→大大吉）'),
+    ),
+  );
+  const backdrop = el('div', { style:{ position:'fixed', inset:'0', background:'rgba(0,0,0,.5)', zIndex:599 }, onclick: () => { pop.remove(); backdrop.remove(); } });
+  document.body.appendChild(backdrop);
+  document.body.appendChild(pop);
+  const orig = pop.remove.bind(pop);
+  pop.remove = () => { try { backdrop.remove(); } catch(_) {} orig(); };
+}
+
+function recipesRandom() {
+  const r = window.YOJI_RECIPES;
+  return r[Math.floor(Math.random() * r.length)];
 }
 
 // 「あと 1 字でコンボ成立」する熟語を推薦
