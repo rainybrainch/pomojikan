@@ -6427,7 +6427,7 @@ function renderEffectsPanel() {
   }
   let panel = $('#effects-panel');
   if (!panel) {
-    panel = el('div', { id:'effects-panel', class:'effects-panel' });
+    panel = el('div', { id:'effects-panel', class:'effects-panel collapsed' });
     const partyBar = $('#party-bar');
     const after = $('#combo-bar') || partyBar;
     if (after && after.parentNode) {
