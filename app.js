@@ -2648,6 +2648,8 @@ function stopWorkSpawning() {
 }
 function workSpawnTick() {
   if (STATE.mode !== 'work') return;
+  // v1.5.4: メイン非表示中は字を貯めない（戻った時にメッセージで一括反映）
+  if (document.hidden) return;
   // v1.4.5: 熟語ラッキー（8% 確率）── 解放済熟語の構成字を連続降下
   if (Math.random() < 0.08) {
     if (triggerLuckyCombo()) return;
