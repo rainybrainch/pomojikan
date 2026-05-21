@@ -5150,3 +5150,31 @@ body.harvest-mode .pomoji {
   .pyramid-step { font-size: .6rem; grid-template-columns: 26px 1fr 32px; padding: 2px 6px; }
   .ps-here { right: -36px; font-size: .56rem; }
 }
+
+/* v1.5.5: 効果アイコン＝漢字を篆刻丸風に */
+.ep-row-ic {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, rgba(240,212,138,.22), rgba(240,212,138,.06));
+  border: 1px solid rgba(240,212,138,.45);
+  border-radius: 50%;
+  font-family: 'Noto Serif JP', serif;
+  font-size: .78rem !important;
+  font-weight: 800;
+  color: #fff5b0;
+  text-shadow: 0 0 4px rgba(240,212,138,.5);
+}
+.ep-row.ep-none .ep-row-ic {
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.10);
+  color: var(--ink-mute);
+  text-shadow: none;
+}
+.cb-chip {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 700;
+}
+.play-hud {
+  font-family: 'Noto Serif JP', serif !important;
+}

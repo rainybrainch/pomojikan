@@ -4532,12 +4532,13 @@ function renderComboBar() {
   const addChip = (icon, label, color, weight) => allChips.push({ icon, label, color, weight });
   // v1.1.4: ×表記をやめて +N% / -N% / +N個 に
   const _pct = (m) => '+' + Math.round((m - 1) * 100) + '%';
-  if (cb.expMul && cb.expMul > 1.01)         addChip('📈', `EXP ${_pct(cb.expMul)}`,   '#ffd86b', cb.expMul);
-  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('🌧', `重力 -${Math.round((1-cb.gravityMul)*100)}%`, '#a0e0ff', 1/cb.gravityMul);
-  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('🤝', `融合 ${_pct(cb.mergeRadiusMul)}`, '#c0e0a0', cb.mergeRadiusMul);
-  if (cb.dropCountAdd)                       addChip('💧', `粒 +${cb.dropCountAdd}個`, '#9be0ff', 1 + cb.dropCountAdd * 0.2);
-  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('📦', `ストック ${_pct(cb.stockExpMul)}`, '#d4b6ff', cb.stockExpMul);
-  if (cb.evoBoost && cb.evoBoost > 0.005)    addChip('🌱', `進化 +${Math.round(cb.evoBoost*100)}%`, '#ffe0a0', 1 + cb.evoBoost);
+  // v1.5.5: 漢字シンボルに統一
+  if (cb.expMul && cb.expMul > 1.01)         addChip('経', `${_pct(cb.expMul)}`,   '#ffd86b', cb.expMul);
+  if (cb.gravityMul && cb.gravityMul < 0.99) addChip('重', `-${Math.round((1-cb.gravityMul)*100)}%`, '#a0e0ff', 1/cb.gravityMul);
+  if (cb.mergeRadiusMul && cb.mergeRadiusMul > 1.01) addChip('結', `${_pct(cb.mergeRadiusMul)}`, '#c0e0a0', cb.mergeRadiusMul);
+  if (cb.dropCountAdd)                       addChip('粒', `+${cb.dropCountAdd}`, '#9be0ff', 1 + cb.dropCountAdd * 0.2);
+  if (cb.stockExpMul && cb.stockExpMul > 1.01) addChip('蓄', `${_pct(cb.stockExpMul)}`, '#d4b6ff', cb.stockExpMul);
+  if (cb.evoBoost && cb.evoBoost > 0.005)    addChip('進', `+${Math.round(cb.evoBoost*100)}%`, '#ffe0a0', 1 + cb.evoBoost);
   allChips.sort((a, b) => b.weight - a.weight);
   const effChips = allChips.slice(0, 3);
   const hidden = allChips.length - effChips.length;
@@ -5969,12 +5970,12 @@ function renderHUD() {
     }
   }
   hud.innerHTML = '';
-  hud.appendChild(el('div', { class:'hud-row hud-leader' }, `★ ${hero.char} Lv.${hero.level}`));
+  hud.appendChild(el('div', { class:'hud-row hud-leader' }, `首 ${hero.char} Lv.${hero.level}`));
   hud.appendChild(el('div', { class:'hud-row hud-eff' },
-    `⚡ EXP×${expFinal >= 100 ? fmtBig(expFinal) : expFinal.toFixed(2)}`,
-    combo.combos?.length ? el('span', { class:'hud-combo' }, ` ・ ${combo.combos.length} コンボ`) : null,
+    `経 ×${expFinal >= 100 ? fmtBig(expFinal) : expFinal.toFixed(2)}`,
+    combo.combos?.length ? el('span', { class:'hud-combo' }, ` ・ 結 ${combo.combos.length}`) : null,
   ));
-  if (nextHint) hud.appendChild(el('div', { class:'hud-row hud-hint' }, '💡 ' + nextHint));
+  if (nextHint) hud.appendChild(el('div', { class:'hud-row hud-hint' }, '次 ' + nextHint));
   // v1.0.1: 一時バフ表示（残り秒数）
   const buffs = getActiveTempBuffs ? getActiveTempBuffs() : [];
   for (const b of buffs) {
@@ -6163,18 +6164,16 @@ function renderEffectsPanel() {
   const gravLabel = gravFinal < 0.99 ? pctInv(gravFinal) + ' 緩' : gravFinal > 1.01 ? '+' + Math.round((gravFinal-1)*100) + '% 速' : '通常';
   const mergeLabel = mergeFinal > 1.01 ? pct(mergeFinal) + ' 広' : '通常';
   const stockLabel = stockFinal > 1.01 ? pct(stockFinal) : '通常';
+  // v1.5.5: 絵文字 → 単漢字シンボル（ぽもじ世界観に統一）
   const items = [
-    // 成長系
-    { ic:'📈', lbl:'EXP',     val:expLabel,                                hint:'もらえる経験値の増分',         grade: grade(expFinal, 1.10, 1.50), inv:false },
-    { ic:'📦', lbl:'ストック', val:stockLabel,                              hint:'拾った字から入る EXP の増分',    grade: grade(stockFinal, 1.05, 1.30), inv:false },
-    { ic:'🌱', lbl:'進化加速', val:'+' + Math.round(evoFinal * 100) + '%', hint:'次 Lv 必要 EXP を削る率',       grade: grade(evoFinal, 0.05, 0.20), inv:false },
-    // 物理系
-    { ic:'🌧', lbl:'重力',     val:gravLabel,                              hint:'字の落下スピード（緩いほど捕まえやすい）', grade: grade(gravFinal, 0.95, 0.70, true), inv:true },
-    { ic:'🤝', lbl:'融合範囲', val:mergeLabel,                             hint:'同字が合体する判定半径',         grade: grade(mergeFinal, 1.05, 1.20), inv:false },
-    { ic:'💧', lbl:'粒数',     val:dropFinal > 0 ? '+' + Math.round(dropFinal) + '個' : '通常', hint:'1 回の落下で追加される粒数', grade: grade(dropFinal, 1, 3), inv:false },
-    // 状態系
-    { ic:'⭐', lbl:'リーダーLv', val:pct(lvMul),                            hint:'リーダー Lv 由来の全効果ブースト', grade: grade(lvMul, 1.10, 1.30), inv:false },
-    { ic:'⚙', lbl:'パッシブ',   val:passCount + '/20 解放',                hint:'達成済の常時効果数（コレクション・継続由来）', grade: grade(passCount, 2, 5), inv:false },
+    { ic:'経', lbl:'経験',     val:expLabel,                                hint:'もらえる経験値の増分',         grade: grade(expFinal, 1.10, 1.50), inv:false },
+    { ic:'蓄', lbl:'蓄積',     val:stockLabel,                              hint:'拾った字から入る EXP の増分',    grade: grade(stockFinal, 1.05, 1.30), inv:false },
+    { ic:'進', lbl:'進化',     val:'+' + Math.round(evoFinal * 100) + '%', hint:'次 Lv 必要 EXP を削る率',       grade: grade(evoFinal, 0.05, 0.20), inv:false },
+    { ic:'重', lbl:'重力',     val:gravLabel,                              hint:'字の落下スピード（緩いほど捕まえやすい）', grade: grade(gravFinal, 0.95, 0.70, true), inv:true },
+    { ic:'結', lbl:'融合',     val:mergeLabel,                             hint:'同字が合体する判定半径',         grade: grade(mergeFinal, 1.05, 1.20), inv:false },
+    { ic:'粒', lbl:'粒数',     val:dropFinal > 0 ? '+' + Math.round(dropFinal) + '個' : '通常', hint:'1 回の落下で追加される粒数', grade: grade(dropFinal, 1, 3), inv:false },
+    { ic:'統', lbl:'統率',     val:pct(lvMul),                            hint:'リーダー Lv 由来の全効果ブースト', grade: grade(lvMul, 1.10, 1.30), inv:false },
+    { ic:'常', lbl:'常時',     val:passCount + '/20',                     hint:'達成済の常時効果数（パッシブ）', grade: grade(passCount, 2, 5), inv:false },
   ];
   for (const it of items) it.arr = arrow(it.grade, it.inv);
   const activeCount = items.filter(x => x.grade !== 'none').length;
