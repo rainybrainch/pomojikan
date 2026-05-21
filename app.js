@@ -2689,6 +2689,7 @@ function pauseMeasure() {
 }
 function resumeMeasure() {
   if (STATE.mode !== 'measurePaused') return;
+  try { clampSettledToGround(); } catch(_) {}
   STATE.phaseStart = Date.now();
   STATE.mode = 'measure';
   document.body.dataset.mode = 'measure';
@@ -2702,6 +2703,7 @@ function resumeMeasure() {
 
 function startMeasure() {
   if (STATE.mode === 'measure') return;
+  try { clampSettledToGround(); } catch(_) {}
   stopWorkSpawning();
   cancelAnimationFrame(timerRaf);
   STATE.mode = 'measure';
@@ -2749,6 +2751,7 @@ function startWork() {
   const now = Date.now();
   const isQuickRestart = (now - _lastStartAt) < 3000;
   _lastStartAt = now;
+  try { clampSettledToGround(); } catch(_) {}
   STATE.mode = 'work';
   STATE.phaseStart = now;
   setTimeout(() => { try { renderHUD(); } catch(_) {} }, 50);
@@ -2884,6 +2887,7 @@ function pauseTimer() {
 }
 
 function resumeTimer() {
+  try { clampSettledToGround(); } catch(_) {}
   // v1.5.14: pausedMode から確実復元
   const m = STATE.pausedMode || (document.body.dataset.mode === 'rest' ? 'rest' : 'work');
   STATE.phaseEnd = Date.now() + (STATE.pausedRemaining || 0);
@@ -3714,6 +3718,11 @@ function physicsStep() {
       } else {
         if (p.settledX != null) { p.x = p.settledX; }
         if (p.settledY != null) { p.y = p.settledY; }
+        // v1.5.20: 画面サイズ変更や再開時に地中に埋まる事を防止 ── 地面より下なら持ち上げ
+        const groundY = H - SIZE - LEDGE_THICKNESS;
+        if (p.y > groundY) { p.y = groundY; p.settledY = groundY; }
+        if (p.x < 0) { p.x = 0; p.settledX = 0; }
+        if (p.x > W - SIZE) { p.x = W - SIZE; p.settledX = W - SIZE; }
         p.vx = 0; p.vy = 0;
         p.el.style.left = p.x + 'px';
         p.el.style.top  = p.y + 'px';
@@ -4124,6 +4133,22 @@ function feedPomojiToMember(p, idx, cardEl) {
 }
 
 // v1.2.6: 消える字の上に乗ってる settled 字を即時解除 → 自然落下
+// v1.5.20: 地中埋まり防止 ── 全 settled ぽもじを現在の地面まで持ち上げ
+function clampSettledToGround() {
+  try {
+    const H = window.innerHeight, W = window.innerWidth;
+    const groundY = H - SIZE - LEDGE_THICKNESS;
+    if (!livePomoji) return;
+    for (const p of livePomoji.values()) {
+      if (!p.settled) continue;
+      if (p.y > groundY) { p.y = groundY; p.settledY = groundY; }
+      if (p.x < 0) { p.x = 0; p.settledX = 0; }
+      if (p.x > W - SIZE) { p.x = W - SIZE; p.settledX = W - SIZE; }
+      if (p.el) { p.el.style.top = p.y + 'px'; p.el.style.left = p.x + 'px'; }
+    }
+  } catch(_) {}
+}
+
 function unsettleAbove(deadP) {
   if (!deadP || !livePomoji) return;
   for (const other of livePomoji.values()) {
@@ -8134,7 +8159,7 @@ function bindEvents() {
   let _resizeT = 0;
   window.addEventListener('resize', () => {
     clearTimeout(_resizeT);
-    _resizeT = setTimeout(refreshPCPanels, 150);
+    _resizeT = setTimeout(() => { refreshPCPanels(); clampSettledToGround(); }, 150);
   });
 
   $('#party-picker-reroll').addEventListener('click', () => {
