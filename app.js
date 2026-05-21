@@ -457,6 +457,7 @@ const DEFAULT_STATE = {
   themePref: 'auto',              // v10n19 ─ 'auto' / 'spring' / 'summer' / 'autumn' / 'winter' / 'dark' / 'light'
   ledgeStyle: 'default',          // v1.5.9 ─ 'default' / 'stone' / 'wood' / 'ornate' / 'jade' / 'cosmos' / 'divine'
   tfontStyle: 'serif',            // v1.5.10 ─ 'serif' / 'mono' / 'brush'
+  charDisplayStyle: {},           // v1.5.13 ─ { char: 'auto'/'plain'/'lvband-novice'/... }
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
 };
@@ -517,6 +518,7 @@ function checkMilestones() {
   if (typeof STATE.themePref !== 'string') STATE.themePref = 'auto';
   if (typeof STATE.ledgeStyle !== 'string') STATE.ledgeStyle = 'default';
   if (typeof STATE.tfontStyle !== 'string') STATE.tfontStyle = 'serif';
+  if (!STATE.charDisplayStyle || typeof STATE.charDisplayStyle !== 'object') STATE.charDisplayStyle = {};
   // v1.3.18: 字ごと Lv 永続化（パーティ抜けても保持）
   if (!STATE.charLevels) STATE.charLevels = {};  // { char: { level, exp, perks } }
   // v10n15: 堅牢化 ── 旧 state 構造の破損対策
@@ -5310,17 +5312,31 @@ function setTextWithLvBand(elOrId, s) {
 }
 
 // v1.3.6: 字のパーティ Lv からエフェクトクラスを決定
+// v1.5.13: 字ごとの表示スタイル設定（auto/plain/forced bands）
 function charLvBand(char) {
-  if (!STATE.party || !STATE.party.members) return '';
-  const m = STATE.party.members.find(mb => mb.char === char);
-  if (!m) return '';
-  const lv = m.level || 0;
+  // 個別スタイル override（plain=なし、forced=指定 band）
+  const pref = STATE.charDisplayStyle?.[char];
+  if (pref === 'plain') return '';
+  if (pref && pref.startsWith('lvband-')) return pref;
+  // 自動：パーティ内の Lv + charLevels に保存された Lv 両方見る
+  let lv = 0;
+  if (STATE.party?.members) {
+    const m = STATE.party.members.find(mb => mb.char === char);
+    if (m) lv = m.level || 0;
+  }
+  if (!lv && STATE.charLevels?.[char]?.level) lv = STATE.charLevels[char].level;
   if (lv >= 1000) return 'lvband-divine';
   if (lv >= 300)  return 'lvband-cosmic';
   if (lv >= 100)  return 'lvband-master';
   if (lv >= 30)   return 'lvband-adept';
   if (lv >= 10)   return 'lvband-novice';
   return '';
+}
+function setCharDisplayStyle(char, style) {
+  if (!STATE.charDisplayStyle) STATE.charDisplayStyle = {};
+  if (style === 'auto') delete STATE.charDisplayStyle[char];
+  else STATE.charDisplayStyle[char] = style;
+  saveState();
 }
 
 // v1.3.5: 字→レア度 Map キャッシュ（41,890 codex filter を解消）
@@ -6954,6 +6970,40 @@ function showCharDetail(c, rarity) {
       showCharDetail(c, rarity);
     },
   }, isFavoriteChar(c) ? '⭐ お気に入り' : '☆ お気に入りに追加'));
+  // v1.5.13: 字ごと表示スタイル切替
+  const curStyle = STATE.charDisplayStyle?.[c] || 'auto';
+  const styleOptions = [
+    ['auto', '自動（Lv連動）'],
+    ['plain', '無装飾（Lv 隠す）'],
+    ['lvband-novice', '青光'],
+    ['lvband-adept', '青強'],
+    ['lvband-master', '金光'],
+    ['lvband-cosmic', '紫光'],
+    ['lvband-divine', '七彩'],
+  ];
+  const styleRow = el('div', { style:{ display:'flex', gap:'4px', flexWrap:'wrap', marginTop:'4px' } });
+  styleOptions.forEach(([key, lbl]) => {
+    const active = curStyle === key;
+    styleRow.appendChild(el('button', {
+      style:{
+        padding:'4px 8px', fontSize:'.66rem', borderRadius:'4px', cursor:'pointer',
+        background: active ? 'rgba(240,212,138,.25)' : 'rgba(255,255,255,.04)',
+        border: '1px solid ' + (active ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.12)'),
+        color: active ? '#f0d48a' : 'var(--ink-mute)',
+        fontWeight: active ? 700 : 400,
+      },
+      onclick: (e) => {
+        e.stopPropagation();
+        setCharDisplayStyle(c, key);
+        $$('.char-detail-pop').forEach(p => p.remove());
+        showCharDetail(c, rarity);
+      },
+    }, lbl));
+  });
+  actionBtns.push(el('div', {},
+    el('div', { style:{ fontSize:'.68rem', color:'var(--ink-mute)', marginTop:'4px' } }, '表示スタイル'),
+    styleRow
+  ));
   const recruitBtn = actionBtns.length > 0
     ? el('div', { class:'cd-actions', style:{ display:'flex', flexDirection:'column', gap:'6px', margin:'8px 0' } }, ...actionBtns)
     : null;
