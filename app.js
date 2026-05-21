@@ -192,6 +192,8 @@ function getCharStats(c) {
   power += ((h >> 4) % 3) - 1;
   life  += ((h >> 8) % 3) - 1;
   bond  += ((h >> 12) % 3) - 1;
+  // v1.5.37: 雨 ── ブランド字なので全ステータス +1 優遇
+  if (c === '雨') { speed += 1; power += 1; life += 1; bond += 1; }
   // クランプ 1-5
   const cl = v => Math.max(1, Math.min(5, v));
   const stats = { speed:cl(speed), power:cl(power), life:cl(life), bond:cl(bond) };
