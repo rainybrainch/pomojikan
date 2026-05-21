@@ -6606,7 +6606,7 @@ function openPartyPresets() {
         ),
         el('div', { id:'party-presets-list', style:{ padding:'12px 16px', display:'flex', flexDirection:'column', gap:'8px' } }),
         el('div', { style:{ padding:'8px 16px 16px', display:'flex', gap:'8px' } },
-          el('button', { class:'btn-primary', onclick: savePartyPreset, style:{ flex:1 } }, ' 現パーティを保存'),
+          el('button', { class:'btn-primary', onclick: savePartyPreset, style:{ flex:1 } }, '＋ 現パーティを保存'),
         ),
       )
     );
@@ -6625,26 +6625,27 @@ function renderPartyPresetsModal() {
     return;
   }
   presets.slice().reverse().forEach(p => {
-    const heroChar = p.members[p.hero || 0]?.char || '?';
-    const memberChars = p.members.map((m,i) => i === (p.hero||0) ? `★${m.char}` : m.char).join('・');
+    const memberChars = p.members.map((m,i) => i === (p.hero||0) ? `★${m.char}` : m.char).join(' ');
     const lvSum = p.members.reduce((s,m) => s + (m.level||1), 0);
     list.appendChild(el('div', {
       style:{
         padding:'10px 12px', borderRadius:'8px',
         background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)',
-        display:'flex', alignItems:'center', gap:'10px',
+        display:'grid', gap:'8px',
+        gridTemplateColumns:'1fr auto auto auto',
+        alignItems:'center',
       }
     },
-      el('div', { style:{ flex:1, minWidth:0 } },
-        el('div', { style:{ fontWeight:700, fontSize:'.95rem' } }, p.name),
-        el('div', { style:{ fontSize:'.75rem', color:'var(--ink-mute)' } }, memberChars + ` ・ ΣLv ${lvSum}`),
+      el('div', { style:{ minWidth:0, overflow:'hidden' } },
+        el('div', { style:{ fontWeight:700, fontSize:'.95rem', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' } }, p.name),
+        el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)' } }, memberChars + ` ・ ΣLv${lvSum}`),
       ),
-      el('button', { class:'btn-secondary', style:{ padding:'4px 8px', fontSize:'.78rem' },
-        title:'名前変更', onclick: () => renamePartyPreset(p.id) }, '✏'),
-      el('button', { class:'btn-secondary', style:{ padding:'4px 10px', fontSize:'.78rem' },
-        onclick: () => loadPartyPreset(p.id) }, '📂 読込'),
-      el('button', { class:'btn-danger', style:{ padding:'4px 8px', fontSize:'.78rem' },
-        onclick: () => deletePartyPreset(p.id) }, ''),
+      el('button', { style:{ padding:'6px 10px', fontSize:'.72rem', borderRadius:'6px', background:'rgba(135,206,235,.15)', border:'1px solid rgba(135,206,235,.4)', color:'#cfe6ff', cursor:'pointer' },
+        onclick: () => loadPartyPreset(p.id) }, '読込'),
+      el('button', { style:{ padding:'6px 8px', fontSize:'.72rem', borderRadius:'6px', background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.15)', color:'var(--ink)', cursor:'pointer' },
+        title:'名前変更', onclick: () => renamePartyPreset(p.id) }, '名'),
+      el('button', { style:{ padding:'6px 8px', fontSize:'.72rem', borderRadius:'6px', background:'rgba(255,80,80,.12)', border:'1px solid rgba(255,80,80,.35)', color:'#ff9090', cursor:'pointer' },
+        title:'削除', onclick: () => { if (confirm(`「${p.name}」を削除？`)) deletePartyPreset(p.id); } }, '削'),
     ));
   });
 }
