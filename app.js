@@ -1348,6 +1348,7 @@ const el = (tag, props={}, ...children) => {
     else if (k === 'dataset') Object.assign(e.dataset, props[k]);
     else if (k.startsWith('on') && typeof props[k] === 'function') e.addEventListener(k.slice(2).toLowerCase(), props[k]);
     else if (k === 'html') e.innerHTML = props[k];
+    else if (typeof props[k] === 'boolean') { if (props[k]) e.setAttribute(k, ''); /* false なら属性自体を付けない（disabled="false" でも無効化される HTML 仕様回避）*/ }
     else e.setAttribute(k, props[k]);
   }
   for (const c of children) {
