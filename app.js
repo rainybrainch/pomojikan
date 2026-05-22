@@ -8743,6 +8743,20 @@ function handleVisibilityChange() {
         }
       } catch(_) {}
 
+      // v1.5.58: 不在が長いと rAF 停止で字が画面上端に固着するため、
+      // 復帰時は非永続字（パーティ字以外）を全て EXP 吸収してフィールドをリセット
+      if (hiddenElapsed > 30 * 1000) {
+        try {
+          const victims = [];
+          for (const p of livePomoji.values()) {
+            if (!p.persistent && !p.dragging && !p._expiring && !p._awarded) {
+              victims.push(p);
+            }
+          }
+          for (const p of victims) { try { expireAsExp(p); } catch(_) {} }
+        } catch(_) {}
+      }
+
       if (wasWorkBeforeHide && hiddenElapsed > WORK_SPAWN_INTERVAL_MS && !_pipWindow) {
         const wouldHaveSpawned = Math.floor(hiddenElapsed / WORK_SPAWN_INTERVAL_MS);
         const bonusCount = Math.min(20, Math.floor(wouldHaveSpawned * 0.5));
