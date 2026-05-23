@@ -94,7 +94,7 @@ const PERKS = {
   magnet:      { name:'磁字',    desc:'着地で近くの同字を引き寄せ自動合体',  category:'basic' },
 
   // ─── special ───
-  guardian:    { name:'守護',    desc:'主人公が消滅しない',                  category:'special' },
+  guardian:    { name:'守護',    desc:'リーダーが消滅しない',                  category:'special' },
 
   // ─── tag ───
   tag_virtue:  { name:'七徳の徳',  desc:'七徳タグの字でEXP増',               category:'tag', tag:'七徳'  },
@@ -565,11 +565,11 @@ const MILESTONES = [
   _mk('yoji_1000', '語学', '1,000 熟語 解放', 'yoj', 1000),
   _mk('yoji_4000', '達語', '4,000 熟語 全解放', 'yoj', 4000),
   // Lv 系（無限育成の到達点）── 何十年遊べる育成型ポモドーロの記憶
-  _mk('lv_100',     '楷書師', '主人公 Lv.100 到達',                       'lv', 100),
-  _mk('lv_1000',    '創造主', '主人公 Lv.1,000 到達（進化10段階）',       'lv', 1000),
-  _mk('lv_10000',   '永劫者', '主人公 Lv.10,000 到達',                    'lv', 10000),
-  _mk('lv_100000',  '無始',   '主人公 Lv.100,000 到達',                   'lv', 100000),
-  _mk('lv_1000000', '永遠',   '主人公 Lv.1,000,000 到達（人智の極）',    'lv', 1000000),
+  _mk('lv_100',     '楷書師', 'リーダー Lv.100 到達',                       'lv', 100),
+  _mk('lv_1000',    '創造主', 'リーダー Lv.1,000 到達（進化10段階）',       'lv', 1000),
+  _mk('lv_10000',   '永劫者', 'リーダー Lv.10,000 到達',                    'lv', 10000),
+  _mk('lv_100000',  '無始',   'リーダー Lv.100,000 到達',                   'lv', 100000),
+  _mk('lv_1000000', '永遠',   'リーダー Lv.1,000,000 到達（人智の極）',    'lv', 1000000),
 ];
 
 // 達成チェック（completePhase, addStock 等から定期的に呼ぶ）
@@ -1390,7 +1390,7 @@ function partyAverageLevel() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// パーティコンボ ── 主人公+仲間の字組み合わせが熟語と一致したら発動
+// パーティコンボ ── リーダー+仲間の字組み合わせが熟語と一致したら発動
 // 公式構想：4体パーティで「春夏秋冬」「諸行無常」等の四字熟語コンボ
 // ═══════════════════════════════════════════════════════════════
 
@@ -1407,7 +1407,7 @@ const MBTI_COMBOS = [
   // 外交官（NF）
   { word:'INFJ', chars:['I','N','F','J'], rarity:'★14', desc:'提唱者 ── 静かな信念',     effect:{ gravityMul:0.6, evoBoost:0.20 }, special:true },
   { word:'INFP', chars:['I','N','F','P'], rarity:'★14', desc:'仲介者 ── 内なる詩',       effect:{ mergeRadiusMul:1.4, expMul:1.3 }, special:true },
-  { word:'ENFJ', chars:['E','N','F','J'], rarity:'★14', desc:'主人公 ── 導く光',         effect:{ expMul:1.7, evoBoost:0.18, mergeRadiusMul:1.2 }, special:true },
+  { word:'ENFJ', chars:['E','N','F','J'], rarity:'★14', desc:'リーダー ── 導く光',         effect:{ expMul:1.7, evoBoost:0.18, mergeRadiusMul:1.2 }, special:true },
   { word:'ENFP', chars:['E','N','F','P'], rarity:'★14', desc:'運動家 ── 弾ける情熱',     effect:{ dropCountAdd:3, mergeRadiusMul:1.4 }, special:true },
   // 番人（SJ）
   { word:'ISTJ', chars:['I','S','T','J'], rarity:'★14', desc:'管理者 ── 着実な堆積',     effect:{ stockExpMul:1.8, expMul:1.3 }, special:true },
@@ -2306,7 +2306,7 @@ function spawnComboBurst(recipe) {
   setTimeout(() => node.remove(), isSpecial ? 3000 : 2400);
 }
 
-// リーダー（主人公）の Lv ── 落下プール tier の判定基準（v3 / 2026-05-16）
+// リーダー（リーダー）の Lv ── 落下プール tier の判定基準（v3 / 2026-05-16）
 function partyHeroLevel() {
   if (!STATE.party || !STATE.party.members.length) return 0;
   const heroIdx = STATE.party.hero || 0;
@@ -2927,7 +2927,7 @@ function startWork() {
   tick();
 }
 
-// パーティ字（主人公＋仲間）を 1 つずつ永続スポーン
+// パーティ字（リーダー＋仲間）を 1 つずつ永続スポーン
 // 既に画面上にいる持続字はスキップ
 function spawnPartyPersistents() {
   if (!STATE.party || !STATE.party.members) return;
@@ -5913,7 +5913,7 @@ function renderPCLeftPanel(){
   const detail = $('#pc-party-detail');
   if (!detail) return;
   if (!isPartyChosen()) {
-    detail.innerHTML = '<div style="color:var(--ink-mute);font-size:.86rem;">まずは主人公を選んでね</div>';
+    detail.innerHTML = '<div style="color:var(--ink-mute);font-size:.86rem;">まずはリーダーを選んでね</div>';
   } else {
     detail.innerHTML = '';
     STATE.party.members.forEach((m, idx) => {
@@ -6858,7 +6858,7 @@ function openHelpPlusTour() {
 // v10n16: 新機能ツアー（5 ページに圧縮）
 const CURRENT_VERSION = 'v1.0.0';
 const TOUR_PAGES = [
-  { emoji:'★', title:'リーダー制', body:'「主人公」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。編 編成プリセットで名前付き保存（最大12個）。' },
+  { emoji:'★', title:'リーダー制', body:'「リーダー」→「リーダー」に。図鑑で字をタップ → ★ボタンで一発切替。編 編成プリセットで名前付き保存（最大12個）。' },
   { emoji:'', title:'コンボ × 4,546 + パッシブ 16', body:'全熟語に固有効果と物語。さらに「100字発見」「30日連続」等のマイルストーンで パッシブが恒久発動。3層（特性×コンボ×パッシブ）で育つ。' },
   { emoji:'', title:'物理＆タイマー UI', body:'コインプッシャー型：字が押されて棚から落ちると自動EXP化＝重くならない。タイマー円の縁をなぞって分数設定、長押しで休憩時間。' },
   { emoji:'', title:'現効果パネル & HUD', body:'パーティ下に EXP / 重力 / 融合 / 粒+ / ストック / 進化加速が常時表示。画面左上 HUD で次の推薦コンボも見える。図鑑は折りたたみで見やすく。' },
@@ -8158,7 +8158,7 @@ function showCharDetail(c, rarity) {
           renderCodex();
         }
       },
-    }, `★ ${c} を主人公にして始める`));
+    }, `★ ${c} をリーダーにして始める`));
   } else if (isAlreadyHero) {
     actionBtns.push(el('div', { class:'cd-leader-already', style:{ padding:'8px', textAlign:'center', color:'var(--gold)', fontWeight:700, background:'rgba(240,212,138,.1)', borderRadius:'6px', fontSize:'.85rem' } }, `★ ${c} は現リーダー`));
   } else if (isInParty) {
@@ -8415,7 +8415,7 @@ function renderCodex() {
       const isOwned = ownedPerks.has(pid);
       if (isOwned) ownedCnt++;
       const catLabel = {
-        basic:'基本', tag:'タグ系', rare:' レア', special:'主人公専用',
+        basic:'基本', tag:'タグ系', rare:' レア', special:'リーダー専用',
       }[cat] || cat;
       // 未獲得：名前・効果を「???」でマスク。カテゴリと「入手方法」だけ見せる
       const displayName = isOwned
@@ -8432,10 +8432,10 @@ function renderCodex() {
         el('div', { class:'pck-grow' },
           isOwned
             ? (p.tag ? `育て方：「${p.tag}」タグの字をストック → +1/個`
-                    : isSpecial ? '主人公にすると自動付与'
+                    : isSpecial ? 'リーダーにすると自動付与'
                     : isRare ? '★8 以降の字を仲間にすると抽選で付与（★16 で確定）'
                     : '育て方：どの字でもストック → +0.5/個（累積）')
-            : (isSpecial ? '入手：主人公を選ぶと自動付与'
+            : (isSpecial ? '入手：リーダーを選ぶと自動付与'
                 : isRare ? '入手：★8 以降の字を仲間にすると抽選'
                 : '入手：パーティ字の属性で自動付与')
         ),
@@ -8730,7 +8730,7 @@ function updateProgressPill() {
       const remain = nextLv != null ? nextLv - hero.level : null;
       ldrEl.textContent = `${hero.char} Lv.${hero.level}`;
     } else {
-      ldrEl.textContent = '主人公 未選択';
+      ldrEl.textContent = 'リーダー 未選択';
     }
   }
 }

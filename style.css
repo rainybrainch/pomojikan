@@ -1828,7 +1828,7 @@ body.stream-mode .party-bar{
 }
 
 /* ════════════════════ パーティ字 永続スポーン ════════════════════ */
-/* 主人公・仲間：金縁＋静的グロー（呼吸アニメ廃止 ─ 落ち着き優先）*/
+/* リーダー・仲間：金縁＋静的グロー（呼吸アニメ廃止 ─ 落ち着き優先）*/
 .pomoji.persistent{
   border-width:2px !important;
   border-color:#f0d48a !important;
@@ -1847,7 +1847,7 @@ body.stream-mode .party-bar{
     inset 0 3px 4px rgba(255,250,230,.55),
     0 4px 10px rgba(0,0,0,.28) !important;
 }
-/* 主人公：金縁＋強い金外光 */
+/* リーダー：金縁＋強い金外光 */
 .pomoji.party-member.party-leader{
   border-color:#f0d48a !important;
   box-shadow:
@@ -2802,7 +2802,7 @@ body[data-mode="rest"] #tank{
 /* パーティカード hover ヒント（PC・タッチでも長押しで表示）*/
 @media (hover: hover){
   .party-card:not(.hero):not(.empty-slot):hover::after{
-    content:'⇒ ダブルタップで主人公';
+    content:'⇒ ダブルタップでリーダー';
     position:absolute;
     bottom:-22px; left:50%;
     transform:translateX(-50%);
