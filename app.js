@@ -4320,18 +4320,45 @@ function attachDragHandlers(node, obj) {
       $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
       // v1.5.21: 長押しで詳細を開いた場合は burst しない
       if (obj._lpDetailOpened) { obj._lpDetailOpened = false; return; }
-      // v1.5.62: タップ＝「拾う」── ストックに+1、小EXP、字は静かに消える（ドラッグ：融合/餌付け、長押し：詳細 と差別化）
+      // v1.5.62: タップ＝「拾う」── ストックに+1、小EXP、字は静かに消える
+      // v1.5.65: ダブルタップ（400ms以内）＝「📌 ピン留め」── 寿命/cap/復帰リセットから保護
       const dt = Date.now() - startTime;
       if (!moved || dt < 250) {
-        try {
-          const rIdx = RARITY_TIERS.indexOf(obj.rarity);
-          const exp = Math.max(1, Math.pow(1.25, rIdx));  // dissolve(=2倍係数) より控えめ
-          awardExpToParty(obj.char, exp) || _orphanExp(exp);
-          addStock(obj.char);
-          spawnXpFloat(obj.x + SIZE/2, obj.y + SIZE/2, exp, obj.rarity);
-          obj.el?.classList.add('dissolve');
-          setTimeout(() => { obj.el?.remove(); livePomoji.delete(obj.id); }, 300);
-        } catch(_) {}
+        const now = Date.now();
+        const isDouble = (now - (obj._lastTap || 0)) < 400;
+        obj._lastTap = now;
+        if (isDouble) {
+          if (obj._pinned) {
+            obj._pinned = false;
+            obj.persistent = false;
+            obj.el?.classList.remove('pinned');
+            try { toast('ピン解除'); } catch(_) {}
+          } else {
+            obj._pinned = true;
+            obj.persistent = true;  // 寿命・cap・復帰リセット・休憩泡化から保護
+            obj.spawnedAt = Date.now();
+            obj.el?.classList.add('pinned');
+            try { toast('📌 ピン留め'); } catch(_) {}
+          }
+          return;
+        }
+        // 単タップ＝拾う（少し遅延してダブルタップ判定を許す）
+        const pickupTs = now;
+        setTimeout(() => {
+          if (obj._lastTap !== pickupTs) return;  // この後にダブルタップが来てたらスキップ
+          if (!livePomoji.has(obj.id) || obj._awarded) return;
+          if (obj._pinned) return;  // ピン中は拾わない
+          try {
+            const rIdx = RARITY_TIERS.indexOf(obj.rarity);
+            const exp = Math.max(1, Math.pow(1.25, rIdx));
+            obj._awarded = true;
+            awardExpToParty(obj.char, exp) || _orphanExp(exp);
+            addStock(obj.char);
+            spawnXpFloat(obj.x + SIZE/2, obj.y + SIZE/2, exp, obj.rarity);
+            obj.el?.classList.add('dissolve');
+            setTimeout(() => { obj.el?.remove(); livePomoji.delete(obj.id); }, 300);
+          } catch(_) {}
+        }, 410);
         return;
       }
       // v1.1.7: パーティカードにドロップ → そのメンバーに EXP（餌付け）

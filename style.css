@@ -5662,3 +5662,17 @@ body[data-ledge="ink"] #ledge-surface::before {
   border: 1px solid rgba(240,212,138,.25) !important;
 }
 .wr-input:focus { outline: 2px solid var(--gold); border-color: var(--gold) !important; }
+
+/* v1.5.65: お気に入りピン留め ── 金色の固定光リング＋ピンマーク */
+.pomoji.pinned {
+  box-shadow: 0 0 0 2px rgba(255,215,80,.85), 0 0 18px rgba(255,215,80,.55), 0 2px 6px rgba(0,0,0,.3) !important;
+  z-index: 12 !important;
+}
+.pomoji.pinned::after {
+  content: '📌';
+  position: absolute;
+  top: -6px; right: -6px;
+  font-size: .65rem;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+}
