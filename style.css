@@ -5885,3 +5885,20 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
   0%   { transform: scale(.4); opacity: 1; border-width: 3px; }
   100% { transform: scale(2.5); opacity: 0; border-width: 1px; }
 }
+
+/* v1.6.14: アクセシビリティ ─ キーボード操作の focus-visible を全要素で明確化 */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* マウス click では focus リング出さない */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
