@@ -988,6 +988,7 @@ function playSFX(type) {
     case 'land_low':    playTone(180 + Math.random()*40, 0.06, 'sine', 0.025, 0.003, 0.06); break;
     case 'land_mid':    playTone(320, 0.10, 'triangle', 0.045, 0.003, 0.10); playTone(480, 0.06, 'sine', 0.02, 0.003, 0.06); break;
     case 'land_high':   playSweep(880, 1320, 0.18, 'sine', 0.06); playTone(1760, 0.10, 'triangle', 0.025, 0.003, 0.10); break;
+    case 'combo_land':  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.10,'triangle',0.05,0.003,0.10),i*60)); break;
     case 'merge':       // 合体：上昇 chime
       playSweep(440, 880, 0.25, 'triangle', 0.10);
       playTone(660, 0.18, 'sine', 0.05, 0.005, 0.18);
@@ -3214,6 +3215,31 @@ function startRisingPomoji() {
   setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
 }
 
+// v1.5.72: サイクルK ── ピン留め字が3つ以上並んでたら金光波紋＋ボーナス
+let _lastPinTriadAt = 0;
+function checkPinTriad() {
+  try {
+    if (Date.now() - _lastPinTriadAt < 30000) return; // 30秒クールダウン
+    const pins = Array.from(livePomoji.values()).filter(p => p._pinned);
+    if (pins.length < 3) return;
+    _lastPinTriadAt = Date.now();
+    const bonus = 50 * pins.length;
+    const cx = pins.reduce((s,p)=>s+p.x,0)/pins.length + SIZE/2;
+    const cy = pins.reduce((s,p)=>s+p.y,0)/pins.length + SIZE/2;
+    spawnXpFloat(cx, cy, bonus, '★8');
+    const hero = STATE.party?.members?.[STATE.party?.hero || 0];
+    if (hero) awardExpToParty(hero.char, bonus) || _orphanExp(bonus);
+    else _orphanExp(bonus);
+    try { toast(`📌 ピン${pins.length}連結 +${bonus} EXP`); } catch(_) {}
+    try { playSFX('milestone'); } catch(_) {}
+    // 簡易波紋エフェクト
+    const ripple = document.createElement('div');
+    ripple.style.cssText = `position:fixed;left:${cx-50}px;top:${cy-50}px;width:100px;height:100px;border-radius:50%;border:3px solid rgba(255,215,80,.85);pointer-events:none;z-index:99;animation:ripple-out 1.2s ease-out forwards;`;
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 1300);
+  } catch(_) {}
+}
+
 // v1.5.69: サイクルG ── 棚の景色を日別保存（完了時のsettled字一覧）
 function snapshotLedge() {
   try {
@@ -3715,6 +3741,17 @@ function spawnPomoji(opts={}) {
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
+  // v1.5.74: サイクルP 高レア（★10+）入場演出 ── 縦光帯＋短い chime
+  if (!opts.asPinned && tierIdx >= 9) {
+    try {
+      const beam = document.createElement('div');
+      beam.style.cssText = `position:fixed;left:${x + SIZE/2 - 2}px;top:0;width:4px;height:100vh;background:linear-gradient(180deg,transparent,rgba(255,215,80,.7),transparent);pointer-events:none;z-index:50;animation:beam-fade .8s ease-out forwards;`;
+      document.body.appendChild(beam);
+      setTimeout(() => beam.remove(), 850);
+      playSFX('land_high');
+    } catch(_) {}
+  }
+
   // v1.5.67: 復元時のピン留め反映（落下せず即位置固定）
   if (opts.asPinned) {
     obj._pinned = true;
@@ -3961,6 +3998,19 @@ function physicsStep() {
   _physicsFrame++;
   // v1.5.70: 同タグ磁力を 30 フレに 1 回（負荷抑制）
   if ((_physicsFrame % 30) === 0) applyTagMagnet();
+  // v1.5.72: サイクルK ピン3つ並びで金光波紋＋EXP（10秒に1回判定）
+  if ((_physicsFrame % 600) === 0) checkPinTriad();
+  // v1.5.73: サイクルO settled字が稀に小ジャンプ（呼吸演出）─ 5秒に1回
+  if ((_physicsFrame % 300) === 0) {
+    for (const p of livePomoji.values()) {
+      if (p.settled && !p.persistent && !p._pinned && Math.random() < 0.05) {
+        p.settled = false;
+        p.el?.classList.remove('settled');
+        p.vy = -0.6;
+        p._settleBlockUntil = Date.now() + 300;
+      }
+    }
+  }
   const W = window.innerWidth, H = window.innerHeight;
   const ledge = ledgeBounds(W);
   // perk 適用（10 フレーム毎にしか再計算しない ・ 視覚差は無視できる）
@@ -4290,6 +4340,13 @@ function physicsStep() {
             const t = p.tier || 0;
             const sfx = t >= 9 ? 'land_high' : t >= 4 ? 'land_mid' : 'land_low';
             playSFX(sfx);
+            // v1.5.71: サイクルI 連続着地コンボ（500ms内に3+で chime）
+            window._landCombo = (window._landCombo || []).filter(ts => Date.now() - ts < 500);
+            window._landCombo.push(Date.now());
+            if (window._landCombo.length >= 3) {
+              playSFX('combo_land');
+              window._landCombo = [];
+            }
           } catch(_) {}
         }
       }
