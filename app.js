@@ -3435,6 +3435,8 @@ function renderWordOfDay() {
   const node = document.getElementById('word-of-day');
   if (!node) return;
   if (STATE.mode && STATE.mode !== 'idle') { node.classList.add('wod-hide'); return; }
+  // v1.6.18: パーティ未編成時は party-pick-cta を最優先 → 今日の言葉は出さない
+  if (!isPartyChosen()) { node.classList.add('wod-hide'); return; }
   const recipes = window.YOJI_RECIPES || [];
   if (recipes.length === 0) return;
   // 解放済または構成字を全て持っている熟語のみから選定（読めるものだけ）
@@ -4719,11 +4721,17 @@ function attachDragHandlers(node, obj) {
             obj.el?.classList.remove('pinned');
             try { toast('ピン解除'); } catch(_) {}
           } else {
+            // v1.6.18: ピン留め上限12（棚が埋まり過ぎないよう保護）
+            const pinCount = Array.from(livePomoji.values()).filter(p => p._pinned).length;
+            if (pinCount >= 12) {
+              try { toast('📌 ピン留めは最大12個まで（既存をダブルタップで解除を）'); } catch(_) {}
+              return;
+            }
             obj._pinned = true;
             obj.persistent = true;
             obj.spawnedAt = Date.now();
             obj.el?.classList.add('pinned');
-            try { toast('📌 ピン留め'); } catch(_) {}
+            try { toast(`📌 ピン留め (${pinCount + 1}/12)`); } catch(_) {}
             // v1.6.13: ピン留め成功で金色の小波紋（行為の余韻）
             try {
               const ripple = document.createElement('div');
