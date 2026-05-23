@@ -7593,29 +7593,14 @@ function openOmikujiPicker() {
   const nextFortuneTier = Math.min(5, Math.floor(streak / 3) + 1);
   const nextFortuneName = ['末吉','吉','中吉','吉','大吉','大大吉'][nextFortuneTier] || '吉';
 
-  const pop = el('div', { class:'omikuji-picker', style:{
-    position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
-    width:'min(340px,90vw)', padding:'22px 20px', zIndex:600,
-    background:'linear-gradient(180deg, rgba(30,20,55,.98), rgba(7,10,28,.98))',
-    border:'2px solid var(--gold)', borderRadius:'14px',
-    boxShadow:'0 8px 40px rgba(0,0,0,.6), 0 0 30px rgba(240,212,138,.4)',
-    display:'flex', flexDirection:'column', gap:'10px',
-    fontFamily:"'Noto Serif JP', serif",
-  } },
-    el('button', { style:{ position:'absolute', top:'6px', right:'10px', background:'transparent', border:'none', color:'var(--ink-mute)', fontSize:'1.4rem', cursor:'pointer' }, onclick:() => pop.remove() }, '×'),
-    el('div', { style:{ fontWeight:900, fontSize:'1.1rem', color:'var(--gold)', textAlign:'center' } }, 'おみくじガチャ'),
-    el('div', { style:{ fontSize:'.72rem', color:'var(--ink-mute)', textAlign:'center', lineHeight:1.5 } },
-      `連続 ${streak} 日 ・ 今の運勢「${nextFortuneName}」`
-    ),
+  // v1.5.82: おみくじUI刷新 ─ シンプル2ボタン+詳細は折りたたみ
+  const pop = el('div', { class:'omikuji-picker' },
+    el('button', { class:'omi-close', onclick:() => pop.remove() }, '×'),
+    el('div', { class:'omi-title' }, '🎴 おみくじ'),
+    el('div', { class:'omi-sub' }, `連続 ${streak} 日 ・ 運勢「${nextFortuneName}」`),
     // 無料毎日
     el('button', {
-      style:{
-        padding:'14px', borderRadius:'8px', cursor: freeAvailable ? 'pointer' : 'not-allowed',
-        background: freeAvailable ? 'linear-gradient(135deg,#f0d48a,#d4a84a)' : 'rgba(255,255,255,.06)',
-        color: freeAvailable ? '#1a1208' : 'var(--ink-mute)',
-        border: '1px solid ' + (freeAvailable ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.12)'),
-        fontWeight:700, fontSize:'.95rem',
-      },
+      class: 'omi-btn omi-btn-free' + (freeAvailable ? '' : ' is-disabled'),
       disabled: !freeAvailable,
       onclick: () => {
         if (!freeAvailable) return;
@@ -7628,16 +7613,12 @@ function openOmikujiPicker() {
         pop.remove();
         showYojiDetail(r);
       },
-    }, freeAvailable ? '無料おみくじ（1日1回）' : '本日の無料は引き済 ・ 明日まで'),
+    }, freeAvailable
+        ? el('span', {}, el('span', { style:{ fontSize:'1.05rem', display:'block' } }, '無料おみくじ'), el('span', { style:{ fontSize:'.7rem', opacity:.8 } }, '1日1回'))
+        : el('span', { style:{ fontSize:'.85rem' } }, '本日は引き済 ── 明日まで')),
     // 有料ガチャ
     el('button', {
-      style:{
-        padding:'14px', borderRadius:'8px', cursor: canPay ? 'pointer' : 'not-allowed',
-        background: canPay ? 'linear-gradient(135deg,#5b3a8c,#8b5fc8)' : 'rgba(255,255,255,.06)',
-        color: canPay ? '#fff' : 'var(--ink-mute)',
-        border: '1px solid ' + (canPay ? 'rgba(155,120,200,.6)' : 'rgba(255,255,255,.12)'),
-        fontWeight:700, fontSize:'.95rem',
-      },
+      class: 'omi-btn omi-btn-paid' + (canPay ? '' : ' is-disabled'),
       disabled: !canPay,
       onclick: () => {
         if (!canPay) return;
@@ -7658,46 +7639,56 @@ function openOmikujiPicker() {
         pop.remove();
         showYojiDetail(r);
       },
-    }, canPay ? `おみくじガチャ（ストック ${OMIKUJI_GACHA_COST} 消費 ・ 残 ${totalStock}）` : `ストック不足（${totalStock}/${OMIKUJI_GACHA_COST}）`),
-    el('div', { style:{ fontSize:'.68rem', color:'var(--ink-mute)', lineHeight:1.5, marginTop:'4px', padding:'8px', background:'rgba(135,206,235,.08)', borderRadius:'6px' } },
-      el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'#cfe6ff' } }, 'ご利益'),
-      el('div', {}, '・ 引いた熟語の構成字を全て +1 ストック'),
-      el('div', {}, '・ EXP バフ ×1.10〜×1.30（15〜40分）'),
-      el('div', {}, '・ 連続日数で運勢上昇（末吉→大大吉）'),
-    ),
+    }, canPay
+        ? el('span', {}, el('span', { style:{ fontSize:'1.05rem', display:'block' } }, '有料ガチャ'), el('span', { style:{ fontSize:'.7rem', opacity:.85 } }, `ストック${OMIKUJI_GACHA_COST}消費 ・ 残${totalStock}`))
+        : el('span', { style:{ fontSize:'.85rem' } }, `ストック不足 ${totalStock}/${OMIKUJI_GACHA_COST}`)),
+    // 折りたたみ詳細
     (() => {
-      const rates = omikujiDropRates();
-      const tiers = Object.keys(rates).map(Number).sort((a, b) => a - b);
-      if (!tiers.length) return null;
-      return el('div', { style:{ fontSize:'.65rem', color:'var(--ink-mute)', lineHeight:1.5, padding:'8px', background:'rgba(155,120,200,.06)', borderRadius:'6px' } },
-        el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'#c8a8ff' } }, `排出率（現在の解放範囲 ★1〜★${(STATE.unlockedTier||0)+2}）`),
-        ...tiers.map(t => el('div', {}, `★${t+1} ── ${rates[t].toFixed(1)}%`)),
+      const det = el('details', { class:'omi-details' },
+        el('summary', {}, '詳細（ご利益・排出率・ストック）'),
+        el('div', { class:'omi-section' },
+          el('div', { class:'omi-section-title' }, 'ご利益'),
+          el('div', {}, '・ 引いた熟語の構成字を全て +1 ストック'),
+          el('div', {}, '・ EXP バフ ×1.10〜×1.30（15〜40分）'),
+          el('div', {}, '・ 連続日数で運勢上昇（末吉→大大吉）'),
+        ),
+        (() => {
+          const rates = omikujiDropRates();
+          const tiers = Object.keys(rates).map(Number).sort((a, b) => a - b);
+          if (!tiers.length) return null;
+          const top = tiers.slice(0, 6);
+          return el('div', { class:'omi-section' },
+            el('div', { class:'omi-section-title' }, `排出率（★1〜★${(STATE.unlockedTier||0)+2}）`),
+            el('div', { class:'omi-rate-grid' },
+              ...top.map(t => el('span', {}, `★${t+1} ${rates[t].toFixed(1)}%`)),
+            ),
+          );
+        })(),
+        (() => {
+          const stock = STATE.stock || {};
+          const byTier = {};
+          let total = 0;
+          for (const [c, v] of Object.entries(stock)) {
+            const r = _charRarityIdx(c);
+            byTier[r] = (byTier[r] || 0) + v;
+            total += v;
+          }
+          let avg = 0;
+          for (const t of Object.keys(byTier)) avg += Number(t) * byTier[t];
+          avg = total > 0 ? avg / total : 0;
+          const tiers = Object.keys(byTier).map(Number).sort((a,b) => a - b);
+          return el('div', { class:'omi-section' },
+            el('div', { class:'omi-section-title' }, `ストック ${total} ・ 平均 ★${(avg+1).toFixed(1)}`),
+            tiers.length === 0
+              ? el('div', { style:{ opacity:.7 } }, '字をタップでストックを貯めると、平均レア度に合った熟語が出やすくなります')
+              : el('div', { class:'omi-rate-grid' }, ...tiers.map(t => el('span', {}, `★${t+1}:${byTier[t]}`))),
+          );
+        })(),
       );
-    })(),
-    (() => {
-      // ストックのレア度別内訳
-      const stock = STATE.stock || {};
-      const byTier = {};
-      let total = 0;
-      for (const [c, v] of Object.entries(stock)) {
-        const r = _charRarityIdx(c);
-        byTier[r] = (byTier[r] || 0) + v;
-        total += v;
-      }
-      let avg = 0;
-      for (const t of Object.keys(byTier)) avg += Number(t) * byTier[t];
-      avg = total > 0 ? avg / total : 0;
-      const tiers = Object.keys(byTier).map(Number).sort((a,b) => a - b);
-      return el('div', { style:{ fontSize:'.65rem', color:'var(--ink-mute)', lineHeight:1.5, padding:'8px', background:'rgba(255,255,255,.04)', borderRadius:'6px' } },
-        el('div', { style:{ fontWeight:700, marginBottom:'3px', color:'var(--ink)' } }, `ストック構成（合計 ${total} ・ 平均 ★${(avg+1).toFixed(1)}）`),
-        tiers.length === 0
-          ? el('div', {}, '字をタップしてストックを貯めると、その平均レア度に合わせた熟語が出やすくなります。')
-          : el('div', {}, tiers.map(t => `★${t+1}:${byTier[t]}`).join(' / ')),
-        el('div', { style:{ marginTop:'4px', color:'var(--accent-2)' } }, '有料ガチャは「ストックの平均レア度」に近い熟語が出やすくなります（釣鐘曲線）'),
-      );
+      return det;
     })(),
   );
-  const backdrop = el('div', { style:{ position:'fixed', inset:'0', background:'rgba(0,0,0,.5)', zIndex:599 }, onclick: () => { pop.remove(); backdrop.remove(); } });
+  const backdrop = el('div', { class:'omi-backdrop', onclick: () => { pop.remove(); backdrop.remove(); } });
   document.body.appendChild(backdrop);
   document.body.appendChild(pop);
   const orig = pop.remove.bind(pop);
