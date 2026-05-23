@@ -524,6 +524,7 @@ const DEFAULT_STATE = {
   charDisplayStyle: {},           // v1.5.13 ─ { char: 'auto'/'plain'/'lvband-novice'/... }
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
+  pinnedField: [],                // v1.5.67 ─ ピン留め字 [{char, rarity, xRatio, yRatio}]
 };
 
 // 長期達成マイルストーン（何十年遊べる目標）
@@ -3206,6 +3207,42 @@ function startRisingPomoji() {
   setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
 }
 
+// v1.5.67: ピン留め字を localStorage に保存（次回ロード復元用）
+function savePinnedField() {
+  try {
+    const W = window.innerWidth || 1, H = window.innerHeight || 1;
+    const arr = [];
+    for (const p of livePomoji.values()) {
+      if (p._pinned) {
+        arr.push({
+          char: p.char, rarity: p.rarity,
+          xRatio: (p.x || 0) / W, yRatio: (p.y || 0) / H,
+        });
+      }
+    }
+    STATE.pinnedField = arr;
+    saveState();
+  } catch(_) {}
+}
+
+// v1.5.67: 起動時にピン留め字を復元
+function restorePinnedField() {
+  try {
+    const arr = STATE.pinnedField || [];
+    if (!Array.isArray(arr) || arr.length === 0) return;
+    const W = window.innerWidth, H = window.innerHeight;
+    const codex = window.KANJI_CODEX || [];
+    for (const entry of arr) {
+      const k = codex.find(x => (x.char || x.c) === entry.char) || { char: entry.char, c: entry.char, rarity: entry.rarity };
+      const x = (entry.xRatio || 0.5) * W;
+      const y = (entry.yRatio || 0.5) * H;
+      try {
+        spawnPomoji({ kanji: k, x, y, asPinned: true });
+      } catch(_) {}
+    }
+  } catch(_) {}
+}
+
 // v1.5.66: 休憩の浮上字で熟語が成立してたらボーナス
 function detectRestYojiChains(targets) {
   try {
@@ -3625,6 +3662,17 @@ function spawnPomoji(opts={}) {
   }
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
+
+  // v1.5.67: 復元時のピン留め反映（落下せず即位置固定）
+  if (opts.asPinned) {
+    obj._pinned = true;
+    obj.persistent = true;
+    obj.settled = true;
+    obj.settledX = obj.x;
+    obj.settledY = obj.y;
+    obj.vx = 0; obj.vy = 0;
+    node.classList.add('pinned', 'settled');
+  }
 
   STATE.stats.totalDrops += 1;
   STATE.collection[char] = (STATE.collection[char] || 0) + 1;
@@ -4378,11 +4426,12 @@ function attachDragHandlers(node, obj) {
             try { toast('ピン解除'); } catch(_) {}
           } else {
             obj._pinned = true;
-            obj.persistent = true;  // 寿命・cap・復帰リセット・休憩泡化から保護
+            obj.persistent = true;
             obj.spawnedAt = Date.now();
             obj.el?.classList.add('pinned');
             try { toast('📌 ピン留め'); } catch(_) {}
           }
+          try { savePinnedField(); } catch(_) {}
           return;
         }
         // 単タップ＝拾う（少し遅延してダブルタップ判定を許す）
@@ -9251,6 +9300,8 @@ function init() {
   // v10n19: テーマ適用
   try { applyTheme(); } catch(_) {}
   try { applyIconMode(); } catch(_) {}
+  // v1.5.67: ピン留め字を復元（少し遅延：DOM 整い次第）
+  setTimeout(() => { try { restorePinnedField(); } catch(_) {} }, 800);
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
   window.addEventListener('pagehide', () => {
     try { if (_pipWindow) _pipWindow.close(); } catch(_) {}
