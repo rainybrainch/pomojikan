@@ -525,6 +525,7 @@ const DEFAULT_STATE = {
   dailyLog: {},                   // v10n ─ 日別実績 { 'YYYY-MM-DD': { newChars, newYoji, exp } }
   lastShownDailyReport: null,     // v10n ─ 「送り状」を最後に見た日付（重複表示防止）
   pinnedField: [],                // v1.5.67 ─ ピン留め字 [{char, rarity, xRatio, yRatio}]
+  ledgeSnapshots: {},             // v1.5.69 ─ 日別棚景色 { 'YYYY-MM-DD': [{char,rarity}, ...] }
 };
 
 // 長期達成マイルストーン（何十年遊べる目標）
@@ -983,6 +984,10 @@ function playSFX(type) {
   };
 
   switch (type) {
+    // v1.5.68: 着地音をレアリティ別に（★1-4=ぽとっ / ★5-9=ころん / ★10-16=きらりん）
+    case 'land_low':    playTone(180 + Math.random()*40, 0.06, 'sine', 0.025, 0.003, 0.06); break;
+    case 'land_mid':    playTone(320, 0.10, 'triangle', 0.045, 0.003, 0.10); playTone(480, 0.06, 'sine', 0.02, 0.003, 0.06); break;
+    case 'land_high':   playSweep(880, 1320, 0.18, 'sine', 0.06); playTone(1760, 0.10, 'triangle', 0.025, 0.003, 0.10); break;
     case 'merge':       // 合体：上昇 chime
       playSweep(440, 880, 0.25, 'triangle', 0.10);
       playTone(660, 0.18, 'sine', 0.05, 0.005, 0.18);
@@ -3092,6 +3097,8 @@ function playKakkou() {
 function completePhase() {
   const prevMode = STATE.mode;
   try { notifyPhaseComplete(prevMode); } catch(_) {}
+  // v1.5.69: 作業完了時に棚スナップショット保存
+  if (STATE.mode === 'work') { try { snapshotLedge(); } catch(_) {} }
   if (STATE.mode === 'work') {
     STATE.cycles += 1;
     STATE.stats.totalCycles += 1;
@@ -3205,6 +3212,51 @@ function startRisingPomoji() {
   toast(`${targets.length}粒の字が育つ`);
   // v1.5.66: サイクルD ── 浮上字の集合から熟語チェーンを検出して大EXPボーナス
   setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
+}
+
+// v1.5.69: サイクルG ── 棚の景色を日別保存（完了時のsettled字一覧）
+function snapshotLedge() {
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const snap = [];
+    for (const p of livePomoji.values()) {
+      if (p.settled && !p.persistent) snap.push({ char: p.char, rarity: p.rarity });
+    }
+    if (snap.length === 0) return;
+    if (!STATE.ledgeSnapshots) STATE.ledgeSnapshots = {};
+    STATE.ledgeSnapshots[today] = snap;
+    // 90日より古いのは削る
+    const cutoff = new Date(Date.now() - 90*24*60*60*1000).toISOString().slice(0,10);
+    Object.keys(STATE.ledgeSnapshots).forEach(k => { if (k < cutoff) delete STATE.ledgeSnapshots[k]; });
+    saveState();
+  } catch(_) {}
+}
+
+// v1.5.70: サイクルH ── 同タグ字同士の磁力（settled同士で緩やかに引き寄せ）
+function applyTagMagnet() {
+  try {
+    const arr = Array.from(livePomoji.values()).filter(p => !p._pinned && !p.dragging);
+    for (let i = 0; i < arr.length; i++) {
+      const p = arr[i];
+      if (p.settled || p.rising) continue;
+      const pTags = getCharTags(p.char) || [];
+      if (pTags.length === 0) continue;
+      for (let j = 0; j < arr.length; j++) {
+        if (i === j) continue;
+        const q = arr[j];
+        if (!q.settled) continue;
+        const qTags = getCharTags(q.char) || [];
+        if (!pTags.some(t => qTags.includes(t))) continue;
+        const dx = (q.x + SIZE/2) - (p.x + SIZE/2);
+        const dy = (q.y + SIZE/2) - (p.y + SIZE/2);
+        const d2 = dx*dx + dy*dy;
+        if (d2 < 4 || d2 > 40000) continue; // 200px以内
+        const inv = 1 / Math.sqrt(d2);
+        const f = 0.015;
+        p.vx += dx * inv * f;
+      }
+    }
+  } catch(_) {}
 }
 
 // v1.5.67: ピン留め字を localStorage に保存（次回ロード復元用）
@@ -3907,6 +3959,8 @@ function ledgeBounds(W) {
 
 function physicsStep() {
   _physicsFrame++;
+  // v1.5.70: 同タグ磁力を 30 フレに 1 回（負荷抑制）
+  if ((_physicsFrame % 30) === 0) applyTagMagnet();
   const W = window.innerWidth, H = window.innerHeight;
   const ledge = ledgeBounds(W);
   // perk 適用（10 フレーム毎にしか再計算しない ・ 視覚差は無視できる）
@@ -4231,6 +4285,12 @@ function physicsStep() {
           p.settled = true;
           p.settledX = p.x;
           p.settledY = p.y;
+          // v1.5.68: レアリティ別着地音
+          try {
+            const t = p.tier || 0;
+            const sfx = t >= 9 ? 'land_high' : t >= 4 ? 'land_mid' : 'land_low';
+            playSFX(sfx);
+          } catch(_) {}
         }
       }
     } else if (p.y > H + SIZE * 0.8) {
