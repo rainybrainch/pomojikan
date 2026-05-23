@@ -5974,3 +5974,161 @@ a:focus:not(:focus-visible) {
   /* mobile: hover ないので fade 後も .35 で残す（操作の邪魔にならない位置） */
   .word-of-day.wod-fade { opacity: .35; }
 }
+
+/* ════════════════════ v11: 5世界テーマ（World System）════════════════════ */
+:root {
+  --font-display: 'Noto Serif JP', serif;
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+  --glyph-hue: rgba(220,240,255,.92);
+  --motif-color: rgba(180,220,250,.35);
+  --surface: rgba(20,40,62,.55);
+  --ink-dim: rgba(138,163,184,.45);
+}
+
+/* 夜雨（よるあめ）── 深い藍、雨と水滴 */
+body[data-world="yoruame"] {
+  --bg-deep: #06101b;
+  --bg-mid: #0d1f2e;
+  --bg-light: #1b3a55;
+  --ink: #eaf2fa;
+  --ink-mute: #7c98b0;
+  --ink-dim: rgba(74,100,120,.6);
+  --line: rgba(180,220,250,.10);
+  --accent: #87ceeb;
+  --accent-2: #b8e0f5;
+  --gold: #f0d48a;
+  --rose: #e89aa8;
+  --purple: #b8a8ff;
+  --glyph-hue: rgba(220,240,255,.92);
+  --motif-color: rgba(180,220,250,.35);
+  --surface: rgba(20,40,62,.55);
+  --font-display: 'Noto Serif JP', serif;
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* 墨道（すみどう）── 和紙に墨、朱の印 */
+body[data-world="sumido"] {
+  --bg-deep: #e8dcc0;
+  --bg-mid: #efe4cc;
+  --bg-light: #f6eede;
+  --ink: #1a1410;
+  --ink-mute: #6a5a44;
+  --ink-dim: rgba(106,90,68,.5);
+  --line: rgba(60,40,20,.10);
+  --accent: #8a2a26;
+  --accent-2: #b04030;
+  --gold: #9a6818;
+  --rose: #c87060;
+  --purple: #5a3a6a;
+  --accent-dim: rgba(138,42,38,.12);
+  --glyph-hue: #1a1410;
+  --motif-color: rgba(40,30,20,.18);
+  --surface: rgba(255,250,238,.72);
+  --font-display: 'Shippori Mincho B1', 'Noto Serif JP', serif;
+  --font-body: 'Klee One', 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* 苔庭（こけにわ）── 苔の緑、白砂の波紋 */
+body[data-world="kokeniwa"] {
+  --bg-deep: #152018;
+  --bg-mid: #1f2e22;
+  --bg-light: #2a3e2c;
+  --ink: #eef3e2;
+  --ink-mute: #8aa088;
+  --ink-dim: rgba(90,112,90,.6);
+  --line: rgba(200,220,180,.10);
+  --accent: #9bc080;
+  --accent-2: #c0d8a0;
+  --gold: #d8c478;
+  --rose: #d49080;
+  --purple: #a890c8;
+  --accent-dim: rgba(155,192,128,.14);
+  --glyph-hue: rgba(232,240,210,.92);
+  --motif-color: rgba(155,192,128,.50);
+  --surface: rgba(48,68,52,.55);
+  --font-display: 'Shippori Mincho B1', 'Noto Serif JP', serif;
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* 金閣（きんかく）── 夕暮れの金、炎の粉 */
+body[data-world="kinkaku"] {
+  --bg-deep: #1a0d08;
+  --bg-mid: #2e160c;
+  --bg-light: #48261a;
+  --ink: #f8e8c8;
+  --ink-mute: #b89070;
+  --ink-dim: rgba(122,88,64,.6);
+  --line: rgba(220,180,120,.12);
+  --accent: #e4b060;
+  --accent-2: #ffd080;
+  --gold: #ffd860;
+  --rose: #ff8e60;
+  --purple: #c890e8;
+  --accent-dim: rgba(228,176,96,.14);
+  --glyph-hue: rgba(255,232,188,.96);
+  --motif-color: rgba(255,180,80,.70);
+  --surface: rgba(80,40,24,.55);
+  --font-display: 'Shippori Mincho B1', 'Noto Serif JP', serif;
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* 春霞（はるがすみ）── 夜明けの霞、桜の花弁 */
+body[data-world="harugasumi"] {
+  --bg-deep: #f0d8de;
+  --bg-mid: #f6e4e6;
+  --bg-light: #fcf0f0;
+  --ink: #2a1a26;
+  --ink-mute: #7a5868;
+  --ink-dim: rgba(122,88,104,.5);
+  --line: rgba(140,80,100,.10);
+  --accent: #c46090;
+  --accent-2: #e48ab0;
+  --gold: #d49060;
+  --rose: #e07090;
+  --purple: #9870c8;
+  --accent-dim: rgba(196,96,144,.12);
+  --glyph-hue: #2a1a26;
+  --motif-color: rgba(228,138,176,.65);
+  --surface: rgba(255,240,244,.80);
+  --font-display: 'Klee One', 'Shippori Mincho B1', serif;
+  --font-body: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* 世界テーマ時: 文字・タイマー・見出しにdisplayフォントを適用 */
+body[data-world] .pomoji,
+body[data-world] .timer-text,
+body[data-world] .app-header .brand,
+body[data-world] .party-card .pc-char,
+body[data-world] .modal-title,
+body[data-world] .progress-pill .pp-band {
+  font-family: var(--font-display);
+}
+
+/* 墨道・春霞は明るい背景なので rain-bg を非表示 */
+body[data-world="sumido"] .rain-bg,
+body[data-world="harugasumi"] .rain-bg {
+  opacity: 0;
+}
+
+/* 世界テーマピッカー（openThemePicker の世界カード） */
+.world-card {
+  position: relative;
+  padding: 14px 12px 12px;
+  border: 1.5px solid;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  display: flex; flex-direction: column; gap: 2px;
+  transition: transform .15s, box-shadow .15s;
+  background: none;
+  font-family: inherit;
+}
+.world-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+.world-card.active { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,.25); }
+.world-card-name { font-size: 16px; font-weight: 600; letter-spacing: .04em; }
+.world-card-yomi { font-size: 10px; letter-spacing: .15em; opacity: .7; }
+.world-card-dot {
+  position: absolute; top: 10px; right: 10px;
+  width: 8px; height: 8px; border-radius: 50%;
+}
+}

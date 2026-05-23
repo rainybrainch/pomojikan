@@ -1738,6 +1738,15 @@ function applyComboTagEffects(r, acc) {
   }
 }
 
+// v11: 5世界テーマ
+const WORLD_THEMES = [
+  { id:'yoruame',    name:'夜雨',  yomi:'よるあめ',  bg:['#06101b','#1b3a55'], ink:'#eaf2fa', accent:'#87ceeb',  dot:'#87ceeb'  },
+  { id:'sumido',     name:'墨道',  yomi:'すみどう',  bg:['#e8dcc0','#f6eede'], ink:'#1a1410', accent:'#8a2a26',  dot:'#8a2a26'  },
+  { id:'kokeniwa',   name:'苔庭',  yomi:'こけにわ',  bg:['#152018','#2a3e2c'], ink:'#eef3e2', accent:'#9bc080',  dot:'#9bc080'  },
+  { id:'kinkaku',    name:'金閣',  yomi:'きんかく',  bg:['#1a0d08','#48261a'], ink:'#f8e8c8', accent:'#e4b060',  dot:'#e4b060'  },
+  { id:'harugasumi', name:'春霞',  yomi:'はるがすみ',bg:['#f0d8de','#fcf0f0'], ink:'#2a1a26', accent:'#c46090',  dot:'#c46090'  },
+];
+
 // v10n19: 季節判定（北半球・気象基準）
 function currentSeasonAuto() {
   const m = new Date().getMonth() + 1;
@@ -1748,14 +1757,28 @@ function currentSeasonAuto() {
 }
 function applyTheme() {
   const pref = STATE.themePref || 'auto';
-  let season = '';
-  let theme = 'dark';
-  if (pref === 'auto')        season = currentSeasonAuto();
-  else if (pref === 'light')  theme  = 'light';
-  else if (pref === 'dark')   theme  = 'dark';
-  else                        season = pref;
-  document.body.dataset.season = season || '';
-  document.body.dataset.theme  = theme;
+  const isWorld = WORLD_THEMES.some(w => w.id === pref);
+  if (isWorld) {
+    document.body.dataset.world  = pref;
+    document.body.dataset.season = '';
+    document.body.dataset.theme  = 'dark';
+    // chrome-color を世界テーマのbg-deepに合わせる
+    const w = WORLD_THEMES.find(x => x.id === pref);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta && w) meta.content = w.bg[0];
+  } else {
+    document.body.dataset.world  = '';
+    let season = '';
+    let theme = 'dark';
+    if (pref === 'auto')        season = currentSeasonAuto();
+    else if (pref === 'light')  theme  = 'light';
+    else if (pref === 'dark')   theme  = 'dark';
+    else                        season = pref;
+    document.body.dataset.season = season || '';
+    document.body.dataset.theme  = theme;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = '#0d1f2e';
+  }
   document.body.dataset.ledge = STATE.ledgeStyle || 'default';
   document.body.dataset.tfont = STATE.tfontStyle || 'serif';
 }
@@ -1763,6 +1786,7 @@ const THEME_LABELS = {
   auto:'自動（季節）', spring:'春', summer:'夏',
   autumn:'秋', winter:'冬', dark:'夜', light:'紙',
 };
+
 // v1.5.15: 土台バリエ ── 形状（穴配置）＋トレードオフ付き効果
 function tierFullyDiscovered(tierIdx) {
   return tierSeenRatio(tierIdx) >= 1.0;
@@ -1837,30 +1861,58 @@ function openThemePicker() {
   let modal = $('#theme-modal');
   if (!modal) {
     modal = el('div', { class:'modal', id:'theme-modal', role:'dialog' },
-      el('div', { class:'modal-card', style:{ maxWidth:'380px' } },
+      el('div', { class:'modal-card', style:{ maxWidth:'420px' } },
         el('div', { class:'modal-head' },
-          el('div', { class:'modal-title' }, '🎨 テーマ'),
+          el('div', { class:'modal-title' }, '🎨 世界（テーマ）'),
           el('button', { class:'modal-close', onclick: () => modal.classList.remove('show') }, '×'),
         ),
-        el('div', { id:'theme-list', style:{ padding:'12px 16px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' } }),
+        el('div', { id:'theme-list', style:{ padding:'12px 16px' } }),
       ),
     );
     document.body.appendChild(modal);
   }
   const list = $('#theme-list');
   list.innerHTML = '';
-  // テーマ
-  list.appendChild(el('div', { style:{ gridColumn:'1 / -1', fontSize:'.7rem', color:'var(--ink-mute)', padding:'4px 4px 0' } }, '彩'));
+
+  // ── 5世界カード ──
+  list.appendChild(el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', letterSpacing:'.15em', padding:'0 2px 8px' } }, '世 界'));
+  const worldGrid = el('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginBottom:'16px' } });
+  WORLD_THEMES.forEach(w => {
+    const active = (STATE.themePref || '') === w.id;
+    const card = el('button', {
+      class: 'world-card' + (active ? ' active' : ''),
+      style:{
+        background: `linear-gradient(135deg, ${w.bg[0]}, ${w.bg[1]})`,
+        color: w.ink,
+        borderColor: active ? w.accent : 'rgba(128,128,128,.25)',
+      },
+      onclick: () => {
+        STATE.themePref = w.id; saveState(); applyTheme(); openThemePicker();
+        toast(`${w.name} の世界へ`);
+      },
+    },
+      el('span', { class:'world-card-name', style:{ fontFamily: 'var(--font-display)' } }, w.name),
+      el('span', { class:'world-card-yomi' }, w.yomi),
+      el('span', { class:'world-card-dot', style:{ background: w.dot } }),
+    );
+    worldGrid.appendChild(card);
+  });
+  list.appendChild(worldGrid);
+
+  // ── 従来カラーテーマ ──
+  list.appendChild(el('div', { style:{ fontSize:'.7rem', color:'var(--ink-mute)', letterSpacing:'.15em', padding:'0 2px 8px' } }, '彩'));
+  const colorGrid = el('div', { style:{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' } });
   Object.entries(THEME_LABELS).forEach(([key, lbl]) => {
     const active = (STATE.themePref || 'auto') === key;
-    list.appendChild(el('button', {
+    colorGrid.appendChild(el('button', {
       style:{
-        padding:'10px 8px', minHeight:'48px',
+        padding:'10px 8px', minHeight:'44px',
         background: active ? 'linear-gradient(135deg, rgba(240,212,138,.25), rgba(240,212,138,.08))' : 'rgba(255,255,255,.04)',
         border: '1px solid ' + (active ? 'rgba(240,212,138,.6)' : 'rgba(255,255,255,.12)'),
         borderRadius:'8px',
         color: active ? '#ffe9a0' : 'var(--ink)',
         fontWeight: active ? 700 : 400, cursor:'pointer',
+        fontFamily: 'inherit',
       },
       onclick: () => {
         STATE.themePref = key; saveState(); applyTheme(); openThemePicker();
@@ -1868,6 +1920,7 @@ function openThemePicker() {
       },
     }, lbl));
   });
+  list.appendChild(colorGrid);
   // 土台
   list.appendChild(el('div', { style:{ gridColumn:'1 / -1', fontSize:'.7rem', color:'var(--ink-mute)', padding:'12px 4px 0' } }, '土台（実績解放）'));
   LEDGE_VARIANTS.forEach(v => {
