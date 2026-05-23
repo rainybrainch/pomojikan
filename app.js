@@ -3190,18 +3190,61 @@ function burstPartyPersistents(){
 // ═══════════════════════════════════════════════════════════════
 function startRisingPomoji() {
   // v1.2.0: 全ぽもじ（persistent 含む）を順番に泡化
-  // パーティ字は次の作業開始で spawnPartyPersistents が再スポーンする
+  // v1.5.66: ピン留め字（_pinned）は浮上させず棚に残す
   const targets = Array.from(livePomoji.values())
-    .filter(p => !p.dragging && !p.rising)
-    .sort((a, b) => a.y - b.y); // 上にあるものから（演出順）
+    .filter(p => !p.dragging && !p.rising && !p._pinned)
+    .sort((a, b) => a.y - b.y);
   if (targets.length === 0) {
     toast('泡にする字がない（集中で貯めよう）');
     return;
   }
   targets.forEach((p, i) => {
-    setTimeout(() => convertToRising(p), i * 100);  // 180ms → 100ms に短縮
+    setTimeout(() => convertToRising(p), i * 100);
   });
   toast(`${targets.length}粒の字が育つ`);
+  // v1.5.66: サイクルD ── 浮上字の集合から熟語チェーンを検出して大EXPボーナス
+  setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
+}
+
+// v1.5.66: 休憩の浮上字で熟語が成立してたらボーナス
+function detectRestYojiChains(targets) {
+  try {
+    const recipes = window.YOJI_RECIPES || [];
+    if (recipes.length === 0 || targets.length < 2) return;
+    const charsInRise = targets.map(p => p.char);
+    const counts = {};
+    for (const c of charsInRise) counts[c] = (counts[c] || 0) + 1;
+    const hits = [];
+    for (const r of recipes) {
+      if (!r.chars || r.chars.length < 2) continue;
+      const need = {};
+      for (const c of r.chars) need[c] = (need[c] || 0) + 1;
+      let ok = true;
+      for (const k in need) { if ((counts[k] || 0) < need[k]) { ok = false; break; } }
+      if (ok) hits.push(r);
+    }
+    if (hits.length === 0) return;
+    hits.sort((a,b) => (b.chars?.length||0) - (a.chars?.length||0));
+    const top = hits.slice(0, 3);
+    let totalBonus = 0;
+    top.forEach((r, i) => {
+      const rIdx = RARITY_TIERS.indexOf(r.rarity);
+      const bonus = Math.floor(Math.max(5, Math.pow(1.35, rIdx) * (r.chars?.length || 2) * 3));
+      totalBonus += bonus;
+      setTimeout(() => {
+        try {
+          toast(`熟語連鎖 ${r.word} +${bonus} EXP`, r.rarity);
+          const hero = STATE.party?.members?.[STATE.party?.hero || 0];
+          if (hero) awardExpToParty(hero.char, bonus) || _orphanExp(bonus);
+          else _orphanExp(bonus);
+          spawnXpFloat(window.innerWidth/2, 100 + i*40, bonus, r.rarity);
+        } catch(_) {}
+      }, i * 500);
+    });
+    if (top.length >= 2) {
+      setTimeout(() => { try { toast(`✨ ${top.length} 連鎖！合計 +${totalBonus}`); } catch(_) {} }, top.length * 500 + 100);
+    }
+  } catch(_) {}
 }
 function stopRisingPomoji() {
   // 上昇中の字を着底に戻す（一時停止用）— 実装簡略：そのまま継続でOK
