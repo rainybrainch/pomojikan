@@ -769,11 +769,14 @@ body[data-mode="rest"] .timer-text{
 }
 .stats-section-title{
   font-family:'Noto Serif JP', serif;
-  font-size:.86rem;
+  font-size:.78rem;
   font-weight:700;
   color:var(--ink-mute);
-  letter-spacing:.1em;
-  margin:18px 0 8px;
+  letter-spacing:.12em;
+  margin:22px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  text-transform: none;
 }
 .stats-section-title.danger{ color:#e89aa8; }
 .stats-tiers{
