@@ -38,7 +38,9 @@ const TIER_DROP_COUNT = [
   [1,2], [1,2], [1,2], [1,2], [1,2], [1,2]
 ];
 // レアごとの落下速度倍率（高レアほどゆっくり、ドラマを作る）
-const TIER_FALL_MUL = [1.0, 0.97, 0.94, 0.90, 0.86, 0.82, 0.78, 0.74, 0.70, 0.66, 0.62, 0.58, 0.54, 0.50, 0.46, 0.42];
+// v1.5.64: レアリティ落下差を強化（1.0→0.30）+ 高レアは横揺れ風
+const TIER_FALL_MUL = [1.0, 0.95, 0.90, 0.84, 0.78, 0.72, 0.66, 0.60, 0.55, 0.50, 0.46, 0.42, 0.38, 0.35, 0.32, 0.30];
+const TIER_SWAY_AMP = [0, 0, 0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.22, 0.24, 0.26];
 
 // 無限 Lv 設計（v5 / 2026-05-18）── 何十年も遊べる育成型ポモドーロ
 // ★は16段階で頭打ちでも Lv は無限に育つ ── 進化段階を 15 段階に拡張（〜Lv 1,000,000）
@@ -4001,6 +4003,14 @@ function physicsStep() {
       // v1.5.36: 速ステータス（1-5）で重力 ±20%
       const speedMul = p.stats ? (0.8 + 0.1 * p.stats.speed) : 1;
       p.vy += GRAVITY_BASE * tierMul * (agg.gravityMul || 1.0) * speedMul;
+      // v1.5.64: 高レアは空中で横揺れ（風に舞う羽根的演出）── settled/dragging/rising 中は除外
+      if (!p.settled && !p.dragging && !p.rising) {
+        const amp = TIER_SWAY_AMP[p.tier] || 0;
+        if (amp > 0) {
+          p._swayPhase = (p._swayPhase || Math.random() * Math.PI * 2) + 0.04;
+          p.vx += Math.sin(p._swayPhase) * amp;
+        }
+      }
     } else {
       p.vy *= 0.85;  // 静的な台に乗ってる時は重力を切って減衰のみ
     }
