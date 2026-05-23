@@ -3215,6 +3215,63 @@ function startRisingPomoji() {
   setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
 }
 
+// v1.5.83: サイクルAB 成立中熟語をSVG線で結ぶ（settled字から探索）
+function ensureChainLayer() {
+  let svg = document.getElementById('yoji-chain-svg');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'yoji-chain-svg';
+    svg.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:8;';
+    document.body.appendChild(svg);
+  }
+  return svg;
+}
+function updateYojiChainLines() {
+  try {
+    const svg = ensureChainLayer();
+    svg.innerHTML = '';
+    const recipes = window.YOJI_RECIPES || [];
+    if (recipes.length === 0) return;
+    const settled = Array.from(livePomoji.values()).filter(p => p.settled);
+    if (settled.length < 2) return;
+    const byChar = {};
+    for (const p of settled) (byChar[p.char] = byChar[p.char] || []).push(p);
+    const drawn = new Set();
+    for (const r of recipes) {
+      if (!r.chars || r.chars.length < 2 || r.chars.length > 4) continue;
+      const picks = [];
+      const used = new Set();
+      let ok = true;
+      for (const c of r.chars) {
+        const cands = (byChar[c] || []).filter(p => !used.has(p.id));
+        if (cands.length === 0) { ok = false; break; }
+        picks.push(cands[0]); used.add(cands[0].id);
+      }
+      if (!ok) continue;
+      const key = picks.map(p => p.id).sort().join(',');
+      if (drawn.has(key)) continue;
+      drawn.add(key);
+      const rIdx = RARITY_TIERS.indexOf(r.rarity);
+      const color = rIdx >= 9 ? '#ffd860' : rIdx >= 5 ? '#a4d4ff' : '#9be0c0';
+      for (let i = 0; i < picks.length - 1; i++) {
+        const a = picks[i], b = picks[i+1];
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', a.x + SIZE/2);
+        line.setAttribute('y1', a.y + SIZE/2);
+        line.setAttribute('x2', b.x + SIZE/2);
+        line.setAttribute('y2', b.y + SIZE/2);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('stroke-dasharray', '4 4');
+        line.setAttribute('opacity', '0.55');
+        svg.appendChild(line);
+      }
+      // 5本まで（パフォ）
+      if (drawn.size >= 5) break;
+    }
+  } catch(_) {}
+}
+
 // v1.5.78: サイクルV 隣接する同レアリティ settled字に薄いペアグロー
 function updateRarityPairGlow() {
   try {
@@ -4083,6 +4140,8 @@ function physicsStep() {
   if ((_physicsFrame % 120) === 0) updateRarityPairGlow();
   // v1.5.79: サイクルX 棚の片側偏り警告（右に5つ以上で .ledge-warn）
   if ((_physicsFrame % 180) === 0) updateLedgeBiasWarning();
+  // v1.5.83: サイクルAB 成立中熟語を線で結ぶ
+  if ((_physicsFrame % 90) === 0) updateYojiChainLines();
   // v1.5.73: サイクルO settled字が稀に小ジャンプ（呼吸演出）─ 5秒に1回
   if ((_physicsFrame % 300) === 0) {
     for (const p of livePomoji.values()) {
