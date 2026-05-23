@@ -3015,20 +3015,29 @@ body[data-mode="rest"] #tank{
   box-shadow:0 0 6px rgba(135,206,235,.3);
 }
 
+/* v1.6.8: tier tabs 17個を横スクロール1行に圧縮 */
 .codex-tabs{
-  display:flex; gap:4px; margin:8px 0; flex-wrap:wrap;
+  display:flex; gap:4px; margin:8px 0;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:thin;
+  scroll-snap-type:x proximity;
+  padding-bottom:4px;
 }
+.codex-tabs::-webkit-scrollbar{ height:4px; }
+.codex-tabs::-webkit-scrollbar-thumb{ background:rgba(135,206,235,.3); border-radius:2px; }
 .codex-tab{
-  padding:5px 9px;
+  padding:5px 10px;
   background:rgba(255,255,255,.04);
   border:1px solid var(--line);
   color:var(--ink-mute);
   border-radius:99px;
   font-family:inherit;
-  font-size:.72rem;
+  font-size:.74rem;
   cursor:pointer;
   transition:all .15s;
   white-space:nowrap;
+  flex-shrink:0;
+  scroll-snap-align:start;
 }
 .codex-tab:hover{ background:var(--accent-dim); color:var(--ink); }
 .codex-tab.active{
