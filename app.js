@@ -987,7 +987,7 @@ function playSFX(type) {
     // v1.5.68: 着地音をレアリティ別に（★1-4=ぽとっ / ★5-9=ころん / ★10-16=きらりん）
     case 'land_low':    playTone(180 + Math.random()*40, 0.06, 'sine', 0.025, 0.003, 0.06); break;
     case 'land_mid':    playTone(320, 0.10, 'triangle', 0.045, 0.003, 0.10); playTone(480, 0.06, 'sine', 0.02, 0.003, 0.06); break;
-    case 'land_high':   playSweep(880, 1320, 0.18, 'sine', 0.06); playTone(1760, 0.10, 'triangle', 0.025, 0.003, 0.10); break;
+    case 'land_high':   playSweep(880, 1320, 0.14, 'sine', 0.025); break;  /* v1.5.89: 音量down */
     case 'combo_land':  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.10,'triangle',0.05,0.003,0.10),i*60)); break;
     case 'merge':       // 合体：上昇 chime
       playSweep(440, 880, 0.25, 'triangle', 0.10);
@@ -3661,8 +3661,9 @@ function awardFallen(p, ringoutMul) {
   const fy = Math.min(H - 40, Math.max(40, p.y));
   spawnXpFloat(fx, fy, exp, p.rarity);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
-  try { playSFX(smash > 1.5 ? 'milestone' : 'pop'); } catch(_) {}
-  if (smash > 1.5) { try { toast(`💥 撃墜 +${exp}`); } catch(_) {} }
+  try { playSFX(smash > 2.0 ? 'milestone' : 'pop'); } catch(_) {}
+  // v1.5.89: 撃墜toastは超高速時のみ（spam抑制）
+  if (smash > 2.0 && rIdx >= 7) { try { toast(`💥 撃墜 +${exp}`); } catch(_) {} }
   p.el?.classList.add('burst');
   setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 400);
 }
