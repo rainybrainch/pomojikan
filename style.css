@@ -3431,6 +3431,12 @@ body[data-mode="rest"] #tank{
   .game-main{ gap:10px; padding:10px; }
   .progress-pill{ font-size:.66rem; padding:5px 10px; }
 }
+/* v1.5.99: 極狭幅でサイクル数を畳む（リーダー名が見える方が大事） */
+@media (max-width: 380px) {
+  .progress-pill .pp-cycles,
+  .progress-pill .pp-sep:last-of-type { display: none; }
+  .progress-pill { font-size: .62rem; padding: 4px 8px; }
+}
 
 /* ════════════════════ 💤 スリープモード ════════════════════ */
 /* 全画面オーバーレイ：時計だけ大きく出して画面を休める */
