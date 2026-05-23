@@ -2920,6 +2920,8 @@ function startWork() {
   const isQuickRestart = (now - _lastStartAt) < 3000;
   _lastStartAt = now;
   try { clampSettledToGround(); } catch(_) {}
+  // v1.6.17: タイマー開始で「今日の言葉」を消す（集中を妨げない）
+  try { document.getElementById('word-of-day')?.classList.add('wod-hide'); } catch(_) {}
   STATE.mode = 'work';
   STATE.phaseStart = now;
   setTimeout(() => { try { renderHUD(); } catch(_) {} }, 50);
@@ -3083,6 +3085,8 @@ function stopTimer() {
   document.body.dataset.mode = 'idle';
   $('#main-btn').textContent = '始める';
   $('#main-btn').dataset.state = 'idle';
+  // v1.6.17: idle 復帰で「今日の言葉」を再表示
+  try { document.getElementById('word-of-day')?.classList.remove('wod-hide'); renderWordOfDay(); } catch(_) {}
   setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
   try { releaseWakeLock(); } catch(_) {}
   updateProgress(0);
@@ -3426,9 +3430,11 @@ function applyTagMagnet() {
 }
 
 // v1.6.16: 今日の言葉 ── 日付から決定的に1熟語を選んで、その日の言葉として静かに表示
+// v1.6.17: idle時のみ表示・タイマー稼働中は非表示にして集中を妨げない
 function renderWordOfDay() {
   const node = document.getElementById('word-of-day');
   if (!node) return;
+  if (STATE.mode && STATE.mode !== 'idle') { node.classList.add('wod-hide'); return; }
   const recipes = window.YOJI_RECIPES || [];
   if (recipes.length === 0) return;
   // 解放済または構成字を全て持っている熟語のみから選定（読めるものだけ）

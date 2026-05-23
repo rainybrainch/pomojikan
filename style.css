@@ -5971,4 +5971,6 @@ a:focus:not(:focus-visible) {
   .wod-card { padding: 8px 16px; }
   .wod-word { font-size: 1.15rem; }
   .wod-desc { font-size: .62rem; max-width: 220px; }
+  /* mobile: hover ないので fade 後も .35 で残す（操作の邪魔にならない位置） */
+  .word-of-day.wod-fade { opacity: .35; }
 }
