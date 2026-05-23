@@ -5635,10 +5635,31 @@ function resetAllData() {
   const typed = prompt(`本当にリセットする場合は「${phrase}」と入力：`, '');
   if (typed !== phrase) { toast('キャンセル（合言葉が違う）'); return; }
   try {
-    localStorage.removeItem(LS_KEY);
+    // v1.5.60: pomojikan_* 全キー + エラーログ + SW キャッシュも一括削除
+    // （v29 が残ると再ロード時に自動マイグレーションで復活する）
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.startsWith('pomojikan_') || k === LS_KEY)) toRemove.push(k);
+    }
+    toRemove.forEach(k => { try { localStorage.removeItem(k); } catch(_) {} });
+    try { sessionStorage.clear(); } catch(_) {}
     if (_yomuChannel) { try { _yomuChannel.close(); } catch(_) {} }
+    // SW キャッシュ削除 + 登録解除（次回ロードで再登録）
+    const wipeCaches = (async () => {
+      try {
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.filter(k => k.startsWith('pomojikan-')).map(k => caches.delete(k)));
+        }
+        if (navigator.serviceWorker) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+      } catch(_) {}
+    })();
     toast(' リセット完了 ── リロードします');
-    setTimeout(() => location.reload(), 800);
+    wipeCaches.finally(() => setTimeout(() => location.reload(), 400));
   } catch(e) {
     alert('リセット失敗：' + (e.message || ''));
   }
