@@ -5775,3 +5775,13 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
 }
+
+/* v1.5.97: codex-howto を控えめ1行に */
+.codex-howto {
+  font-size: .68rem;
+  color: var(--ink-mute);
+  text-align: center;
+  margin: 2px 0 6px;
+  opacity: .7;
+  letter-spacing: .04em;
+}
