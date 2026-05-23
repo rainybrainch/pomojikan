@@ -2511,6 +2511,20 @@ function spawnEvolutionBurst(char, glyph, rarity) {
   }, char, el('span', { class:'eb-glyph' }, glyph));
   field.appendChild(node);
   setTimeout(() => node.remove(), 1700);
+  // v1.6.11: 進化時に画面全体に光の波紋＋8方向の光線
+  try {
+    const halo = document.createElement('div');
+    halo.style.cssText = `position:fixed;left:50%;top:50%;width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,215,80,.9);transform:translate(-50%,-50%);pointer-events:none;z-index:60;animation:evo-halo 1.5s ease-out forwards;`;
+    document.body.appendChild(halo);
+    setTimeout(() => halo.remove(), 1600);
+    for (let i = 0; i < 8; i++) {
+      const ray = document.createElement('div');
+      const angle = i * 45;
+      ray.style.cssText = `position:fixed;left:50%;top:50%;width:2px;height:200px;background:linear-gradient(180deg, transparent, rgba(255,215,80,.7), transparent);transform-origin: top center; transform: translate(-50%, 0) rotate(${angle}deg);pointer-events:none;z-index:59;animation:evo-ray .9s ease-out forwards;`;
+      document.body.appendChild(ray);
+      setTimeout(() => ray.remove(), 1000);
+    }
+  } catch(_) {}
 }
 
 // ═══════════════════════════════════════════════════════════════

@@ -5863,3 +5863,14 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
   font-weight: 700;
   letter-spacing: .06em;
 }
+
+/* v1.6.11: 進化時の派手化（halo + 8方向光線） */
+@keyframes evo-halo {
+  0%   { width:40px; height:40px; opacity:.9; border-width:3px; }
+  100% { width:600px; height:600px; opacity:0; border-width:1px; }
+}
+@keyframes evo-ray {
+  0%   { opacity:0; transform-origin: top center; }
+  20%  { opacity:1; }
+  100% { opacity:0; }
+}
