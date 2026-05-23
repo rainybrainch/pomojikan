@@ -4219,6 +4219,12 @@ function attachDragHandlers(node, obj) {
 
   const startDrag = (e) => {
     if (obj.dragging) return;
+    // v1.5.63: 休憩中の浮上字はタップで即EXP化（ドラッグ/拾うロジックを通さない）
+    if (obj.rising || STATE.mode === 'rest') {
+      e.preventDefault(); e.stopPropagation();
+      if (!obj._awarded) { obj._awarded = true; try { awardRising(obj); } catch(_) {} }
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     pointerId = e.pointerId;
