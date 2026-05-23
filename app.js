@@ -3871,14 +3871,13 @@ function spawnPomoji(opts={}) {
   livePomoji.set(id, obj);
   attachDragHandlers(node, obj);
 
-  // v1.5.74: サイクルP 高レア（★10+）入場演出 ── 縦光帯＋短い chime
-  if (!opts.asPinned && tierIdx >= 9) {
+  // v1.5.87: 入場光帯は★13+のみ（控えめに）
+  if (!opts.asPinned && tierIdx >= 12) {
     try {
       const beam = document.createElement('div');
-      beam.style.cssText = `position:fixed;left:${x + SIZE/2 - 2}px;top:0;width:4px;height:100vh;background:linear-gradient(180deg,transparent,rgba(255,215,80,.7),transparent);pointer-events:none;z-index:50;animation:beam-fade .8s ease-out forwards;`;
+      beam.style.cssText = `position:fixed;left:${x + SIZE/2 - 1}px;top:0;width:2px;height:100vh;background:linear-gradient(180deg,transparent,rgba(255,215,80,.5),transparent);pointer-events:none;z-index:50;animation:beam-fade .6s ease-out forwards;`;
       document.body.appendChild(beam);
-      setTimeout(() => beam.remove(), 850);
-      playSFX('land_high');
+      setTimeout(() => beam.remove(), 650);
     } catch(_) {}
   }
 
@@ -4463,18 +4462,9 @@ function physicsStep() {
           p.settledY = p.y;
           // v1.5.77: サイクルU 作業中も settled 字から熟語チェーン検出
           try { detectSettledYojiChain(); } catch(_) {}
-          // v1.5.68: レアリティ別着地音
+          // v1.5.87: 着地音は高レア（★10+）のみ・控えめに（コンボ音は廃止）
           try {
-            const t = p.tier || 0;
-            const sfx = t >= 9 ? 'land_high' : t >= 4 ? 'land_mid' : 'land_low';
-            playSFX(sfx);
-            // v1.5.71: サイクルI 連続着地コンボ（500ms内に3+で chime）
-            window._landCombo = (window._landCombo || []).filter(ts => Date.now() - ts < 500);
-            window._landCombo.push(Date.now());
-            if (window._landCombo.length >= 3) {
-              playSFX('combo_land');
-              window._landCombo = [];
-            }
+            if ((p.tier || 0) >= 9) playSFX('land_high');
           } catch(_) {}
         }
       }
@@ -6669,6 +6659,8 @@ const SCRIPT_RANGES = {
   canadian:    [[0x1400, 0x167F]],
   runic:       [[0x16A0, 0x16FF]],
   ancient:     [[0x10000, 0x100FF], [0x10900, 0x1091F], [0x12000, 0x123FF], [0x13000, 0x1342F]],
+  // v1.5.88: 絵文字（主要ブロック）
+  emoji:       [[0x1F300, 0x1F5FF], [0x1F600, 0x1F64F], [0x1F680, 0x1F6FF], [0x1F900, 0x1F9FF], [0x1FA70, 0x1FAFF], [0x2600, 0x26FF], [0x2700, 0x27BF]],
 };
 function matchesScript(ch, scriptKey) {
   if (!scriptKey || scriptKey === 'all') return true;
@@ -8863,6 +8855,7 @@ function openStats() {
     { key:'canadian',   label:'カナダ先住民',    icon:'ᐃ' },
     { key:'runic',      label:'ルーン',          icon:'ᚠ' },
     { key:'ancient',    label:'古代文字',        icon:'𓂀' },
+    { key:'emoji',      label:'絵文字',          icon:'😀' },
   ];
   const codexAll = window.KANJI_CODEX || [];
   const scriptGrid = el('div', { class:'script-grid' });
