@@ -5902,3 +5902,18 @@ button:focus:not(:focus-visible),
 a:focus:not(:focus-visible) {
   outline: none;
 }
+
+/* v1.6.15: prefers-reduced-motion ─ 体に優しいモード */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .pomoji.fading,
+  .pomoji.pair-glow,
+  .party-pick-cta,
+  .ob-hero {
+    animation: none !important;
+  }
+}
