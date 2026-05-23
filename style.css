@@ -2471,15 +2471,17 @@ body[data-mode="rest"] #tank{
 }
 /* 旧 .toast（単独）も残しつつスタックでも動くように */
 .toast{
-  position:fixed;left:50%;bottom:30px;
+  position:fixed;left:50%;bottom:64px;
   transform:translateX(-50%) translateY(15px);
   z-index:90;
-  background:rgba(15,42,58,.95);
-  border:1px solid var(--accent-dim);
-  color:var(--ink);
-  padding:12px 22px;
+  background:rgba(10,18,32,.96);
+  backdrop-filter: blur(6px);
+  border:1px solid rgba(135,206,235,.35);
+  color:#fff;
+  padding:11px 20px;
   border-radius:99px;
-  font-size:.86rem;
+  font-size:.84rem; font-weight:600;
+  letter-spacing:.04em;
   opacity:0;
   pointer-events:none;
   transition:opacity .3s, transform .3s;
