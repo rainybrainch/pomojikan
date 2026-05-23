@@ -3215,6 +3215,44 @@ function startRisingPomoji() {
   setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
 }
 
+// v1.5.78: サイクルV 隣接する同レアリティ settled字に薄いペアグロー
+function updateRarityPairGlow() {
+  try {
+    const settled = Array.from(livePomoji.values()).filter(p => p.settled && p.el);
+    const paired = new Set();
+    for (let i = 0; i < settled.length; i++) {
+      for (let j = i+1; j < settled.length; j++) {
+        const a = settled[i], b = settled[j];
+        if (a.rarity !== b.rarity) continue;
+        const dx = a.x - b.x, dy = a.y - b.y;
+        if (dx*dx + dy*dy < SIZE * SIZE * 2.5) {
+          paired.add(a.id); paired.add(b.id);
+        }
+      }
+    }
+    for (const p of settled) {
+      if (paired.has(p.id)) p.el.classList.add('pair-glow');
+      else p.el.classList.remove('pair-glow');
+    }
+  } catch(_) {}
+}
+
+// v1.5.79: サイクルX 棚の片側偏り警告
+function updateLedgeBiasWarning() {
+  try {
+    const W = window.innerWidth;
+    const settled = Array.from(livePomoji.values()).filter(p => p.settled && !p._pinned);
+    let left = 0, right = 0;
+    for (const p of settled) {
+      if (p.x + SIZE/2 < W/2) left++; else right++;
+    }
+    const body = document.body;
+    body.classList.remove('ledge-bias-l', 'ledge-bias-r');
+    if (right - left >= 5) body.classList.add('ledge-bias-r');
+    else if (left - right >= 5) body.classList.add('ledge-bias-l');
+  } catch(_) {}
+}
+
 // v1.5.77: サイクルU 作業中の settled字で熟語成立→小ボーナス（クールダウン15秒）
 let _lastSettleChainAt = 0;
 function detectSettledYojiChain() {
@@ -4041,6 +4079,10 @@ function physicsStep() {
   if ((_physicsFrame % 30) === 0) applyTagMagnet();
   // v1.5.72: サイクルK ピン3つ並びで金光波紋＋EXP（10秒に1回判定）
   if ((_physicsFrame % 600) === 0) checkPinTriad();
+  // v1.5.78: サイクルV 隣接同レアペアにグロー（120fに1回更新）
+  if ((_physicsFrame % 120) === 0) updateRarityPairGlow();
+  // v1.5.79: サイクルX 棚の片側偏り警告（右に5つ以上で .ledge-warn）
+  if ((_physicsFrame % 180) === 0) updateLedgeBiasWarning();
   // v1.5.73: サイクルO settled字が稀に小ジャンプ（呼吸演出）─ 5秒に1回
   if ((_physicsFrame % 300) === 0) {
     for (const p of livePomoji.values()) {
@@ -8135,18 +8177,26 @@ function showCharDetail(c, rarity) {
     ? el('div', { class:'cd-actions', style:{ display:'flex', flexDirection:'column', gap:'6px', margin:'8px 0' } }, ...actionBtns)
     : null;
 
-  // 関連熟語 ── 未解放は ？？？ マスク（ネタバレ防止）
-  const recipeNodes = recipes.slice(0, 10).map(r => {
+  // v1.5.81: 関連熟語 ── 解放順ソート + レアリティラベル + 解放/未解放を視覚的に区別
+  const sortedRecipes = recipes.slice().sort((a, b) => {
+    const af = (STATE.discoveredYoji && STATE.discoveredYoji[a.word]) || (a.chars || []).every(ch => (STATE.collection[ch] || 0) > 0);
+    const bf = (STATE.discoveredYoji && STATE.discoveredYoji[b.word]) || (b.chars || []).every(ch => (STATE.collection[ch] || 0) > 0);
+    if (af !== bf) return af ? -1 : 1;
+    return RARITY_TIERS.indexOf(b.rarity) - RARITY_TIERS.indexOf(a.rarity);
+  });
+  const recipeNodes = sortedRecipes.slice(0, 20).map(r => {
     const rrIdx = RARITY_TIERS.indexOf(r.rarity);
     const found = (STATE.discoveredYoji && STATE.discoveredYoji[r.word])
       || (r.chars || []).every(ch => (STATE.collection[ch] || 0) > 0);
     const label = found ? r.word : '？'.repeat(Math.max(2, r.word.length));
-    return el('span', {
+    return el('div', {
       class:`cd-recipe rarity-${rrIdx + 1}` + (found ? '' : ' locked'),
       title: found ? (r.desc || r.word) : '未解放：構成字を集めると見える',
-      style:{ cursor:'pointer', opacity: found ? 1 : 0.55 },
       onclick: (e) => { e.stopPropagation(); showYojiDetail(r); },
-    }, label);
+    },
+      el('span', {}, label),
+      el('span', { style:{ fontSize:'.7rem', opacity:.65, fontWeight:400 } }, r.rarity || ''),
+    );
   });
 
   const pop = el('div', { class: `char-detail-pop rarity-${rIdx + 1}` },
@@ -8214,7 +8264,7 @@ function showCharDetail(c, rarity) {
     ) : null,
     recruitBtn,
     recipes.length > 0 ? el('div', { class:'cd-recipes' },
-      el('div', { class:'cd-recipes-title' }, ` 関連熟語 ${recipes.length} 件${recipes.length > 10 ? '（上位10）' : ''}`),
+      el('div', { class:'cd-recipes-title' }, ` 関連熟語 ${recipes.length} 件${recipes.length > 20 ? '（解放順上位20）' : '（解放順）'}`),
       el('div', { class:'cd-recipes-list' }, ...recipeNodes)
     ) : el('div', { class:'cd-recipes-empty' }, '関連熟語なし'),
   );

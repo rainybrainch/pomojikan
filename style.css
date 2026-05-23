@@ -3380,20 +3380,30 @@ body[data-mode="rest"] #tank{
   font-size:.74rem;color:var(--ink-mute);
   margin-bottom:6px;letter-spacing:.05em;
 }
+/* v1.5.81: 関連熟語を見やすく ── 1行1件タイル + レアリティ色帯 */
 .cd-recipes-list{
-  display:flex; flex-wrap:wrap; gap:5px;
-  line-height:1.5;
+  display:flex; flex-direction:column; gap:6px;
+  max-height: 280px; overflow-y: auto;
+  padding-right:4px;
 }
 .cd-recipe{
   font-family:'Noto Serif JP', serif;
-  font-size:.92rem; font-weight:700;
+  font-size:1.05rem; font-weight:700;
   color:var(--r-color, var(--ink));
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--r-color, rgba(255,255,255,.12));
-  padding:3px 8px;
-  border-radius:5px;
-  cursor:pointer;
-  transition:background .15s, transform .1s;
+  background:linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid var(--r-color, rgba(255,255,255,.18));
+  border-left: 4px solid var(--r-color, rgba(255,255,255,.4));
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  display: flex; align-items: center; justify-content: space-between;
+  letter-spacing: .08em;
+}
+.cd-recipe.locked {
+  font-size: .9rem; letter-spacing: .2em;
+  color: var(--ink-mute);
+  background: rgba(0,0,0,.15);
 }
 .cd-recipe:hover{ background:rgba(135,206,235,.18); transform:translateY(-1px); }
 .cd-recipe:active{ transform:translateY(0); }
@@ -5690,3 +5700,19 @@ body[data-ledge="ink"] #ledge-surface::before {
 
 /* v1.5.73: settled字の呼吸感（CSS transition で滑らかに） */
 .pomoji { transition: filter .3s, transform .15s; }
+
+/* v1.5.78: 隣接同レアペアグロー（薄く） */
+.pomoji.pair-glow {
+  box-shadow: 0 0 12px rgba(150,200,255,.45), 0 2px 4px rgba(0,0,0,.25);
+  transition: box-shadow .4s;
+}
+.pomoji.pair-glow.pinned {
+  box-shadow: 0 0 0 2px rgba(255,215,80,.85), 0 0 18px rgba(255,215,80,.55), 0 0 22px rgba(150,200,255,.5) !important;
+}
+
+/* v1.5.79: 棚偏り警告（赤い縁グロー） */
+body.ledge-bias-r #ledge-surface { box-shadow: inset -60px 0 40px -10px rgba(255,80,80,.35), 0 -1px 0 rgba(255,255,255,.45) inset; }
+body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,80,80,.35),  0 -1px 0 rgba(255,255,255,.45) inset; }
+
+/* v1.5.80: 投擲 trail（ドラッグ中の字に弱い blur 残像） */
+.pomoji.dragging { filter: drop-shadow(0 0 8px rgba(255,255,255,.6)) drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
