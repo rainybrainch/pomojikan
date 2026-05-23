@@ -3215,6 +3215,39 @@ function startRisingPomoji() {
   setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
 }
 
+// v1.5.77: サイクルU 作業中の settled字で熟語成立→小ボーナス（クールダウン15秒）
+let _lastSettleChainAt = 0;
+function detectSettledYojiChain() {
+  try {
+    if (Date.now() - _lastSettleChainAt < 15000) return;
+    const recipes = window.YOJI_RECIPES || [];
+    if (recipes.length === 0) return;
+    const settled = Array.from(livePomoji.values()).filter(p => p.settled && !p._awarded);
+    if (settled.length < 2) return;
+    const counts = {};
+    for (const p of settled) counts[p.char] = (counts[p.char] || 0) + 1;
+    let best = null;
+    for (const r of recipes) {
+      if (!r.chars || r.chars.length < 2) continue;
+      const need = {};
+      for (const c of r.chars) need[c] = (need[c] || 0) + 1;
+      let ok = true;
+      for (const k in need) { if ((counts[k] || 0) < need[k]) { ok = false; break; } }
+      if (ok && (!best || (r.chars.length > best.chars.length))) best = r;
+    }
+    if (!best) return;
+    _lastSettleChainAt = Date.now();
+    const rIdx = RARITY_TIERS.indexOf(best.rarity);
+    const bonus = Math.floor(Math.max(3, Math.pow(1.3, rIdx) * (best.chars.length || 2) * 1.5));
+    toast(`棚成立 ${best.word} +${bonus}`, best.rarity);
+    const hero = STATE.party?.members?.[STATE.party?.hero || 0];
+    if (hero) awardExpToParty(hero.char, bonus) || _orphanExp(bonus);
+    else _orphanExp(bonus);
+    spawnXpFloat(window.innerWidth/2, window.innerHeight - 100, bonus, best.rarity);
+    try { playSFX('merge'); } catch(_) {}
+  } catch(_) {}
+}
+
 // v1.5.72: サイクルK ── ピン留め字が3つ以上並んでたら金光波紋＋ボーナス
 let _lastPinTriadAt = 0;
 function checkPinTriad() {
@@ -3521,18 +3554,22 @@ function spawnRipple(x) {
   setTimeout(() => node.remove(), 850);
 }
 
-function awardFallen(p) {
+function awardFallen(p, ringoutMul) {
   if (p._awarded) return;
   p._awarded = true;
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
-  // v1.5.36: 力ステータス（1-5）で EXP ±40%
   const powerMul = p.stats ? (0.8 + 0.1 * p.stats.power) : 1;
-  const exp = Math.max(1, Math.round(Math.pow(1.3, rIdx) * 6 * powerMul));
-  // 落下位置の上方向に XP float を出す（画面内で見える位置）
-  const H = window.innerHeight;
-  spawnXpFloat(p.x + SIZE/2, Math.min(H - 40, Math.max(40, p.y)), exp, p.rarity);
+  // v1.5.76: スマブラ式 ringout ボーナス（高速ほど大きく）
+  const smash = ringoutMul || 1;
+  const exp = Math.max(1, Math.round(Math.pow(1.3, rIdx) * 6 * powerMul * smash));
+  const H = window.innerHeight, W = window.innerWidth;
+  // 画面内に float が見えるよう端から内側にクランプ
+  const fx = Math.min(W - 40, Math.max(40, p.x + SIZE/2));
+  const fy = Math.min(H - 40, Math.max(40, p.y));
+  spawnXpFloat(fx, fy, exp, p.rarity);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
-  try { playSFX('pop'); } catch(_) {}
+  try { playSFX(smash > 1.5 ? 'milestone' : 'pop'); } catch(_) {}
+  if (smash > 1.5) { try { toast(`💥 撃墜 +${exp}`); } catch(_) {} }
   p.el?.classList.add('burst');
   setTimeout(() => { p.el?.remove(); livePomoji.delete(p.id); }, 400);
 }
@@ -3994,8 +4031,12 @@ function ledgeBounds(W) {
   return { left: W * LEDGE_PAD, right: W * (1 - LEDGE_PAD) - SIZE };
 }
 
+// v1.5.75: サイクルT 緩やかな横風（時間で位相変化）
+let _windPhase = 0;
 function physicsStep() {
   _physicsFrame++;
+  _windPhase += 0.002;
+  const wind = Math.sin(_windPhase) * 0.015;
   // v1.5.70: 同タグ磁力を 30 フレに 1 回（負荷抑制）
   if ((_physicsFrame % 30) === 0) applyTagMagnet();
   // v1.5.72: サイクルK ピン3つ並びで金光波紋＋EXP（10秒に1回判定）
@@ -4213,11 +4254,16 @@ function physicsStep() {
     // v1.1.9: 摩擦さらに弱め（しっかり転がり続ける）
     p.vx *= 0.998;
     if (Math.abs(p.vx) < 0.008) p.vx = 0;
+    // v1.5.75: サイクルT 緩やかな横風（settled・ピン・浮上中は除外）
+    if (!p.settled && !p._pinned && !p.rising && !p.dragging) p.vx += wind;
     p.x += p.vx;
     p.y += p.vy;
-    // v1.5.15: 画面端まで行ったら EXP 化、それ以外は反射なし（穴に落ちる）
-    if (p.x < -SIZE * 1.2) { awardFallen(p); continue; }
-    if (p.x > W + SIZE * 0.2) { awardFallen(p); continue; }
+    // v1.5.76: スマブラ式枠外＝EXP（左右・上・下すべて）+ 高速で飛び出すほどボーナス
+    const speedSq = (p.vx*p.vx + p.vy*p.vy);
+    const ringoutBonus = Math.min(3.0, 1 + Math.sqrt(speedSq) * 0.15);
+    if (p.x < -SIZE * 1.2) { awardFallen(p, ringoutBonus); continue; }
+    if (p.x > W + SIZE * 0.2) { awardFallen(p, ringoutBonus); continue; }
+    if (p.y < -SIZE * 2 && p.vy < 0) { awardFallen(p, ringoutBonus); continue; }
     {
       // 棚内：x 反射（万一の表示はみ出し防止のみ）
       if (p.x < 0)        { p.x = 0; p.vx *= -0.4; }
@@ -4335,6 +4381,8 @@ function physicsStep() {
           p.settled = true;
           p.settledX = p.x;
           p.settledY = p.y;
+          // v1.5.77: サイクルU 作業中も settled 字から熟語チェーン検出
+          try { detectSettledYojiChain(); } catch(_) {}
           // v1.5.68: レアリティ別着地音
           try {
             const t = p.tier || 0;
