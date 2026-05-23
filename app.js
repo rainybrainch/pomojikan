@@ -38,9 +38,9 @@ const TIER_DROP_COUNT = [
   [1,2], [1,2], [1,2], [1,2], [1,2], [1,2]
 ];
 // レアごとの落下速度倍率（高レアほどゆっくり、ドラマを作る）
-// v1.5.64: レアリティ落下差を強化（1.0→0.30）+ 高レアは横揺れ風
-const TIER_FALL_MUL = [1.0, 0.95, 0.90, 0.84, 0.78, 0.72, 0.66, 0.60, 0.55, 0.50, 0.46, 0.42, 0.38, 0.35, 0.32, 0.30];
-const TIER_SWAY_AMP = [0, 0, 0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.22, 0.24, 0.26];
+// v1.5.85: レアリティ落下差を穏やかに（元の控えめな差に戻す）+ 横揺れ撤去
+const TIER_FALL_MUL = [1.0, 0.97, 0.94, 0.90, 0.86, 0.82, 0.78, 0.74, 0.70, 0.66, 0.62, 0.58, 0.54, 0.50, 0.46, 0.42];
+const TIER_SWAY_AMP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 // 無限 Lv 設計（v5 / 2026-05-18）── 何十年も遊べる育成型ポモドーロ
 // ★は16段階で頭打ちでも Lv は無限に育つ ── 進化段階を 15 段階に拡張（〜Lv 1,000,000）
@@ -1945,12 +1945,12 @@ function openThemePicker() {
 
 // v1.5.50: メニューアイコンの絵文字／漢字切替
 const ICON_MAP_KANJI = {
-  'm-stats':'録','m-codex':'鑑','m-writings':'書','m-theme':'彩','m-help':'問','m-data':'蓄',
-  'm-measure':'計','m-pip':'窓','m-hud':'視','m-sleep':'眠',
+  'm-stats':'録','m-codex':'鑑','m-writings':'書','m-theme':'彩','m-data':'蓄',
+  'm-pip':'窓','m-sleep':'眠',
 };
 const ICON_MAP_EMOJI = {
-  'm-stats':'📊','m-codex':'📖','m-writings':'📝','m-theme':'🎨','m-help':'❓','m-data':'💾',
-  'm-measure':'⏱️','m-pip':'🪟','m-hud':'👁️','m-sleep':'💤',
+  'm-stats':'📊','m-codex':'📖','m-writings':'📝','m-theme':'🎨','m-data':'💾',
+  'm-pip':'🪟','m-sleep':'💤',
 };
 function applyIconMode() {
   const mode = STATE.iconMode || 'emoji';
@@ -3198,21 +3198,19 @@ function burstPartyPersistents(){
 // 「集中で貯めて、休憩で育つ」
 // ═══════════════════════════════════════════════════════════════
 function startRisingPomoji() {
-  // v1.2.0: 全ぽもじ（persistent 含む）を順番に泡化
-  // v1.5.66: ピン留め字（_pinned）は浮上させず棚に残す
-  const targets = Array.from(livePomoji.values())
+  // v1.5.86: 浮上は最大8粒に絞る（溢れ防止）── 残りはサイレントに EXP 吸収
+  const all = Array.from(livePomoji.values())
     .filter(p => !p.dragging && !p.rising && !p._pinned)
     .sort((a, b) => a.y - b.y);
-  if (targets.length === 0) {
-    toast('泡にする字がない（集中で貯めよう）');
-    return;
-  }
-  targets.forEach((p, i) => {
-    setTimeout(() => convertToRising(p), i * 100);
-  });
-  toast(`${targets.length}粒の字が育つ`);
-  // v1.5.66: サイクルD ── 浮上字の集合から熟語チェーンを検出して大EXPボーナス
-  setTimeout(() => detectRestYojiChains(targets), targets.length * 100 + 200);
+  if (all.length === 0) { toast('泡にする字がない（集中で貯めよう）'); return; }
+  const MAX_RISE = 8;
+  const rising = all.slice(0, MAX_RISE);
+  const silent = all.slice(MAX_RISE);
+  rising.forEach((p, i) => setTimeout(() => convertToRising(p), i * 120));
+  // 残りは静かに EXP 化（演出なし・通知なし）
+  silent.forEach(p => { try { expireAsExp(p); } catch(_) {} });
+  toast(`${rising.length}粒 浮上${silent.length ? `（+${silent.length}静かに吸収）` : ''}`);
+  setTimeout(() => detectRestYojiChains(all), rising.length * 120 + 200);
 }
 
 // v1.5.83: サイクルAB 成立中熟語をSVG線で結ぶ（settled字から探索）
@@ -3743,8 +3741,8 @@ function pickPartyDrop() {
 
 // ぽもじ上限（負荷管理：persistent パーティ字を除いて 30体超えたら最古を消滅）
 const MAX_LIVE_POMOJI = 18;  // v1.4.3: 30→18（インフレ抑制）
-// 一般ぽもじ寿命：5分（300 秒）。経過したら経験値吸収して消える
-const POMOJI_LIFETIME_MS = 5 * 60 * 1000;
+// v1.5.86: 寿命を 1 分に短縮（溢れ防止）
+const POMOJI_LIFETIME_MS = 60 * 1000;
 
 function enforcePomojiCap() {
   // persistent は除外して数える
@@ -4126,33 +4124,14 @@ function ledgeBounds(W) {
   return { left: W * LEDGE_PAD, right: W * (1 - LEDGE_PAD) - SIZE };
 }
 
-// v1.5.75: サイクルT 緩やかな横風（時間で位相変化）
-let _windPhase = 0;
+// v1.5.85: 落下挙動を簡素化 ─ 横風/磁力/呼吸ジャンプ/偏り警告を停止
+//          残すのは「ピン3連結ボーナス」「ペアグロー」「成立熟語線」のみ（視覚＋判定のみで挙動に介入しない）
+const wind = 0;
 function physicsStep() {
   _physicsFrame++;
-  _windPhase += 0.002;
-  const wind = Math.sin(_windPhase) * 0.015;
-  // v1.5.70: 同タグ磁力を 30 フレに 1 回（負荷抑制）
-  if ((_physicsFrame % 30) === 0) applyTagMagnet();
-  // v1.5.72: サイクルK ピン3つ並びで金光波紋＋EXP（10秒に1回判定）
   if ((_physicsFrame % 600) === 0) checkPinTriad();
-  // v1.5.78: サイクルV 隣接同レアペアにグロー（120fに1回更新）
   if ((_physicsFrame % 120) === 0) updateRarityPairGlow();
-  // v1.5.79: サイクルX 棚の片側偏り警告（右に5つ以上で .ledge-warn）
-  if ((_physicsFrame % 180) === 0) updateLedgeBiasWarning();
-  // v1.5.83: サイクルAB 成立中熟語を線で結ぶ
-  if ((_physicsFrame % 90) === 0) updateYojiChainLines();
-  // v1.5.73: サイクルO settled字が稀に小ジャンプ（呼吸演出）─ 5秒に1回
-  if ((_physicsFrame % 300) === 0) {
-    for (const p of livePomoji.values()) {
-      if (p.settled && !p.persistent && !p._pinned && Math.random() < 0.05) {
-        p.settled = false;
-        p.el?.classList.remove('settled');
-        p.vy = -0.6;
-        p._settleBlockUntil = Date.now() + 300;
-      }
-    }
-  }
+  if ((_physicsFrame % 90)  === 0) updateYojiChainLines();
   const W = window.innerWidth, H = window.innerHeight;
   const ledge = ledgeBounds(W);
   // perk 適用（10 フレーム毎にしか再計算しない ・ 視覚差は無視できる）
