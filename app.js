@@ -4270,9 +4270,16 @@ function physicsStep() {
     // 寿命チェック：一般字（非persistent）── 命ステータス（1-5）で ±40%
     if (!p.persistent && p.spawnedAt) {
       const lifeMul = p.stats ? (0.8 + 0.1 * p.stats.life) : 1;
-      if ((Date.now() - p.spawnedAt) > POMOJI_LIFETIME_MS * lifeMul) {
+      const lifeMs = POMOJI_LIFETIME_MS * lifeMul;
+      const age = Date.now() - p.spawnedAt;
+      if (age > lifeMs) {
         expireAsExp(p);
         continue;
+      }
+      // v1.5.96: 寿命残り15%以下でフェード警告（消える前の予告）
+      if (age > lifeMs * 0.85 && !p._fadeWarned) {
+        p._fadeWarned = true;
+        p.el?.classList.add('fading');
       }
     }
     // 落下ぽもじ：重力＋円形ソフトボディ衝突（控えめ弾性／ゆっくり転がる）

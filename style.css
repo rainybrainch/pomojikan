@@ -5766,3 +5766,12 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
 .omi-section + .omi-section { border-top: 1px solid rgba(255,255,255,.05); }
 .omi-section-title { font-weight: 700; color: var(--ink); margin-bottom: 4px; font-size: .76rem; }
 .omi-rate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: .7rem; }
+
+/* v1.5.96: 寿命残り15%以下のフェード警告（消える予告） */
+.pomoji.fading {
+  animation: pomoji-fade-pulse 1.2s ease-in-out infinite;
+}
+@keyframes pomoji-fade-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
