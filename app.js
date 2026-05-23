@@ -4687,6 +4687,13 @@ function attachDragHandlers(node, obj) {
             obj.spawnedAt = Date.now();
             obj.el?.classList.add('pinned');
             try { toast('📌 ピン留め'); } catch(_) {}
+            // v1.6.13: ピン留め成功で金色の小波紋（行為の余韻）
+            try {
+              const ripple = document.createElement('div');
+              ripple.style.cssText = `position:fixed;left:${obj.x + SIZE/2 - 25}px;top:${obj.y + SIZE/2 - 25}px;width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,215,80,.9);pointer-events:none;z-index:55;animation:pin-ripple .8s ease-out forwards;`;
+              document.body.appendChild(ripple);
+              setTimeout(() => ripple.remove(), 850);
+            } catch(_) {}
           }
           try { savePinnedField(); } catch(_) {}
           return;

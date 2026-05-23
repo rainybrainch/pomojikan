@@ -5879,3 +5879,9 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
   20%  { opacity:1; }
   100% { opacity:0; }
 }
+
+/* v1.6.13: ピン留め成功の小波紋 */
+@keyframes pin-ripple {
+  0%   { transform: scale(.4); opacity: 1; border-width: 3px; }
+  100% { transform: scale(2.5); opacity: 0; border-width: 1px; }
+}
