@@ -4304,9 +4304,18 @@ function attachDragHandlers(node, obj) {
       $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
       // v1.5.21: 長押しで詳細を開いた場合は burst しない
       if (obj._lpDetailOpened) { obj._lpDetailOpened = false; return; }
-      // v1.5.61: タップでは消さない（ドラッグ専用）── 動かなかったらその場に残す
+      // v1.5.62: タップ＝「拾う」── ストックに+1、小EXP、字は静かに消える（ドラッグ：融合/餌付け、長押し：詳細 と差別化）
       const dt = Date.now() - startTime;
       if (!moved || dt < 250) {
+        try {
+          const rIdx = RARITY_TIERS.indexOf(obj.rarity);
+          const exp = Math.max(1, Math.pow(1.25, rIdx));  // dissolve(=2倍係数) より控えめ
+          awardExpToParty(obj.char, exp) || _orphanExp(exp);
+          addStock(obj.char);
+          spawnXpFloat(obj.x + SIZE/2, obj.y + SIZE/2, exp, obj.rarity);
+          obj.el?.classList.add('dissolve');
+          setTimeout(() => { obj.el?.remove(); livePomoji.delete(obj.id); }, 300);
+        } catch(_) {}
         return;
       }
       // v1.1.7: パーティカードにドロップ → そのメンバーに EXP（餌付け）
@@ -4345,7 +4354,14 @@ function attachDragHandlers(node, obj) {
         }
       }
       const target = checkMergeCollision(obj);
-      if (target) mergePomoji(obj, target);
+      if (target) { mergePomoji(obj, target); return; }
+      // v1.5.62: 枠外ドロップ＝EXP化（ウィンドウ外 or 棚より下に投げ捨て）
+      const W = window.innerWidth, H = window.innerHeight;
+      const cx = obj.x + SIZE/2, cy = obj.y + SIZE/2;
+      const outside = cx < -SIZE/2 || cx > W + SIZE/2 || cy < -SIZE/2 || cy > H + SIZE/2;
+      if (outside && !obj.persistent) {
+        try { expireAsExp(obj); } catch(_) {}
+      }
     };
     document.addEventListener('pointermove', onMove, { passive: false });
     document.addEventListener('pointerup',   onUp);
