@@ -4304,10 +4304,9 @@ function attachDragHandlers(node, obj) {
       $$('.pomoji.merge-glow').forEach(n => n.classList.remove('merge-glow'));
       // v1.5.21: 長押しで詳細を開いた場合は burst しない
       if (obj._lpDetailOpened) { obj._lpDetailOpened = false; return; }
-      // v1.3.0: 素早いタップ（250ms 以内）は moved 判定無視で必ず burst
+      // v1.5.61: タップでは消さない（ドラッグ専用）── 動かなかったらその場に残す
       const dt = Date.now() - startTime;
       if (!moved || dt < 250) {
-        dissolvePomoji(obj);
         return;
       }
       // v1.1.7: パーティカードにドロップ → そのメンバーに EXP（餌付け）
