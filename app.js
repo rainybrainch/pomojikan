@@ -3425,6 +3425,37 @@ function applyTagMagnet() {
   } catch(_) {}
 }
 
+// v1.6.16: 今日の言葉 ── 日付から決定的に1熟語を選んで、その日の言葉として静かに表示
+function renderWordOfDay() {
+  const node = document.getElementById('word-of-day');
+  if (!node) return;
+  const recipes = window.YOJI_RECIPES || [];
+  if (recipes.length === 0) return;
+  // 解放済または構成字を全て持っている熟語のみから選定（読めるものだけ）
+  const eligible = recipes.filter(r => {
+    if (!r.chars || r.chars.length < 2) return false;
+    if (STATE.discoveredYoji && STATE.discoveredYoji[r.word]) return true;
+    return r.chars.every(c => (STATE.collection[c] || 0) > 0);
+  });
+  const pool = eligible.length > 0 ? eligible : recipes;
+  // 日付シードでデコ確定的に選定（同じ日は同じ熟語）
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const idx = seed % pool.length;
+  const r = pool[idx];
+  const rIdx = RARITY_TIERS.indexOf(r.rarity);
+  node.innerHTML = '';
+  node.className = 'word-of-day';
+  const card = el('div', { class:`wod-card rarity-${rIdx + 1}`, onclick: () => { try { showYojiDetail(r); } catch(_) {} node.classList.add('wod-hide'); } },
+    el('span', { class:'wod-label' }, '今日の言葉'),
+    el('span', { class:'wod-word' }, r.word),
+    el('span', { class:'wod-desc' }, r.desc || r.rarity || ''),
+  );
+  node.appendChild(card);
+  // 8秒後に薄くフェード（操作の邪魔にならない）
+  setTimeout(() => node.classList.add('wod-fade'), 8000);
+}
+
 // v1.5.67: ピン留め字を localStorage に保存（次回ロード復元用）
 function savePinnedField() {
   try {
@@ -9607,6 +9638,8 @@ function init() {
   try { applyIconMode(); } catch(_) {}
   // v1.5.67: ピン留め字を復元（少し遅延：DOM 整い次第）
   setTimeout(() => { try { restorePinnedField(); } catch(_) {} }, 800);
+  // v1.6.16: 今日の言葉を表示（毎日違う熟語が静かに迎える・再訪の核）
+  setTimeout(() => { try { renderWordOfDay(); } catch(_) {} }, 600);
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
   window.addEventListener('pagehide', () => {
     try { if (_pipWindow) _pipWindow.close(); } catch(_) {}

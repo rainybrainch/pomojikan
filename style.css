@@ -5917,3 +5917,58 @@ a:focus:not(:focus-visible) {
     animation: none !important;
   }
 }
+
+/* v1.6.16: 今日の言葉 ─ 毎日違う熟語が静かに迎える */
+.word-of-day {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+  opacity: 1;
+}
+.word-of-day.wod-fade { opacity: 0.18; }
+.word-of-day.wod-fade:hover { opacity: 1; }
+.word-of-day.wod-hide { opacity: 0; pointer-events: none; }
+.wod-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 24px;
+  background: linear-gradient(180deg, rgba(15,30,50,.85), rgba(7,15,28,.85));
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--r-color, rgba(135,206,235,.35));
+  border-radius: 14px;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 18px rgba(0,0,0,.4), 0 0 12px var(--r-glow, rgba(135,206,235,.25));
+  font-family: 'Noto Serif JP', serif;
+}
+.wod-card:hover { transform: translate(0, -2px); }
+.wod-label {
+  font-size: .6rem;
+  color: var(--ink-mute);
+  letter-spacing: .2em;
+}
+.wod-word {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--r-color, var(--gold));
+  letter-spacing: .15em;
+  text-shadow: 0 0 12px var(--r-glow, rgba(240,212,138,.4));
+}
+.wod-desc {
+  font-size: .68rem;
+  color: var(--ink-mute);
+  margin-top: 2px;
+  max-width: 280px;
+  text-align: center;
+  line-height: 1.4;
+}
+@media (max-width: 480px) {
+  .word-of-day { top: 60px; }
+  .wod-card { padding: 8px 16px; }
+  .wod-word { font-size: 1.15rem; }
+  .wod-desc { font-size: .62rem; max-width: 220px; }
+}
