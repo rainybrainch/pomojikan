@@ -6975,6 +6975,14 @@ function renderHUD() {
     }
   }
   hud.innerHTML = '';
+  // v1.6.9: 今日のサイクル数を最上段に（成長実感）
+  const today = new Date().toISOString().slice(0, 10);
+  const todayCycles = (STATE.dailyCycles || {})[today] || 0;
+  const streak = STATE.streak?.current || 0;
+  if (todayCycles > 0 || streak > 0) {
+    hud.appendChild(el('div', { class:'hud-row hud-streak' },
+      `今日 ${todayCycles}回${streak > 1 ? ` ・ ${streak}日連続` : ''}`));
+  }
   hud.appendChild(el('div', { class:'hud-row hud-leader' }, `首 ${hero.char} Lv.${hero.level}`));
   hud.appendChild(el('div', { class:'hud-row hud-eff' },
     `経 ×${expFinal >= 100 ? fmtBig(expFinal) : expFinal.toFixed(2)}`,

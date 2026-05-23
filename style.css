@@ -5843,3 +5843,11 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
   padding: 0 4px;
   opacity: .6;
 }
+
+/* v1.6.9: HUD 今日サイクル＋連続日数バッジ */
+.hud-row.hud-streak {
+  font-size: .68rem;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: .06em;
+}
