@@ -1294,23 +1294,19 @@ body[data-mode="rest"] .timer-text{
 .tank-hint{
   text-align:center;
   color:var(--ink);
-  font-size:.92rem;
-  line-height:1.9;
-  padding:24px 18px;
+  font-size:.88rem;
+  line-height:1.8;
+  padding:20px 18px;
   margin:0 auto;
   max-width:480px;
   background:rgba(135,206,235,.04);
   border:1px dashed rgba(135,206,235,.25);
   border-radius:14px;
   position:relative;
-  animation:tankHintSway 3.6s ease-in-out infinite;
+  /* v1.6.5: 揺れ回転を廃止（目に痛い）── 静止＋ホバー時のみ軽く浮く */
+  transition: transform .4s ease;
 }
-@keyframes tankHintSway{
-  0%, 100%{ transform:translate(0, 0) rotate(0deg); }
-  25%    { transform:translate(-3px, -2px) rotate(-.6deg); }
-  50%    { transform:translate(0, -4px) rotate(0deg); }
-  75%    { transform:translate(3px, -2px) rotate(.6deg); }
-}
+.tank-hint:hover { transform: translateY(-2px); }
 .tank-hint::before{ content:none; display:none; }
 @keyframes tankHintBob{
   0%, 100%{ transform:translateY(0); }
