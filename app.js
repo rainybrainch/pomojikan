@@ -8920,6 +8920,37 @@ function openStats() {
     recentZone.appendChild(grid);
   }
 
+  // v1.6.7: 棚景色アルバム（日別 snapshot を縮小表示）
+  const ledgeZone = $('#stats-ledge-album') || (() => {
+    const z = el('div', { class:'stats-recent-zone', id:'stats-ledge-album' });
+    recentZone.parentElement?.insertBefore(z, recentZone.nextSibling);
+    return z;
+  })();
+  ledgeZone.innerHTML = '';
+  ledgeZone.appendChild(el('h3', { class:'stats-section-title' }, '🪟 棚の景色アルバム'));
+  const snaps = STATE.ledgeSnapshots || {};
+  const days = Object.keys(snaps).sort((a, b) => b.localeCompare(a)).slice(0, 7);
+  if (days.length === 0) {
+    ledgeZone.appendChild(el('div', { class:'sry-empty' }, '景色はまだ ── 集中サイクルを終えると、その日の棚が記録される'));
+  } else {
+    const album = el('div', { class:'ledge-album' });
+    for (const d of days) {
+      const arr = snaps[d] || [];
+      const row = el('div', { class:'la-day' },
+        el('div', { class:'la-date' }, d.slice(5).replace('-', '/') + ` ・ ${arr.length}字`),
+        el('div', { class:'la-strip' },
+          ...arr.slice(0, 24).map(s => {
+            const rIdx = RARITY_TIERS.indexOf(s.rarity);
+            return el('span', { class:`la-char rarity-${rIdx + 1}` }, s.char);
+          }),
+          arr.length > 24 ? el('span', { class:'la-more' }, `+${arr.length - 24}`) : null,
+        ),
+      );
+      album.appendChild(row);
+    }
+    ledgeZone.appendChild(album);
+  }
+
   // 長期達成バッジ ── 何十年も遊べる育成型ポモドーロの記憶
   const badgeZone = $('#stats-milestones') || (() => {
     const z = el('div', { class:'stats-milestones-zone', id:'stats-milestones' });

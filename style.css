@@ -5796,3 +5796,41 @@ body.ledge-bias-l #ledge-surface { box-shadow: inset 60px 0 40px -10px rgba(255,
   margin: 2px 0 8px;
   opacity: .65;
 }
+
+/* v1.6.7: 棚景色アルバム */
+.ledge-album { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.la-day {
+  padding: 8px 10px;
+  background: linear-gradient(90deg, rgba(135,206,235,.05), rgba(135,206,235,.01));
+  border: 1px solid rgba(135,206,235,.12);
+  border-radius: 8px;
+}
+.la-date {
+  font-size: .68rem;
+  color: var(--ink-mute);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 5px;
+  letter-spacing: .06em;
+}
+.la-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+.la-char {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .9rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.04);
+  color: var(--r-color, var(--ink));
+  line-height: 1.4;
+}
+.la-more {
+  font-size: .65rem;
+  color: var(--ink-mute);
+  padding: 0 4px;
+  opacity: .6;
+}
