@@ -2962,9 +2962,16 @@ body[data-mode="rest"] #tank{
 }
 
 /* シーズンタブ（RBAI 公式構想 S1-S7+）── 図鑑の上位フィルタ */
+/* v1.6.10: シーズンタブも横スクロール1行 */
 .codex-seasons{
-  display:flex; gap:5px; margin:10px 0 6px; flex-wrap:wrap;
+  display:flex; gap:5px; margin:10px 0 6px;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:thin;
+  padding-bottom:4px;
 }
+.codex-seasons::-webkit-scrollbar{ height:4px; }
+.codex-seasons::-webkit-scrollbar-thumb{ background:rgba(240,212,138,.3); border-radius:2px; }
+.codex-season { flex-shrink: 0; white-space: nowrap; }
 .codex-season{
   padding:6px 11px;
   background:rgba(240,212,138,.05);
@@ -2986,12 +2993,17 @@ body[data-mode="rest"] #tank{
 
 /* 🌏 文字種フィルター（41,890 字を瞬時に絞る） */
 .codex-scripts{
-  display:flex; gap:4px; margin:6px 0; flex-wrap:wrap;
+  display:flex; gap:4px; margin:6px 0;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:thin;
   padding:6px;
   background:rgba(135,206,235,.03);
   border:1px dashed rgba(135,206,235,.15);
   border-radius:6px;
 }
+.codex-scripts::-webkit-scrollbar{ height:4px; }
+.codex-scripts::-webkit-scrollbar-thumb{ background:rgba(135,206,235,.3); border-radius:2px; }
+.codex-script { flex-shrink: 0; white-space: nowrap; }
 .codex-script{
   padding:4px 9px;
   background:rgba(135,206,235,.05);
