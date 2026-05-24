@@ -5921,7 +5921,7 @@ a:focus:not(:focus-visible) {
 /* v1.6.16: 今日の言葉 ─ 毎日違う熟語が静かに迎える */
 .word-of-day {
   position: fixed;
-  top: 70px;
+  bottom: 180px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 8;
@@ -5967,7 +5967,7 @@ a:focus:not(:focus-visible) {
   line-height: 1.4;
 }
 @media (max-width: 480px) {
-  .word-of-day { top: 60px; }
+  .word-of-day { bottom: 160px; top: auto; }
   .wod-card { padding: 8px 16px; }
   .wod-word { font-size: 1.15rem; }
   .wod-desc { font-size: .62rem; max-width: 220px; }
@@ -6094,11 +6094,9 @@ body[data-world="harugasumi"] {
   --font-body: 'Zen Kaku Gothic New', sans-serif;
 }
 
-/* 世界テーマ時: 文字・タイマー・見出しにdisplayフォントを適用 */
-body[data-world] .pomoji,
+/* 世界テーマ時: タイマー・見出しにdisplayフォントを適用（.pomoji は除外 ── 物理座標がズレるため） */
 body[data-world] .timer-text,
 body[data-world] .app-header .brand,
-body[data-world] .party-card .pc-char,
 body[data-world] .modal-title,
 body[data-world] .progress-pill .pp-band {
   font-family: var(--font-display);

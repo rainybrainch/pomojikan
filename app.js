@@ -7319,7 +7319,7 @@ function renderEffectsPanel() {
   const collapsed = panel.classList.contains('collapsed');
   panel.innerHTML = '';
   // v1.0.4: 簡潔ヘッダ「 効果 N/8（うち強 M）」
-  const modeLabel = strongCount >= 3 ? '大爆発中' : strongCount >= 1 ? '強化中' : activeCount >= 4 ? '稼働中' : activeCount > 0 ? '静か' : '休眠';
+  const modeLabel = strongCount >= 3 ? '全力稼働' : strongCount >= 1 ? '強化中' : activeCount >= 4 ? '稼働中' : activeCount > 0 ? '静か' : '休眠';
   const modeColor = strongCount >= 3 ? '#ffd86b' : strongCount >= 1 ? '#ffc070' : activeCount > 0 ? '#cfe6ff' : 'var(--ink-mute)';
   const header = el('div', { class:'ep-head' },
     el('span', { class:'ep-toggle',
