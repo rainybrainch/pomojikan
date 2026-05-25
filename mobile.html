@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06101b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ぽもじかん">
+<meta name="description" content="字を拾うポモドーロ ── スマホ版">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+<title>ぽもじかん</title>
+<style>
+/* ── リセット ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  background: #06101b;
+  color: #eaf2fa;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  touch-action: none;
+  user-select: none;
+}
+
+/* ── レイアウト ── */
+#app {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #06101b 0%, #0d1f2e 60%, #1b3a55 100%);
+}
+
+/* ── ヘッダ ── */
+#m-header {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: max(env(safe-area-inset-top, 12px), 12px) 16px 10px;
+  z-index: 20;
+}
+#m-brand {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: #eaf2fa; letter-spacing: .06em;
+}
+#m-brand .b-accent { color: #87ceeb; }
+#m-today {
+  font-size: .75rem; color: #7c98b0;
+  background: rgba(135,206,235,.10);
+  border: 1px solid rgba(135,206,235,.18);
+  border-radius: 999px; padding: 3px 10px;
+}
+#m-menu-btn {
+  background: none; border: none; cursor: pointer;
+  color: #eaf2fa; font-size: 1.2rem;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+
+/* ── 落下フィールド ── */
+#fall-field {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.f-char {
+  position: absolute;
+  top: -70px;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: all;
+  animation: fall linear forwards;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .1s, opacity .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.f-char:active { transform: scale(1.3); }
+@keyframes fall {
+  0%   { top: -70px; opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { top: 108vh; opacity: 0; }
+}
+.f-char.caught {
+  animation: catch-pop .4s cubic-bezier(.2,1.4,.4,1) forwards;
+  pointer-events: none;
+}
+@keyframes catch-pop {
+  0%   { transform: scale(1); opacity: 1; }
+  40%  { transform: scale(1.5); opacity: 1; filter: brightness(1.8) drop-shadow(0 0 14px #87ceeb); }
+  100% { transform: scale(.2); opacity: 0; }
+}
+.f-xp-pop {
+  position: absolute;
+  font-family: 'Noto Serif JP', serif;
+  font-size: .85rem; font-weight: 700;
+  color: #87ceeb;
+  pointer-events: none;
+  animation: xp-rise .9s ease-out forwards;
+  z-index: 10;
+}
+@keyframes xp-rise {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-50px); opacity: 0; }
+}
+
+/* ── メインエリア ── */
+#m-main {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 20px;
+  position: relative; z-index: 10;
+  pointer-events: none;
+}
+
+/* ── タイマーリング ── */
+#timer-wrap {
+  position: relative;
+  width: 220px; height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: all;
+}
+#timer-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: rotate(-90deg);
+}
+#ring-bg { fill: none; stroke: rgba(255,255,255,.06); stroke-width: 2; }
+#ring-fg {
+  fill: none; stroke: #87ceeb; stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-dasharray: 659.73; /* 2π×105 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .5s linear, stroke .3s;
+}
+#timer-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  z-index: 1;
+}
+#timer-mode {
+  font-size: .72rem; color: #7c98b0; letter-spacing: .15em;
+  font-family: 'Noto Serif JP', serif;
+}
+#timer-time {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 3.4rem; font-weight: 900;
+  color: #eaf2fa; letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+#timer-sets {
+  font-size: .68rem; color: #7c98b0;
+}
+
+/* ── CTAボタン ── */
+#cta-btn {
+  pointer-events: all;
+  min-width: 180px; padding: 14px 32px;
+  background: #87ceeb;
+  color: #06101b;
+  border: none; border-radius: 999px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.1rem; font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .08em;
+  box-shadow: 0 4px 20px rgba(135,206,235,.35);
+  transition: transform .12s, box-shadow .12s;
+  -webkit-tap-highlight-color: transparent;
+}
+#cta-btn:active { transform: scale(.96); box-shadow: 0 2px 10px rgba(135,206,235,.2); }
+#cta-btn.rest-mode { background: #f0d48a; color: #1a0d08; box-shadow: 0 4px 20px rgba(240,212,138,.35); }
+#cta-btn.pause-mode {
+  background: transparent; color: #eaf2fa;
+  border: 1.5px solid rgba(135,206,235,.4);
+  box-shadow: none;
+}
+
+/* ── リーダーストリップ ── */
+#leader-strip {
+  flex: 0 0 auto;
+  padding: 12px 20px max(env(safe-area-inset-bottom, 16px), 16px);
+  background: rgba(7,17,28,.7);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(135,206,235,.12);
+  display: flex; align-items: center; gap: 14px;
+  z-index: 20;
+}
+#leader-char {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 2.4rem; font-weight: 900;
+  color: #eaf2fa; min-width: 48px;
+  text-align: center; line-height: 1;
+}
+#leader-info { flex: 1; }
+#leader-name-row {
+  display: flex; align-items: baseline; gap: 8px;
+  margin-bottom: 5px;
+}
+#leader-lv { font-size: .95rem; color: #eaf2fa; font-weight: 700; }
+#leader-rarity { font-size: .72rem; color: #87ceeb; }
+#leader-evo { font-size: .72rem; color: #f0d48a; }
+#leader-xp-bar {
+  height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,.10);
+  overflow: hidden; margin-bottom: 4px;
+}
+#leader-xp-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, #87ceeb, #b8e0f5);
+  transition: width .3s ease;
+}
+#leader-stats { font-size: .68rem; color: #7c98b0; }
+#no-leader-msg {
+  flex: 1; font-size: .85rem; color: #7c98b0;
+  text-align: center;
+}
+#no-leader-btn {
+  background: rgba(135,206,235,.15);
+  border: 1px solid rgba(135,206,235,.3);
+  border-radius: 8px; color: #87ceeb;
+  font-size: .8rem; padding: 6px 14px;
+  cursor: pointer; white-space: nowrap;
+}
+
+/* ── セッション完了オーバーレイ ── */
+#complete-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(6,16,27,.92);
+  backdrop-filter: blur(16px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 18px; padding: 32px 24px;
+  animation: fade-in .4s ease;
+}
+#complete-overlay.hidden { display: none; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+#co-icon { font-size: 3rem; }
+#co-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.6rem; font-weight: 900;
+  color: #eaf2fa; letter-spacing: .06em;
+}
+#co-stats {
+  display: flex; gap: 24px;
+  text-align: center;
+}
+.co-stat-val {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 2rem; font-weight: 900; color: #87ceeb;
+  display: block;
+}
+.co-stat-lbl { font-size: .72rem; color: #7c98b0; }
+#co-uiki-btn {
+  width: 100%; max-width: 320px;
+  padding: 14px;
+  background: rgba(135,206,235,.15);
+  border: 1.5px solid rgba(135,206,235,.4);
+  border-radius: 12px;
+  color: #eaf2fa; font-size: .95rem;
+  cursor: pointer;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  transition: background .15s;
+}
+#co-uiki-btn:active { background: rgba(135,206,235,.25); }
+#co-next-btn {
+  width: 100%; max-width: 320px;
+  padding: 14px;
+  background: #87ceeb;
+  border: none; border-radius: 12px;
+  color: #06101b; font-size: .95rem; font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Serif JP', serif;
+  transition: transform .12s;
+}
+#co-next-btn:active { transform: scale(.97); }
+
+/* ── メニュードロワー ── */
+#menu-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
+}
+#menu-overlay.hidden { display: none; }
+#menu-drawer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #0d1f2e;
+  border-top: 1px solid rgba(135,206,235,.15);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px max(env(safe-area-inset-bottom, 20px), 20px);
+  animation: slide-up .3s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.menu-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 14px 12px;
+  background: none; border: none;
+  border-radius: 10px; color: #eaf2fa;
+  font-size: .95rem; cursor: pointer;
+  text-align: left; font-family: inherit;
+  transition: background .12s;
+}
+.menu-item:active { background: rgba(135,206,235,.10); }
+.menu-item-icon { font-size: 1.2rem; width: 28px; text-align: center; }
+.menu-sep { height: 1px; background: rgba(255,255,255,.08); margin: 6px 0; }
+
+/* ── タイマー設定 ── */
+#timer-settings {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(6,16,27,.95);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 20px; padding: 32px 24px;
+}
+#timer-settings.hidden { display: none; }
+.ts-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.3rem; font-weight: 700; color: #eaf2fa;
+}
+.ts-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; max-width: 320px;
+}
+.ts-label { font-size: .85rem; color: #7c98b0; width: 60px; }
+.ts-input {
+  flex: 1; padding: 10px 14px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(135,206,235,.2);
+  border-radius: 8px; color: #eaf2fa;
+  font-size: 1rem; text-align: center;
+  font-family: 'Noto Serif JP', serif;
+}
+.ts-input:focus { outline: none; border-color: #87ceeb; }
+.ts-apply {
+  width: 100%; max-width: 320px; padding: 14px;
+  background: #87ceeb; border: none; border-radius: 12px;
+  color: #06101b; font-weight: 700; font-size: 1rem;
+  cursor: pointer; font-family: 'Noto Serif JP', serif;
+}
+
+/* ── 世界テーマ（ぽもじかんPC版と連動） ── */
+body[data-world="sumido"]    { background-color: #e8dcc0; color: #1a1410; }
+body[data-world="sumido"]    #app { background: linear-gradient(180deg,#e8dcc0,#f6eede); }
+body[data-world="sumido"]    #ring-fg { stroke: #8a2a26; }
+body[data-world="sumido"]    #cta-btn { background:#8a2a26; color:#fff; box-shadow:0 4px 20px rgba(138,42,38,.35); }
+body[data-world="sumido"]    #leader-strip { background: rgba(232,220,192,.85); border-top-color: rgba(138,42,38,.2); }
+body[data-world="sumido"]    #timer-time, body[data-world="sumido"] #leader-lv { color: #1a1410; }
+body[data-world="kokeniwa"]  #app { background: linear-gradient(180deg,#152018,#2a3e2c); }
+body[data-world="kokeniwa"]  #ring-fg { stroke: #9bc080; }
+body[data-world="kokeniwa"]  #cta-btn { background:#9bc080; color:#152018; box-shadow:0 4px 20px rgba(155,192,128,.35); }
+body[data-world="kinkaku"]   #app { background: linear-gradient(180deg,#1a0d08,#48261a); }
+body[data-world="kinkaku"]   #ring-fg { stroke: #e4b060; }
+body[data-world="kinkaku"]   #cta-btn { background:#e4b060; color:#1a0d08; box-shadow:0 4px 20px rgba(228,176,96,.35); }
+body[data-world="harugasumi"] { background-color: #f0d8de; color: #2a1a26; }
+body[data-world="harugasumi"] #app { background: linear-gradient(180deg,#f0d8de,#fcf0f0); }
+body[data-world="harugasumi"] #ring-fg { stroke: #c46090; }
+body[data-world="harugasumi"] #cta-btn { background:#c46090; color:#fff; box-shadow:0 4px 20px rgba(196,96,144,.35); }
+body[data-world="harugasumi"] #leader-strip { background: rgba(240,216,222,.85); }
+body[data-world="harugasumi"] #timer-time, body[data-world="harugasumi"] #leader-lv { color: #2a1a26; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ヘッダ -->
+  <header id="m-header">
+    <div id="m-brand"><span class="b-accent">ぽ</span>もじかん</div>
+    <div id="m-today">今日 <span id="today-cycles">0</span>回</div>
+    <button id="m-menu-btn" aria-label="メニュー">☰</button>
+  </header>
+
+  <!-- 落下フィールド -->
+  <div id="fall-field"></div>
+
+  <!-- メイン（タイマー＋CTA） -->
+  <div id="m-main">
+    <div id="timer-wrap">
+      <svg id="timer-svg" viewBox="0 0 220 220" aria-hidden="true">
+        <circle id="ring-bg" cx="110" cy="110" r="105"/>
+        <circle id="ring-fg" cx="110" cy="110" r="105"/>
+      </svg>
+      <div id="timer-inner">
+        <div id="timer-mode">休む</div>
+        <div id="timer-time">25:00</div>
+        <div id="timer-sets">— / — セット</div>
+      </div>
+    </div>
+    <button id="cta-btn">始める</button>
+  </div>
+
+  <!-- リーダーストリップ -->
+  <div id="leader-strip">
+    <div id="leader-char">？</div>
+    <div id="leader-info" class="hidden">
+      <div id="leader-name-row">
+        <span id="leader-lv">Lv.1</span>
+        <span id="leader-rarity">★1</span>
+        <span id="leader-evo"></span>
+      </div>
+      <div id="leader-xp-bar"><div id="leader-xp-fill" style="width:0%"></div></div>
+      <div id="leader-stats">このセッション <span id="sess-caught">0</span>字 / 累計 <span id="total-caught">0</span>字</div>
+    </div>
+    <div id="no-leader-msg">リーダーを選んでください</div>
+    <button id="no-leader-btn">PC版で選ぶ</button>
+  </div>
+
+</div><!-- /app -->
+
+<!-- セッション完了オーバーレイ -->
+<div id="complete-overlay" class="hidden">
+  <div id="co-icon">🌧</div>
+  <div id="co-title">集中完了</div>
+  <div id="co-stats">
+    <div>
+      <span class="co-stat-val" id="co-cycles">0</span>
+      <span class="co-stat-lbl">回</span>
+    </div>
+    <div>
+      <span class="co-stat-val" id="co-caught">0</span>
+      <span class="co-stat-lbl">字拾った</span>
+    </div>
+    <div>
+      <span class="co-stat-val" id="co-xp">0</span>
+      <span class="co-stat-lbl">XP獲得</span>
+    </div>
+  </div>
+  <button id="co-uiki-btn">📋 UIKIに記録する</button>
+  <button id="co-next-btn">続ける</button>
+</div>
+
+<!-- メニューオーバーレイ -->
+<div id="menu-overlay" class="hidden">
+  <div id="menu-drawer">
+    <button class="menu-item" id="mn-timer"><span class="menu-item-icon">⏱</span>タイマー設定</button>
+    <button class="menu-item" id="mn-uiki"><span class="menu-item-icon">🌧</span>UIKIを開く</button>
+    <div class="menu-sep"></div>
+    <button class="menu-item" id="mn-pc"><span class="menu-item-icon">💻</span>PC版（フル機能）を開く</button>
+    <div class="menu-sep"></div>
+    <button class="menu-item" id="mn-close"><span class="menu-item-icon">✕</span>閉じる</button>
+  </div>
+</div>
+
+<!-- タイマー設定 -->
+<div id="timer-settings" class="hidden">
+  <div class="ts-title">タイマー設定</div>
+  <div class="ts-row">
+    <span class="ts-label">作業</span>
+    <input class="ts-input" id="ts-work" type="number" min="1" max="180" value="25"> 分
+  </div>
+  <div class="ts-row">
+    <span class="ts-label">休憩</span>
+    <input class="ts-input" id="ts-rest" type="number" min="1" max="60" value="5"> 分
+  </div>
+  <div class="ts-row">
+    <span class="ts-label">セット数</span>
+    <input class="ts-input" id="ts-sets" type="number" min="1" max="20" value="3">
+  </div>
+  <button class="ts-apply" id="ts-apply">適用</button>
+</div>
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════
+   ぽもじかん Mobile ── スマホ特化版
+   ・PC版（pomojikan_v30）のデータを読み書き共有
+   ・タップのみ・物理エンジンなし
+   ・タイマー完了でUIKI連携
+   ═══════════════════════════════════════════ */
+
+// ── 定数 ──────────────────────────────────────
+const LS_KEY = 'pomojikan_v30';
+const SHARED_KEY = 'shared_pomojikan_party';
+
+const RARITY_TO_TIER = {
+  '★1':1,'★2':2,'★3':3,'★4':4,'★5':5,'★6':6,'★7':7,'★8':8,
+  '★9':9,'★10':10,'★11':11,'★12':12,'★13':13,'★14':14,'★15':15,'★16':16
+};
+const EVO_STAGE_LV = [10,30,70,150,300,600,1000,2000,5000,10000,30000,100000,300000,1000000,10000000];
+const EVO_GLYPH    = ['','✦','✧','✩','☆','✯','✪','❂','✺','✹','𓂀','𓁹','𒀭','☥','⚛','∞'];
+
+// テーマ別グリフプール
+const GLYPH_POOL = {
+  yoruame:    ['雨','雫','音','静','間','詩','夜','藍','澄','響','水','心','空','陰','閑','霧','滴'],
+  sumido:     ['道','無','空','禅','一','心','静','寂','字','墨','書','茶','花','月','風','松','竹'],
+  kokeniwa:   ['苔','葉','緑','森','石','風','木','蔭','滴','光','土','岩','幽','玄','蘚','苑','庭'],
+  kinkaku:    ['金','閣','炎','陽','輝','光','燦','焔','緋','朱','瑠','璃','華','栄','曜','煌','煉'],
+  harugasumi: ['春','花','霞','桜','夢','麗','薄','紅','匂','和','咲','艶','雅','綻','麗','暖','陽'],
+};
+const DEFAULT_POOL = ['雨','心','光','夢','空','花','風','月','雲','星','水','音','詩','道','命'];
+
+// ── 状態 ─────────────────────────────────────
+let state = {};         // pomojikan_v30 から読む
+let timerSec = 25*60;  // 残り秒
+let totalSec = 25*60;  // フェーズ全体秒
+let timerMode = 'idle'; // idle | work | rest
+let timerInterval = null;
+let setsDone = 0;
+let setsTarget = 3;
+let sessCaught = 0;
+let sessXP = 0;
+let spawnInterval = null;
+
+// ── 読み込み ──────────────────────────────────
+function loadState() {
+  try { state = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { state = {}; }
+  const t = state.timer || {};
+  timerSec = totalSec = (t.workSec || 25*60);
+  setsTarget = t.setsTarget || 3;
+  setsDone = 0;
+  applyWorldTheme();
+}
+
+function saveState() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
+  writeSharedParty();
+}
+
+function writeSharedParty() {
+  const members = state.party?.members || [];
+  const party = members.map(m => {
+    const lv = m.level || 1;
+    const stage = evoStage(lv);
+    return {
+      char: m.char, tier: RARITY_TO_TIER[m.rarity] || 1,
+      lv, evoStage: stage, evoGlyph: EVO_GLYPH[stage] || ''
+    };
+  });
+  try { localStorage.setItem(SHARED_KEY, JSON.stringify({ party, updatedAt: new Date().toISOString() })); } catch(e) {}
+}
+
+function evoStage(lv) {
+  for (let i = EVO_STAGE_LV.length - 1; i >= 0; i--) {
+    if (lv >= EVO_STAGE_LV[i]) return i + 1;
+  }
+  return 0;
+}
+
+// ── テーマ ────────────────────────────────────
+function applyWorldTheme() {
+  const w = state.themePref;
+  const worlds = ['yoruame','sumido','kokeniwa','kinkaku','harugasumi'];
+  document.body.dataset.world = worlds.includes(w) ? w : '';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  const chromeMap = { yoruame:'#06101b', sumido:'#e0d2b0', kokeniwa:'#16201a', kinkaku:'#1a0c06', harugasumi:'#ecccd4' };
+  if (meta) meta.content = chromeMap[w] || '#06101b';
+}
+
+// ── UI更新 ────────────────────────────────────
+function getAccentColor() {
+  const w = document.body.dataset.world;
+  const map = { sumido:'#8a2a26', kokeniwa:'#9bc080', kinkaku:'#e4b060', harugasumi:'#c46090' };
+  return map[w] || '#87ceeb';
+}
+
+function renderLeader() {
+  const members = state.party?.members;
+  const leader = members?.[state.party?.hero || 0];
+  const char = document.getElementById('leader-char');
+  const info = document.getElementById('leader-info');
+  const noMsg = document.getElementById('no-leader-msg');
+  const noBtn = document.getElementById('no-leader-btn');
+
+  if (!leader) {
+    char.textContent = '？';
+    info.classList.add('hidden');
+    noMsg.style.display = '';
+    noBtn.style.display = '';
+    return;
+  }
+  info.classList.remove('hidden');
+  noMsg.style.display = 'none';
+  noBtn.style.display = 'none';
+
+  const stage = evoStage(leader.level || 1);
+  const glyph = EVO_GLYPH[stage] || '';
+  char.textContent = leader.char;
+  char.style.textShadow = tierGlow(RARITY_TO_TIER[leader.rarity] || 1);
+  document.getElementById('leader-lv').textContent = `Lv.${(leader.level || 1).toLocaleString()}`;
+  document.getElementById('leader-rarity').textContent = leader.rarity || '★1';
+  document.getElementById('leader-evo').textContent = glyph ? `${glyph} ${stage}段階` : '';
+  // XPバー（PC版のexpForLevel計算を簡易再現）
+  const expRatio = Math.min(1, (leader.exp || 0) / expForLevel(leader.level || 1));
+  document.getElementById('leader-xp-fill').style.width = (expRatio * 100) + '%';
+  document.getElementById('total-caught').textContent = (state.stats?.totalDrops || 0).toLocaleString();
+  document.getElementById('sess-caught').textContent = sessCaught;
+}
+
+function expForLevel(lv) {
+  // PC版と同じ簡易計算（effectiveExpForLevel相当）
+  return Math.floor(100 * Math.pow(1.08, Math.min(lv, 200)) + lv * 10);
+}
+
+function tierGlow(tier) {
+  if (tier >= 16) return '0 0 18px gold, 0 0 30px #ff8';
+  if (tier >= 14) return '0 0 12px gold, 0 0 20px rgba(255,200,100,.7)';
+  if (tier >= 12) return '0 0 8px #87ceeb, 0 0 14px rgba(255,200,100,.5)';
+  if (tier >= 8)  return '0 0 6px #87ceeb';
+  return 'none';
+}
+
+function renderTimer() {
+  const mm = String(Math.floor(timerSec / 60)).padStart(2,'0');
+  const ss = String(timerSec % 60).padStart(2,'0');
+  document.getElementById('timer-time').textContent = `${mm}:${ss}`;
+
+  const labels = { idle:'休む', work:'集中', rest:'休憩' };
+  document.getElementById('timer-mode').textContent = labels[timerMode] || '';
+  document.getElementById('timer-sets').textContent = `${setsDone} / ${setsTarget} セット`;
+
+  const ratio = totalSec > 0 ? 1 - (timerSec / totalSec) : 0;
+  const circ = 2 * Math.PI * 105;
+  document.getElementById('ring-fg').style.strokeDashoffset = circ * (1 - ratio);
+  const ringColor = timerMode === 'rest' ? '#f0d48a' : getAccentColor();
+  document.getElementById('ring-fg').style.stroke = ringColor;
+
+  const btn = document.getElementById('cta-btn');
+  if (timerMode === 'idle') {
+    btn.textContent = '始める'; btn.className = '';
+  } else if (timerMode === 'work' || timerMode === 'rest') {
+    btn.textContent = '一時停止'; btn.className = 'pause-mode';
+  }
+}
+
+function renderToday() {
+  const today = new Date().toISOString().slice(0,10);
+  const dc = state.dailyCycles || {};
+  document.getElementById('today-cycles').textContent = (dc[today] || 0) + setsDone;
+}
+
+// ── タイマー ──────────────────────────────────
+function startTimer(mode) {
+  clearInterval(timerInterval);
+  timerMode = mode;
+  const t = state.timer || {};
+  if (mode === 'work') {
+    timerSec = totalSec = (t.workSec || 25*60);
+    startSpawning();
+  } else {
+    timerSec = totalSec = (t.restSec || 5*60);
+    stopSpawning();
+  }
+  renderTimer();
+  timerInterval = setInterval(tick, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  stopSpawning();
+  timerMode = 'idle';
+  renderTimer();
+}
+
+function tick() {
+  timerSec--;
+  if (timerSec <= 0) {
+    timerSec = 0;
+    renderTimer();
+    clearInterval(timerInterval);
+    if (timerMode === 'work') onWorkComplete();
+    else onRestComplete();
+    return;
+  }
+  renderTimer();
+}
+
+function onWorkComplete() {
+  setsDone++;
+  stopSpawning();
+  // 日別サイクル記録
+  const today = new Date().toISOString().slice(0,10);
+  if (!state.dailyCycles) state.dailyCycles = {};
+  state.dailyCycles[today] = (state.dailyCycles[today] || 0) + 1;
+  if (!state.stats) state.stats = {};
+  state.stats.totalCycles = (state.stats.totalCycles || 0) + 1;
+  saveState();
+  renderToday();
+  showCompleteOverlay();
+}
+
+function onRestComplete() {
+  if (setsDone >= setsTarget) {
+    timerMode = 'idle';
+    renderTimer();
+    return;
+  }
+  startTimer('work');
+}
+
+// ── 完了オーバーレイ ──────────────────────────
+function showCompleteOverlay() {
+  document.getElementById('co-cycles').textContent = setsDone;
+  document.getElementById('co-caught').textContent = sessCaught;
+  document.getElementById('co-xp').textContent = sessXP;
+  document.getElementById('complete-overlay').classList.remove('hidden');
+}
+
+document.getElementById('co-uiki-btn').addEventListener('click', () => {
+  sendToUiki();
+  document.getElementById('co-uiki-btn').textContent = '✓ UIKIに記録しました';
+  document.getElementById('co-uiki-btn').disabled = true;
+});
+
+document.getElementById('co-next-btn').addEventListener('click', () => {
+  document.getElementById('complete-overlay').classList.add('hidden');
+  sessCaught = 0; sessXP = 0;
+  renderLeader();
+  if (setsDone < setsTarget) startTimer('rest');
+  else { timerMode = 'idle'; renderTimer(); }
+});
+
+function sendToUiki() {
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const inbox = JSON.parse(localStorage.getItem('uiki_inbox') || '[]');
+    inbox.push({
+      text: `ぽもじかん集中 ${setsDone}回・${sessCaught}字拾った（${today}）`,
+      projectName: 'ぽもじかん',
+      projectColor: '#87ceeb',
+      createdAt: new Date().toISOString(),
+      device: 'mobile'
+    });
+    localStorage.setItem('uiki_inbox', JSON.stringify(inbox));
+  } catch(e) {}
+}
+
+// ── 字の落下 ──────────────────────────────────
+function getCharPool() {
+  const world = document.body.dataset.world || 'yoruame';
+  const themePool = GLYPH_POOL[world] || DEFAULT_POOL;
+  const discovered = Object.keys(state.collection || {});
+  // 発見済みの字（tier 1〜unlockedTier）を混ぜる
+  const maxTier = (state.unlockedTier || 0) + 1;
+  const eligible = discovered.filter(c => c.length === 1).slice(0, 200);
+  return eligible.length > 5
+    ? [...themePool, ...eligible.slice(0, 30)]
+    : themePool;
+}
+
+function spawnChar() {
+  const field = document.getElementById('fall-field');
+  const pool = getCharPool();
+  const char = pool[Math.floor(Math.random() * pool.length)];
+  const tier = Math.random() < 0.6 ? 1 : Math.random() < 0.8 ? 2 : Math.random() < 0.9 ? 3 : 4;
+  const size = 36 + Math.random() * 22 + tier * 4;
+  const dur  = 12 + Math.random() * 10;
+  const left = 5 + Math.random() * 88;
+  const accent = getAccentColor();
+
+  const el = document.createElement('div');
+  el.className = 'f-char';
+  el.textContent = char;
+  el.style.cssText = `
+    left: ${left}%;
+    font-size: ${size}px;
+    width: ${size + 16}px; height: ${size + 16}px;
+    color: ${tier >= 3 ? '#f0d48a' : accent};
+    text-shadow: ${tier >= 3 ? `0 0 10px ${accent}` : 'none'};
+    animation-duration: ${dur}s;
+    animation-delay: 0s;
+  `;
+
+  el.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    if (timerMode !== 'work') return;
+    catchChar(el, char, tier, left, e.clientY);
+  }, { once: true });
+
+  field.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
+function catchChar(el, char, tier, leftPct, clientY) {
+  el.classList.add('caught');
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+
+  const xpBase = [1,2,4,8,16,24,36,52,72,96,124,156,196,240,288,340];
+  const xp = xpBase[Math.min(tier - 1, 15)] || 1;
+  sessCaught++;
+  sessXP += xp;
+
+  // XPポップ
+  const pop = document.createElement('div');
+  pop.className = 'f-xp-pop';
+  pop.textContent = `+${xp}`;
+  pop.style.cssText = `left:${leftPct}%; top:${Math.max(10, clientY - document.getElementById('fall-field').getBoundingClientRect().top - 30)}px;`;
+  document.getElementById('fall-field').appendChild(pop);
+  pop.addEventListener('animationend', () => pop.remove());
+
+  // コレクションに追加
+  if (!state.collection) state.collection = {};
+  state.collection[char] = (state.collection[char] || 0) + 1;
+
+  // リーダーにXP追加
+  addXpToLeader(xp);
+  renderLeader();
+}
+
+function addXpToLeader(xp) {
+  const members = state.party?.members;
+  if (!members?.length) return;
+  const hi = state.party.hero || 0;
+  const leader = members[hi];
+  if (!leader) return;
+  leader.exp = (leader.exp || 0) + xp;
+  const needed = expForLevel(leader.level || 1);
+  while (leader.exp >= needed) {
+    leader.exp -= needed;
+    leader.level = (leader.level || 1) + 1;
+    // tier解放
+    const lv = leader.level;
+    const unlock = {3:'★2',6:'★3',10:'★4',14:'★5',18:'★6',24:'★7',32:'★8',42:'★9',55:'★10',70:'★11',90:'★12',115:'★13',145:'★14',180:'★15',220:'★16'};
+    if (unlock[lv]) state.unlockedTier = Math.max(state.unlockedTier||0, RARITY_TO_TIER[unlock[lv]]-1);
+  }
+  if (!state.stats) state.stats = {};
+  state.stats.totalDrops = (state.stats.totalDrops || 0) + 1;
+  state.stats.totalExp = (state.stats.totalExp || 0) + xp;
+  // 定期保存（5字ごと）
+  if (sessCaught % 5 === 0) saveState();
+}
+
+function startSpawning() {
+  stopSpawning();
+  spawnChar(); // 最初は即座に
+  const density = 2800;
+  spawnInterval = setInterval(spawnChar, density);
+}
+
+function stopSpawning() {
+  clearInterval(spawnInterval);
+  spawnInterval = null;
+  // 残キャラをフェードアウト
+  document.querySelectorAll('.f-char:not(.caught)').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .5s';
+    setTimeout(() => el.remove(), 500);
+  });
+}
+
+// ── CTAボタン ─────────────────────────────────
+document.getElementById('cta-btn').addEventListener('click', () => {
+  if (timerMode === 'idle') {
+    const members = state.party?.members;
+    if (!members?.length) {
+      alert('PC版でリーダーを選んでから始めてください。');
+      return;
+    }
+    sessCaught = 0; sessXP = 0;
+    startTimer('work');
+  } else {
+    pauseTimer();
+  }
+});
+
+// ── メニュー ──────────────────────────────────
+function openMenu() { document.getElementById('menu-overlay').classList.remove('hidden'); }
+function closeMenu() { document.getElementById('menu-overlay').classList.add('hidden'); }
+
+document.getElementById('m-menu-btn').addEventListener('click', openMenu);
+document.getElementById('menu-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeMenu();
+});
+document.getElementById('mn-close').addEventListener('click', closeMenu);
+document.getElementById('mn-pc').addEventListener('click', () => { location.href = 'index.html'; });
+document.getElementById('mn-uiki').addEventListener('click', () => { location.href = '../UIKI/index.html'; });
+document.getElementById('mn-timer').addEventListener('click', () => {
+  closeMenu();
+  openTimerSettings();
+});
+
+// ── タイマー設定 ───────────────────────────────
+function openTimerSettings() {
+  const t = state.timer || {};
+  document.getElementById('ts-work').value = Math.round((t.workSec || 25*60) / 60);
+  document.getElementById('ts-rest').value = Math.round((t.restSec || 5*60) / 60);
+  document.getElementById('ts-sets').value = t.setsTarget || 3;
+  document.getElementById('timer-settings').classList.remove('hidden');
+}
+
+document.getElementById('ts-apply').addEventListener('click', () => {
+  const workMin = Math.max(1, Math.min(180, parseInt(document.getElementById('ts-work').value) || 25));
+  const restMin = Math.max(1, Math.min(60,  parseInt(document.getElementById('ts-rest').value) || 5));
+  const sets    = Math.max(1, Math.min(20,  parseInt(document.getElementById('ts-sets').value) || 3));
+  if (!state.timer) state.timer = {};
+  state.timer.workSec   = workMin * 60;
+  state.timer.restSec   = restMin * 60;
+  state.timer.setsTarget = sets;
+  setsTarget = sets;
+  saveState();
+  if (timerMode === 'idle') { timerSec = totalSec = workMin * 60; renderTimer(); }
+  document.getElementById('timer-settings').classList.add('hidden');
+});
+
+// ── 初期化 ────────────────────────────────────
+loadState();
+renderLeader();
+renderTimer();
+renderToday();
+</script>
+</body>
+</html>

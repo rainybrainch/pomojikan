@@ -18,6 +18,20 @@
 </head>
 <body data-mode="idle">
 
+<!-- スマホ検出バナー -->
+<div id="mobile-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(13,31,46,0.95);color:#eaf2fa;text-align:center;padding:12px 16px;font-size:14px;backdrop-filter:blur(8px);">
+  📱 スマホ版はこちら →
+  <a href="mobile.html" style="color:#87ceeb;font-weight:bold;margin-left:6px;">ぽもじかん Mobile</a>
+  <button onclick="document.getElementById('mobile-banner').remove();localStorage.setItem('pomoji_pc_preferred','1');" style="margin-left:12px;background:none;border:1px solid #87ceeb44;color:#87ceeb;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:12px;">このまま使う</button>
+</div>
+<script>
+(function(){
+  if(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)&&!localStorage.getItem('pomoji_pc_preferred')){
+    document.getElementById('mobile-banner').style.display='block';
+  }
+})();
+</script>
+
 <!-- 全画面背景：作業中=雨 / 休憩中=泡 -->
 <div class="rain-bg" id="rain-bg" aria-hidden="true"></div>
 <div class="bubble-bg" id="bubble-bg" aria-hidden="true"></div>
