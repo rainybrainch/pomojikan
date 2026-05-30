@@ -2396,11 +2396,18 @@ function currentDropTier() {
 }
 
 function updateUnlockTier() {
-  const newTier = currentDropTier();
+  // rawBand = キャップなしの実力ティア（プレミアム判定に使う）
+  let rawBand = 0;
+  for (let i = 1; i < RARITY_TIERS.length; i++) {
+    if (tierSeenRatio(i - 1) >= 0.8) rawBand = i;
+    else break;
+  }
+  const newTier = currentDropTier(); // 未購入時は ★9(idx8) 上限
   const oldTier = STATE.unlockedTier;
   STATE.unlockedTier = newTier;
-  // ★10 到達（未購入）→ プレミアムモーダルを表示
-  if (newTier >= PREMIUM_MIN_TIER_IDX && !STATE.isPurchased) {
+
+  // ★10 閾値に初めて到達 かつ 未購入 → プレミアムモーダル（1回だけ）
+  if (!STATE.isPurchased && rawBand >= PREMIUM_MIN_TIER_IDX && oldTier < PREMIUM_MIN_TIER_IDX) {
     setTimeout(() => openPremiumModal('★10'), 600);
     return;
   }
@@ -9845,24 +9852,8 @@ function _showPurchasedModal() {
       osc.stop(ctx.currentTime + i * 0.1 + 0.55);
     });
   } catch (_) {}
-  // ★10以上の tier を解放（updateUnlockTier を再評価）
-  setTimeout(() => {
-    STATE.isPurchased = true; // 確保
-    updateUnlockTier();
-  }, 1000);
-}
-
-// 購入後に unlockedTier を正しく更新（購入前に上限をかけていたので再計算）
-function _recalcTierAfterPurchase() {
-  let band = 0;
-  for (let i = 1; i < RARITY_TIERS.length; i++) {
-    if (tierSeenRatio(i - 1) >= 0.8) band = i;
-    else break;
-  }
-  if (band !== STATE.unlockedTier) {
-    STATE.unlockedTier = band;
-    saveState();
-  }
+  // ★10以上の tier を解放（isPurchased=true 後に updateUnlockTier を再評価）
+  setTimeout(() => updateUnlockTier(), 1000);
 }
 
 // 7日連続バナーを表示するか判定（起動時に呼ぶ）
@@ -9938,6 +9929,11 @@ function _injectPurchaseSectionToStats() {
   }
   renderPurchaseSection();
   dangerZone.insertAdjacentElement('beforebegin', section);
-  // stats モーダルが開くたびに更新
-  document.getElementById('stats-modal')?.addEventListener('transitionend', renderPurchaseSection);
+  // stats モーダルが開くたびに更新（MutationObserver で show クラスを監視）
+  const statsModal = document.getElementById('stats-modal');
+  if (statsModal) {
+    new MutationObserver(() => {
+      if (statsModal.classList.contains('show')) renderPurchaseSection();
+    }).observe(statsModal, { attributes: true, attributeFilter: ['class'] });
+  }
 }
