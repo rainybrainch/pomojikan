@@ -653,6 +653,89 @@
 <!-- アクセシビリティ -->
 <div class="sr-only" id="aria-status" aria-live="polite"></div>
 
+<!-- ★10+ 完全版プレミアムゲートモーダル -->
+<div class="modal" id="premium-modal" role="dialog" aria-modal="true" aria-labelledby="premium-modal-title">
+  <div class="modal-card" style="max-width:400px;position:relative;overflow:hidden;">
+    <!-- 背景装飾 -->
+    <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-family:'Shippori Mincho B1',serif;font-size:110px;font-weight:700;color:rgba(240,212,138,0.06);pointer-events:none;line-height:1;" aria-hidden="true">拾</div>
+
+    <button class="modal-close" id="premium-close" aria-label="閉じる">×</button>
+
+    <!-- ヘッダー -->
+    <div style="margin-bottom:16px;">
+      <span style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:99px;background:rgba(240,212,138,0.12);border:1px solid rgba(240,212,138,0.3);color:var(--gold);">完全版</span>
+      <h2 class="modal-title" id="premium-modal-title" style="margin-top:10px;font-size:1.3rem;">文字の博物館へ</h2>
+      <p class="modal-desc" id="premium-modal-desc">★10以上の文字が解放されます</p>
+    </div>
+
+    <!-- 無料版でできること -->
+    <div style="background:rgba(135,206,235,0.05);border:1px solid rgba(135,206,235,0.12);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+      <p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ink-mute);margin:0 0 8px;">無料版でできること</p>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px;">
+        <li style="font-size:12px;color:var(--ink-mute);display:flex;gap:6px;"><span style="color:var(--accent);">✓</span>★1〜★9の文字（ひらがな〜小4漢字）</li>
+        <li style="font-size:12px;color:var(--ink-mute);display:flex;gap:6px;"><span style="color:var(--accent);">✓</span>4体パーティ・書体進化（楷書〜行書）</li>
+        <li style="font-size:12px;color:var(--ink-mute);display:flex;gap:6px;"><span style="color:var(--accent);">✓</span>ポモドーロタイマー・全テーマ</li>
+      </ul>
+    </div>
+
+    <!-- 完全版機能 -->
+    <ul style="list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:8px;">
+      <li style="font-size:13px;color:var(--ink-mute);display:flex;align-items:flex-start;gap:8px;"><span style="font-size:15px;flex-shrink:0;">⭐</span>★10〜★16（中高校・人名・古典・神字 全字）</li>
+      <li style="font-size:13px;color:var(--ink-mute);display:flex;align-items:flex-start;gap:8px;"><span style="font-size:15px;flex-shrink:0;">📖</span>書体進化 全15段（草書・篆書・甲骨・神代文字）</li>
+      <li style="font-size:13px;color:var(--ink-mute);display:flex;align-items:flex-start;gap:8px;"><span style="font-size:15px;flex-shrink:0;">⚗</span>熟語合成システム</li>
+      <li style="font-size:13px;color:var(--ink-mute);display:flex;align-items:flex-start;gap:8px;"><span style="font-size:15px;flex-shrink:0;">👥</span>パーティ拡張・達成バッジ全開放</li>
+    </ul>
+
+    <!-- 価格 + CTA -->
+    <div style="background:linear-gradient(135deg,rgba(240,212,138,0.10),rgba(135,206,235,0.06));border:1px solid rgba(240,212,138,0.22);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:14px;font-weight:600;color:var(--ink);">ぽもじかん 完全版</span>
+        <div style="text-align:right;">
+          <span style="font-size:22px;font-weight:700;color:var(--gold);">¥480</span>
+          <span style="font-size:11px;color:var(--ink-mute);margin-left:4px;">買い切り</span>
+        </div>
+      </div>
+      <button id="btn-purchase-full" style="width:100%;padding:13px;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--gold),#c9a84c);color:#07111c;transition:opacity .15s;">
+        完全版を手に入れる ✦
+      </button>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:var(--ink-mute);margin:0 0 8px;">一度購入すれば永久に使えます</p>
+    <button id="btn-premium-skip" style="display:block;width:100%;padding:8px;border:none;background:none;color:var(--ink-mute);font-size:12px;cursor:pointer;">今はしない（無料版で続ける）</button>
+  </div>
+</div>
+
+<!-- 購入完了モーダル -->
+<div class="modal" id="purchased-modal" role="dialog" aria-modal="true">
+  <div class="modal-card" style="max-width:360px;text-align:center;">
+    <div id="purchased-kanji" style="font-family:'Shippori Mincho B1',serif;font-size:72px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:12px;text-shadow:0 0 24px rgba(240,212,138,0.7),0 0 60px rgba(240,212,138,0.3);"></div>
+    <span style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;padding:3px 12px;border-radius:99px;background:rgba(240,212,138,0.14);border:1px solid rgba(240,212,138,0.3);color:var(--gold);margin-bottom:14px;">✦ 完全版 解放</span>
+    <h2 class="modal-title" style="margin-bottom:6px;">ありがとうございます</h2>
+    <p class="modal-desc" style="margin-bottom:16px;">文字の博物館が全て開きました。<br>★10〜★16 の文字が降ってきます。</p>
+    <div style="background:rgba(240,212,138,0.06);border:1px solid rgba(240,212,138,0.14);border-radius:12px;padding:12px;margin-bottom:16px;text-align:left;">
+      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-mute);margin-bottom:6px;"><span>⭐</span>★10〜★16 全文字解放</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-mute);margin-bottom:6px;"><span>📖</span>書体進化 全15段</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-mute);"><span>⚗</span>熟語合成システム</div>
+    </div>
+    <button id="btn-purchased-ok" style="width:100%;padding:13px;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--gold),#c9a84c);color:#07111c;">
+      あそびに行く ✦
+    </button>
+  </div>
+</div>
+
+<!-- 7日連続バナー（条件付き表示） -->
+<div id="streak-premium-banner" style="display:none;position:fixed;bottom:72px;left:12px;right:12px;z-index:90;background:linear-gradient(135deg,rgba(240,212,138,0.12),rgba(135,206,235,0.07));border:1px solid rgba(240,212,138,0.25);border-radius:16px;padding:12px 14px;backdrop-filter:blur(12px);">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">🔥</span>
+    <div style="flex:1;min-width:0;">
+      <p id="streak-banner-title" style="font-size:13px;font-weight:700;color:var(--gold);margin:0 0 2px;"></p>
+      <p style="font-size:11px;color:var(--ink-mute);margin:0;">完全版で★10〜★16も集められます</p>
+    </div>
+    <button onclick="openPremiumModal()" style="flex-shrink:0;padding:6px 12px;border:1px solid rgba(240,212,138,0.28);border-radius:99px;background:rgba(240,212,138,0.12);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;">¥480</button>
+    <button onclick="document.getElementById('streak-premium-banner').style.display='none';" style="flex-shrink:0;width:28px;height:28px;border:none;background:rgba(255,255,255,0.06);border-radius:50%;color:var(--ink-mute);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+  </div>
+</div>
+
 <script src="codex.js?v=20260523-v1594" defer></script>
 <script src="app.js?v=20260523-v1594" defer></script>
 </body>

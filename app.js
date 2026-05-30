@@ -514,6 +514,7 @@ const DEFAULT_STATE = {
   milestones: {},                 // v10 ─ 長期達成バッジ { 'cycle_100': 1746543210, 'char_10000': ... }
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
+  isPurchased: false,             // 完全版買い切り（¥480）── ★10以上を解放
   favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（★）字／熟語
   partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
   lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
@@ -2377,12 +2378,19 @@ function tierSeenRatio(tierIdx) {
   const seen = chars.filter(k => (STATE.collection?.[k.char || k.c] || 0) > 0).length;
   return seen / chars.length;
 }
+// ★10以上（index 9〜）は完全版購入が必要
+const PREMIUM_MIN_TIER_IDX = 9;
+
 function currentDropTier() {
   // 段階解放：tier 0 は常に開放。以後、前 tier が 80% 以上発見されたら次を解放
   let band = 0;
   for (let i = 1; i < RARITY_TIERS.length; i++) {
     if (tierSeenRatio(i - 1) >= 0.8) band = i;
     else break;
+  }
+  // 未購入の場合 ★9（index 8）上限
+  if (!STATE.isPurchased && band >= PREMIUM_MIN_TIER_IDX) {
+    band = PREMIUM_MIN_TIER_IDX - 1;
   }
   return band;
 }
@@ -2391,6 +2399,11 @@ function updateUnlockTier() {
   const newTier = currentDropTier();
   const oldTier = STATE.unlockedTier;
   STATE.unlockedTier = newTier;
+  // ★10 到達（未購入）→ プレミアムモーダルを表示
+  if (newTier >= PREMIUM_MIN_TIER_IDX && !STATE.isPurchased) {
+    setTimeout(() => openPremiumModal('★10'), 600);
+    return;
+  }
   // Band-up: 全画面解放セレモニー（??? → ★N の盛大な発表）
   if (newTier > oldTier) {
     setTimeout(() => {
@@ -9776,4 +9789,155 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
+}
+
+// ══════════════════════════════════════════════════════════════
+// 完全版 買い切り課金システム（¥480）
+// 実装：openPremiumModal / purchaseFullVersion / 7日連続バナー
+// ══════════════════════════════════════════════════════════════
+
+function openPremiumModal(triggeredTier) {
+  const modal = document.getElementById('premium-modal');
+  if (!modal) return;
+  // 説明文を動的に変更
+  const desc = document.getElementById('premium-modal-desc');
+  if (desc) {
+    desc.textContent = triggeredTier
+      ? `${triggeredTier} の文字は完全版で解放されます`
+      : '★10〜★16の文字が解放されます';
+  }
+  modal.classList.add('show');
+}
+
+function closePremiumModal() {
+  document.getElementById('premium-modal')?.classList.remove('show');
+}
+
+function purchaseFullVersion() {
+  // 実際のリリースではここに RevenueCat / App Store IAP を繋ぐ
+  STATE.isPurchased = true;
+  saveState();
+  closePremiumModal();
+  _showPurchasedModal();
+}
+
+function _showPurchasedModal() {
+  const modal = document.getElementById('purchased-modal');
+  if (!modal) return;
+  // 現在のパーティリーダーの漢字を表示
+  const hero = STATE.party?.members?.[STATE.party?.hero || 0];
+  const kanjiEl = document.getElementById('purchased-kanji');
+  if (kanjiEl && hero?.char) kanjiEl.textContent = hero.char;
+  modal.classList.add('show');
+  // 購入完了音
+  try {
+    const ctx = new AudioContext();
+    const notes = [523, 659, 784, 1047, 1319];
+    notes.forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.frequency.value = f;
+      g.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+      g.gain.linearRampToValueAtTime(0.22, ctx.currentTime + i * 0.1 + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.5);
+      osc.start(ctx.currentTime + i * 0.1);
+      osc.stop(ctx.currentTime + i * 0.1 + 0.55);
+    });
+  } catch (_) {}
+  // ★10以上の tier を解放（updateUnlockTier を再評価）
+  setTimeout(() => {
+    STATE.isPurchased = true; // 確保
+    updateUnlockTier();
+  }, 1000);
+}
+
+// 購入後に unlockedTier を正しく更新（購入前に上限をかけていたので再計算）
+function _recalcTierAfterPurchase() {
+  let band = 0;
+  for (let i = 1; i < RARITY_TIERS.length; i++) {
+    if (tierSeenRatio(i - 1) >= 0.8) band = i;
+    else break;
+  }
+  if (band !== STATE.unlockedTier) {
+    STATE.unlockedTier = band;
+    saveState();
+  }
+}
+
+// 7日連続バナーを表示するか判定（起動時に呼ぶ）
+function checkStreakPremiumBanner() {
+  if (STATE.isPurchased) return; // 購入済みなら不要
+  const streak = STATE.streak?.current || 0;
+  if (streak < 7) return;
+  const banner = document.getElementById('streak-premium-banner');
+  if (!banner) return;
+  const title = document.getElementById('streak-banner-title');
+  if (title) title.textContent = `${streak}日連続達成！`;
+  banner.style.display = 'flex';
+}
+
+// ── イベントリスナー登録（DOMContentLoaded 以降） ──
+document.addEventListener('DOMContentLoaded', () => {
+  // プレミアムモーダル
+  document.getElementById('premium-close')?.addEventListener('click', closePremiumModal);
+  document.getElementById('btn-premium-skip')?.addEventListener('click', closePremiumModal);
+  document.getElementById('btn-purchase-full')?.addEventListener('click', purchaseFullVersion);
+  document.getElementById('premium-modal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closePremiumModal();
+  });
+
+  // 購入完了モーダル
+  document.getElementById('btn-purchased-ok')?.addEventListener('click', () => {
+    document.getElementById('purchased-modal')?.classList.remove('show');
+  });
+
+  // 記録モーダルに購入セクションを動的挿入
+  _injectPurchaseSectionToStats();
+
+  // 7日連続バナー
+  setTimeout(checkStreakPremiumBanner, 1500);
+});
+
+// 記録（stats）モーダルに「完全版」セクションを追加
+function _injectPurchaseSectionToStats() {
+  const dangerZone = document.querySelector('.danger-zone');
+  if (!dangerZone) return;
+  const section = document.createElement('div');
+  section.id = 'purchase-section-in-stats';
+  section.style.cssText = 'margin-bottom:20px;';
+  function renderPurchaseSection() {
+    if (STATE.isPurchased) {
+      section.innerHTML = `
+        <h3 class="stats-section-title">完全版</h3>
+        <div style="background:rgba(240,212,138,0.07);border:1px solid rgba(240,212,138,0.2);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:22px;">✦</span>
+          <div>
+            <p style="font-weight:700;font-size:13px;color:var(--gold);margin:0 0 2px;">完全版 購入済み</p>
+            <p style="font-size:12px;color:var(--ink-mute);margin:0;">★1〜★16 全文字・全機能が使えます</p>
+          </div>
+        </div>`;
+    } else {
+      section.innerHTML = `
+        <h3 class="stats-section-title">完全版</h3>
+        <div style="border:1px solid rgba(240,212,138,0.18);border-radius:12px;overflow:hidden;">
+          <div style="padding:12px 14px;background:rgba(240,212,138,0.06);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <p style="font-weight:600;font-size:13px;color:var(--ink);margin:0 0 2px;">ぽもじかん 完全版</p>
+              <p style="font-size:11px;color:var(--ink-mute);margin:0;">★10〜★16・書体全段階・熟語合成</p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:20px;font-weight:700;color:var(--gold);">¥480</span>
+              <p style="font-size:10px;color:var(--ink-mute);margin:0;">買い切り</p>
+            </div>
+          </div>
+          <button onclick="openPremiumModal()" style="width:100%;padding:11px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--gold),#c9a84c);color:#07111c;">完全版を購入する</button>
+          <button style="width:100%;padding:9px;border:none;background:rgba(0,0,0,0.1);color:var(--ink-mute);font-size:11px;cursor:default;">購入を復元する（App Store）</button>
+        </div>`;
+    }
+  }
+  renderPurchaseSection();
+  dangerZone.insertAdjacentElement('beforebegin', section);
+  // stats モーダルが開くたびに更新
+  document.getElementById('stats-modal')?.addEventListener('transitionend', renderPurchaseSection);
 }
