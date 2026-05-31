@@ -515,6 +515,7 @@ const DEFAULT_STATE = {
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
   isPurchased: false,             // 完全版買い切り（¥480）── ★10以上を解放
+  premiumPromptShown: false,      // ★10プレミアムモーダル表示済み（重複防止）
   favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（★）字／熟語
   partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
   lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
@@ -2381,33 +2382,35 @@ function tierSeenRatio(tierIdx) {
 // ★10以上（index 9〜）は完全版購入が必要
 const PREMIUM_MIN_TIER_IDX = 9;
 
-function currentDropTier() {
-  // 段階解放：tier 0 は常に開放。以後、前 tier が 80% 以上発見されたら次を解放
+// キャップなしの実力ティア（内部共通計算）
+function _rawDropTier() {
   let band = 0;
   for (let i = 1; i < RARITY_TIERS.length; i++) {
     if (tierSeenRatio(i - 1) >= 0.8) band = i;
     else break;
   }
+  return band;
+}
+
+function currentDropTier() {
+  const band = _rawDropTier();
   // 未購入の場合 ★9（index 8）上限
   if (!STATE.isPurchased && band >= PREMIUM_MIN_TIER_IDX) {
-    band = PREMIUM_MIN_TIER_IDX - 1;
+    return PREMIUM_MIN_TIER_IDX - 1;
   }
   return band;
 }
 
 function updateUnlockTier() {
-  // rawBand = キャップなしの実力ティア（プレミアム判定に使う）
-  let rawBand = 0;
-  for (let i = 1; i < RARITY_TIERS.length; i++) {
-    if (tierSeenRatio(i - 1) >= 0.8) rawBand = i;
-    else break;
-  }
+  const rawBand = _rawDropTier(); // キャップなしの実力ティア（プレミアム判定用）
   const newTier = currentDropTier(); // 未購入時は ★9(idx8) 上限
   const oldTier = STATE.unlockedTier;
   STATE.unlockedTier = newTier;
 
-  // ★10 閾値に初めて到達 かつ 未購入 → プレミアムモーダル（1回だけ）
-  if (!STATE.isPurchased && rawBand >= PREMIUM_MIN_TIER_IDX && oldTier < PREMIUM_MIN_TIER_IDX) {
+  // ★10 閾値到達 かつ 未購入 かつ 未通知 → プレミアムモーダル（セッション1回）
+  if (!STATE.isPurchased && rawBand >= PREMIUM_MIN_TIER_IDX && !STATE.premiumPromptShown) {
+    STATE.premiumPromptShown = true;
+    saveState();
     setTimeout(() => openPremiumModal('★10'), 600);
     return;
   }
@@ -9821,6 +9824,7 @@ function closePremiumModal() {
 }
 
 function purchaseFullVersion() {
+  if (STATE.isPurchased) return; // 二重購入防止
   // 実際のリリースではここに RevenueCat / App Store IAP を繋ぐ
   STATE.isPurchased = true;
   saveState();
@@ -9834,7 +9838,7 @@ function _showPurchasedModal() {
   // 現在のパーティリーダーの漢字を表示
   const hero = STATE.party?.members?.[STATE.party?.hero || 0];
   const kanjiEl = document.getElementById('purchased-kanji');
-  if (kanjiEl && hero?.char) kanjiEl.textContent = hero.char;
+  if (kanjiEl) kanjiEl.textContent = hero?.char || '拾'; // フォールバック: 拾（拾段）
   modal.classList.add('show');
   // 購入完了音
   try {
@@ -9894,6 +9898,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function _injectPurchaseSectionToStats() {
   const dangerZone = document.querySelector('.danger-zone');
   if (!dangerZone) return;
+  // 二重注入防止（DOMContentLoaded が複数回発火する環境への備え）
+  if (document.getElementById('purchase-section-in-stats')) return;
   const section = document.createElement('div');
   section.id = 'purchase-section-in-stats';
   section.style.cssText = 'margin-bottom:20px;';
