@@ -515,7 +515,6 @@ const DEFAULT_STATE = {
   streakFreezes: 0,               // v10n ─ ストリークフリーズ：10日ごと +1、1日休みを救済（最大3）
   lastBackupAt: null,             // v10n ─ 最終 JSON バックアップ日時（何十年遊ぶための安全網）
   isPurchased: false,             // 完全版買い切り（¥480）── ★10以上を解放
-  premiumPromptShown: false,      // ★10プレミアムモーダル表示済み（重複防止）
   favorites: { chars: {}, yoji: {} }, // v10n8 ─ お気に入り（★）字／熟語
   partyPresets: [],               // v10n9 ─ パーティプリセット [{name, hero, members[]}]
   lastSeenVersion: '',            // v10n10 ─ 新機能ツアー既読バージョン
@@ -1262,13 +1261,12 @@ function decodePartyShare(b64) {
   try {
     const json = decodeURIComponent(escape(atob(b64)));
     const data = JSON.parse(json);
-    if (!data || !Array.isArray(data.m) || data.m.length !== 4) return null;
-    const codex = window.KANJI_CODEX || [];
+    if (!data || !Array.isArray(data.m) || data.m.length < 1 || data.m.length > 4) return null;
     const members = data.m.map(([char, level, perks]) => {
-      const k = codex.find(x => (x.char || x.c) === char);
+      const rIdx = _charRarityIdx(char);
       return {
         char, level: level || 1, exp: 0,
-        rarity: k?.rarity || '★1',
+        rarity: RARITY_TIERS[rIdx] || '★1',
         perks: Array.isArray(perks) ? perks : ['scholar']
       };
     });
@@ -1364,7 +1362,7 @@ const el = (tag, props={}, ...children) => {
   }
   for (const c of children) {
     if (c == null) continue;
-    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    e.appendChild((typeof c === 'string' || typeof c === 'number') ? document.createTextNode(String(c)) : c);
   }
   return e;
 };
@@ -1508,7 +1506,8 @@ function _buildCharRarityCache() {
 }
 function _charRarityIdx(c) {
   if (!_charRarityCache) _buildCharRarityCache();
-  return _charRarityCache.get(c) || 1;
+  const v = _charRarityCache.get(c);
+  return v !== undefined ? v - 1 : 0;  // 0-based: 0=★1, 15=★16, 0=unknown
 }
 function comboDifficulty(r) {
   if (!r || !r.chars || !r.chars.length) return 1.0;
@@ -2382,35 +2381,27 @@ function tierSeenRatio(tierIdx) {
 // ★10以上（index 9〜）は完全版購入が必要
 const PREMIUM_MIN_TIER_IDX = 9;
 
-// キャップなしの実力ティア（内部共通計算）
-function _rawDropTier() {
+function currentDropTier() {
+  // 段階解放：tier 0 は常に開放。以後、前 tier が 80% 以上発見されたら次を解放
   let band = 0;
   for (let i = 1; i < RARITY_TIERS.length; i++) {
     if (tierSeenRatio(i - 1) >= 0.8) band = i;
     else break;
   }
-  return band;
-}
-
-function currentDropTier() {
-  const band = _rawDropTier();
   // 未購入の場合 ★9（index 8）上限
   if (!STATE.isPurchased && band >= PREMIUM_MIN_TIER_IDX) {
-    return PREMIUM_MIN_TIER_IDX - 1;
+    band = PREMIUM_MIN_TIER_IDX - 1;
   }
   return band;
 }
 
 function updateUnlockTier() {
-  const rawBand = _rawDropTier(); // キャップなしの実力ティア（プレミアム判定用）
-  const newTier = currentDropTier(); // 未購入時は ★9(idx8) 上限
+  const newTier = currentDropTier();
   const oldTier = STATE.unlockedTier;
   STATE.unlockedTier = newTier;
-
-  // ★10 閾値到達 かつ 未購入 かつ 未通知 → プレミアムモーダル（セッション1回）
-  if (!STATE.isPurchased && rawBand >= PREMIUM_MIN_TIER_IDX && !STATE.premiumPromptShown) {
-    STATE.premiumPromptShown = true;
-    saveState();
+  // ★10 到達（未購入）→ プレミアムモーダルを表示
+  // currentDropTier() はキャップで最大8を返すため、自然帯が9以上かを別途判定する
+  if (!STATE.isPurchased && newTier >= PREMIUM_MIN_TIER_IDX - 1 && newTier > oldTier) {
     setTimeout(() => openPremiumModal('★10'), 600);
     return;
   }
@@ -2479,7 +2470,7 @@ function isPartyChosen() {
 function awardExpToParty(c, exp, opts={}) {
   const idx = partyContainsChar(c);
   if (idx < 0) return false;
-  const agg = aggregatePartyPerks();
+  const agg = _aggCache || aggregatePartyPerks();
   let mul = agg.expMul || 1.0;
   if (opts.tagMatch) mul *= 1.5;
   const tags = getCharTags(c);
@@ -2567,7 +2558,7 @@ function onLevelUp(member, idx) {
 
   // 書体進化時 ── 派手な祝祭演出（フィールド全体に光放射）
   if (evolved) {
-    const stageNames = ['', '楷書', '行書', '草書', '篆書', '甲骨', '神代文字', '超越', '星屑', '神話', '創造主'];
+    const stageNames = ['', '楷書', '行書', '草書', '篆書', '甲骨', '神代文字', '超越', '星屑', '神話', '創造主', '永劫', '無始', '虚無', '永遠', '∞'];
     const glyph = EVO_GLYPH[newStage] || '𓂀';
     toast(`${glyph} 書体進化「${stageNames[newStage] || ''}」 ${member.char}`, '★16');
     spawnEvolutionBurst(member.char, glyph, member.rarity);
@@ -2632,7 +2623,7 @@ function openOnboarding() {
         'color:#f0d48a; font-weight:900;'
       );
       console.log(
-        '%c  100 サイクルリリース達成 ── 開発進化v9c時点',
+        `%c  文字の博物館 ── v1.0.0 / 2026-05-31`,
         'color:#ff6b9d; font-weight:900; font-size:14px;'
       );
     }, 500);
@@ -3023,7 +3014,6 @@ function startWork() {
 // 既に画面上にいる持続字はスキップ
 function spawnPartyPersistents() {
   if (!STATE.party || !STATE.party.members) return;
-  const codex = window.KANJI_CODEX || [];
   // 現存する persistent の char セット
   const existing = new Set(
     Array.from(livePomoji.values()).filter(p => p.persistent).map(p => p.char)
@@ -3032,7 +3022,7 @@ function spawnPartyPersistents() {
   let idx = 0;
   for (const m of STATE.party.members) {
     if (existing.has(m.char)) continue;
-    const k = codex.find(c => (c.char || c.c) === m.char) || { char: m.char, c: m.char, rarity: m.rarity };
+    const k = { char: m.char, c: m.char, rarity: m.rarity };
     // 横方向に均等配置（パーティ4体なら 1/5, 2/5, 3/5, 4/5）
     const slot = (idx + 1) / (STATE.party.members.length + 1);
     const x = Math.round(slot * W) - SIZE/2;
@@ -3059,12 +3049,13 @@ function triggerLuckyCombo() {
   });
   if (candidates.length === 0) return false;
   const r = candidates[Math.floor(Math.random() * candidates.length)];
-  const codex = window.KANJI_CODEX || [];
   try { toast(`熟語ラッキー：${r.word}`, r.rarity); } catch(_) {}
   r.chars.forEach((c, i) => {
     setTimeout(() => {
       if (STATE.mode !== 'work') return;
-      const k = codex.find(x => (x.char||x.c) === c) || { char: c, c: c, rarity: r.rarity };
+      // _charRarityIdx でキャッシュ参照（O(1)）
+      const rIdx = _charRarityIdx(c);
+      const k = { char: c, c: c, rarity: RARITY_TIERS[rIdx] || r.rarity };
       spawnPomoji({ kanji: k });
     }, i * 700);
   });
@@ -3564,9 +3555,8 @@ function restorePinnedField() {
     const arr = STATE.pinnedField || [];
     if (!Array.isArray(arr) || arr.length === 0) return;
     const W = window.innerWidth, H = window.innerHeight;
-    const codex = window.KANJI_CODEX || [];
     for (const entry of arr) {
-      const k = codex.find(x => (x.char || x.c) === entry.char) || { char: entry.char, c: entry.char, rarity: entry.rarity };
+      const k = { char: entry.char, c: entry.char, rarity: entry.rarity || RARITY_TIERS[_charRarityIdx(entry.char)] || '★1' };
       const x = (entry.xRatio || 0.5) * W;
       const y = (entry.yRatio || 0.5) * H;
       try {
@@ -3639,7 +3629,6 @@ function convertToRising(p) {
 function awardRising(p) {
   const rIdx = RARITY_TIERS.indexOf(p.rarity);
   const exp = Math.max(1, Math.pow(1.3, rIdx) * 6);
-  const tankRect = $('#tank').getBoundingClientRect();
   spawnXpFloat(p.x + SIZE/2, Math.max(20, p.y), exp, p.rarity);
   awardExpToParty(p.char, exp) || _orphanExp(exp);
   p.el.classList.add('burst');
@@ -3863,10 +3852,7 @@ function pickPartyDrop() {
   // パーティ字を1粒（保証ドロップ用）
   if (!STATE.party) return null;
   const m = choose(STATE.party.members);
-  // KANJI_CODEX で実体を探して rarity も持ってくる
-  const codex = window.KANJI_CODEX || [];
-  const found = codex.find(k => (k.char || k.c) === m.char);
-  return found || { char: m.char, c: m.char, rarity: m.rarity };
+  return { char: m.char, c: m.char, rarity: m.rarity };
 }
 
 // ぽもじ上限（負荷管理：persistent パーティ字を除いて 30体超えたら最古を消滅）
@@ -4208,7 +4194,7 @@ function spawnCycleDrops() {
   // レアごとに落下数を変える
   const tier = STATE.unlockedTier;
   const [minN, maxN] = TIER_DROP_COUNT[tier] || [5, 8];
-  const agg = aggregatePartyPerks();
+  const agg = _aggCache || aggregatePartyPerks();
   const base = minN + Math.floor(Math.random() * (maxN - minN + 1));
   const count = Math.max(2, base + (agg.dropCountAdd || 0));
 
@@ -4258,6 +4244,11 @@ function ledgeBounds(W) {
 const wind = 0;
 function physicsStep() {
   _physicsFrame++;
+  // idle かつ字が 0 のときは低頻度に落とす（CPU/バッテリー節約）
+  if (STATE.mode === 'idle' && livePomoji.size === 0 && (_physicsFrame % 6) !== 0) {
+    physicsRaf = requestAnimationFrame(physicsStep);
+    return;
+  }
   if ((_physicsFrame % 600) === 0) checkPinTriad();
   if ((_physicsFrame % 120) === 0) updateRarityPairGlow();
   if ((_physicsFrame % 90)  === 0) updateYojiChainLines();
@@ -4650,7 +4641,7 @@ function squashEl(p, cls) {
 }
 
 function checkMergeCollision(p) {
-  const agg = aggregatePartyPerks();
+  const agg = _aggCache || aggregatePartyPerks();
   // v1.5.36: 結ステータス（1-5）で融合範囲 ±40%
   const bondMul = p.stats ? (0.8 + 0.1 * p.stats.bond) : 1;
   const radius = SIZE * 0.9 * (agg.mergeRadiusMul || 1.0) * bondMul;
@@ -4994,8 +4985,8 @@ function dissolvePomoji(p) {
     setTimeout(() => {
       if (!STATE.party || !STATE.party.members.some(m => m.char === oldChar)) return;
       if (Array.from(livePomoji.values()).some(x => x.char === oldChar && x.persistent)) return;
-      const codex = window.KANJI_CODEX || [];
-      const k = codex.find(c => (c.char || c.c) === oldChar) || { char: oldChar, c: oldChar, rarity: oldRarity };
+      const rIdx2 = _charRarityIdx(oldChar);
+      const k = { char: oldChar, c: oldChar, rarity: RARITY_TIERS[rIdx2] || oldRarity };
       const W = window.innerWidth;
       const x = Math.random() * (W - SIZE);
       spawnPomoji({ kanji: k, x, persistent: true });
@@ -5122,14 +5113,12 @@ function addStock(char) {
   if (!STATE.perkLevels) STATE.perkLevels = {};
   STATE.stock[char] = (STATE.stock[char] || 0) + 1;
 
-  const codex = window.KANJI_CODEX || [];
-  const k = codex.find(c => (c.char || c.c) === char);
-  const rIdx = k ? RARITY_TIERS.indexOf(k.rarity) : 0;
+  const rIdx = _charRarityIdx(char);
 
   if (STATE.party && STATE.party.members) {
     // ストック→Lv：パーティ全員に rarity 比例の小 EXP
     // 「ぽ文字漢」コンボ成立時は ×1.3
-    const agg = aggregatePartyPerks();
+    const agg = _aggCache || aggregatePartyPerks();
     const stockMul = (agg && agg.stockExpMul) ? agg.stockExpMul : 1.0;
     // v1.4.2: stock EXP を更に控えめに（旧 0.3 → 0.15）
     const expPerStock = Math.max(1, Math.round((rIdx + 1) * 0.15 * stockMul));
@@ -5291,7 +5280,7 @@ function mergePomoji(src, target) {
   }
 
   // 連鎖（chain rare 特性）：mergeLevel 3 以上で全員 Lv+1（大爆発）
-  const agg = aggregatePartyPerks();
+  const agg = _aggCache || aggregatePartyPerks();
   if (agg.chain && newLv >= 3 && STATE.party) {
     for (let i = 0; i < STATE.party.members.length; i++) {
       STATE.party.members[i].level += 1;
@@ -5643,7 +5632,7 @@ function openPartyMemberAction(idx) {
     const p = PERKS[pid];
     if (!p) return null;
     const lv = perkLv(pid);
-    const isRare = p.rare;
+    const isRare = p.category === 'rare';
     // 進捗：raw 累計の小数部分が次 Lv までの分子
     const raw = (STATE.perkLevels && STATE.perkLevels[pid]) || 0;
     const frac = raw - Math.floor(raw);
@@ -6533,6 +6522,7 @@ function detectGenre(chars) {
   if (n === 3) return '三字熟語';
   if (n === 4) return '四字熟語';
   if (n === 5) return '五字 ・ 俳句の上の句';
+  if (n === 6) return `六字`;
   if (n === 7) return '七字 ・ 俳句の中の句';
   if (n === 17) return ' 俳句（5-7-5）';
   if (n === 31) return ' 短歌（5-7-5-7-7）';
@@ -6935,7 +6925,7 @@ function renderCodexFilterSummary() {
   if (!s) return;
   const parts = [];
   if (codexFilter.season !== 'all') {
-    const labels = { S1:'S1 字種', S2:'S2 漢字', S3:'S3 熟語', S4:'S4 四字熟語', S5:'S5 昭和', S6:'S6 令和', S7:'S7 未来', S8:'S8 世界', PERKS:' 特性' };
+    const labels = { S1:'S1 字種', S2:'S2 漢字', S3:'S3 熟語', S4:'S4 四字熟語', S5:'S5 昭和', S6:'S6 令和', S7:'S7 未来', S8:'S8 世界', S9:'S9 絵文字', PERKS:' 特性', PASSIVES:' 常時' };
     parts.push(labels[codexFilter.season] || codexFilter.season);
   }
   if (codexFilter.tier !== 'all') parts.push('★' + (parseInt(codexFilter.tier) + 1));
@@ -7090,6 +7080,23 @@ function renderDataManagerStatus() {
   }
 }
 
+// HUD next-hint キャッシュ（パーティ変化時に無効化）
+let _hudHintCache = null;
+let _hudHintPartyKey = '';
+function _getHudNextHint() {
+  const partyKey = isPartyChosen() ? STATE.party.members.map(m => m.char).join(',') : '';
+  if (_hudHintCache !== null && _hudHintPartyKey === partyKey) return _hudHintCache;
+  _hudHintPartyKey = partyKey;
+  const partySet = new Set(STATE.party.members.map(m => m.char));
+  _hudHintCache = '';
+  for (const r of (window.YOJI_RECIPES || [])) {
+    if (!r.chars || r.chars.length < 2 || r.chars.length > 4) continue;
+    const missing = r.chars.filter(c => !partySet.has(c));
+    if (missing.length === 1) { _hudHintCache = `「${missing[0]}」→ ${r.word}`; break; }
+  }
+  return _hudHintCache;
+}
+
 // v10n10: プレイ中 HUD ── 画面右上に「リーダー / 効果 / 推薦」薄く表示
 function renderHUD() {
   let hud = $('#play-hud');
@@ -7102,20 +7109,11 @@ function renderHUD() {
     document.body.appendChild(hud);
   }
   const hero = STATE.party.members[STATE.party.hero || 0];
-  const agg = aggregatePartyPerks();
+  const agg = _aggCache || aggregatePartyPerks();
   const combo = getComboBonus();
   const expFinal = (agg.expMul || 1) * (combo.expMul || 1);
-  // 次推薦：あと1字でコンボ成立する熟語があれば
-  const partySet = new Set(STATE.party.members.map(m => m.char));
-  let nextHint = '';
-  for (const r of (window.YOJI_RECIPES || [])) {
-    if (!r.chars || r.chars.length < 2 || r.chars.length > 4) continue;
-    const missing = r.chars.filter(c => !partySet.has(c));
-    if (missing.length === 1) {
-      nextHint = `「${missing[0]}」→ ${r.word}`;
-      break;
-    }
-  }
+  // 次推薦：キャッシュを使用（パーティ変化時のみ再計算）
+  const nextHint = _getHudNextHint();
   hud.innerHTML = '';
   // v1.6.9: 今日のサイクル数を最上段に（成長実感）
   const today = new Date().toISOString().slice(0, 10);
@@ -7180,7 +7178,7 @@ function loadPartyPreset(id) {
   if (!p) return;
   if (!confirm(`「${p.name}」を読込みますか？\n（現パーティは置き換え。プリセット側に保存された Lv が復元される）`)) return;
   invalidateAggCache();
-  STATE.party = { hero: p.hero || 0, members: JSON.parse(JSON.stringify(p.members)) };
+  STATE.party = { hero: p.hero || 0, members: JSON.parse(JSON.stringify(p.members)), bench: [] };
   saveState();
   renderParty();
   updateProgressPill();
@@ -7280,7 +7278,7 @@ function renderEffectsPanel() {
       after.parentNode.insertBefore(panel, after.nextSibling);
     }
   }
-  const agg = aggregatePartyPerks();
+  const agg = _aggCache || aggregatePartyPerks();
   const combo = getComboBonus();
   // 合算（agg 側の効果は perks 由来・combo は熟語発動由来 ── perks は既に getComboBonus に乗ってないので別管理）
   const expFinal      = (agg.expMul || 1) * (combo.expMul || 1);
@@ -7520,13 +7518,12 @@ function formatComboEffect(eff) {
 function openComboPlacementPicker(r) {
   if (!r || !r.chars || r.chars.length === 0) return;
   if (r.chars.length > 4) { toast('5字以上は枠超過'); return; }
-  const codex = window.KANJI_CODEX || [];
   const missing = [];
   const chars = [];
   for (const c of r.chars) {
     if (!((STATE.collection||{})[c] > 0)) { missing.push(c); continue; }
-    const k = codex.find(x => (x.char || x.c) === c);
-    chars.push({ char:c, rarity: (k && k.rarity) || '★1' });
+    const rIdx = _charRarityIdx(c);
+    chars.push({ char:c, rarity: RARITY_TIERS[rIdx] || '★1' });
   }
   if (missing.length > 0) {
     toast(`あと ${missing.length} 字（${missing.join('・')}）未発見`);
@@ -7655,14 +7652,12 @@ function openComboPlacementPicker(r) {
 function assemblePartyFromYoji(r) {
   if (!r || !r.chars || r.chars.length === 0) return { ok:false, reason:'構成字なし' };
   if (r.chars.length > 4) return { ok:false, reason:'5字以上の熟語はパーティ枠超過' };
-  const codex = window.KANJI_CODEX || [];
   const missing = [];
   const found = [];
   for (const c of r.chars) {
     if (!((STATE.collection||{})[c] > 0)) { missing.push(c); continue; }
-    const k = codex.find(x => (x.char || x.c) === c);
-    if (!k) { missing.push(c); continue; }
-    found.push({ char:c, rarity:k.rarity });
+    const rIdx = _charRarityIdx(c);
+    found.push({ char:c, rarity: RARITY_TIERS[rIdx] || '★1' });
   }
   if (missing.length > 0) return { ok:false, reason:`あと ${missing.length} 字（${missing.join('・')}）未発見`, missing };
   // 既存パーティを置き換え（確認）
@@ -7688,7 +7683,7 @@ function assemblePartyFromYoji(r) {
 function computeSeasonProgress(season) {
   const codex = window.KANJI_CODEX || [];
   const recipes = window.YOJI_RECIPES || [];
-  if (season === 'S1' || season === 'S2') {
+  if (['S1','S2','S8','S9'].includes(season)) {
     const items = codex.filter(k => (k.season || 'S1') === season);
     const found = items.filter(k => ((STATE.collection||{})[k.char || k.c] || 0) > 0).length;
     return { found, total: items.length };
@@ -7708,13 +7703,6 @@ function _omikujiTotalStock() {
   let n = 0;
   for (const k of Object.keys(STATE.stock || {})) n += STATE.stock[k] || 0;
   return n;
-}
-// v1.5.33: 字の rarity を取得（codex から）
-function _charRarityIdx(c) {
-  const codex = window.KANJI_CODEX || [];
-  const k = codex.find(x => (x.char || x.c) === c);
-  if (!k) return 0;
-  return Math.max(0, RARITY_TIERS.indexOf(k.rarity));
 }
 // 消費：所有数で重み付きランダム抽選で 10 個削る ・ 平均 rIdx を返す
 function _omikujiConsumeStock(cost) {
@@ -7985,6 +7973,8 @@ function applyCodexSeasonBadges() {
     'S5': recipes.filter(r => r.season === 'S5').length,
     'S6': recipes.filter(r => r.season === 'S6').length,
     'S7': recipes.filter(r => r.season === 'S7').length,
+    'S8': codex.filter(k => k.season === 'S8').length,
+    'S9': codex.filter(k => k.season === 'S9').length,
     'PERKS': Object.keys(PERKS || {}).length,
     'PASSIVES': PASSIVES.length,
   };
@@ -7995,7 +7985,7 @@ function applyCodexSeasonBadges() {
     if (!btn.dataset.origLabel) btn.dataset.origLabel = btn.textContent;
     // v10n8: 進捗率バッジ
     let progressHtml = '';
-    if (['S1','S2','S3','S4','S5','S6','S7'].includes(s)) {
+    if (['S1','S2','S3','S4','S5','S6','S7','S8','S9'].includes(s)) {
       const p = computeSeasonProgress(s);
       if (p.total > 0) {
         const pct = Math.round(p.found / p.total * 100);
@@ -8194,7 +8184,7 @@ function showYojiDetail(r) {
 // 字のクイック詳細
 function showCharDetail(c, rarity) {
   const tags = getCharTags(c);
-  const recipes = (window.YOJI_RECIPES || []).filter(r => r.chars && r.chars.includes(c));
+  const recipes = (window.CHAR_TO_WORDS || {})[c] || [];
   const seen = STATE.collection[c] || 0;
   const stock = (STATE.stock || {})[c] || 0;
   const partyIdx = partyContainsChar(c);
@@ -8457,6 +8447,13 @@ function showCharDetail(c, rarity) {
   const origRemove = pop.remove.bind(pop);
   pop.remove = () => { try { backdrop.remove(); } catch(_){} origRemove(); };
 }
+// 熟語の発見判定 ── 構成字全て発見済 or パーティで一度コンボ発動済（グローバル関数）
+function isYojiDiscovered(r) {
+  if (!r || !r.chars) return false;
+  if (STATE.discoveredYoji && STATE.discoveredYoji[r.word]) return true;
+  return r.chars.every(c => (STATE.collection[c] || 0) > 0);
+}
+
 function renderCodex() {
   // v10n12: フィルタサマリーを毎回更新
   try { renderCodexFilterSummary(); } catch(_) {}
@@ -8469,12 +8466,7 @@ function renderCodex() {
   const seasonMatch = (k) =>
     codexFilter.season === 'all' || (k.season || 'S1') === codexFilter.season;
 
-  // 熟語の発見判定 ── 構成字全て発見済 or パーティで一度コンボ発動済
-  const isYojiDiscovered = (r) => {
-    if (!r || !r.chars) return false;
-    if (STATE.discoveredYoji && STATE.discoveredYoji[r.word]) return true;
-    return r.chars.every(c => (STATE.collection[c] || 0) > 0);
-  };
+  // 熟語の発見判定はグローバル関数 isYojiDiscovered を使用
 
   // v10n13: パッシブ図鑑
   if (codexFilter.season === 'PASSIVES') {
@@ -8857,7 +8849,8 @@ function updateProgressPill() {
       const nextTierName = RARITY_TIERS[tier + 1];
       const nextLv = nextTierName ? UNLOCK_LV[nextTierName] : null;
       const remain = nextLv != null ? nextLv - hero.level : null;
-      ldrEl.textContent = `${hero.char} Lv.${hero.level}`;
+      const remainStr = (remain != null && remain > 0) ? ` (次 +${remain})` : '';
+      ldrEl.textContent = `${hero.char} Lv.${hero.level}${remainStr}`;
     } else {
       ldrEl.textContent = 'リーダー 未選択';
     }
@@ -8903,7 +8896,7 @@ function openStats() {
     { label:'🛡 ストリークフリーズ', value: `${STATE.streakFreezes || 0} / 3（10日毎+1 ・ 1日休み救済）` },
     { label:'累計ぽもじ', value: STATE.stats.totalDrops || 0 },
     { label:'累計 EXP', value: (STATE.stats.totalExp || 0).toLocaleString() },
-    { label:'🌏 世界の文字', value: `${discovered.toLocaleString()} / ${totalKanji.toLocaleString()}（${(discovered/totalKanji*100).toFixed(2)}%）`, span:2 },
+    { label:'🌏 世界の文字', value: `${discovered.toLocaleString()} / ${totalKanji.toLocaleString()}（${totalKanji > 0 ? (discovered/totalKanji*100).toFixed(2) : '0.00'}%）`, span:2 },
     { label:'解放熟語', value: `${unlockedYoji.toLocaleString()} / ${totalYoji.toLocaleString()}` },
     { label:'獲得特性', value: `${ownedPerks.size} / ${totalPerks}` },
     { label:'所有字 合計', value: totalStock.toLocaleString() },
@@ -9197,7 +9190,7 @@ function notifyPhaseComplete(prevMode) {
     const title = prevMode === 'work' ? '作業完了 ── 休憩へ' : '休憩完了 ── 次のサイクルへ';
     const body  = prevMode === 'work' ? `${Math.floor(STATE.timer.restSec/60)} 分の休憩` : `${Math.floor(STATE.timer.workSec/60)} 分の作業`;
     new Notification(title, {
-      body, icon: './icon-192.png', tag: 'pomojikan-phase', renotify: true, silent: false,
+      body, icon: './icon.svg', tag: 'pomojikan-phase', renotify: true, silent: false,
     });
   } catch(_) {}
 }
@@ -9525,7 +9518,7 @@ function bindEvents() {
     // 熟語／特性シーズンでは文字種フィルター非表示（字単位ではない）
     const scriptBar = $('#codex-scripts');
     if (scriptBar) {
-      const hide = ['S3','S4','S5','S6','S7','PERKS'].includes(codexFilter.season);
+      const hide = ['S3','S4','S5','S6','S7','PERKS','PASSIVES'].includes(codexFilter.season);
       scriptBar.style.display = hide ? 'none' : '';
     }
     renderCodex();
@@ -9575,7 +9568,7 @@ function bindEvents() {
     }
   });
 
-  bindOpt('#btn-reset-all', resetState);
+  bindOpt('#btn-reset-all', resetAllData);
   bindOpt('#btn-share-party', copyShareURL);
 
   bindOpt('#btn-audio', toggleAudio);
@@ -9702,10 +9695,19 @@ function init() {
   STATE.pausedRemaining = 0;
   STATE.lastHiddenAt = null;
   document.body.dataset.mode = 'idle';
-  // 配信モード判定（?stream=1）── OBS 用透過オーバーレイ
+  // URL パラメータ処理
   try {
     const params = new URLSearchParams(location.search);
+    // 配信モード（?stream=1）── OBS 用透過オーバーレイ
     if (params.get('stream') === '1') document.body.classList.add('stream-mode');
+    // ショートカット起動（?work=N&autostart=1）── manifest shortcuts 対応
+    const workMin = parseInt(params.get('work'));
+    if (!isNaN(workMin) && workMin > 0) {
+      STATE.timer.workSec = workMin * 60;
+      if (params.get('autostart') === '1') {
+        setTimeout(() => { if (isPartyChosen()) startWork(); }, 800);
+      }
+    }
   } catch(_) {}
   bindEvents();
   setTextWithLvBand("timer-text", fmtTime(STATE.timer.workSec));
@@ -9726,14 +9728,16 @@ function init() {
   // v10n19: テーマ適用
   try { applyTheme(); } catch(_) {}
   try { applyIconMode(); } catch(_) {}
-  // v1.5.67: ピン留め字を復元（少し遅延：DOM 整い次第）
-  setTimeout(() => { try { restorePinnedField(); } catch(_) {} }, 800);
-  // v1.6.16: 今日の言葉を表示（毎日違う熟語が静かに迎える・再訪の核）
-  setTimeout(() => { try { renderWordOfDay(); } catch(_) {} }, 600);
+  // ピン留め字の復元 + 今日の言葉（物理ループ安定後・300ms で十分）
+  setTimeout(() => {
+    try { restorePinnedField(); } catch(_) {}
+    try { renderWordOfDay(); } catch(_) {}
+  }, 300);
   // v10n15: アプリ閉じ時に PiP/WakeLock 後片付け（リーク防止）
   window.addEventListener('pagehide', () => {
     try { if (_pipWindow) _pipWindow.close(); } catch(_) {}
     try { releaseWakeLock(); } catch(_) {}
+    try { if (_yomuChannel) { _yomuChannel.close(); _yomuChannel = null; } } catch(_) {}
   });
 
   // First-launch flow: onboarding → party picker
@@ -9824,7 +9828,6 @@ function closePremiumModal() {
 }
 
 function purchaseFullVersion() {
-  if (STATE.isPurchased) return; // 二重購入防止
   // 実際のリリースではここに RevenueCat / App Store IAP を繋ぐ
   STATE.isPurchased = true;
   saveState();
@@ -9838,7 +9841,7 @@ function _showPurchasedModal() {
   // 現在のパーティリーダーの漢字を表示
   const hero = STATE.party?.members?.[STATE.party?.hero || 0];
   const kanjiEl = document.getElementById('purchased-kanji');
-  if (kanjiEl) kanjiEl.textContent = hero?.char || '拾'; // フォールバック: 拾（拾段）
+  if (kanjiEl && hero?.char) kanjiEl.textContent = hero.char;
   modal.classList.add('show');
   // 購入完了音
   try {
@@ -9856,8 +9859,24 @@ function _showPurchasedModal() {
       osc.stop(ctx.currentTime + i * 0.1 + 0.55);
     });
   } catch (_) {}
-  // ★10以上の tier を解放（isPurchased=true 後に updateUnlockTier を再評価）
-  setTimeout(() => updateUnlockTier(), 1000);
+  // ★10以上の tier を解放（updateUnlockTier を再評価）
+  setTimeout(() => {
+    STATE.isPurchased = true; // 確保
+    updateUnlockTier();
+  }, 1000);
+}
+
+// 購入後に unlockedTier を正しく更新（購入前に上限をかけていたので再計算）
+function _recalcTierAfterPurchase() {
+  let band = 0;
+  for (let i = 1; i < RARITY_TIERS.length; i++) {
+    if (tierSeenRatio(i - 1) >= 0.8) band = i;
+    else break;
+  }
+  if (band !== STATE.unlockedTier) {
+    STATE.unlockedTier = band;
+    saveState();
+  }
 }
 
 // 7日連続バナーを表示するか判定（起動時に呼ぶ）
@@ -9898,8 +9917,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function _injectPurchaseSectionToStats() {
   const dangerZone = document.querySelector('.danger-zone');
   if (!dangerZone) return;
-  // 二重注入防止（DOMContentLoaded が複数回発火する環境への備え）
-  if (document.getElementById('purchase-section-in-stats')) return;
   const section = document.createElement('div');
   section.id = 'purchase-section-in-stats';
   section.style.cssText = 'margin-bottom:20px;';
@@ -9935,11 +9952,6 @@ function _injectPurchaseSectionToStats() {
   }
   renderPurchaseSection();
   dangerZone.insertAdjacentElement('beforebegin', section);
-  // stats モーダルが開くたびに更新（MutationObserver で show クラスを監視）
-  const statsModal = document.getElementById('stats-modal');
-  if (statsModal) {
-    new MutationObserver(() => {
-      if (statsModal.classList.contains('show')) renderPurchaseSection();
-    }).observe(statsModal, { attributes: true, attributeFilter: ['class'] });
-  }
+  // stats モーダルが開くたびに更新
+  document.getElementById('stats-modal')?.addEventListener('transitionend', renderPurchaseSection);
 }

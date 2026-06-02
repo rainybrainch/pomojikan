@@ -2341,6 +2341,79 @@ body[data-mode="rest"] #tank{
   transform:skewX(-6deg);
   letter-spacing:-.02em;
 }
+/* 篆書（Lv150〜）── 重厚・幅広 */
+.font-tens{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+/* 甲骨（Lv300〜）── 金色グロー */
+.font-kou{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:900;
+  color:var(--gold);
+  text-shadow:0 0 8px rgba(240,212,138,.6);
+  letter-spacing:.04em;
+}
+/* 神代文字（Lv600〜）── 金色＋大グロー */
+.font-shin{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:900;
+  color:#ffd860;
+  text-shadow:0 0 14px rgba(240,212,138,.8),0 0 30px rgba(240,212,138,.4);
+  letter-spacing:.06em;
+}
+/* 超越（Lv1000〜）── 白金 */
+.font-choetsu{
+  font-family:'Noto Serif JP',serif;
+  font-weight:900;
+  color:#e8f4ff;
+  text-shadow:0 0 18px rgba(135,206,235,.9),0 0 40px rgba(135,206,235,.5);
+  letter-spacing:.04em;
+}
+/* 星屑（Lv2000〜）── 虹色アニメ */
+.font-hoshi{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:900;
+  background:linear-gradient(90deg,#f0d48a,#87ceeb,#d4a8ff,#f0d48a);
+  background-size:300%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:rainbowShift 3s linear infinite;
+}
+/* 神話（Lv5000〜）*/
+.font-shinwa{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:900;
+  background:linear-gradient(135deg,#f0d48a,#fff8e0,#f0d48a);
+  background-size:200%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:none;
+  animation:goldShimmer 2s ease-in-out infinite alternate;
+}
+/* 創造主（Lv10000〜）*/
+.font-sozo{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 0 20px #fff,0 0 40px rgba(200,180,255,.8),0 0 80px rgba(200,180,255,.4);
+  animation:divinePulse 1.5s ease-in-out infinite alternate;
+}
+/* 永劫〜∞（Lv30000〜）── 究極グロー */
+.font-eigou,.font-mushi,.font-kyomu,.font-eien,.font-mugen{
+  font-family:'Shippori Mincho B1','Noto Serif JP',serif;
+  font-weight:900;
+  color:#f0d48a;
+  text-shadow:0 0 24px rgba(240,212,138,1),0 0 50px rgba(240,212,138,.7),0 0 100px rgba(240,212,138,.3);
+  animation:divinePulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes rainbowShift{ to{ background-position:100%; } }
+@keyframes goldShimmer{ from{ background-position:0%; } to{ background-position:100%; } }
+@keyframes divinePulse{ from{ opacity:.85; } to{ opacity:1; filter:brightness(1.15); } }
 
 /* タグ共振（同タグ融合時） */
 .pomoji.merge-resonate{
@@ -2514,9 +2587,8 @@ body[data-mode="rest"] #tank{
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   z-index:100;
   padding:20px;
-  animation:modalIn .25s ease-out;
 }
-.modal.show{ display:flex; }
+.modal.show{ display:flex; animation:modalIn .25s ease-out; }
 @keyframes modalIn{
   from{ opacity:0; }
   to{ opacity:1; }
@@ -6129,4 +6201,22 @@ body[data-world="harugasumi"] .rain-bg {
   position: absolute; top: 10px; right: 10px;
   width: 8px; height: 8px; border-radius: 50%;
 }
+
+/* ── 極光（aurora-mode）── legendary_aurora 特性発動時の背景演出 ── */
+body.aurora-mode .rain-bg { opacity: 1 !important; }
+body.aurora-mode .bubble-bg { opacity: 0.85 !important; }
+body.aurora-mode #play-field::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: linear-gradient(135deg,
+    rgba(100,0,180,0.08) 0%,
+    rgba(0,180,120,0.06) 33%,
+    rgba(0,80,220,0.08) 66%,
+    rgba(180,0,120,0.06) 100%);
+  animation: aurora-shift 8s ease-in-out infinite alternate;
+}
+@keyframes aurora-shift {
+  0%   { opacity: .5; transform: scale(1) rotate(0deg); }
+  50%  { opacity: 1;  transform: scale(1.04) rotate(1deg); }
+  100% { opacity: .6; transform: scale(1) rotate(-1deg); }
 }

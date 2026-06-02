@@ -591,8 +591,8 @@ function renderLeader() {
 }
 
 function expForLevel(lv) {
-  // PC版と同じ簡易計算（effectiveExpForLevel相当）
-  return Math.floor(100 * Math.pow(1.08, Math.min(lv, 200)) + lv * 10);
+  // app.js と同じ式（pomojikan_v30 準拠）
+  return Math.floor(250 * Math.pow(lv, 2.5));
 }
 
 function tierGlow(tier) {
@@ -677,6 +677,20 @@ function onWorkComplete() {
   state.dailyCycles[today] = (state.dailyCycles[today] || 0) + 1;
   if (!state.stats) state.stats = {};
   state.stats.totalCycles = (state.stats.totalCycles || 0) + 1;
+  // ストリーク更新（app.js の updateStreak と同じロジック）
+  if (!state.streak) state.streak = { current: 0, longest: 0, lastDate: null };
+  if (state.streak.lastDate !== today) {
+    const yest = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    if (!state.streak.lastDate) {
+      state.streak.current = 1;
+    } else if (state.streak.lastDate === yest) {
+      state.streak.current = (state.streak.current || 0) + 1;
+    } else {
+      state.streak.current = 1;
+    }
+    if (state.streak.current > (state.streak.longest || 0)) state.streak.longest = state.streak.current;
+    state.streak.lastDate = today;
+  }
   saveState();
   renderToday();
   showCompleteOverlay();
@@ -807,8 +821,10 @@ function addXpToLeader(xp) {
   const leader = members[hi];
   if (!leader) return;
   leader.exp = (leader.exp || 0) + xp;
-  const needed = expForLevel(leader.level || 1);
-  while (leader.exp >= needed) {
+  let safetyCount = 0;
+  while (safetyCount++ < 100) {
+    const needed = expForLevel(leader.level || 1);
+    if (leader.exp < needed) break;
     leader.exp -= needed;
     leader.level = (leader.level || 1) + 1;
     // tier解放

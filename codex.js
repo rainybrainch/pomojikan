@@ -8164,8 +8164,9 @@ for (const r of _YOJI_THOUGHT) YOJI_RECIPES.push(r);
     const r = YOJI_RECIPES[i];
     if (seenWords.has(r.word)) { dupCnt++; continue; }
     seenWords.add(r.word);
-    kept.unshift(r);
+    kept.push(r);  // push+reverse で O(n) に（unshift は O(n²)）
   }
+  kept.reverse();
   YOJI_RECIPES.length = 0;
   for (const r of kept) YOJI_RECIPES.push(r);
   if (dupCnt > 0 && typeof console !== 'undefined') {
