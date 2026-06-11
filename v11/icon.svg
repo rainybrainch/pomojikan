@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1b3a55"/>
+      <stop offset="100%" stop-color="#06101b"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- 背景 -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- 雨粒の装飾ライン -->
+  <line x1="120" y1="60" x2="108" y2="140" stroke="#87ceeb" stroke-width="1.5" stroke-opacity="0.3"/>
+  <line x1="200" y1="30" x2="188" y2="110" stroke="#87ceeb" stroke-width="1.5" stroke-opacity="0.2"/>
+  <line x1="310" y1="50" x2="298" y2="130" stroke="#87ceeb" stroke-width="1.5" stroke-opacity="0.25"/>
+  <line x1="390" y1="70" x2="378" y2="150" stroke="#87ceeb" stroke-width="1.5" stroke-opacity="0.2"/>
+  <line x1="150" y1="380" x2="138" y2="460" stroke="#87ceeb" stroke-width="1.5" stroke-opacity="0.15"/>
+  <line x1="360" y1="360" x2="348" y2="440" stroke="#87ceeb" stroke-width="1.5" stroke-opacity="0.2"/>
+  <!-- 中央の字「字」 -->
+  <text
+    x="256" y="320"
+    text-anchor="middle"
+    font-family="'Noto Serif JP', 'Hiragino Mincho ProN', serif"
+    font-size="240"
+    font-weight="400"
+    fill="#87ceeb"
+    filter="url(#glow)"
+    opacity="0.95"
+  >字</text>
+  <!-- 下部の小テキスト -->
+  <text
+    x="256" y="430"
+    text-anchor="middle"
+    font-family="'Noto Serif JP', serif"
+    font-size="42"
+    fill="#7c98b0"
+    letter-spacing="8"
+  >ぽもじかん</text>
+</svg>
